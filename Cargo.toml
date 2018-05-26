@@ -1,0 +1,27 @@
+[package]
+name = "airmash-server"
+version = "0.1.0"
+authors = ["STEAMROLLER"]
+
+[dependencies]
+simple_logger = "*"
+log = "0.4.1"
+specs = "*"
+dimensioned = "*"
+cgmath = "*"
+lazy_static = "*"
+fnv = "*"
+rand = "*"
+
+[dependencies.uuid]
+version = "*"
+features=["v5"]
+
+[dependencies.websocket]
+version = "*"
+default-features = false
+features = [ "async", "async-ssl" ]
+
+[dependencies.airmash-protocol]
+git = "https://github.com/steamroller-airmash/airmash-protocol-rs"
+branch = "dev"
