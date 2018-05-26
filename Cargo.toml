@@ -7,6 +7,7 @@ authors = ["STEAMROLLER"]
 simple_logger = "*"
 log = "0.4.1"
 specs = "*"
+specs-derive = "*"
 dimensioned = "*"
 lazy_static = "*"
 fnv = "*"
