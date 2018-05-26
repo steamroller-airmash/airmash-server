@@ -2,6 +2,7 @@
 use std::time::Duration;
 use std::sync::atomic::{AtomicUsize, ATOMIC_USIZE_INIT, Ordering};
 
+use specs::DenseVecStorage;
 use dimensioned::{Cbrt, Sqrt, Root, Recip};
 
 use types::Vector2;
@@ -10,6 +11,8 @@ pub type BaseType = f64;
 
 pub mod detail {
 	use types::units::BaseType;
+	
+	use specs::{Component, VecStorage};
 	
 	make_units! {
 		AirmashUnits;
@@ -52,6 +55,14 @@ pub mod detail {
 			self.inner().signum()
 		}
 	}
+
+	impl<T: 'static, U: 'static> Component for AirmashUnits<T, U> 
+	where 
+		T: Sync + Send,
+		U: Sync + Send
+	{
+		type Storage = VecStorage<AirmashUnits<T, U>>;
+	}
 }
 
 pub type Distance = detail::Distance<BaseType>;
@@ -67,13 +78,13 @@ pub type Speed        = Vector2<detail::Speed<BaseType>>;
 pub type Accel        = Vector2<detail::Accel<BaseType>>;
 pub type RotationRate = detail::RotationRate<BaseType>;
 
-#[derive(Copy, Clone, Debug, Eq, PartialEq, Hash, Default)]
+#[derive(Copy, Clone, Debug, Eq, PartialEq, Hash, Default, Component)]
 pub struct Team(pub u16);
-#[derive(Copy, Clone, Debug, Eq, PartialEq, Hash, Default)]
+#[derive(Copy, Clone, Debug, Eq, PartialEq, Hash, Default, Component)]
 pub struct Level(pub u16);
-#[derive(Copy, Clone, Debug, Eq, PartialEq, Hash, Default)]
+#[derive(Copy, Clone, Debug, Eq, PartialEq, Hash, Default, Component)]
 pub struct Score(pub u32);
-#[derive(Copy, Clone, Debug, Eq, PartialEq, Hash, Default)]
+#[derive(Copy, Clone, Debug, Eq, PartialEq, Hash, Default, Component)]
 pub struct ConnectionId(pub usize);
 
 impl From<Duration> for Time {

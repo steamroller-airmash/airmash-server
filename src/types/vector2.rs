@@ -2,6 +2,7 @@
 use std::ops::*;
 use std::mem;
 
+use specs::*;
 use dimensioned::Sqrt;
 
 /// Required trait to allow specialized impls for self
@@ -159,5 +160,9 @@ where Self: Div<U, Output=Vector2<T>>
 		let val = mem::replace(self, unsafe { mem::uninitialized() });
 		mem::forget(mem::replace(self, val / rhs));
 	}
+}
+
+impl<T: 'static + Send + Sync> Component for Vector2<T> {
+	type Storage = VecStorage<Vector2<T>>;
 }
 
