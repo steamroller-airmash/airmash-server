@@ -6,10 +6,8 @@ use websocket::OwnedMessage;
 use airmash_protocol::client::Login;
 use airmash_protocol::server::{ServerPacket, PlayerNew, PlayerLevel};
 use airmash_protocol::{
-	client,
 	server,
 	to_bytes,
-	KeyState as ProtocolKeyState,
 	PlayerStatus,
 	PlaneType,
 	Upgrades as ProtocolUpgrades,

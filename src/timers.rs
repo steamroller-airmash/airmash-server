@@ -6,7 +6,6 @@ use types::*;
 use timeloop::timeloop;
 
 use tokio;
-use tokio::timer::Interval;
 
 pub fn start_timer_events(
 	channel: Sender<TimerEvent>

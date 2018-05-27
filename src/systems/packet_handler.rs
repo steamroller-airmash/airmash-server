@@ -1,12 +1,11 @@
 
 use specs::*;
-use specs::prelude::*;
 use shrev::EventChannel;
 use websocket::OwnedMessage;
 use airmash_protocol::from_bytes;
 use airmash_protocol::client::*;
 
-use std::sync::mpsc::{Receiver, Sender, channel};
+use std::sync::mpsc::Receiver;
 
 use types::*;
 

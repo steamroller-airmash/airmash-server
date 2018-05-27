@@ -6,8 +6,6 @@ use websocket::OwnedMessage;
 use airmash_protocol::{to_bytes, ServerPacket};
 use airmash_protocol::server::PlayerLeave;
 
-use std::mem;
-
 pub struct OnCloseHandler {
 	reader: Option<ReaderId<ConnectionClose>>
 }

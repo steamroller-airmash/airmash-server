@@ -1,5 +1,4 @@
 
-use specs::*;
 use futures::{Future, Stream};
 use tokio::timer::Interval;
 

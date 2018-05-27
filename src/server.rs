@@ -4,21 +4,15 @@
 use types::*;
 
 use std::fmt::Debug;
-use std::net::{ToSocketAddrs, SocketAddr};
+use std::net::ToSocketAddrs;
 use std::sync::mpsc::Sender;
 use std::sync::Mutex;
 
 use futures::{Stream, Future};
-use futures::stream::{SplitSink, SplitStream};
-use websocket::OwnedMessage;
-use websocket::client::async::Framed;
 use websocket::server::async::Server;
 use websocket::server::InvalidConnection;
-use websocket::async::{TcpStream, MessageCodec};
 
-use tokio_core::reactor::{Core, Handle};
-
-pub type ConnectionSink = SplitSink<Framed<TcpStream, MessageCodec<OwnedMessage>>>;
+use tokio_core::reactor::Core;
 
 pub fn run_acceptor<A>(addr: A, channel: Sender<ConnectionEvent>) 
 where 

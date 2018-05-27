@@ -6,8 +6,6 @@
 #[macro_use]
 extern crate log;
 #[macro_use]
-extern crate lazy_static;
-#[macro_use]
 extern crate dimensioned;
 #[macro_use]
 extern crate specs_derive;
@@ -39,12 +37,10 @@ mod timeloop;
 
 use std::env;
 use std::thread;
-use std::sync::Mutex;
 use std::time::{Instant, Duration};
 use std::sync::mpsc::{channel, Receiver};
 
 use specs::{World, DispatcherBuilder, Dispatcher};
-use tokio::reactor::Reactor;
 use tokio::runtime::current_thread::Runtime;
 
 use types::{ThisFrame, LastFrame};

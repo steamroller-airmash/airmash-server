@@ -22,13 +22,6 @@ impl ScoreBoardTimerHandler {
 	}
 }
 
-pub fn scale_to_minimap(x: f32, y: f32) -> (u8, u8) {
-	return (
-		((x / 16384.0) as i32 + 128) as u8,
-		((y / 8192.0)  as i32 + 128) as u8
-	);
-}
-
 #[derive(SystemData)]
 pub struct ScoreBoardSystemData<'a> {
 	channel:  Read<'a, EventChannel<ScoreBoardTimerEvent>>,

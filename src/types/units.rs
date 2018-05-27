@@ -3,7 +3,6 @@ use std::time::Duration;
 use std::sync::atomic::{AtomicUsize, ATOMIC_USIZE_INIT, Ordering};
 
 use specs::DenseVecStorage;
-use dimensioned::{Cbrt, Sqrt, Root, Recip};
 
 use types::Vector2;
 

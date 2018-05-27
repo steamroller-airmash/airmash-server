@@ -1,7 +1,6 @@
 
 use tokio::prelude::Sink;
 use specs::prelude::*;
-use specs::*;
 use types::*;
 
 pub struct PollComplete {
