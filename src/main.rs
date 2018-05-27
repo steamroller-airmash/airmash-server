@@ -31,7 +31,6 @@ use websocket::futures as futures;
 
 // Modules
 mod types;
-mod debug;
 mod server;
 mod timers;
 mod systems;
