@@ -83,6 +83,8 @@ pub type EnergyRegen  = detail::EnergyRegen<BaseType>;
 pub type Speed        = Vector2<detail::Speed<BaseType>>;
 pub type Accel        = Vector2<detail::Accel<BaseType>>;
 pub type RotationRate = detail::RotationRate<BaseType>;
+pub type SpeedScalar  = detail::Speed<BaseType>;
+pub type AccelScalar  = detail::Accel<BaseType>;
 
 #[derive(Copy, Clone, Debug, Eq, PartialEq, Hash, Default, Component)]
 pub struct Team(pub u16);

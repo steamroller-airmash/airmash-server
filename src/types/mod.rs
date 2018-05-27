@@ -1,6 +1,7 @@
 
 mod units;
 mod events;
+mod config;
 mod vector2;
 mod keystate;
 mod powerups;
@@ -11,6 +12,7 @@ mod timer_event;
 
 pub use self::units::*;
 pub use self::events::*;
+pub use self::config::Config;
 pub use self::vector2::*;
 pub use self::keystate::*;
 pub use self::powerups::*;

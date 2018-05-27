@@ -31,6 +31,7 @@ use websocket::futures as futures;
 
 // Modules
 mod types;
+mod debug;
 mod server;
 mod timers;
 mod systems;
@@ -40,7 +41,7 @@ mod timeloop;
 use std::env;
 use std::thread;
 use std::sync::Mutex;
-use std::time::Duration;
+use std::time::{Instant, Duration};
 use std::sync::mpsc::{channel, Receiver};
 
 use specs::{World, DispatcherBuilder, Dispatcher};
@@ -63,7 +64,11 @@ fn build_dispatcher<'a, 'b>(
         .with(handlers::OnOpenHandler::new(),  "onopen",  &["packet"])
         .with(handlers::OnCloseHandler::new(), "onclose", &["onopen"])
         .with(handlers::LoginHandler::new(),   "onlogin", &["onclose"])
+        .with(handlers::KeyHandler::new(),     "onkey",   &["onclose"])
         .with(handlers::ScoreBoardTimerHandler::new(), "scoreboard", &["timer"])
+
+        // Systems with dependencies on handlers
+        .with(systems::PositionUpdate::new(),  "pos_update", &["onkey"])
 
         // This needs to run after systems which send messages
         .with_thread_local(systems::PollComplete::new())
@@ -137,6 +142,7 @@ fn main() {
         }));
     });
 
+    world.add_resource(types::StartTime(Instant::now()));
     dispatcher.setup(&mut world.res);
 
     // Run the gameloop at 60 Hz
@@ -145,6 +151,8 @@ fn main() {
         dispatcher.dispatch(&mut world.res);
         world.maintain();
         world.add_resource(LastFrame(now));
+
+        //debug::print_all_entities(&world);
     }, Duration::from_nanos(16666667)));
 
     runtime.run().unwrap();

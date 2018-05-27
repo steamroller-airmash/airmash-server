@@ -90,6 +90,10 @@ impl Connections {
 			match x {
 				AsyncSink::Ready => (),
 				AsyncSink::NotReady(item) => {
+					// Not sure if this will panic because there is 
+					// no active task in worker threads. Leave a warning
+					// so that it is easily diagnosable
+					warn!(target: "server", "start_send returned NotReady!");
 					conn.poll_complete().unwrap();
 					conn.start_send(item).unwrap();
 				}

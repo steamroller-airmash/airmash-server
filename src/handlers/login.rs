@@ -28,7 +28,6 @@ pub struct LoginSystemData<'a> {
 	pub entities: Entities<'a>,
 	pub position: WriteStorage<'a, Position>,
 	pub speed:    WriteStorage<'a, Speed>,
-	pub accel:    WriteStorage<'a, Accel>,
 	pub energy:   WriteStorage<'a, Energy>,
 	pub health:   WriteStorage<'a, Health>,
 	pub rot:      WriteStorage<'a, Rotation>,
@@ -180,7 +179,6 @@ impl LoginHandler {
 		// Set all possible pieces of state for a plane
 		data.position.insert(entity, Position::default()).unwrap();
 		data.speed.insert(entity, Speed::default()).unwrap();
-		data.accel.insert(entity, Accel::default()).unwrap();
 		data.energy.insert(entity, Energy::new(1.0)).unwrap();
 		data.health.insert(entity, Health::new(1.0)).unwrap();
 		data.rot.insert(entity, Rotation::default()).unwrap();
