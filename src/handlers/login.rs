@@ -25,7 +25,6 @@ use types::*;
 // about everything
 #[derive(SystemData)]
 pub struct LoginSystemData<'a> {
-	pub channel:  Read<'a, EventChannel<(ConnectionId, Login)>>,
 	pub entities: Entities<'a>,
 	pub position: WriteStorage<'a, Position>,
 	pub speed:    WriteStorage<'a, Speed>,
@@ -185,7 +184,7 @@ impl LoginHandler {
 
 		data.conns.associate(
 			conn, 
-			entity.id(),
+			entity,
 			ConnectionType::Primary
 		);
 
@@ -219,7 +218,7 @@ impl LoginHandler {
 
 impl<'a> System<'a> for LoginHandler {
 	type SystemData = (
-		Write<'a, EventChannel<(ConnectionId, Login)>>, 
+		Read<'a, EventChannel<(ConnectionId, Login)>>, 
 		LoginSystemData<'a>
 	);
 

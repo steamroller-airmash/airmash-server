@@ -6,6 +6,7 @@ use types::*;
 use std::fmt::Debug;
 use std::net::{ToSocketAddrs, SocketAddr};
 use std::sync::mpsc::Sender;
+use std::sync::Mutex;
 
 use futures::{Stream, Future};
 use futures::stream::{SplitSink, SplitStream};
@@ -61,7 +62,8 @@ where
 						let (sink, stream) = s.split();
 
 						channel.send(ConnectionEvent::ConnectionOpen(ConnectionOpen { 
-							conn: id, sink 
+							conn: id, 
+							sink: Mutex::new(Some(sink)) 
 						})).map_err(|e| {
 							error!(target: "server", "Channel send error: {}", e)
 						})

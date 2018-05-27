@@ -7,6 +7,7 @@ use websocket::async::{TcpStream, MessageCodec};
 use futures::stream::SplitSink;
 use futures::{Sink, AsyncSink};
 use fnv::FnvHashMap;
+use specs::Entity;
 
 use std::sync::Mutex;
 
@@ -16,7 +17,7 @@ pub struct ConnectionData {
 	pub sink: Mutex<ConnectionSink>,
 	pub id: ConnectionId,
 	pub ty: ConnectionType,
-	pub player: Option<u32>
+	pub player: Option<Entity>
 }
 
 #[derive(Copy, Clone, Debug, Eq, PartialEq, Hash)]
@@ -27,7 +28,7 @@ pub enum ConnectionType {
 }
 
 #[derive(Default)]
-pub struct Connections(FnvHashMap<ConnectionId, ConnectionData>);
+pub struct Connections(pub FnvHashMap<ConnectionId, ConnectionData>);
 
 impl Connections {
 	pub fn new() -> Self {
@@ -54,12 +55,27 @@ impl Connections {
 			panic!("Nonexistent connection id {:?}", id);
 		});
 	}
+	pub fn remove_player(&mut self, player: Entity) {
+		let mut conns = vec![];
 
-	pub fn associate(&mut self, id: ConnectionId, player: u32, ty: ConnectionType) {
+		for conn in self.0.values() {
+			if let Some(p) = conn.player {
+				if p == player {
+					conns.push(conn.id);
+				}
+			}
+		}
+
+		for id in conns {
+			self.remove(id);
+		}
+	}
+
+	pub fn associate(&mut self, id: ConnectionId, player: Entity, ty: ConnectionType) {
 		let ref mut conn = self.0.get_mut(&id).unwrap_or_else(|| {
 			error!(
 				target: "server",
-				"Attempted to associate non-existent connection {:?} with player {}",
+				"Attempted to associate non-existent connection {:?} with player {:?}",
 				id, player
 			);
 			panic!("Nonexistent connection id {:?}", id);
@@ -92,6 +108,12 @@ impl Connections {
 			panic!("Nonexistent connection id {:?}", id);
 		});
 
+		debug!(
+			target: "server",
+			"Sent message to {:?}: {:?}",
+			id, msg
+		);
+
 		Self::send_sink(&mut data.sink.lock().unwrap(), msg);
 	}
 
@@ -108,5 +130,9 @@ impl Connections {
 			.for_each(|ref sink| {
 				Self::send_sink(&mut sink.lock().unwrap(), msg.clone());
 			});
+	}
+
+	pub fn iter<'a>(&'a self) -> impl Iterator<Item=&'a ConnectionData> {
+		self.0.values()
 	}
 }

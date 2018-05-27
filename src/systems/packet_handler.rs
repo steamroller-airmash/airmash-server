@@ -31,8 +31,8 @@ pub struct PacketHandlerData<'a> {
 		pub votemute:      Write<'a, EventChannel<(ConnectionId, VoteMute)>>,
 		pub whisper:       Write<'a, EventChannel<(ConnectionId, Whisper)>>,
 		pub localping:     Write<'a, EventChannel<(ConnectionId, LocalPing)>>,
-		pub scoredetailed: Write<'a, EventChannel<ConnectionId>>,
-		pub ack:           Write<'a, EventChannel<ConnectionId>>,
+		pub scoredetailed: Write<'a, EventChannel<ScoreDetailedEvent>>,
+		pub ack:           Write<'a, EventChannel<AckEvent>>,
 }
 
 impl PacketHandler {
@@ -60,8 +60,8 @@ impl PacketHandler {
 			ClientPacket::TeamChat(p) =>  data.teamchat.single_write((id, p)),
 			ClientPacket::VoteMute(p) =>  data.votemute.single_write((id, p)),
 			ClientPacket::LocalPing(p) => data.localping.single_write((id, p)),
-			ClientPacket::ScoreDetailed=> data.scoredetailed.single_write(id),
-			ClientPacket::Ack =>          data.ack.single_write(id)
+			ClientPacket::ScoreDetailed=> data.scoredetailed.single_write(ScoreDetailedEvent(id)),
+			ClientPacket::Ack =>          data.ack.single_write(AckEvent(id))
 		}
 	}
 }

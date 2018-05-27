@@ -12,9 +12,10 @@ dimensioned = "*"
 lazy_static = "*"
 fnv = "*"
 rand = "*"
-shred = "*"
+shred = { version="*", features=["nightly"] }
 shred-derive = "*"
 shrev = "*"
+tokio = "*"
 tokio-core = "*"
 
 [dependencies.uuid]

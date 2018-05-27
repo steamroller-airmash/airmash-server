@@ -1,10 +1,11 @@
 
 use types::{ConnectionId, ConnectionSink};
 use websocket::OwnedMessage;
+use std::sync::Mutex;
 
 pub struct ConnectionOpen {
 	pub conn: ConnectionId,
-	pub sink: ConnectionSink
+	pub sink: Mutex<Option<ConnectionSink>>
 }
 
 #[derive(Copy, Clone, Debug)]
