@@ -16,7 +16,7 @@ pub struct ConnectionData {
 	pub sink: Mutex<ConnectionSink>,
 	pub id: ConnectionId,
 	pub ty: ConnectionType,
-	pub player: Option<usize>
+	pub player: Option<u32>
 }
 
 #[derive(Copy, Clone, Debug, Eq, PartialEq, Hash)]
@@ -55,7 +55,7 @@ impl Connections {
 		});
 	}
 
-	pub fn associate(&mut self, id: ConnectionId, player: usize, ty: ConnectionType) {
+	pub fn associate(&mut self, id: ConnectionId, player: u32, ty: ConnectionType) {
 		let ref mut conn = self.0.get_mut(&id).unwrap_or_else(|| {
 			error!(
 				target: "server",

@@ -7,7 +7,7 @@ use dimensioned::{Cbrt, Sqrt, Root, Recip};
 
 use types::Vector2;
 
-pub type BaseType = f64;
+pub type BaseType = f32;
 
 pub mod detail {
 	use types::units::BaseType;
@@ -63,6 +63,12 @@ pub mod detail {
 	{
 		type Storage = VecStorage<AirmashUnits<T, U>>;
 	}
+
+	impl<T: Default, U> Default for AirmashUnits<T, U> {
+		fn default() -> Self {
+			Self::new(T::default())
+		}
+	}
 }
 
 pub type Distance = detail::Distance<BaseType>;
@@ -81,7 +87,7 @@ pub type RotationRate = detail::RotationRate<BaseType>;
 #[derive(Copy, Clone, Debug, Eq, PartialEq, Hash, Default, Component)]
 pub struct Team(pub u16);
 #[derive(Copy, Clone, Debug, Eq, PartialEq, Hash, Default, Component)]
-pub struct Level(pub u16);
+pub struct Level(pub u8);
 #[derive(Copy, Clone, Debug, Eq, PartialEq, Hash, Default, Component)]
 pub struct Score(pub u32);
 #[derive(Copy, Clone, Debug, Eq, PartialEq, Hash, Default, Component)]

@@ -12,6 +12,10 @@ dimensioned = "*"
 lazy_static = "*"
 fnv = "*"
 rand = "*"
+shred = "*"
+shred-derive = "*"
+shrev = "*"
+tokio-core = "*"
 
 [dependencies.uuid]
 version = "*"

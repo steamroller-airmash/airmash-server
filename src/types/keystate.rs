@@ -1,7 +1,7 @@
 
 use specs::*;
 
-#[derive(Component)]
+#[derive(Component, Default, Clone)]
 pub struct KeyState {
 	pub up: bool,
 	pub down: bool,
