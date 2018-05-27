@@ -171,26 +171,11 @@ impl LoginHandler {
 			Err(_) => None
 		};
 
-		let resp = server::Login {
-			clock: 0,
-			id:    entity.id() as u16,
-			room:  "test".to_string(),
-			success: true,
-			token: login.session,
-			team:  0,
-			ty:    PlaneType::Predator,
-			players: Self::get_player_data(data)
-		};
-
 		data.conns.associate(
 			conn, 
 			entity,
 			ConnectionType::Primary
 		);
-
-		data.conns.send_to(conn, OwnedMessage::Binary(
-			to_bytes(&ServerPacket::Login(resp)).unwrap()
-		));
 
 		// Set all possible pieces of state for a plane
 		data.position.insert(entity, Position::default()).unwrap();
@@ -213,6 +198,22 @@ impl LoginHandler {
 		data.plane.insert(entity, Plane::default()).unwrap();
 		data.status.insert(entity, Status::default()).unwrap();
 		data.associated_conn.insert(entity, AssociatedConnection(conn)).unwrap();
+
+		// Actually send login packet
+		let resp = server::Login {
+			clock: 0,
+			id:    entity.id() as u16,
+			room:  "test".to_string(),
+			success: true,
+			token: login.session,
+			team:  0,
+			ty:    PlaneType::Predator,
+			players: Self::get_player_data(data)
+		};
+
+		data.conns.send_to(conn, OwnedMessage::Binary(
+			to_bytes(&ServerPacket::Login(resp)).unwrap()
+		));
 	}
 }
 
