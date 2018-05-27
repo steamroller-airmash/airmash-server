@@ -32,9 +32,10 @@ use websocket::futures as futures;
 // Modules
 mod types;
 mod server;
+mod timers;
 mod systems;
 mod handlers;
-mod gameloop;
+mod timeloop;
 
 use std::env;
 use std::thread;
@@ -47,23 +48,25 @@ use tokio::reactor::Reactor;
 use tokio::runtime::current_thread::Runtime;
 
 use types::{ThisFrame, LastFrame};
+use timeloop::timeloop;
 
 fn build_dispatcher<'a, 'b>(
-    event_recv: Receiver<types::ConnectionEvent>
+    event_recv: Receiver<types::ConnectionEvent>,
+    timer_recv: Receiver<types::TimerEvent>
 ) -> Dispatcher<'a, 'b> {
     DispatcherBuilder::new()
         // Add systems here
         .with(systems::PacketHandler::new(event_recv), "packet", &[])
+        .with(systems::TimerHandler::new(timer_recv), "timer", &[])
         
         // Add handlers here
         .with(handlers::OnOpenHandler::new(),  "onopen",  &["packet"])
-        .with(handlers::OnCloseHandler::new(), "onclose", &["packet", "onopen"])
-        .with(handlers::LoginHandler::new(),   "onlogin", &["packet", "onclose"])
+        .with(handlers::OnCloseHandler::new(), "onclose", &["onopen"])
+        .with(handlers::LoginHandler::new(),   "onlogin", &["onclose"])
+        .with(handlers::ScoreBoardTimerHandler::new(), "scoreboard", &["timer"])
 
-        // This needs to run after all messages are sent
-        .with(systems::PollComplete::new(),    "poll-complete", &[
-            "onopen", "onclose", "onlogin", "packet"
-        ])
+        // This needs to run after systems which send messages
+        .with_thread_local(systems::PollComplete::new())
 
         // Build
         .build()
@@ -101,6 +104,7 @@ fn main() {
     let mut world = World::new();
 
     let (event_send, event_recv) = channel::<types::ConnectionEvent>();
+    let (timer_send, timer_recv) = channel::<types::TimerEvent>();
 
     // Add resources
     info!(target: "server", "Setting up resources");
@@ -110,7 +114,7 @@ fn main() {
     // Add systems
     info!(target: "server", "Setting up systems");
 
-    let mut dispatcher = build_dispatcher(event_recv);
+    let mut dispatcher = build_dispatcher(event_recv, timer_recv);
 
     // Start websocket server
     info!(target: "server", "Starting websocket server!");
@@ -125,17 +129,18 @@ fn main() {
     // thread since Dispatcher doesn't implement Send
     let mut runtime = Runtime::new().unwrap();
 
-    let background = Reactor::new()
-        .unwrap()
-        .background()
-        .unwrap();
-
-    world.add_resource(background.handle().clone());
+    // Start timer loops
+    let timers = thread::spawn(move || {
+        tokio::run(futures::lazy(move || {
+            timers::start_timer_events(timer_send);
+            Ok(())
+        }));
+    });
 
     dispatcher.setup(&mut world.res);
 
     // Run the gameloop at 60 Hz
-    runtime.spawn(gameloop::gameloop(move |now| {
+    runtime.spawn(timeloop(move |now| {
         world.add_resource(ThisFrame(now));
         dispatcher.dispatch(&mut world.res);
         world.maintain();
@@ -147,6 +152,7 @@ fn main() {
     // Shut down
     info!(target: "server", "Exited gameloop, shutting down");
     server_thread.join().unwrap();
+    timers.join().unwrap();
 
     info!(target: "server", "Shutdown completed successfully");
 }

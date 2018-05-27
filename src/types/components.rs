@@ -31,6 +31,11 @@ pub struct ScoreDetailedEvent(pub ConnectionId);
 #[derive(Copy, Clone, Debug, Default, Component)]
 pub struct AckEvent(pub ConnectionId);
 
+#[derive(Copy, Clone, Debug, Component)]
+pub struct ScoreBoardTimerEvent(pub Instant);
+#[derive(Copy, Clone, Debug, Component)]
+pub struct AFKTimerEvent(pub Instant);
+
 impl Default for LastFrame {
 	fn default() -> Self {
 		LastFrame(Instant::now())

@@ -5,7 +5,7 @@ use tokio::timer::Interval;
 
 use std::time::{Duration, Instant};
 
-pub fn gameloop<'a, 'b, F: FnMut(Instant) -> ()>(
+pub fn timeloop<'a, 'b, F: FnMut(Instant) -> ()>(
 	mut func: F,
 	period: Duration
 ) -> impl Future<Item=(), Error=()> {
