@@ -59,6 +59,7 @@ fn build_dispatcher<'a, 'b>(
         .with(handlers::OnCloseHandler::new(), "onclose", &["onopen"])
         .with(handlers::LoginHandler::new(),   "onlogin", &["onclose"])
         .with(handlers::KeyHandler::new(),     "onkey",   &["onclose"])
+        .with(handlers::ChatHandler::new(),    "onchat",  &["onclose"])
         .with(handlers::ScoreBoardTimerHandler::new(), "scoreboard", &["timer"])
 
         // Systems with dependencies on handlers
