@@ -3,6 +3,10 @@ name = "airmash-server"
 version = "0.1.0"
 authors = ["STEAMROLLER"]
 
+[profile.release]
+debug = true
+lto = true
+
 [dependencies]
 simple_logger = "*"
 log = "0.4.1"

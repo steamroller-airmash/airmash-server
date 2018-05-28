@@ -9,6 +9,7 @@ use std::sync::mpsc::Sender;
 use std::sync::Mutex;
 
 use futures::{Future, Stream};
+use websocket::OwnedMessage;
 use websocket::server::async::Server;
 use websocket::server::InvalidConnection;
 
@@ -68,11 +69,13 @@ where
                     stream.take_while(|m| Ok(!m.is_close())).for_each({
                         let channel = channel.clone();
                         move |m| {
-                            debug!(
-                                target: "server",
-                                "{:?} sent {:?}",
-                                id, m
-                            );
+                            if m != OwnedMessage::Binary(vec![5]) {
+                                trace!(
+                                    target: "server",
+                                    "{:?} sent {:?}",
+                                    id, m
+                                );
+                            }
 
                             channel.send(ConnectionEvent::Message(Message{
                                     conn: id,

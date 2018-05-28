@@ -26,6 +26,8 @@ pub struct LastFrame(pub Instant);
 pub struct ThisFrame(pub Instant);
 #[derive(Clone, Debug, Copy, Component)]
 pub struct StartTime(pub Instant);
+#[derive(Clone, Debug, Copy, Component)]
+pub struct LastUpdate(pub Instant);
 
 #[derive(Copy, Clone, Debug, Default, Component)]
 pub struct ScoreDetailedEvent(pub ConnectionId);
@@ -50,6 +52,11 @@ impl Default for ThisFrame {
 impl Default for StartTime {
     fn default() -> Self {
         StartTime(Instant::now())
+    }
+}
+impl Default for LastUpdate {
+    fn default() -> Self {
+        LastUpdate(Instant::now())
     }
 }
 

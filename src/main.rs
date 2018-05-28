@@ -48,6 +48,7 @@ use types::{LastFrame, ThisFrame};
 fn build_dispatcher<'a, 'b>(
     event_recv: Receiver<types::ConnectionEvent>,
     timer_recv: Receiver<types::TimerEvent>,
+    msg_recv:   Receiver<(types::ConnectionId, websocket::OwnedMessage)>
 ) -> Dispatcher<'a, 'b> {
     DispatcherBuilder::new()
         // Add systems here
@@ -66,7 +67,7 @@ fn build_dispatcher<'a, 'b>(
         .with(systems::PositionUpdate::new(),  "pos_update", &["onkey"])
 
         // This needs to run after systems which send messages
-        .with_thread_local(systems::PollComplete::new())
+        .with_thread_local(systems::PollComplete::new(msg_recv))
 
         // Build
         .build()
@@ -94,27 +95,28 @@ fn setup_panic_handler() {
 }
 
 fn main() {
-    simple_logger::init_with_level(log::Level::Info).unwrap();
+    simple_logger::init_with_level(log::Level::Trace).unwrap();
     env::set_var("RUST_BACKTRACE", "1");
 
     setup_panic_handler();
 
-    let addr = "127.0.0.1:3501";
+    let addr = "0.0.0.0:3501";
 
     let mut world = World::new();
 
     let (event_send, event_recv) = channel::<types::ConnectionEvent>();
     let (timer_send, timer_recv) = channel::<types::TimerEvent>();
+    let (msg_send, msg_recv) = channel::<(types::ConnectionId, websocket::OwnedMessage)>();
 
     // Add resources
     info!(target: "server", "Setting up resources");
 
-    world.add_resource(types::Connections::new());
+    world.add_resource(types::Connections::new(msg_send));
 
     // Add systems
     info!(target: "server", "Setting up systems");
 
-    let mut dispatcher = build_dispatcher(event_recv, timer_recv);
+    let mut dispatcher = build_dispatcher(event_recv, timer_recv, msg_recv);
 
     // Start websocket server
     info!(target: "server", "Starting websocket server!");

@@ -10,6 +10,7 @@ use uuid::Uuid;
 use websocket::OwnedMessage;
 
 use std::str::FromStr;
+use std::time::Instant;
 
 use types::*;
 
@@ -36,6 +37,7 @@ pub struct LoginSystemData<'a> {
     pub status: WriteStorage<'a, Status>,
     pub conns: Write<'a, Connections>,
     pub associated_conn: WriteStorage<'a, AssociatedConnection>,
+    pub lastupdate: WriteStorage<'a, LastUpdate>
 }
 
 pub struct LoginHandler {
@@ -172,6 +174,7 @@ impl LoginHandler {
         data.associated_conn
             .insert(entity, AssociatedConnection(conn))
             .unwrap();
+        data.lastupdate.insert(entity, LastUpdate(Instant::now())).unwrap();
 
         // Actually send login packet
         let resp = server::Login {

@@ -9,6 +9,7 @@ use websocket::client::async::Framed;
 use websocket::OwnedMessage;
 
 use std::sync::Mutex;
+use std::sync::mpsc::Sender;
 
 pub type ConnectionSink = SplitSink<Framed<TcpStream, MessageCodec<OwnedMessage>>>;
 
@@ -26,12 +27,23 @@ pub enum ConnectionType {
     Inactive,
 }
 
-#[derive(Default)]
-pub struct Connections(pub FnvHashMap<ConnectionId, ConnectionData>);
+pub struct Connections(
+    pub FnvHashMap<ConnectionId, ConnectionData>,
+    Mutex<Sender<(ConnectionId, OwnedMessage)>>
+);
+
+impl Default for Connections {
+    fn default() -> Self {
+        panic!("No default for connections");
+    }
+}
 
 impl Connections {
-    pub fn new() -> Self {
-        Self::default()
+    pub fn new(channel: Sender<(ConnectionId, OwnedMessage)>) -> Self {
+        Connections(
+            FnvHashMap::default(),
+            Mutex::new(channel)
+        )
     }
 
     pub fn add(&mut self, id: ConnectionId, sink: ConnectionSink) {
@@ -84,7 +96,7 @@ impl Connections {
         conn.ty = ty;
     }
 
-    fn send_sink(conn: &mut ConnectionSink, msg: OwnedMessage) {
+    pub fn send_sink(conn: &mut ConnectionSink, msg: OwnedMessage) {
         conn.start_send(msg)
             .and_then(|x| {
                 match x {
@@ -104,37 +116,28 @@ impl Connections {
     }
 
     pub fn send_to(&self, id: ConnectionId, msg: OwnedMessage) {
-        let data = self.0.get(&id).unwrap_or_else(|| {
-            error!(
-				target: "server",
-				"Tried to send to nonexistent connection {:?} this message: {:?}",
-				id, msg
-			);
-            panic!("Nonexistent connection id {:?}", id);
-        });
-
-        debug!(
+        trace!(
 			target: "server",
 			"Sent message to {:?}: {:?}",
 			id, msg
 		);
 
-        Self::send_sink(&mut data.sink.lock().unwrap(), msg);
+        self.1.lock().unwrap().send((id, msg)).unwrap();
     }
 
     pub fn send_to_all(&self, msg: OwnedMessage) {
         self.0
-            .values()
-            .filter_map(|ref conn| {
+            .iter()
+            .filter_map(|(id, ref conn)| {
                 if conn.player.is_some() {
                     if conn.ty == ConnectionType::Primary {
-                        return Some(&conn.sink);
+                        return Some(id)
                     }
                 }
                 None
             })
-            .for_each(|ref sink| {
-                Self::send_sink(&mut sink.lock().unwrap(), msg.clone());
+            .for_each(|id| {
+                self.1.lock().unwrap().send((*id, msg.clone())).unwrap();
             });
     }
 

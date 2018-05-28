@@ -2,6 +2,7 @@ use specs::*;
 use types::*;
 
 use std::f32::consts;
+use std::time::Duration;
 use std::marker::PhantomData;
 
 use airmash_protocol::server::{PlayerUpdate, ServerPacket};
@@ -53,7 +54,7 @@ impl PositionUpdate {
             &data.keystate,
             &data.upgrades,
             &data.powerups,
-            &data.planes,
+            &data.planes
         ).join()
             .for_each(|(pos, rot, speed, keystate, upgrades, powerups, plane)| {
                 let mut movement_angle = None;
@@ -146,7 +147,14 @@ impl PositionUpdate {
             });
     }
 
-    fn send_updates<'a>(&self, data: &mut PositionUpdateData<'a>) {
+    fn send_updates<'a>(
+        &self,
+        data: &mut PositionUpdateData<'a>,
+        lastupdate: &mut WriteStorage<'a, LastUpdate>
+    ) {
+        let thisframe = data.thisframe.0;
+        let starttime = data.starttime.0;
+
         (
             &data.pos,
             &data.rot,
@@ -157,10 +165,74 @@ impl PositionUpdate {
             &data.powerups,
             &*data.entities,
             &self.dirty,
+            lastupdate
         ).join()
             .for_each(
-                |(pos, rot, speed, plane, keystate, upgrades, powerups, ent, _)| {
+                |(pos, rot, speed, plane, keystate, upgrades, powerups, ent, _, lastupdate)| {
                     type Key = ServerKeyState;
+                    
+                    *lastupdate = LastUpdate(thisframe);
+
+                    let mut state = ServerKeyState(0);
+                    state.set(Key::UP, keystate.up);
+                    state.set(Key::DOWN, keystate.down);
+                    state.set(Key::LEFT, keystate.left);
+                    state.set(Key::RIGHT, keystate.right);
+                    state.set(Key::BOOST, Self::boost(plane, keystate));
+                    state.set(Key::STRAFE, Self::strafe(plane, keystate));
+                    state.set(Key::STEALTH, keystate.stealthed);
+                    state.set(Key::FLAGSPEED, keystate.flagspeed);
+
+                    let mut ups = ServerUpgrades(0);
+                    ups.set_speed(upgrades.speed);
+                    ups.set(ServerUpgrades::INFERNO, powerups.inferno);
+                    ups.set(ServerUpgrades::SHIELD, powerups.shield);
+
+                    let packet = PlayerUpdate {
+                        clock: (thisframe - starttime).to_clock(),
+                        id: ent.id() as u16,
+                        keystate: state,
+                        pos_x: pos.x.inner(),
+                        pos_y: pos.y.inner(),
+                        rot: rot.inner(),
+                        speed_x: speed.x.inner(),
+                        speed_y: speed.y.inner(),
+                        upgrades: ups,
+                    };
+
+                    info!(target: "server", "Update: {:?}", packet);
+
+                    data.conns.send_to_all(OwnedMessage::Binary(
+                        to_bytes(&ServerPacket::PlayerUpdate(packet)).unwrap(),
+                    ))
+                },
+            )
+    }
+    
+    fn send_outdated<'a>(
+        &self, 
+        data: &mut PositionUpdateData<'a>,
+        lastupdate: &mut WriteStorage<'a, LastUpdate>
+    ) {
+        (
+            &data.pos,
+            &data.rot,
+            &data.speed,
+            &data.planes,
+            &data.keystate,
+            &data.upgrades,
+            &data.powerups,
+            &*data.entities,
+            lastupdate
+        ).join()
+            .filter(|(_, _, _, _, _, _, _, _, lastupdate)| {
+                lastupdate.0.elapsed() > Duration::from_secs(2)
+            })
+            .for_each(
+                |(pos, rot, speed, plane, keystate, upgrades, powerups, ent, lastupdate)| {
+                    type Key = ServerKeyState;
+                    
+                    *lastupdate = LastUpdate(data.thisframe.0);
 
                     let mut state = ServerKeyState(0);
                     state.set(Key::UP, keystate.up);
@@ -189,6 +261,8 @@ impl PositionUpdate {
                         upgrades: ups,
                     };
 
+                    info!(target: "server", "Update: {:?}", packet);
+
                     data.conns.send_to_all(OwnedMessage::Binary(
                         to_bytes(&ServerPacket::PlayerUpdate(packet)).unwrap(),
                     ))
@@ -214,7 +288,10 @@ pub struct PositionUpdateData<'a> {
 }
 
 impl<'a> System<'a> for PositionUpdate {
-    type SystemData = (PositionUpdateData<'a>, Read<'a, Config>);
+    type SystemData = (
+        PositionUpdateData<'a>, 
+        Read<'a, Config>,
+        WriteStorage<'a, LastUpdate>);
 
     fn setup(&mut self, res: &mut Resources) {
         Self::SystemData::setup(res);
@@ -223,12 +300,13 @@ impl<'a> System<'a> for PositionUpdate {
         self.modify_reader = Some(storage.track_modified());
     }
 
-    fn run(&mut self, (mut data, config): Self::SystemData) {
+    fn run(&mut self, (mut data, config, mut lastupdate): Self::SystemData) {
         self.dirty.clear();
         data.keystate
             .populate_modified(&mut self.modify_reader.as_mut().unwrap(), &mut self.dirty);
 
         Self::step_players(&mut data, &config);
-        self.send_updates(&mut data);
+        self.send_updates(&mut data, &mut lastupdate);
+        self.send_outdated(&mut data, &mut lastupdate);
     }
 }
