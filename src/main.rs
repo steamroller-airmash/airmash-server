@@ -1,4 +1,3 @@
-
 #![allow(dead_code, unused_imports)]
 #![feature(optin_builtin_traits)]
 
@@ -13,42 +12,42 @@ extern crate specs_derive;
 extern crate shred_derive;
 
 // Regular Dependencies
-extern crate simple_logger;
-extern crate rand;
-extern crate specs;
-extern crate shrev;
-extern crate shred;
+extern crate airmash_protocol;
 extern crate fnv;
-extern crate uuid;
+extern crate rand;
+extern crate shred;
+extern crate shrev;
+extern crate simple_logger;
+extern crate specs;
 extern crate tokio;
 extern crate tokio_core;
+extern crate uuid;
 extern crate websocket;
-extern crate airmash_protocol;
 
-use websocket::futures as futures;
+use websocket::futures;
 
 // Modules
-mod types;
-mod server;
-mod timers;
-mod systems;
 mod handlers;
+mod server;
+mod systems;
 mod timeloop;
+mod timers;
+mod types;
 
 use std::env;
-use std::thread;
-use std::time::{Instant, Duration};
 use std::sync::mpsc::{channel, Receiver};
+use std::thread;
+use std::time::{Duration, Instant};
 
-use specs::{World, DispatcherBuilder, Dispatcher};
+use specs::{Dispatcher, DispatcherBuilder, World};
 use tokio::runtime::current_thread::Runtime;
 
-use types::{ThisFrame, LastFrame};
 use timeloop::timeloop;
+use types::{LastFrame, ThisFrame};
 
 fn build_dispatcher<'a, 'b>(
     event_recv: Receiver<types::ConnectionEvent>,
-    timer_recv: Receiver<types::TimerEvent>
+    timer_recv: Receiver<types::TimerEvent>,
 ) -> Dispatcher<'a, 'b> {
     DispatcherBuilder::new()
         // Add systems here
@@ -76,21 +75,21 @@ fn setup_panic_handler() {
     use std::panic;
     use std::process;
 
-	let orig_handler = panic::take_hook();
-	panic::set_hook(Box::new(move |panic_info| {
-		error!(
+    let orig_handler = panic::take_hook();
+    panic::set_hook(Box::new(move |panic_info| {
+        error!(
 			target: "server",
 			"A fatal error occurred within a server thread. Aborting!",
 		);
-		error!(
+        error!(
 			target: "server",
 			"Error Info: {}",
 			panic_info
 		);
 
-		orig_handler(panic_info);
-		process::exit(1);
-	}));
+        orig_handler(panic_info);
+        process::exit(1);
+    }));
 }
 
 fn main() {
@@ -124,7 +123,7 @@ fn main() {
 
     // Start gameloop
     info!(target: "server", "Starting gameloop!");
-    
+
     // Need to run the event loop on the current
     // thread since Dispatcher doesn't implement Send
     let mut runtime = Runtime::new().unwrap();
@@ -141,14 +140,17 @@ fn main() {
     dispatcher.setup(&mut world.res);
 
     // Run the gameloop at 60 Hz
-    runtime.spawn(timeloop(move |now| {
-        world.add_resource(ThisFrame(now));
-        dispatcher.dispatch(&mut world.res);
-        world.maintain();
-        world.add_resource(LastFrame(now));
+    runtime.spawn(timeloop(
+        move |now| {
+            world.add_resource(ThisFrame(now));
+            dispatcher.dispatch(&mut world.res);
+            world.maintain();
+            world.add_resource(LastFrame(now));
 
-        //debug::print_all_entities(&world);
-    }, Duration::from_nanos(16666667)));
+            //debug::print_all_entities(&world);
+        },
+        Duration::from_nanos(16666667),
+    ));
 
     runtime.run().unwrap();
 
