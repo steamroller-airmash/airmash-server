@@ -39,7 +39,7 @@ where
 				error
 			);
 
-            error
+            ()
         })
         .for_each(move |(upgrade, addr)| {
             let id = ConnectionId::new();
@@ -70,7 +70,7 @@ where
                         let channel = channel.clone();
                         move |m| {
                             if m != OwnedMessage::Binary(vec![5]) {
-                                trace!(
+                                debug!(
                                     target: "server",
                                     "{:?} sent {:?}",
                                     id, m

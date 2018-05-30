@@ -1,22 +1,25 @@
-FROM rust:latest
+FROM clux/muslrust:nightly
 
-RUN apt-get update \
-	&& apt-get install -y openssl libssl-dev \
-	&& rustup default nightly
+WORKDIR /build
+
+ADD Cargo.toml Cargo.lock /build/
+RUN mkdir src
+RUN echo > src/main.rs
+RUN cargo fetch
+RUN rm -rf ./*
+
+ADD . /build/
+
+RUN cargo build --release
+RUN mv target/release/airmash-server /artifacts/airmash-server
+
+FROM alpine:latest
+
+RUN apk add --no-cache supervisor
 
 WORKDIR /app
 
-RUN USER=root cargo new dummy --bin
-COPY Cargo.toml Cargo.lock /app/dummy/
-RUN cd dummy \
-	&& cargo build --release \
-	&& cd /app \
-	&& rm -rf /dummy
+ADD supervisor.conf /app/supervisor.conf
+COPY --from=0 /artifacts/airmash-server /app/airmash-server
 
-ADD . /app
-
-RUN cargo install --path . \
-	&& rm -rf /app/* \
-	&& rm -rf ~/.cargo
-
-ENTRYPOINT airmash-server
+ENTRYPOINT supervisord

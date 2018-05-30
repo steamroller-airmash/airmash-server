@@ -40,6 +40,12 @@ impl PacketHandler {
 
     fn dispatch<'a>(data: &mut PacketHandlerData<'a>, id: ConnectionId, packet: ClientPacket) {
         match packet {
+            ClientPacket::Pong(_) => (),
+            ClientPacket::Ack => (),
+            _ => debug!(target:"", "Received: {:?} from {:?}", packet, id)
+        }
+
+        match packet {
             ClientPacket::Login(p) => data.login.single_write((id, p)),
             ClientPacket::Backup(p) => data.backup.single_write((id, p)),
             ClientPacket::Horizon(p) => data.horizon.single_write((id, p)),
