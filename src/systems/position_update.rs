@@ -38,10 +38,10 @@ impl PositionUpdate {
     }
 
     fn boost(plane: &Plane, keystate: &KeyState) -> bool {
-        plane.0 == PlaneType::Predator && keystate.special
+        *plane == PlaneType::Predator && keystate.special
     }
     fn strafe(plane: &Plane, keystate: &KeyState) -> bool {
-        plane.0 == PlaneType::Mohawk && keystate.special
+        *plane == PlaneType::Mohawk && keystate.special
     }
 
     fn step_players<'a>(data: &mut PositionUpdateData<'a>, config: &Read<'a, Config>) {
@@ -50,13 +50,13 @@ impl PositionUpdate {
         (
             &mut data.pos,
             &mut data.rot,
-            &mut data.speed,
+            &mut data.vel,
             &data.keystate,
             &data.upgrades,
             &data.powerups,
             &data.planes
         ).join()
-            .for_each(|(pos, rot, speed, keystate, upgrades, powerups, plane)| {
+            .for_each(|(pos, rot, vel, keystate, upgrades, powerups, plane)| {
                 let mut movement_angle = None;
                 let info = &config.planes[*plane];
                 let boost_factor = if Self::boost(&plane, keystate) {
@@ -105,11 +105,11 @@ impl PositionUpdate {
 
                 if let Some(angle) = movement_angle {
                     let mult = info.accel_factor * delta * boost_factor;
-                    *speed += Vector2::new(mult * angle.sin(), mult * -angle.cos());
+                    *vel += Vector2::new(mult * angle.sin(), mult * -angle.cos());
                 }
 
-                let oldspeed = *speed;
-                let speed_len = speed.length();
+                let oldspeed = *vel;
+                let speed_len = vel.length();
                 let mut max_speed = info.max_speed * boost_factor;
                 let min_speed = info.min_speed;
 
@@ -123,17 +123,17 @@ impl PositionUpdate {
                 }
 
                 if speed_len > max_speed {
-                    *speed *= max_speed / speed_len;
+                    *vel *= max_speed / speed_len;
                 } else {
-                    if speed.x.abs() > min_speed || speed.y.abs() > min_speed {
+                    if vel.x.abs() > min_speed || vel.y.abs() > min_speed {
                         let val = 1.0 - (info.brake_factor * delta).inner();
-                        *speed *= val;
+                        *vel *= val;
                     } else {
-                        *speed = Speed::default()
+                        *vel = Velocity::default()
                     }
                 }
 
-                *pos += oldspeed * delta + (*speed - oldspeed) * delta * 0.5;
+                *pos += oldspeed * delta + (*vel - oldspeed) * delta * 0.5;
                 *rot = (*rot % PIx2 + PIx2) % PIx2;
 
                 let bound = Position::new(Distance::new(16352.0), Distance::new(8160.0));
@@ -158,7 +158,7 @@ impl PositionUpdate {
         (
             &data.pos,
             &data.rot,
-            &data.speed,
+            &data.vel,
             &data.planes,
             &data.keystate,
             &data.upgrades,
@@ -168,7 +168,7 @@ impl PositionUpdate {
             lastupdate
         ).join()
             .for_each(
-                |(pos, rot, speed, plane, keystate, upgrades, powerups, ent, _, lastupdate)| {
+                |(pos, rot, vel, plane, keystate, upgrades, powerups, ent, _, lastupdate)| {
                     type Key = ServerKeyState;
                     
                     *lastupdate = LastUpdate(thisframe);
@@ -195,8 +195,8 @@ impl PositionUpdate {
                         pos_x: pos.x.inner(),
                         pos_y: pos.y.inner(),
                         rot: rot.inner(),
-                        speed_x: speed.x.inner(),
-                        speed_y: speed.y.inner(),
+                        speed_x: vel.x.inner(),
+                        speed_y: vel.y.inner(),
                         upgrades: ups,
                     };
 
@@ -217,7 +217,7 @@ impl PositionUpdate {
         (
             &data.pos,
             &data.rot,
-            &data.speed,
+            &data.vel,
             &data.planes,
             &data.keystate,
             &data.upgrades,
@@ -229,7 +229,7 @@ impl PositionUpdate {
                 lastupdate.0.elapsed() > Duration::from_secs(2)
             })
             .for_each(
-                |(pos, rot, speed, plane, keystate, upgrades, powerups, ent, lastupdate)| {
+                |(pos, rot, vel, plane, keystate, upgrades, powerups, ent, lastupdate)| {
                     type Key = ServerKeyState;
                     
                     *lastupdate = LastUpdate(data.thisframe.0);
@@ -256,8 +256,8 @@ impl PositionUpdate {
                         pos_x: pos.x.inner(),
                         pos_y: pos.y.inner(),
                         rot: rot.inner(),
-                        speed_x: speed.x.inner(),
-                        speed_y: speed.y.inner(),
+                        speed_x: vel.x.inner(),
+                        speed_y: vel.y.inner(),
                         upgrades: ups,
                     };
 
@@ -275,7 +275,7 @@ impl PositionUpdate {
 pub struct PositionUpdateData<'a> {
     pos: WriteStorage<'a, Position>,
     rot: WriteStorage<'a, Rotation>,
-    speed: WriteStorage<'a, Speed>,
+    vel: WriteStorage<'a, Velocity>,
     keystate: ReadStorage<'a, KeyState>,
     upgrades: ReadStorage<'a, Upgrades>,
     powerups: ReadStorage<'a, Powerups>,

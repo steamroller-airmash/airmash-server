@@ -8,7 +8,7 @@ use types::Vector2;
 pub type BaseType = f32;
 
 pub mod detail {
-    use types::units::BaseType;
+    use types::BaseType;
 
     use specs::{Component, VecStorage};
 
@@ -46,10 +46,10 @@ pub mod detail {
     }
 
     impl<U> AirmashUnits<BaseType, U> {
-        pub fn abs(&self) -> Self {
+        pub fn abs(self) -> Self {
             Self::new(self.inner().abs())
         }
-        pub fn signum(&self) -> BaseType {
+        pub fn signum(self) -> BaseType {
             self.inner().signum()
         }
     }
@@ -78,10 +78,10 @@ pub type Position = Vector2<Distance>;
 
 pub type HealthRegen = detail::HealthRegen<BaseType>;
 pub type EnergyRegen = detail::EnergyRegen<BaseType>;
-pub type Speed = Vector2<detail::Speed<BaseType>>;
+pub type Velocity = Vector2<detail::Speed<BaseType>>;
 pub type Accel = Vector2<detail::Accel<BaseType>>;
 pub type RotationRate = detail::RotationRate<BaseType>;
-pub type SpeedScalar = detail::Speed<BaseType>;
+pub type Speed = detail::Speed<BaseType>;
 pub type AccelScalar = detail::Accel<BaseType>;
 
 #[derive(Copy, Clone, Debug, Eq, PartialEq, Hash, Default, Component)]
@@ -117,4 +117,21 @@ impl ConnectionId {
     pub fn new() -> Self {
         ConnectionId(CONNECTION_ID.fetch_add(1, Ordering::Relaxed))
     }
+}
+
+// Implement new for all custom types (for consistency)
+impl Team {
+	fn new(t: u16) -> Self {
+		Team(t)
+	}
+}
+impl Level {
+	fn new(t: u8) -> Self {
+		Level(t)
+	}
+}
+impl Score {
+	fn new(t: u32) -> Self {
+		Score(t)
+	}
 }

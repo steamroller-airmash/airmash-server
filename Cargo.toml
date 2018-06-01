@@ -34,3 +34,4 @@ features = [ "async", "async-ssl" ]
 [dependencies.airmash-protocol]
 git = "https://github.com/steamroller-airmash/airmash-protocol-rs"
 branch = "dev"
+features = [ "specs" ]

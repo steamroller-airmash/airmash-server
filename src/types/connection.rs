@@ -14,7 +14,7 @@ use std::sync::mpsc::Sender;
 pub type ConnectionSink = SplitSink<Framed<TcpStream, MessageCodec<OwnedMessage>>>;
 
 pub struct ConnectionData {
-    pub sink: Mutex<ConnectionSink>,
+    pub sink: ConnectionSink,
     pub id: ConnectionId,
     pub ty: ConnectionType,
     pub player: Option<Entity>,
@@ -48,7 +48,7 @@ impl Connections {
 
     pub fn add(&mut self, id: ConnectionId, sink: ConnectionSink) {
         let data = ConnectionData {
-            sink: Mutex::new(sink),
+            sink: sink,
             ty: ConnectionType::Inactive,
             player: None,
             id: id,
@@ -143,5 +143,9 @@ impl Connections {
 
     pub fn iter<'a>(&'a self) -> impl Iterator<Item = &'a ConnectionData> {
         self.0.values()
+    }
+
+    pub fn iter_mut<'a>(&'a mut self) -> impl Iterator<Item = &'a mut ConnectionData> {
+        self.0.values_mut()
     }
 }

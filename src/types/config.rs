@@ -22,9 +22,9 @@ pub struct PlaneInfo {
     pub boost_factor: f32,
 
     // Speeds
-    pub max_speed: SpeedScalar,
-    pub min_speed: SpeedScalar,
-    pub flag_speed: SpeedScalar,
+    pub max_speed: Speed,
+    pub min_speed: Speed,
+    pub flag_speed: Speed,
     pub inferno_factor: f32,
 
     // Regen
@@ -56,7 +56,7 @@ impl Default for PlaneInfos {
         let mut map = FnvHashMap::default();
 
         map.insert(
-            Plane(PlaneType::Predator),
+            PlaneType::Predator,
             PlaneInfo {
                 turn_factor: RotationRate::new(0.065),
 
@@ -64,9 +64,9 @@ impl Default for PlaneInfos {
                 brake_factor: AccelScalar::new(0.025),
                 boost_factor: 1.5,
 
-                max_speed: SpeedScalar::new(5.5),
-                min_speed: SpeedScalar::new(0.1),
-                flag_speed: SpeedScalar::new(5.0),
+                max_speed: Speed::new(5.5),
+                min_speed: Speed::new(0.1),
+                flag_speed: Speed::new(5.0),
                 inferno_factor: 0.75,
 
                 // TODO: Set these

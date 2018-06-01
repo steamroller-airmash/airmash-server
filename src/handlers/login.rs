@@ -20,7 +20,7 @@ use types::*;
 pub struct LoginSystemData<'a> {
     pub entities: Entities<'a>,
     pub position: WriteStorage<'a, Position>,
-    pub speed: WriteStorage<'a, Speed>,
+    pub speed: WriteStorage<'a, Velocity>,
     pub energy: WriteStorage<'a, Energy>,
     pub health: WriteStorage<'a, Health>,
     pub rot: WriteStorage<'a, Rotation>,
@@ -106,15 +106,15 @@ impl LoginHandler {
 
                     server::LoginPlayer {
                         id: ent.id() as u16,
-                        status: status.0,
+                        status: *status,
                         level: level.0,
                         name: name.0.clone(),
-                        ty: plane.0,
+                        ty: *plane,
                         team: team.0,
                         pos_x: pos.x.inner(),
                         pos_y: pos.y.inner(),
                         rot: rot.inner(),
-                        flag: flag.0,
+                        flag: *flag,
                         upgrades: upgrade_field,
                     }
                 }
@@ -151,7 +151,7 @@ impl LoginHandler {
 
         // Set all possible pieces of state for a plane
         data.position.insert(entity, Position::default()).unwrap();
-        data.speed.insert(entity, Speed::default()).unwrap();
+        data.speed.insert(entity, Velocity::default()).unwrap();
         data.energy.insert(entity, Energy::new(1.0)).unwrap();
         data.health.insert(entity, Health::new(1.0)).unwrap();
         data.rot.insert(entity, Rotation::default()).unwrap();
@@ -166,11 +166,11 @@ impl LoginHandler {
         data.flag
             .insert(
                 entity,
-                Flag(FlagCode::from_str(&login.flag).unwrap_or(FlagCode::UnitedNations)),
+                FlagCode::from_str(&login.flag).unwrap_or(FlagCode::UnitedNations),
             )
             .unwrap();
-        data.plane.insert(entity, Plane::default()).unwrap();
-        data.status.insert(entity, Status::default()).unwrap();
+        data.plane.insert(entity, PlaneType::Predator).unwrap();
+        data.status.insert(entity, PlayerStatus::Alive).unwrap();
         data.associated_conn
             .insert(entity, AssociatedConnection(conn))
             .unwrap();

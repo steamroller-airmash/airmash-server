@@ -17,22 +17,26 @@ impl PollComplete {
 }
 
 impl<'a> System<'a> for PollComplete {
-    type SystemData = Read<'a, Connections>;
+    type SystemData = Write<'a, Connections>;
 
-    fn run(&mut self, conns: Self::SystemData) {
+    fn run(&mut self, mut conns: Self::SystemData) {
         while let Ok((id, msg)) = self.channel.try_recv() {
-            match conns.0.get(&id) {
-                Some(ref conn) => {
-                    Connections::send_sink(&mut conn.sink.lock().unwrap(), msg);
+            match conns.0.get_mut(&id) {
+                Some(ref mut conn) => {
+                    Connections::send_sink(&mut conn.sink, msg);
                 },
                 // The connection probably closed,
                 // do nothing
-                None => ()
+                None => trace!(
+                    target: "server",
+                    "Tried to send message to closed connection {:?}",
+                    id
+                )
             }
         }
 
-        for conn in conns.iter() {
-            conn.sink.lock().unwrap().poll_complete().unwrap();
+        for conn in conns.iter_mut() {
+            conn.sink.poll_complete().unwrap();
         }
     }
 }
