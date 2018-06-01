@@ -38,32 +38,32 @@ pub struct ScoreBoardTimerEvent(pub Instant);
 pub struct AFKTimerEvent(pub Instant);
 
 impl Default for LastFrame {
-    fn default() -> Self {
-        LastFrame(Instant::now())
-    }
+	fn default() -> Self {
+		LastFrame(Instant::now())
+	}
 }
 impl Default for ThisFrame {
-    fn default() -> Self {
-        ThisFrame(Instant::now())
-    }
+	fn default() -> Self {
+		ThisFrame(Instant::now())
+	}
 }
 impl Default for StartTime {
-    fn default() -> Self {
-        StartTime(Instant::now())
-    }
+	fn default() -> Self {
+		StartTime(Instant::now())
+	}
 }
 impl Default for LastUpdate {
-    fn default() -> Self {
-        LastUpdate(Instant::now())
-    }
+	fn default() -> Self {
+		LastUpdate(Instant::now())
+	}
 }
 
 pub trait ToClock {
-    fn to_clock(&self) -> u32;
+	fn to_clock(&self) -> u32;
 }
 
 impl ToClock for Duration {
-    fn to_clock(&self) -> u32 {
-        (self.as_secs() * 1_000_000) as u32 + self.subsec_micros() / 10
-    }
+	fn to_clock(&self) -> u32 {
+		(self.as_secs() * 1_000_000) as u32 + self.subsec_micros() / 10
+	}
 }

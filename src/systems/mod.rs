@@ -1,3 +1,4 @@
+mod collision;
 mod packet_handler;
 mod poll_complete;
 mod position_update;

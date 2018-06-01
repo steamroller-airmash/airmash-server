@@ -8,144 +8,141 @@ use websocket::async::{MessageCodec, TcpStream};
 use websocket::client::async::Framed;
 use websocket::OwnedMessage;
 
-use std::sync::Mutex;
 use std::sync::mpsc::Sender;
+use std::sync::Mutex;
 
 pub type ConnectionSink = SplitSink<Framed<TcpStream, MessageCodec<OwnedMessage>>>;
 
 pub struct ConnectionData {
-    pub sink: ConnectionSink,
-    pub id: ConnectionId,
-    pub ty: ConnectionType,
-    pub player: Option<Entity>,
+	pub sink: ConnectionSink,
+	pub id: ConnectionId,
+	pub ty: ConnectionType,
+	pub player: Option<Entity>,
 }
 
 #[derive(Copy, Clone, Debug, Eq, PartialEq, Hash)]
 pub enum ConnectionType {
-    Primary,
-    Backup,
-    Inactive,
+	Primary,
+	Backup,
+	Inactive,
 }
 
 pub struct Connections(
-    pub FnvHashMap<ConnectionId, ConnectionData>,
-    Mutex<Sender<(ConnectionId, OwnedMessage)>>
+	pub FnvHashMap<ConnectionId, ConnectionData>,
+	Mutex<Sender<(ConnectionId, OwnedMessage)>>,
 );
 
 impl Default for Connections {
-    fn default() -> Self {
-        panic!("No default for connections");
-    }
+	fn default() -> Self {
+		panic!("No default for connections");
+	}
 }
 
 impl Connections {
-    pub fn new(channel: Sender<(ConnectionId, OwnedMessage)>) -> Self {
-        Connections(
-            FnvHashMap::default(),
-            Mutex::new(channel)
-        )
-    }
+	pub fn new(channel: Sender<(ConnectionId, OwnedMessage)>) -> Self {
+		Connections(FnvHashMap::default(), Mutex::new(channel))
+	}
 
-    pub fn add(&mut self, id: ConnectionId, sink: ConnectionSink) {
-        let data = ConnectionData {
-            sink: sink,
-            ty: ConnectionType::Inactive,
-            player: None,
-            id: id,
-        };
+	pub fn add(&mut self, id: ConnectionId, sink: ConnectionSink) {
+		let data = ConnectionData {
+			sink: sink,
+			ty: ConnectionType::Inactive,
+			player: None,
+			id: id,
+		};
 
-        self.0.insert(id, data);
-    }
-    pub fn remove(&mut self, id: ConnectionId) {
-        self.0.remove(&id).unwrap_or_else(|| {
-            error!(
+		self.0.insert(id, data);
+	}
+	pub fn remove(&mut self, id: ConnectionId) {
+		self.0.remove(&id).unwrap_or_else(|| {
+			error!(
 				target: "server",
 				"Attempted to remove non-existent connection {:?}",
 				id
 			);
-            panic!("Nonexistent connection id {:?}", id);
-        });
-    }
-    pub fn remove_player(&mut self, player: Entity) {
-        let mut conns = vec![];
+			panic!("Nonexistent connection id {:?}", id);
+		});
+	}
+	pub fn remove_player(&mut self, player: Entity) {
+		let mut conns = vec![];
 
-        for conn in self.0.values() {
-            if let Some(p) = conn.player {
-                if p == player {
-                    conns.push(conn.id);
-                }
-            }
-        }
+		for conn in self.0.values() {
+			if let Some(p) = conn.player {
+				if p == player {
+					conns.push(conn.id);
+				}
+			}
+		}
 
-        for id in conns {
-            self.remove(id);
-        }
-    }
+		for id in conns {
+			self.remove(id);
+		}
+	}
 
-    pub fn associate(&mut self, id: ConnectionId, player: Entity, ty: ConnectionType) {
-        let ref mut conn = self.0.get_mut(&id).unwrap_or_else(|| {
-            error!(
+	pub fn associate(&mut self, id: ConnectionId, player: Entity, ty: ConnectionType) {
+		let ref mut conn = self.0.get_mut(&id).unwrap_or_else(|| {
+			error!(
 				target: "server",
 				"Attempted to associate non-existent connection {:?} with player {:?}",
 				id, player
 			);
-            panic!("Nonexistent connection id {:?}", id);
-        });
+			panic!("Nonexistent connection id {:?}", id);
+		});
 
-        conn.player = Some(player);
-        conn.ty = ty;
-    }
+		conn.player = Some(player);
+		conn.ty = ty;
+	}
 
-    pub fn send_sink(conn: &mut ConnectionSink, msg: OwnedMessage) {
-        conn.start_send(msg)
-            .and_then(|x| {
-                match x {
-                    AsyncSink::Ready => (),
-                    AsyncSink::NotReady(item) => {
-                        // Not sure if this will panic because there is
-                        // no active task in worker threads. Leave a warning
-                        // so that it is easily diagnosable
-                        warn!(target: "server", "start_send returned NotReady!");
-                        conn.poll_complete().unwrap();
-                        conn.start_send(item).unwrap();
-                    }
-                }
-                Ok(())
-            })
-            .unwrap();
-    }
+	pub fn send_sink(conn: &mut ConnectionSink, msg: OwnedMessage) {
+		conn.start_send(msg)
+			.and_then(|x| {
+				match x {
+					AsyncSink::Ready => (),
+					AsyncSink::NotReady(item) => {
+						// Not sure if this will panic because there is
+						// no active task in worker threads. Leave a warning
+						// so that it is easily diagnosable
+						warn!(target: "server", "start_send returned NotReady!");
+						conn.poll_complete().unwrap();
+						conn.start_send(item).unwrap();
+					}
+				}
+				Ok(())
+			})
+			.unwrap();
+	}
 
-    pub fn send_to(&self, id: ConnectionId, msg: OwnedMessage) {
-        trace!(
+	pub fn send_to(&self, id: ConnectionId, msg: OwnedMessage) {
+		trace!(
 			target: "server",
 			"Sent message to {:?}: {:?}",
 			id, msg
 		);
 
-        self.1.lock().unwrap().send((id, msg)).unwrap();
-    }
+		self.1.lock().unwrap().send((id, msg)).unwrap();
+	}
 
-    pub fn send_to_all(&self, msg: OwnedMessage) {
-        self.0
-            .iter()
-            .filter_map(|(id, ref conn)| {
-                if conn.player.is_some() {
-                    if conn.ty == ConnectionType::Primary {
-                        return Some(id)
-                    }
-                }
-                None
-            })
-            .for_each(|id| {
-                self.1.lock().unwrap().send((*id, msg.clone())).unwrap();
-            });
-    }
+	pub fn send_to_all(&self, msg: OwnedMessage) {
+		self.0
+			.iter()
+			.filter_map(|(id, ref conn)| {
+				if conn.player.is_some() {
+					if conn.ty == ConnectionType::Primary {
+						return Some(id);
+					}
+				}
+				None
+			})
+			.for_each(|id| {
+				self.1.lock().unwrap().send((*id, msg.clone())).unwrap();
+			});
+	}
 
-    pub fn iter<'a>(&'a self) -> impl Iterator<Item = &'a ConnectionData> {
-        self.0.values()
-    }
+	pub fn iter<'a>(&'a self) -> impl Iterator<Item = &'a ConnectionData> {
+		self.0.values()
+	}
 
-    pub fn iter_mut<'a>(&'a mut self) -> impl Iterator<Item = &'a mut ConnectionData> {
-        self.0.values_mut()
-    }
+	pub fn iter_mut<'a>(&'a mut self) -> impl Iterator<Item = &'a mut ConnectionData> {
+		self.0.values_mut()
+	}
 }

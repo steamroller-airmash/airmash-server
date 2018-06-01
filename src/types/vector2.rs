@@ -6,152 +6,155 @@ use specs::*;
 
 /// Required trait to allow specialized impls for self
 #[doc(hidden)]
+// The current version of rustfmt will format this into
+// a syntax error
+#[cfg_attr(rustfmt, rustfmt_skip)]
 pub auto trait NotVec {}
 impl<T> !NotVec for Vector2<T> {}
 
 #[derive(Default, Clone, Copy, PartialEq, Debug)]
 pub struct Vector2<T> {
-    pub x: T,
-    pub y: T,
+	pub x: T,
+	pub y: T,
 }
 
 impl<T> Vector2<T> {
-    pub fn new(x: T, y: T) -> Self {
-        Self { x, y }
-    }
+	pub fn new(x: T, y: T) -> Self {
+		Self { x, y }
+	}
 
-    pub fn dot<U>(self, rhs: Vector2<U>) -> <<T as Mul<U>>::Output as Add>::Output
-    where
-        T: Mul<U>,
-        <T as Mul<U>>::Output: Add,
-    {
-        self.x * rhs.x + self.y * rhs.y
-    }
+	pub fn dot<U>(self, rhs: Vector2<U>) -> <<T as Mul<U>>::Output as Add>::Output
+	where
+		T: Mul<U>,
+		<T as Mul<U>>::Output: Add,
+	{
+		self.x * rhs.x + self.y * rhs.y
+	}
 
-    pub fn length(self) -> <<<T as Mul>::Output as Add>::Output as Sqrt>::Output
-    where
-        Self: Clone,
-        T: Mul,
-        T::Output: Add,
-        <T::Output as Add>::Output: Sqrt,
-    {
-        Self::dot(self.clone(), self).sqrt()
-    }
+	pub fn length(self) -> <<<T as Mul>::Output as Add>::Output as Sqrt>::Output
+	where
+		Self: Clone,
+		T: Mul,
+		T::Output: Add,
+		<T::Output as Add>::Output: Sqrt,
+	{
+		Self::dot(self.clone(), self).sqrt()
+	}
 }
 
 impl<T, U> Add<U> for Vector2<T>
 where
-    T: Add<U>,
-    U: Clone + NotVec,
+	T: Add<U>,
+	U: Clone + NotVec,
 {
-    type Output = Vector2<T::Output>;
+	type Output = Vector2<T::Output>;
 
-    fn add(self, rhs: U) -> Self::Output {
-        Self::Output::new(self.x + rhs.clone(), self.y + rhs)
-    }
+	fn add(self, rhs: U) -> Self::Output {
+		Self::Output::new(self.x + rhs.clone(), self.y + rhs)
+	}
 }
 impl<T, U> Sub<U> for Vector2<T>
 where
-    T: Sub<U>,
-    U: Clone + NotVec,
+	T: Sub<U>,
+	U: Clone + NotVec,
 {
-    type Output = Vector2<T::Output>;
+	type Output = Vector2<T::Output>;
 
-    fn sub(self, rhs: U) -> Self::Output {
-        Self::Output::new(self.x - rhs.clone(), self.y - rhs)
-    }
+	fn sub(self, rhs: U) -> Self::Output {
+		Self::Output::new(self.x - rhs.clone(), self.y - rhs)
+	}
 }
 impl<T, U> Mul<U> for Vector2<T>
 where
-    T: Mul<U>,
-    U: Clone + NotVec,
+	T: Mul<U>,
+	U: Clone + NotVec,
 {
-    type Output = Vector2<T::Output>;
+	type Output = Vector2<T::Output>;
 
-    fn mul(self, rhs: U) -> Self::Output {
-        Self::Output::new(self.x * rhs.clone(), self.y * rhs)
-    }
+	fn mul(self, rhs: U) -> Self::Output {
+		Self::Output::new(self.x * rhs.clone(), self.y * rhs)
+	}
 }
 impl<T, U> Div<U> for Vector2<T>
 where
-    T: Div<U>,
-    U: Clone + NotVec,
+	T: Div<U>,
+	U: Clone + NotVec,
 {
-    type Output = Vector2<T::Output>;
+	type Output = Vector2<T::Output>;
 
-    fn div(self, rhs: U) -> Self::Output {
-        Self::Output::new(self.x / rhs.clone(), self.y / rhs)
-    }
+	fn div(self, rhs: U) -> Self::Output {
+		Self::Output::new(self.x / rhs.clone(), self.y / rhs)
+	}
 }
 
 impl<T, U> Add<Vector2<U>> for Vector2<T>
 where
-    T: Add<U>,
+	T: Add<U>,
 {
-    type Output = Vector2<T::Output>;
+	type Output = Vector2<T::Output>;
 
-    fn add(self, rhs: Vector2<U>) -> Self::Output {
-        Self::Output::new(self.x + rhs.x, self.y + rhs.y)
-    }
+	fn add(self, rhs: Vector2<U>) -> Self::Output {
+		Self::Output::new(self.x + rhs.x, self.y + rhs.y)
+	}
 }
 impl<T, U> Sub<Vector2<U>> for Vector2<T>
 where
-    T: Sub<U>,
+	T: Sub<U>,
 {
-    type Output = Vector2<T::Output>;
+	type Output = Vector2<T::Output>;
 
-    fn sub(self, rhs: Vector2<U>) -> Self::Output {
-        Self::Output::new(self.x - rhs.x, self.y - rhs.y)
-    }
+	fn sub(self, rhs: Vector2<U>) -> Self::Output {
+		Self::Output::new(self.x - rhs.x, self.y - rhs.y)
+	}
 }
 impl<T, U> Mul<Vector2<U>> for Vector2<T>
 where
-    T: Mul<U>,
+	T: Mul<U>,
 {
-    type Output = Vector2<T::Output>;
+	type Output = Vector2<T::Output>;
 
-    fn mul(self, rhs: Vector2<U>) -> Self::Output {
-        Self::Output::new(self.x * rhs.x, self.y * rhs.y)
-    }
+	fn mul(self, rhs: Vector2<U>) -> Self::Output {
+		Self::Output::new(self.x * rhs.x, self.y * rhs.y)
+	}
 }
 
 impl<T, U> AddAssign<U> for Vector2<T>
 where
-    Self: Add<U, Output = Vector2<T>>,
+	Self: Add<U, Output = Vector2<T>>,
 {
-    fn add_assign(&mut self, rhs: U) {
-        let val = mem::replace(self, unsafe { mem::uninitialized() });
-        mem::forget(mem::replace(self, val + rhs));
-    }
+	fn add_assign(&mut self, rhs: U) {
+		let val = mem::replace(self, unsafe { mem::uninitialized() });
+		mem::forget(mem::replace(self, val + rhs));
+	}
 }
 impl<T, U> SubAssign<U> for Vector2<T>
 where
-    Self: Sub<U, Output = Vector2<T>>,
+	Self: Sub<U, Output = Vector2<T>>,
 {
-    fn sub_assign(&mut self, rhs: U) {
-        let val = mem::replace(self, unsafe { mem::uninitialized() });
-        mem::forget(mem::replace(self, val - rhs));
-    }
+	fn sub_assign(&mut self, rhs: U) {
+		let val = mem::replace(self, unsafe { mem::uninitialized() });
+		mem::forget(mem::replace(self, val - rhs));
+	}
 }
 impl<T, U> MulAssign<U> for Vector2<T>
 where
-    Self: Mul<U, Output = Vector2<T>>,
+	Self: Mul<U, Output = Vector2<T>>,
 {
-    fn mul_assign(&mut self, rhs: U) {
-        let val = mem::replace(self, unsafe { mem::uninitialized() });
-        mem::forget(mem::replace(self, val * rhs));
-    }
+	fn mul_assign(&mut self, rhs: U) {
+		let val = mem::replace(self, unsafe { mem::uninitialized() });
+		mem::forget(mem::replace(self, val * rhs));
+	}
 }
 impl<T, U> DivAssign<U> for Vector2<T>
 where
-    Self: Div<U, Output = Vector2<T>>,
+	Self: Div<U, Output = Vector2<T>>,
 {
-    fn div_assign(&mut self, rhs: U) {
-        let val = mem::replace(self, unsafe { mem::uninitialized() });
-        mem::forget(mem::replace(self, val / rhs));
-    }
+	fn div_assign(&mut self, rhs: U) {
+		let val = mem::replace(self, unsafe { mem::uninitialized() });
+		mem::forget(mem::replace(self, val / rhs));
+	}
 }
 
 impl<T: 'static + Send + Sync> Component for Vector2<T> {
-    type Storage = VecStorage<Vector2<T>>;
+	type Storage = VecStorage<Vector2<T>>;
 }
