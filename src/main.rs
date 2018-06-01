@@ -95,7 +95,7 @@ fn setup_panic_handler() {
 }
 
 fn main() {
-    simple_logger::init_with_level(log::Level::Debug).unwrap();
+    simple_logger::init_with_level(log::Level::Info).unwrap();
     env::set_var("RUST_BACKTRACE", "1");
 
     setup_panic_handler();
@@ -142,6 +142,13 @@ fn main() {
     world.add_resource(types::StartTime(Instant::now()));
     dispatcher.setup(&mut world.res);
 
+    // Add some dummmy entities so that there are no players with id 0, 1, or 2
+    // this makes FFA team logic easier. The airmash client also appears to 
+    // make all players mimic the player with id 0
+    for _ in 0..2 {
+        world.create_entity();
+    }
+
     // Run the gameloop at 60 Hz
     runtime.spawn(timeloop(
         move |now| {
@@ -149,8 +156,6 @@ fn main() {
             dispatcher.dispatch(&mut world.res);
             world.maintain();
             world.add_resource(LastFrame(now));
-
-            //debug::print_all_entities(&world);
         },
         Duration::from_nanos(16666667),
     ));
