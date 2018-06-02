@@ -7,11 +7,11 @@ pub struct Array2D<T> {
 }
 
 impl<T: Default + Clone> Array2D<T> {
-	pub fn new(size: (usize, usize)) -> Self {
+	pub fn new(width: usize, height: usize) -> Self {
 		let mut elems = vec![];
-		elems.resize(size.0 * size.1, T::default());
+		elems.resize(width * height, T::default());
 
-		Self { dims: size, elems }
+		Self { dims: (width, height), elems }
 	}
 }
 
@@ -22,6 +22,10 @@ impl<T> Array2D<T> {
 
 	pub fn iter_mut(&mut self) -> impl Iterator<Item = &mut T> {
 		self.elems.iter_mut()
+	}
+
+	pub fn size(&self) -> (usize, usize) {
+		self.dims
 	}
 }
 

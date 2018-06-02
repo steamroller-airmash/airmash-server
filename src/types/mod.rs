@@ -1,5 +1,4 @@
 mod components;
-mod config;
 mod connection;
 mod events;
 mod keystate;
@@ -8,6 +7,7 @@ mod timer_event;
 mod units;
 mod upgrades;
 mod vector2;
+pub mod config;
 
 pub use self::components::*;
 pub use self::config::Config;

@@ -40,6 +40,15 @@ impl<T> Vector2<T> {
 	{
 		Self::dot(self.clone(), self).sqrt()
 	}
+
+	pub fn length2(self) -> <<T as Mul>::Output as Add>::Output 
+	where
+		Self: Clone,
+		T: Mul,
+		T::Output: Add
+	{
+		Self::dot(self.clone(), self)
+	}
 }
 
 impl<T, U> Add<U> for Vector2<T>

@@ -21,6 +21,7 @@ shred-derive = "*"
 shrev = "*"
 tokio = "*"
 tokio-core = "*"
+rayon = "*"
 
 [dependencies.uuid]
 version = "*"

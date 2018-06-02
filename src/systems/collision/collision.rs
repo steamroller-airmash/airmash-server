@@ -3,64 +3,89 @@
 
 use specs::*;
 use shrev::*;
+
 use types::*;
 use fnv::FnvHashMap;
 
-lazy_static! {
-	pub static ref TERRAIN_BUCKETS: Vec<Bucket> = unimplemented!();
-}
+use systems::collision::array2d::Array2D;
+use systems::collision::bucket::*;
 
-type LayerType = u16;
+// Buckets are configurable here
+const BUCKETS_Y: usize = 64;
+const BUCKETS_X: usize = BUCKETS_Y * 2;
+const BUCKET_WIDTH: f32 = (16384.0 / ((BUCKETS_Y * 2) as f64)) as f32;
+const BUCKET_HEIGHT: f32 = (16384.0 / (BUCKETS_Y as f64)) as f32;
 
-#[derive(Copy, Clone, Debug)]
-pub struct HitCircle {
-	pub pos: Position,
-	pub r:   Distance,
-	pub layer: u32
-}
-
-#[derive(Copy, Clone, Debug)]
-pub struct CollisionEvent {
-	pub e1: (Entity, HitCircle),
-	pub e2: (Entity, HitCircle)
-}
-
-pub struct CollisionSystem {
-	pub buckets: (usize, usize),
-	pub terrain: Vec<HitCircle>
-}
-
-#[derive(Clone, Debug)]
-struct Layer {
-	pub entities: Vec<(Entity, HitCircle)>
-}
-
-#[derive(Clone, Debug)]
-struct Bucket {
-	pub layers: FnvHashMap<u16, Layer>
-}
+pub struct CollisionSystem {}
 
 #[derive(SystemData)]
 pub struct CollisionSystemData<'a> {
 	pub entities:   Entities<'a>,
-	pub collisions: Write<EventChannel<CollisionEvent>>,
-	pub positions:  ReadStorage<Position>,
-	pub velocities: ReadStorage<Speed>,
+	pub collisions: Write<'a, EventChannel<Collision>>,
+	pub config:     Read<'a, Config>,
+	pub pos:        ReadStorage<'a, Position>,
+	pub rot:        ReadStorage<'a, Rotation>,
+	pub planes:     ReadStorage<'a, Plane>,
+	pub teams:      ReadStorage<'a, Team>
 }
 
 impl CollisionSystem {
 	pub fn new() -> Self {
-		// Buckets are configurable here
-		const BUCKETS_Y: usize = 64;
-		Self {
-			buckets: (BUCKETS_Y, BUCKETS_Y * 2),
-			terrain: vec![]
+		Self { }
+	}
+}
+
+/// TODO: Replace this with something that doesn't
+/// need to allocate (a generator most likely).
+/// Note: generators are still a nightly-only feature
+fn intersected_buckets(pos: Position, rad: Distance) -> impl Iterator<Item=(usize, usize)> {
+	let mut vals = vec![];
+
+	let y_max = (((pos.y + rad).inner() / BUCKET_HEIGHT) as isize + (BUCKETS_Y / 2) as isize) as usize;
+	let y_min = (((pos.y - rad).inner() / BUCKET_HEIGHT) as isize + (BUCKETS_Y / 2) as isize) as usize;
+	let x_max = (((pos.x + rad).inner() / BUCKET_WIDTH) as isize + (BUCKETS_X / 2) as isize) as usize;
+	let x_min = (((pos.x - rad).inner() / BUCKET_WIDTH) as isize + (BUCKETS_X / 2) as isize) as usize;
+
+	for x in x_min..x_max {
+		for y in y_min..y_max {
+			vals.push((x, y));
 		}
 	}
 
-
+	vals.into_iter()
 }
 
 impl<'a> System<'a> for CollisionSystem {
+	type SystemData = CollisionSystemData<'a>;
 
+	fn run(&mut self, mut data: Self::SystemData) {
+		let mut buckets = Array2D::<Bucket>::new(BUCKETS_Y, BUCKETS_Y * 2);
+
+		(&*data.entities, &data.pos, &data.rot, &data.planes, &data.teams).join()
+			.for_each(|(ent, pos, rot, plane, team)| {
+				let ref cfg = data.config.planes[*plane];
+
+				for hc in cfg.hit_circles.iter() {
+					let offset = hc.offset.rotate(*rot);
+
+					let circle = HitCircle {
+						pos: *pos + offset,
+						rad: hc.radius,
+						layer: team.0,
+						ent: ent
+					};
+					
+					for coord in intersected_buckets(*pos + offset, hc.radius){
+						buckets[coord].push(circle);
+					}
+				}
+			});
+
+		let mut isects = vec![];
+		buckets.iter().for_each(|bucket| {
+			bucket.collide(&mut isects);
+		});
+
+		data.collisions.iter_write(isects.into_iter());
+	}
 }

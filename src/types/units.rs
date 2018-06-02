@@ -52,6 +52,10 @@ pub mod detail {
 		pub fn signum(self) -> BaseType {
 			self.inner().signum()
 		}
+
+		pub fn sin_cos(self) -> (BaseType, BaseType) {
+			self.inner().sin_cos()
+		}
 	}
 
 	impl<T: 'static, U: 'static> Component for AirmashUnits<T, U>
@@ -133,5 +137,16 @@ impl Level {
 impl Score {
 	fn new(t: u32) -> Self {
 		Score(t)
+	}
+}
+
+impl Position {
+	pub fn rotate(self, angle: Rotation) -> Self {
+		let (sin, cos) = angle.sin_cos();
+
+		Position::new(
+			self.x * cos - self.y * sin,
+			self.x * sin + self.y * cos
+		)
 	}
 }
