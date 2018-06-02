@@ -62,6 +62,7 @@ fn build_dispatcher<'a, 'b>(
         .with(handlers::LoginHandler::new(),   "onlogin", &["onclose"])
         .with(handlers::KeyHandler::new(),     "onkey",   &["onclose"])
         .with(handlers::ChatHandler::new(),    "onchat",  &["onclose"])
+				.with(handlers::SayHandler::new(),     "onsay",   &["onclose"])
         .with(handlers::ScoreBoardTimerHandler::new(), "scoreboard", &["timer"])
 
         // Systems with dependencies on handlers
@@ -146,8 +147,8 @@ fn main() {
 	// Add some dummmy entities so that there are no players with id 0, 1, or 2
 	// this makes FFA team logic easier. The airmash client also appears to
 	// make all players mimic the player with id 0
-	for _ in 0..2 {
-		world.create_entity();
+	for _ in 0..3 {
+		world.create_entity().build();
 	}
 
 	// Run the gameloop at 60 Hz

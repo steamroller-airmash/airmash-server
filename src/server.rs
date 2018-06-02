@@ -38,8 +38,6 @@ where
 				"A client failed to connect with error: {}",
 				error
 			);
-
-			()
 		})
 		.for_each(move |(upgrade, addr)| {
 			let id = ConnectionId::new();
@@ -128,7 +126,8 @@ where
 				}),
 			);
 			Ok(())
-		});
+		})
+		.map_err(|_| {()});
 
 	reactor.run(f).unwrap();
 }

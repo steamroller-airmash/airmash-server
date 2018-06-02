@@ -200,7 +200,7 @@ impl PositionUpdate {
 						upgrades: ups,
 					};
 
-					info!(target: "server", "Update: {:?}", packet);
+					trace!(target: "server", "Update: {:?}", packet);
 
 					data.conns.send_to_all(OwnedMessage::Binary(
 						to_bytes(&ServerPacket::PlayerUpdate(packet)).unwrap(),
@@ -261,7 +261,7 @@ impl PositionUpdate {
 						upgrades: ups,
 					};
 
-					info!(target: "server", "Update: {:?}", packet);
+					trace!(target: "server", "Update: {:?}", packet);
 
 					data.conns.send_to_all(OwnedMessage::Binary(
 						to_bytes(&ServerPacket::PlayerUpdate(packet)).unwrap(),
