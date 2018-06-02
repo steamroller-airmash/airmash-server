@@ -38,6 +38,7 @@ pub struct LoginSystemData<'a> {
 	pub conns: Write<'a, Connections>,
 	pub associated_conn: WriteStorage<'a, AssociatedConnection>,
 	pub lastupdate: WriteStorage<'a, LastUpdate>,
+	pub isplayer: WriteStorage<'a, IsPlayer>,
 }
 
 pub struct LoginHandler {
@@ -162,7 +163,7 @@ impl LoginHandler {
 		data.upgrades.insert(entity, Upgrades::default()).unwrap();
 		data.score.insert(entity, Score(0)).unwrap();
 		data.level.insert(entity, Level(0)).unwrap();
-		data.team.insert(entity, Team(0)).unwrap();
+		data.team.insert(entity, Team(3)).unwrap();
 		data.flag
 			.insert(
 				entity,
@@ -177,6 +178,7 @@ impl LoginHandler {
 		data.lastupdate
 			.insert(entity, LastUpdate(Instant::now()))
 			.unwrap();
+		data.isplayer.insert(entity, IsPlayer{}).unwrap();
 
 		// Actually send login packet
 		let resp = server::Login {

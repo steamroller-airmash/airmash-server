@@ -1,5 +1,6 @@
 mod chat;
 mod key;
+mod say;
 mod login;
 mod onclose;
 mod onopen;

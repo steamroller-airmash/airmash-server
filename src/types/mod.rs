@@ -7,6 +7,7 @@ mod timer_event;
 mod units;
 mod upgrades;
 mod vector2;
+mod flags;
 pub mod config;
 
 pub use self::components::*;
@@ -19,3 +20,4 @@ pub use self::timer_event::*;
 pub use self::units::*;
 pub use self::upgrades::*;
 pub use self::vector2::*;
+pub use self::flags::*;

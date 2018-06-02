@@ -58,6 +58,15 @@ fn intersected_buckets(pos: Position, rad: Distance) -> impl Iterator<Item=(usiz
 impl<'a> System<'a> for CollisionSystem {
 	type SystemData = CollisionSystemData<'a>;
 
+	fn setup(&mut self, res: &mut Resources) {
+		Self::SystemData::setup(res);
+
+		// Hopefully 1000 collision events is enough during 
+		// each 16ms frame. If not, this number should be 
+		// increased.
+		res.insert::<EventChannel<Collision>>(EventChannel::with_capacity(1000));
+	}
+
 	fn run(&mut self, mut data: Self::SystemData) {
 		let mut buckets = Array2D::<Bucket>::new(BUCKETS_Y, BUCKETS_Y * 2);
 

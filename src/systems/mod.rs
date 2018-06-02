@@ -8,3 +8,4 @@ pub use self::packet_handler::PacketHandler;
 pub use self::poll_complete::PollComplete;
 pub use self::position_update::PositionUpdate;
 pub use self::timer_handler::TimerHandler;
+pub use self::collision::*;
