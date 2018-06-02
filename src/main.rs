@@ -102,7 +102,7 @@ fn setup_panic_handler() {
 }
 
 fn main() {
-	simple_logger::init_with_level(log::Level::Trace).unwrap();
+	simple_logger::init_with_level(log::Level::Info).unwrap();
 	env::set_var("RUST_BACKTRACE", "1");
 
 	setup_panic_handler();
