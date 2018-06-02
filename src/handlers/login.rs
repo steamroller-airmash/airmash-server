@@ -178,7 +178,7 @@ impl LoginHandler {
 		data.lastupdate
 			.insert(entity, LastUpdate(Instant::now()))
 			.unwrap();
-		data.isplayer.insert(entity, IsPlayer{}).unwrap();
+		data.isplayer.insert(entity, IsPlayer {}).unwrap();
 
 		// Actually send login packet
 		let resp = server::Login {

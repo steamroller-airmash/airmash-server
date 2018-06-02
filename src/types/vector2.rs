@@ -41,13 +41,26 @@ impl<T> Vector2<T> {
 		Self::dot(self.clone(), self).sqrt()
 	}
 
-	pub fn length2(self) -> <<T as Mul>::Output as Add>::Output 
+	pub fn length2(self) -> <<T as Mul>::Output as Add>::Output
 	where
 		Self: Clone,
 		T: Mul,
-		T::Output: Add
+		T::Output: Add,
 	{
 		Self::dot(self.clone(), self)
+	}
+
+	pub fn normalized(
+		self,
+	) -> Vector2<<T as Div<<<<T as Mul>::Output as Add>::Output as Sqrt>::Output>>::Output>
+	where
+		Self: Clone,
+		T: Mul + Div<<<<T as Mul>::Output as Add>::Output as Sqrt>::Output>,
+		<T as Mul>::Output: Add,
+		<<T as Mul>::Output as Add>::Output: Sqrt,
+		<<<T as Mul>::Output as Add>::Output as Sqrt>::Output: Clone + NotVec,
+	{
+		self.clone() / self.length()
 	}
 }
 

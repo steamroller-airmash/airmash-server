@@ -10,11 +10,14 @@ extern crate dimensioned;
 extern crate specs_derive;
 #[macro_use]
 extern crate shred_derive;
+#[macro_use]
+extern crate lazy_static;
 
 // Regular Dependencies
 extern crate airmash_protocol;
 extern crate fnv;
 extern crate rand;
+extern crate rayon;
 extern crate shred;
 extern crate shrev;
 extern crate simple_logger;
@@ -23,11 +26,11 @@ extern crate tokio;
 extern crate tokio_core;
 extern crate uuid;
 extern crate websocket;
-extern crate rayon;
 
 use websocket::futures;
 
 // Modules
+mod consts;
 mod handlers;
 mod server;
 mod systems;
@@ -67,6 +70,8 @@ fn build_dispatcher<'a, 'b>(
 
         // Systems with dependencies on handlers
         .with(systems::PositionUpdate::new(),  "pos_update", &["onkey"])
+				.with(systems::CollisionSystem::new(), "collisions", &["pos_update"])
+				.with(systems::BounceSystem::new(),    "bounces",    &["collisions"])
 
         // This needs to run after systems which send messages
         .with_thread_local(systems::PollComplete::new(msg_recv))
@@ -97,7 +102,7 @@ fn setup_panic_handler() {
 }
 
 fn main() {
-	simple_logger::init_with_level(log::Level::Info).unwrap();
+	simple_logger::init_with_level(log::Level::Trace).unwrap();
 	env::set_var("RUST_BACKTRACE", "1");
 
 	setup_panic_handler();

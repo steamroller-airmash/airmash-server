@@ -127,7 +127,8 @@ where
 			);
 			Ok(())
 		})
-		.map_err(|_| {});
+		.map_err(|_| {})
+		.map(|_| {});
 
 	reactor.run(f).unwrap();
 }

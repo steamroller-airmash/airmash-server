@@ -11,7 +11,10 @@ impl<T: Default + Clone> Array2D<T> {
 		let mut elems = vec![];
 		elems.resize(width * height, T::default());
 
-		Self { dims: (width, height), elems }
+		Self {
+			dims: (width, height),
+			elems,
+		}
 	}
 }
 

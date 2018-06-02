@@ -37,13 +37,6 @@ impl PositionUpdate {
 		}
 	}
 
-	fn boost(plane: &Plane, keystate: &KeyState) -> bool {
-		*plane == PlaneType::Predator && keystate.special
-	}
-	fn strafe(plane: &Plane, keystate: &KeyState) -> bool {
-		*plane == PlaneType::Mohawk && keystate.special
-	}
-
 	fn step_players<'a>(data: &mut PositionUpdateData<'a>, config: &Read<'a, Config>) {
 		let delta = Time::from(data.thisframe.0 - data.lastframe.0) * 60.0;
 
@@ -59,13 +52,13 @@ impl PositionUpdate {
 			.for_each(|(pos, rot, vel, keystate, upgrades, powerups, plane)| {
 				let mut movement_angle = None;
 				let info = &config.planes[*plane];
-				let boost_factor = if Self::boost(&plane, keystate) {
+				let boost_factor = if keystate.boost(&plane) {
 					info.boost_factor
 				} else {
 					1.0
 				};
 
-				if Self::strafe(plane, keystate) {
+				if keystate.strafe(plane) {
 					if keystate.left {
 						movement_angle = Some(*rot - FRAC_PI_2);
 					}
@@ -173,15 +166,7 @@ impl PositionUpdate {
 
 					*lastupdate = LastUpdate(thisframe);
 
-					let mut state = ServerKeyState(0);
-					state.set(Key::UP, keystate.up);
-					state.set(Key::DOWN, keystate.down);
-					state.set(Key::LEFT, keystate.left);
-					state.set(Key::RIGHT, keystate.right);
-					state.set(Key::BOOST, Self::boost(plane, keystate));
-					state.set(Key::STRAFE, Self::strafe(plane, keystate));
-					state.set(Key::STEALTH, keystate.stealthed);
-					state.set(Key::FLAGSPEED, keystate.flagspeed);
+					let state = keystate.to_server(&plane);
 
 					let mut ups = ServerUpgrades(0);
 					ups.set_speed(upgrades.speed);
@@ -234,15 +219,7 @@ impl PositionUpdate {
 
 					*lastupdate = LastUpdate(data.thisframe.0);
 
-					let mut state = ServerKeyState(0);
-					state.set(Key::UP, keystate.up);
-					state.set(Key::DOWN, keystate.down);
-					state.set(Key::LEFT, keystate.left);
-					state.set(Key::RIGHT, keystate.right);
-					state.set(Key::BOOST, Self::boost(plane, keystate));
-					state.set(Key::STRAFE, Self::strafe(plane, keystate));
-					state.set(Key::STEALTH, keystate.stealthed);
-					state.set(Key::FLAGSPEED, keystate.flagspeed);
+					let state = keystate.to_server(&plane);
 
 					let mut ups = ServerUpgrades(0);
 					ups.set_speed(upgrades.speed);

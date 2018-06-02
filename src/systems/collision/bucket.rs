@@ -1,4 +1,3 @@
-
 use specs::Entity;
 use types::*;
 
@@ -7,19 +6,15 @@ pub struct HitCircle {
 	pub pos: Position,
 	pub rad: Distance,
 	pub layer: u16,
-	pub ent: Entity
+	pub ent: Entity,
 }
 
 #[derive(Copy, Clone, Debug)]
-pub struct Collision(
-	pub HitCircle,
-	pub HitCircle
-);
+pub struct Collision(pub HitCircle, pub HitCircle);
 
 #[derive(Clone, Debug, Default)]
 pub struct Bucket {
 	elems: Vec<HitCircle>,
-
 }
 
 impl HitCircle {
@@ -43,7 +38,7 @@ impl Bucket {
 
 	/// Checks all hit circles within this bucket
 	/// for pairwise collisions. Will not return
-	/// a collision multiple times. Note that 
+	/// a collision multiple times. Note that
 	/// hit circles within the same layer cannot
 	/// collide with each other.
 	pub fn collide(&self, out: &mut Vec<Collision>) {
@@ -51,11 +46,15 @@ impl Bucket {
 
 		for i in 0..len {
 			let a = &self.elems[i];
-			
-			for j in (i+1)..len {
+
+			for j in (i + 1)..len {
 				let b = &self.elems[j];
 
-				if a.layer == b.layer && HitCircle::intersects(a, b) {
+				if a.layer != b.layer {
+					trace!(target: "server", "checking collision {:?} {:?}", a, b);
+				}
+
+				if a.layer != b.layer && HitCircle::intersects(a, b) {
 					out.push(Collision(*a, *b))
 				}
 			}

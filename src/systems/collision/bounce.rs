@@ -1,29 +1,100 @@
-
-use specs::*;
 use shrev::*;
+use specs::*;
 use types::*;
 
 use systems::collision::bucket::Collision;
 
-use airmash_protocol::{to_bytes, ServerPacket};
 use airmash_protocol::server::EventBounce;
+use airmash_protocol::{to_bytes, ServerKeyState, ServerPacket};
+use websocket::OwnedMessage;
 
 pub struct BounceSystem {
-	reader: ReaderId<EventChannel<Collision>>
+	reader: Option<ReaderId<Collision>>,
 }
 
 #[derive(SystemData)]
 pub struct BounceSystemData<'a> {
-	pub entity:  Entities<'a>,
-	pub vel:     WriteStorage<'a, Velocity>,
-	pub channel: Read<'a, EventChannel<Collision>>
+	pub entity: Entities<'a>,
+	pub vel: WriteStorage<'a, Velocity>,
+	pub pos: ReadStorage<'a, Position>,
+	pub rot: ReadStorage<'a, Rotation>,
+	pub plane: ReadStorage<'a, Plane>,
+	pub keystate: ReadStorage<'a, KeyState>,
+	pub conns: Read<'a, Connections>,
+	pub config: Read<'a, Config>,
+	pub channel: Read<'a, EventChannel<Collision>>,
+	pub thisframe: Read<'a, ThisFrame>,
+	pub starttime: Read<'a, StartTime>,
+}
+
+impl BounceSystem {
+	pub fn new() -> Self {
+		Self { reader: None }
+	}
 }
 
 impl<'a> System<'a> for BounceSystem {
 	type SystemData = BounceSystemData<'a>;
 
-	fn run(&mut self, mut data: Self::SystemData) {
+	fn setup(&mut self, res: &mut Resources) {
+		self.reader = Some(res.fetch_mut::<EventChannel<Collision>>().register_reader());
 
-		
+		Self::SystemData::setup(res);
+	}
+
+	fn run(&mut self, mut data: Self::SystemData) {
+		for evt in data.channel.read(self.reader.as_mut().unwrap()) {
+			if evt.0.layer == 0 || evt.1.layer == 0  {
+				assert!(evt.1.layer != evt.0.layer);
+
+				let rel;
+				let maxspd;
+				let ent;
+				if evt.0.layer == 0 {
+					ent = evt.1.ent;
+					rel = (evt.1.pos - evt.0.pos).normalized();
+					maxspd = data.config.planes[*data.plane.get(evt.1.ent).unwrap()].max_speed;
+				} else {
+					ent = evt.0.ent;
+					rel = (evt.0.pos - evt.1.pos).normalized();
+					maxspd = data.config.planes[*data.plane.get(evt.0.ent).unwrap()].max_speed;
+				};
+
+				let vel = rel * maxspd;
+
+				match data.vel.get_mut(ent) {
+					Some(v) => *v = vel,
+					None => {
+						warn!(
+							target: "server",
+							"EventBounce triggered for non-player entity {:?}",
+							ent
+						);
+						continue;
+					}
+				}
+
+				let pos = data.pos.get(ent).unwrap();
+				let rot = data.rot.get(ent).unwrap();
+				let keystate = data.keystate.get(ent).unwrap();
+				let plane = data.plane.get(ent).unwrap();
+				let state = keystate.to_server(&plane);
+
+				let packet = EventBounce {
+					clock: (data.thisframe.0 - data.starttime.0).to_clock(),
+					id: ent.id() as u16,
+					pos_x: pos.x.inner(),
+					pos_y: pos.y.inner(),
+					rot: rot.inner(),
+					speed_x: vel.x.inner(),
+					speed_y: vel.y.inner(),
+					keystate: state,
+				};
+
+				data.conns.send_to_all(OwnedMessage::Binary(
+					to_bytes(&ServerPacket::EventBounce(packet)).unwrap(),
+				));
+			}
+		}
 	}
 }
