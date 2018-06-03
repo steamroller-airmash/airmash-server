@@ -13,8 +13,16 @@ use websocket::server::async::Server;
 use websocket::server::InvalidConnection;
 use websocket::OwnedMessage;
 
+use hyper::header::Headers;
+use hyper::server::Response;
+use hyper::status::StatusCode;
+
 use tokio_core::reactor::Core;
 
+const RESPONSE_STR: &'static [u8] = b"\
+<body>\
+	<img src=\"https://upload.wikimedia.org/wikipedia/commons/thumb/4/44/Black_tea_pot_cropped.jpg/330px-Black_tea_pot_cropped.jpg\"\
+</body>";
 pub fn run_acceptor<A>(addr: A, channel: Sender<ConnectionEvent>)
 where
 	A: ToSocketAddrs + Debug,
@@ -38,6 +46,21 @@ where
 				"A client failed to connect with error: {}",
 				e.error
 			);
+
+			if let Some(mut stream) = e.stream {
+				let mut headers = Headers::new();
+
+				let mut res = Response::new(
+					&mut stream,
+					&mut headers
+				);
+
+				*res.status_mut() = StatusCode::ImATeapot;
+
+				// Try to send, but don't care
+				// if we fail to send.
+				res.send(RESPONSE_STR).err();
+			}
 		})
 		// The following two operators filter out
 		// all connection errors from the stream.

@@ -22,6 +22,7 @@ shrev = "*"
 tokio = "*"
 tokio-core = "*"
 rayon = "*"
+hyper = "*"
 
 [dependencies.uuid]
 version = "*"
