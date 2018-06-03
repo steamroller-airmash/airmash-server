@@ -99,10 +99,6 @@ impl Connections {
 				match x {
 					AsyncSink::Ready => (),
 					AsyncSink::NotReady(item) => {
-						// Not sure if this will panic because there is
-						// no active task in worker threads. Leave a warning
-						// so that it is easily diagnosable
-						warn!(target: "server", "start_send returned NotReady!");
 						conn.poll_complete().unwrap();
 						conn.start_send(item).unwrap();
 					}
@@ -110,6 +106,27 @@ impl Connections {
 				Ok(())
 			})
 			.unwrap();
+	}
+
+	pub fn send_to_player(&self, player: Entity, msg: OwnedMessage) {
+		let conn = self.0.iter()
+			.find(|(_, c)| {
+				c.player.is_some()
+					&& c.ty == ConnectionType::Primary
+					&& c.player.unwrap() == player 
+			});
+
+		if conn.is_none() {
+			warn!(
+				target: "server",
+				"Attempted to send message to nonexistent player {:?}",
+				player
+			);
+
+			return;
+		}
+
+		self.send_to(*conn.unwrap().0, msg);
 	}
 
 	pub fn send_to(&self, id: ConnectionId, msg: OwnedMessage) {

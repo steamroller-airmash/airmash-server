@@ -20,6 +20,7 @@ impl<'a> System<'a> for OnCloseHandler {
 		Entities<'a>,
 		Read<'a, EventChannel<ConnectionClose>>,
 		Write<'a, Connections>,
+		Write<'a, PlayersGame>,
 	);
 
 	fn setup(&mut self, res: &mut Resources) {
@@ -31,7 +32,7 @@ impl<'a> System<'a> for OnCloseHandler {
 		Self::SystemData::setup(res);
 	}
 
-	fn run(&mut self, (entities, channel, mut connections): Self::SystemData) {
+	fn run(&mut self, (entities, channel, mut connections, mut players): Self::SystemData) {
 		if let Some(ref mut reader) = self.reader {
 			for evt in channel.read(reader) {
 				let (player, ty) = {
@@ -49,6 +50,7 @@ impl<'a> System<'a> for OnCloseHandler {
 				if ty == ConnectionType::Primary {
 					if let Some(ent) = player {
 						connections.remove_player(ent);
+						players.0 -= 1;
 
 						// Send out PlayerLeave message
 						let player_leave = PlayerLeave {

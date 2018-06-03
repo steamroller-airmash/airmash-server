@@ -18,6 +18,9 @@ pub struct Session(pub Option<Uuid>);
 #[derive(Clone, Debug, Copy, Component, Default)]
 pub struct AssociatedConnection(pub ConnectionId);
 
+#[derive(Clone, Debug, Copy, Component, Default)]
+pub struct PlayersGame(pub u32);
+
 #[derive(Clone, Debug, Copy, Component)]
 pub struct LastFrame(pub Instant);
 #[derive(Clone, Debug, Copy, Component)]
@@ -36,6 +39,8 @@ pub struct AckEvent(pub ConnectionId);
 pub struct ScoreBoardTimerEvent(pub Instant);
 #[derive(Copy, Clone, Debug, Component)]
 pub struct AFKTimerEvent(pub Instant);
+#[derive(Copy, Clone, Debug, Component)]
+pub struct PingTimerEvent(pub Instant);
 
 impl Default for LastFrame {
 	fn default() -> Self {

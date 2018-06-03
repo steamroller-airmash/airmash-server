@@ -56,6 +56,12 @@ pub mod detail {
 		pub fn sin_cos(self) -> (BaseType, BaseType) {
 			self.inner().sin_cos()
 		}
+		pub fn max(self, o: Self) -> Self {
+			Self::new(self.inner().max(o.inner()))
+		}
+		pub fn min(self, o: Self) -> Self {
+			Self::new(self.inner().min(o.inner()))
+		}
 	}
 
 	impl<T: 'static, U: 'static> Component for AirmashUnits<T, U>

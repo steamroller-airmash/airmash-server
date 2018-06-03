@@ -60,7 +60,7 @@ impl<'a> System<'a> for BounceSystem {
 					maxspd = *data.vel.get(evt.0.ent).unwrap();
 				};
 
-				let vel = rel * maxspd;
+				let vel = rel * Speed::max(maxspd.length(), Speed::new(1.0));
 
 				match data.vel.get_mut(ent) {
 					Some(v) => *v = vel,

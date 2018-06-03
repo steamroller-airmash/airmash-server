@@ -20,7 +20,7 @@ pub struct Bucket {
 impl HitCircle {
 	pub fn intersects(a: &HitCircle, b: &HitCircle) -> bool {
 		// Compare squared distances to avoid a square root
-		(a.pos - b.pos).length2() < a.rad * a.rad + b.rad * b.rad
+		(a.pos - b.pos).length2() < (a.rad * a.rad + b.rad * b.rad)
 	}
 }
 
