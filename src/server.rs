@@ -32,13 +32,27 @@ where
 
 	let f = socket
 		.incoming()
-		.map_err(|InvalidConnection { error, .. }| {
+		.map_err(|e| {
 			info!(
 				target: "server",
 				"A client failed to connect with error: {}",
-				error
+				e.error
 			);
 		})
+		// The following two operators filter out
+		// all connection errors from the stream.
+		// We don't want to crash the server when
+		// somebody connects directly. We end up
+		// simply dropping connections when this
+		// happens, causing nginx to return a 502
+		// (if we are proxying with nginx for https)
+		.then(|v| -> Result<_, ()> {
+			match v {
+				Ok(inner) => Ok(Some(inner)),
+				Err(_) => Ok(None)
+			}
+		})
+		.filter_map(|x| x)
 		.for_each(move |(upgrade, addr)| {
 			let id = ConnectionId::new();
 
@@ -123,12 +137,11 @@ where
 							.map_err(|e| error!(target: "server", "Channel send error: {}", e))
 							.unwrap();
 					}
-				}),
+				})
+				.or_else(|_| -> Result<(), ()> { Ok(()) }),
 			);
 			Ok(())
-		})
-		.map_err(|_| {})
-		.map(|_| {});
+		});
 
 	reactor.run(f).unwrap();
 }

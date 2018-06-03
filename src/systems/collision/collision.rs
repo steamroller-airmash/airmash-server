@@ -116,6 +116,7 @@ impl<'a> System<'a> for CollisionSystem {
 				}
 			});
 
+		// TODO: Parallelize this (figure out par_iter with aggregation)
 		let mut isects = vec![];
 		buckets.iter().for_each(|bucket| {
 			bucket.collide(&mut isects);

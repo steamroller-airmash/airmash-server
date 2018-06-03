@@ -56,8 +56,9 @@ fn build_dispatcher<'a, 'b>(
 ) -> Dispatcher<'a, 'b> {
 	DispatcherBuilder::new()
         // Add systems here
-        .with(systems::PacketHandler::new(event_recv), "packet", &[])
-        .with(systems::TimerHandler::new(timer_recv), "timer", &[])
+        .with(systems::PacketHandler::new(event_recv), "packet",   &[])
+        .with(systems::TimerHandler::new(timer_recv),  "timer",    &[])
+				.with(systems::TimeWarn{},                     "timewarn", &[])
 
         // Add handlers here
         .with(handlers::OnOpenHandler::new(),  "onopen",  &["packet"])
