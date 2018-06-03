@@ -3,6 +3,8 @@ use specs::*;
 use shrev::*;
 use types::*;
 
+use std::time::Instant;
+
 use websocket::OwnedMessage;
 use airmash_protocol::{to_bytes, ServerPacket};
 use airmash_protocol::server::Ping as ServerPing;
@@ -43,7 +45,7 @@ impl<'a> System<'a> for PingTimerHandler {
 
 
 	fn run(&mut self, (data, mut pingdata): Self::SystemData) {
-		let clock = (data.thisframe.0 - data.starttime.0).to_clock();
+		let clock = (Instant::now() - data.starttime.0).to_clock();
 
 		for _ in data.channel.read(self.reader.as_mut().unwrap()) {
 			(&*data.entities, &mut pingdata).join()

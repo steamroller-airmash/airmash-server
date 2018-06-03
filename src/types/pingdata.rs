@@ -24,7 +24,7 @@ impl Ping {
 	pub fn as_secs(&self) -> f32 {
 		self.0 * 1000.0
 	}
-	pub fn as_milis(&self) -> f32 {
+	pub fn as_millis(&self) -> f32 {
 		self.0
 	}
 }
