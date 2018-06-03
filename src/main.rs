@@ -149,6 +149,7 @@ fn main() {
 
 	world.add_resource(types::StartTime(Instant::now()));
 	dispatcher.setup(&mut world.res);
+	world.add_resource(LastFrame(Instant::now()));
 
 	// Add some dummmy entities so that there are no players with id 0, 1, or 2
 	// this makes FFA team logic easier. The airmash client also appears to

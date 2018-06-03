@@ -53,11 +53,11 @@ impl<'a> System<'a> for BounceSystem {
 				if evt.0.layer == 0 {
 					ent = evt.1.ent;
 					rel = (evt.1.pos - evt.0.pos).normalized();
-					maxspd = data.config.planes[*data.plane.get(evt.1.ent).unwrap()].max_speed;
+					maxspd = *data.vel.get(evt.1.ent).unwrap();
 				} else {
 					ent = evt.0.ent;
 					rel = (evt.0.pos - evt.1.pos).normalized();
-					maxspd = data.config.planes[*data.plane.get(evt.0.ent).unwrap()].max_speed;
+					maxspd = *data.vel.get(evt.0.ent).unwrap();
 				};
 
 				let vel = rel * maxspd;
