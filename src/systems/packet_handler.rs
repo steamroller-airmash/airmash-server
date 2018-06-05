@@ -8,6 +8,7 @@ use std::sync::mpsc::Receiver;
 
 use types::*;
 use types::event::*;
+use component::event::*;
 
 pub struct PacketHandler {
 	channel: Receiver<ConnectionEvent>,

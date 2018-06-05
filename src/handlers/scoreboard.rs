@@ -1,6 +1,7 @@
 use shrev::*;
 use specs::*;
 use types::*;
+use component::event::ScoreBoardTimerEvent;
 
 use airmash_protocol::server::{ScoreBoard, ScoreBoardData, ScoreBoardRanking};
 use airmash_protocol::{to_bytes, ServerPacket};

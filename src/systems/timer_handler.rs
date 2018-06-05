@@ -4,6 +4,7 @@ use shrev::*;
 use specs::*;
 use types::*;
 use types::event::*;
+use component::event::*;
 
 pub struct TimerHandler {
 	channel: Receiver<TimerEvent>,

@@ -10,6 +10,7 @@ use airmash_protocol::{to_bytes, ServerPacket};
 use airmash_protocol::server::Ping as ServerPing;
 
 use component::time::*;
+use component::event::PingTimerEvent;
 
 pub struct PingTimerHandler {
 	reader: Option<ReaderId<PingTimerEvent>>
