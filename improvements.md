@@ -55,3 +55,7 @@ Multiple ideas here
   spawn, any mitigation could be disabled when a 
   flag is carried through spawn
 
+### Chat Messages
+- Duplicate flag taken/returned message to chatbox
+- Add Flag Dropped server message (maybe)
+

@@ -4,6 +4,7 @@ mod poll_complete;
 mod position_update;
 mod timer_handler;
 mod timewarn;
+mod missile;
 
 pub use self::collision::*;
 pub use self::timewarn::TimeWarn;

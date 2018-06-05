@@ -1,3 +1,4 @@
+//! All new components should be added here
 
 pub mod flag;
 pub mod time;

@@ -10,6 +10,7 @@ use std::time::{Duration, Instant};
 pub type Flag = FlagCode;
 pub type Plane = protocol::PlaneType;
 pub type Status = protocol::PlayerStatus;
+pub type Mob = protocol::MobType;
 
 #[derive(Clone, Debug, Default, Component, Eq, PartialEq, Hash)]
 pub struct Name(pub String);
