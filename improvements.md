@@ -32,3 +32,26 @@ Multiple ideas here
 - Missiles can shoot other missiles out of the air
 - Friendly fire
 
+### Spectating
+- Let players spectate without being on a team,
+  do this automatically or let it be opt-in
+- (Maybe) Have players who are spectating extend
+  the afk timer, (allow ~5? mins with no chat,
+  and ~20 mins with chat, which would allow for
+  players to do C&C)
+
+### Moderation
+- Allow moderators to kick, ban, votemute, etc.
+- Would need accounts to be implemented
+- Moderators should be chosen carefully, since they
+  can make or break a community
+
+### SpawnKilling Mitigation
+- Disallow spawnkilling by preventing spawnkillers
+  from being able to shoot planes that haven't
+  moved since spawn. Either don't show them
+  or make them indestructible.
+- This should also not mess up flag carries through
+  spawn, any mitigation could be disabled when a 
+  flag is carried through spawn
+

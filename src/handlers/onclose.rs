@@ -5,6 +5,8 @@ use specs::*;
 use types::*;
 use websocket::OwnedMessage;
 
+use types::event::ConnectionClose;
+
 pub struct OnCloseHandler {
 	reader: Option<ReaderId<ConnectionClose>>,
 }

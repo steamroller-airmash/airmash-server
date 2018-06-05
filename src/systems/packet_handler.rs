@@ -7,6 +7,7 @@ use websocket::OwnedMessage;
 use std::sync::mpsc::Receiver;
 
 use types::*;
+use types::event::*;
 
 pub struct PacketHandler {
 	channel: Receiver<ConnectionEvent>,

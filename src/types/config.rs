@@ -1,4 +1,4 @@
-use airmash_protocol::PlaneType;
+use airmash_protocol::{PlaneType, MobType};
 use fnv::FnvHashMap;
 use std::ops::Index;
 use std::vec::Vec;
@@ -35,8 +35,20 @@ pub struct PlaneInfo {
 	pub hit_circles: Vec<HitCircle>,
 }
 
+#[derive(Copy, Clone, Debug, Default)]
+pub struct MissileInfo {
+
+}
+
+#[derive(Copy, Clone, Debug, Default)]
+pub struct MobInfo {
+	
+}
+
 #[derive(Clone)]
 pub struct PlaneInfos(pub FnvHashMap<Plane, PlaneInfo>);
+#[derive(Clone)]
+pub struct MobInfos(pub FnvHashMap<MobType, MobInfo>);
 
 #[derive(Clone, Default)]
 pub struct Config {

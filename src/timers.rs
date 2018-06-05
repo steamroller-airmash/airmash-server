@@ -2,7 +2,7 @@ use std::sync::mpsc::Sender;
 use std::time::Duration;
 
 use timeloop::timeloop;
-use types::*;
+use types::event::*;
 
 use tokio;
 

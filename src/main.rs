@@ -38,6 +38,7 @@ mod systems;
 mod timeloop;
 mod timers;
 mod types;
+mod component;
 
 use std::env;
 use std::sync::mpsc::{channel, Receiver};
@@ -50,9 +51,11 @@ use tokio::runtime::current_thread::Runtime;
 use timeloop::timeloop;
 use types::{LastFrame, ThisFrame};
 
+use types::event::{ConnectionEvent, TimerEvent};
+
 fn build_dispatcher<'a, 'b>(
-	event_recv: Receiver<types::ConnectionEvent>,
-	timer_recv: Receiver<types::TimerEvent>,
+	event_recv: Receiver<ConnectionEvent>,
+	timer_recv: Receiver<TimerEvent>,
 	msg_recv: Receiver<(types::ConnectionId, websocket::OwnedMessage)>,
 ) -> Dispatcher<'a, 'b> {
 	DispatcherBuilder::new()
@@ -115,8 +118,8 @@ fn main() {
 
 	let mut world = World::new();
 
-	let (event_send, event_recv) = channel::<types::ConnectionEvent>();
-	let (timer_send, timer_recv) = channel::<types::TimerEvent>();
+	let (event_send, event_recv) = channel::<ConnectionEvent>();
+	let (timer_send, timer_recv) = channel::<TimerEvent>();
 	let (msg_send, msg_recv) = channel::<(types::ConnectionId, websocket::OwnedMessage)>();
 
 	// Add resources

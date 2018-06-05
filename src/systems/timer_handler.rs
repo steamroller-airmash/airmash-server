@@ -3,6 +3,7 @@ use std::sync::mpsc::Receiver;
 use shrev::*;
 use specs::*;
 use types::*;
+use types::event::*;
 
 pub struct TimerHandler {
 	channel: Receiver<TimerEvent>,

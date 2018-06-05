@@ -4,6 +4,8 @@ use types::*;
 
 use std::mem;
 
+use types::event::ConnectionOpen;
+
 pub struct OnOpenHandler {
 	reader: Option<ReaderId<ConnectionOpen>>,
 }

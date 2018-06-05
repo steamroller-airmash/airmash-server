@@ -2,6 +2,7 @@
 //! and passing on all network packets
 
 use types::*;
+use types::event::*;
 
 use std::fmt::Debug;
 use std::net::ToSocketAddrs;

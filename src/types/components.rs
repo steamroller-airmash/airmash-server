@@ -18,50 +18,9 @@ pub struct Session(pub Option<Uuid>);
 #[derive(Clone, Debug, Copy, Component, Default)]
 pub struct AssociatedConnection(pub ConnectionId);
 
-#[derive(Clone, Debug, Copy, Component, Default)]
-pub struct PlayersGame(pub u32);
-
-#[derive(Clone, Debug, Copy, Component)]
-pub struct LastFrame(pub Instant);
-#[derive(Clone, Debug, Copy, Component)]
-pub struct ThisFrame(pub Instant);
-#[derive(Clone, Debug, Copy, Component)]
-pub struct StartTime(pub Instant);
-#[derive(Clone, Debug, Copy, Component)]
-pub struct LastUpdate(pub Instant);
-
-#[derive(Copy, Clone, Debug, Default, Component)]
-pub struct ScoreDetailedEvent(pub ConnectionId);
-#[derive(Copy, Clone, Debug, Default, Component)]
-pub struct AckEvent(pub ConnectionId);
-
-#[derive(Copy, Clone, Debug, Component)]
-pub struct ScoreBoardTimerEvent(pub Instant);
-#[derive(Copy, Clone, Debug, Component)]
-pub struct AFKTimerEvent(pub Instant);
-#[derive(Copy, Clone, Debug, Component)]
-pub struct PingTimerEvent(pub Instant);
-
-impl Default for LastFrame {
-	fn default() -> Self {
-		LastFrame(Instant::now())
-	}
-}
-impl Default for ThisFrame {
-	fn default() -> Self {
-		ThisFrame(Instant::now())
-	}
-}
-impl Default for StartTime {
-	fn default() -> Self {
-		StartTime(Instant::now())
-	}
-}
-impl Default for LastUpdate {
-	fn default() -> Self {
-		LastUpdate(Instant::now())
-	}
-}
+pub use component::counter::*;
+pub use component::time::*;
+pub use component::event::*;
 
 pub trait ToClock {
 	fn to_clock(&self) -> u32;
