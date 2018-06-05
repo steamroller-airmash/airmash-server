@@ -1,6 +1,8 @@
 use shrev::*;
 use specs::*;
 use types::*;
+use component::counter::PlayersGame;
+use component::time::ThisFrame;
 
 use std::time::Instant;
 

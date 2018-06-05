@@ -49,7 +49,7 @@ use specs::{Dispatcher, DispatcherBuilder, World};
 use tokio::runtime::current_thread::Runtime;
 
 use timeloop::timeloop;
-use types::{LastFrame, ThisFrame};
+use component::time::{ThisFrame, LastFrame, StartTime};
 
 use types::event::{ConnectionEvent, TimerEvent};
 
@@ -153,7 +153,7 @@ fn main() {
 		}));
 	});
 
-	world.add_resource(types::StartTime(Instant::now()));
+	world.add_resource(StartTime(Instant::now()));
 	dispatcher.setup(&mut world.res);
 	world.add_resource(LastFrame(Instant::now()));
 

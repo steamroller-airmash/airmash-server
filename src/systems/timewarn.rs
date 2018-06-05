@@ -1,6 +1,7 @@
 
 use specs::*;
 use types::*;
+use component::time::{ThisFrame, LastFrame};
 
 use std::time::{Duration, Instant};
 

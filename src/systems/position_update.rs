@@ -1,5 +1,6 @@
 use specs::*;
 use types::*;
+use component::time::*;
 
 use std::f32::consts;
 use std::marker::PhantomData;

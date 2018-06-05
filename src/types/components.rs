@@ -18,8 +18,7 @@ pub struct Session(pub Option<Uuid>);
 #[derive(Clone, Debug, Copy, Component, Default)]
 pub struct AssociatedConnection(pub ConnectionId);
 
-pub use component::counter::*;
-pub use component::time::*;
+//pub use component::time::*;
 pub use component::event::*;
 
 pub trait ToClock {

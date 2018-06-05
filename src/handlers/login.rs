@@ -13,6 +13,8 @@ use std::str::FromStr;
 use std::time::Instant;
 
 use types::*;
+use component::counter::PlayersGame;
+use component::time::*;
 
 // Login needs write access to just
 // about everything

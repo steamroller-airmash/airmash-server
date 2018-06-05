@@ -6,6 +6,7 @@ use types::*;
 use websocket::OwnedMessage;
 
 use types::event::ConnectionClose;
+use component::counter::PlayersGame;
 
 pub struct OnCloseHandler {
 	reader: Option<ReaderId<ConnectionClose>>,
