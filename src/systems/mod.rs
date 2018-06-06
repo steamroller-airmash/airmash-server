@@ -7,6 +7,7 @@ mod timewarn;
 mod missile;
 
 pub use self::collision::*;
+pub use self::missile::*;
 pub use self::timewarn::TimeWarn;
 pub use self::packet_handler::PacketHandler;
 pub use self::poll_complete::PollComplete;

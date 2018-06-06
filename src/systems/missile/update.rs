@@ -49,8 +49,8 @@ impl<'a> System<'a> for MissileUpdate {
 
 				{
 					let speed = vel.length();
-					if speed > info.maxspeed {
-						*vel *= info.maxspeed / speed;
+					if speed > info.max_speed {
+						*vel *= info.max_speed / speed;
 					}
 				}
 

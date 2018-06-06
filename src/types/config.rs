@@ -36,13 +36,16 @@ pub struct PlaneInfo {
 	pub fire_energy: Energy,
 	pub special_energy: Energy,
 
+	// Type of missile that the plane fires
+	pub missile_type: Mob,
+
 	// Collisions
 	pub hit_circles: Vec<HitCircle>,
 }
 
 #[derive(Copy, Clone, Debug, Default)]
 pub struct MissileInfo {
-	pub maxspeed: Speed,
+	pub max_speed: Speed,
 	pub accel: AccelScalar,
 	pub base_speed: Speed,
 	pub speed_factor: f32
@@ -118,6 +121,8 @@ impl Default for PlaneInfos {
 				fire_energy: Energy::new(0.0),
 				special_energy: Energy::new(0.0),
 
+				missile_type: MobType::PredatorMissile,
+
 				hit_circles: vec![
 					hit_circle(0, 5, 23),
 					hit_circle(0, -15, 15),
@@ -147,6 +152,8 @@ impl Default for PlaneInfos {
 				// TODO
 				fire_energy: Energy::new(0.0),
 				special_energy: Energy::new(0.0),
+
+				missile_type: MobType::GoliathMissile,
 
 				hit_circles: vec![
 					hit_circle( 0, 0, 35),
@@ -184,6 +191,8 @@ impl Default for PlaneInfos {
 				fire_energy: Energy::new(0.0),
 				special_energy: Energy::new(0.0),
 
+				missile_type: MobType::MohawkRocket,
+
 				hit_circles: vec![
 					hit_circle(0, -12, 15),
 					hit_circle(0, 0, 17),
@@ -214,6 +223,8 @@ impl Default for PlaneInfos {
 				// TODO
 				fire_energy: Energy::new(0.0),
 				special_energy: Energy::new(0.0),
+
+				missile_type: MobType::TornadoSingleMissile,
 
 				hit_circles: vec![
 					hit_circle(0, 8, 18),
@@ -248,6 +259,8 @@ impl Default for PlaneInfos {
 				fire_energy: Energy::new(0.0),
 				special_energy: Energy::new(0.0),
 
+				missile_type: MobType::ProwlerMissile,
+
 				hit_circles: vec![
 					hit_circle(0, 11, 25),
 					hit_circle(0, -8, 18),
@@ -272,7 +285,7 @@ impl Default for MobInfos {
 				// TODO: Figure out missile lifetime
 				lifetime: Duration::from_secs(10),
 				missile: Some(MissileInfo {
-					maxspeed: Speed::new(9.0),
+					max_speed: Speed::new(9.0),
 					accel: AccelScalar::new(0.105),
 					base_speed: Speed::new(4.05),
 					speed_factor: 0.3
@@ -286,7 +299,7 @@ impl Default for MobInfos {
 			MobInfo {
 				lifetime: Duration::from_secs(10),
 				missile: Some(MissileInfo {
-					maxspeed: Speed::new(6.0),
+					max_speed: Speed::new(6.0),
 					accel: AccelScalar::new(0.0375),
 					base_speed: Speed::new(2.1),
 					speed_factor: 0.3
@@ -300,7 +313,7 @@ impl Default for MobInfos {
 			MobInfo {
 				lifetime: Duration::from_secs(10),
 				missile: Some(MissileInfo {
-					maxspeed: Speed::new(9.0),
+					max_speed: Speed::new(9.0),
 					accel: AccelScalar::new(0.14),
 					base_speed: Speed::new(5.7),
 					speed_factor: 0.3
@@ -314,7 +327,7 @@ impl Default for MobInfos {
 			MobInfo {
 				lifetime: Duration::from_secs(10),
 				missile: Some(MissileInfo {
-					maxspeed: Speed::new(7.0),
+					max_speed: Speed::new(7.0),
 					accel: AccelScalar::new(0.0875),
 					base_speed: Speed::new(3.5),
 					speed_factor: 0.3
@@ -328,7 +341,7 @@ impl Default for MobInfos {
 			MobInfo {
 				lifetime: Duration::from_secs(10),
 				missile: Some(MissileInfo {
-					maxspeed: Speed::new(7.0),
+					max_speed: Speed::new(7.0),
 					accel: AccelScalar::new(0.0875),
 					base_speed: Speed::new(3.5),
 					speed_factor: 0.3
@@ -342,7 +355,7 @@ impl Default for MobInfos {
 			MobInfo {
 				lifetime: Duration::from_secs(10),
 				missile: Some(MissileInfo {
-					maxspeed: Speed::new(7.0),
+					max_speed: Speed::new(7.0),
 					accel: AccelScalar::new(0.07),
 					base_speed: Speed::new(2.8),
 					speed_factor: 0.3

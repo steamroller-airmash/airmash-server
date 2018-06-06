@@ -26,7 +26,6 @@ extern crate tokio;
 extern crate tokio_core;
 extern crate uuid;
 extern crate websocket;
-extern crate hyper;
 
 use websocket::futures;
 
@@ -77,8 +76,10 @@ fn build_dispatcher<'a, 'b>(
 
         // Systems with dependencies on handlers
         .with(systems::PositionUpdate::new(),  "pos_update", &["onkey"])
+				.with(systems::MissileFireHandler{},   "missile_fire", &["pos_update"])
 				.with(systems::CollisionSystem::new(), "collisions", &["pos_update"])
 				.with(systems::BounceSystem::new(),    "bounces",    &["collisions"])
+				.with(systems::MissileUpdate{},        "missile_update", &["missile_fire"])
 
         // This needs to run after systems which send messages
         .with_thread_local(systems::PollComplete::new(msg_recv))

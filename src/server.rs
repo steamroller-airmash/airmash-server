@@ -8,19 +8,19 @@ use std::fmt::Debug;
 use std::net::ToSocketAddrs;
 use std::sync::mpsc::Sender;
 use std::sync::Mutex;
+use std::io::Write;
 
 use futures::{Future, Stream};
 use websocket::server::async::Server;
 use websocket::server::InvalidConnection;
 use websocket::OwnedMessage;
 
-use hyper::header::Headers;
-use hyper::server::Response;
-use hyper::status::StatusCode;
-
 use tokio_core::reactor::Core;
 
 const RESPONSE_STR: &'static [u8] = b"\
+418 IM_A_TEAPOT\n\
+Content-Type: text/html\n\
+\n\
 <body>\
 	<img src=\"https://upload.wikimedia.org/wikipedia/commons/thumb/4/44/Black_tea_pot_cropped.jpg/330px-Black_tea_pot_cropped.jpg\"\
 </body>";
@@ -49,18 +49,10 @@ where
 			);
 
 			if let Some(mut stream) = e.stream {
-				let mut headers = Headers::new();
-
-				let mut res = Response::new(
-					&mut stream,
-					&mut headers
-				);
-
-				*res.status_mut() = StatusCode::ImATeapot;
-
-				// Try to send, but don't care
-				// if we fail to send.
-				res.send(RESPONSE_STR).err();
+				// Make a best-effort attempt to
+				// send a response, if this fails
+				// we ignore it
+				stream.write_all(RESPONSE_STR).err();
 			}
 		})
 		// The following two operators filter out
