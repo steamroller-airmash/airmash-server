@@ -7,4 +7,5 @@ at a later date.
 - (Maybe) change status code returned when a 
   non-websocket connection is made to something
 	other than 418 (e.g. redirect to server page)
-
+- Limit firing rate of missiles, even if the player
+  has enough energy to shoot

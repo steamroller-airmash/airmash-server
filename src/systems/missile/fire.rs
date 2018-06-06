@@ -71,14 +71,14 @@ impl<'a> System<'a> for MissileFireHandler {
 					let m_dir = Vector2::new(rot.sin(), -rot.cos());
 
 					// Component of velocity parallel to direction
-					let vel_par = *vel * (
-						(m_dir * detail::f32consts::V).dot(*vel) / vel.length2());
+					let vel_par = Vector2::dot(m_dir, *vel).max(Speed::new(0.0));
 
-					let m_vel = vel_par * missile.speed_factor
-						+ m_dir * missile.base_speed;
+					let m_vel = m_dir * 
+						(vel_par * missile.speed_factor	+ missile.base_speed);
 					let m_accel = m_dir * missile.accel;
 
 					let m_ent = ents.create();
+
 
 					*energy -= info.fire_energy;
 
@@ -94,15 +94,15 @@ impl<'a> System<'a> for MissileFireHandler {
 								accel_y: m_accel.y.inner(),
 								pos_x: pos.x.inner(),
 								pos_y: pos.y.inner(),
-								speed_x: vel.x.inner(),
-								speed_y: vel.y.inner(),
+								speed_x: m_vel.x.inner(),
+								speed_y: m_vel.y.inner(),
 								ty: info.missile_type,
 								max_speed: missile.max_speed.inner()
 							}
 						]
 					};
 
-					conns.send_to_player(ent, OwnedMessage::Binary(
+					conns.send_to_all(OwnedMessage::Binary(
 						to_bytes(&ServerPacket::PlayerFire(packet)).unwrap()
 					));
 
@@ -121,6 +121,12 @@ impl<'a> System<'a> for MissileFireHandler {
 			.collect::<Vec<(Entity, Mob, Position, Velocity, Team, Entity)>>();
 
 		for v in new {
+			info!(
+				target: "",
+				"Fired missile: {:?}",
+				v
+			);
+
 			pos.insert(v.0, v.2).unwrap();
 			vel.insert(v.0, v.3).unwrap();
 			mobs.insert(v.0, v.1).unwrap();
