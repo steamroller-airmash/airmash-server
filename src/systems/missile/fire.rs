@@ -3,7 +3,7 @@ use specs::*;
 use specs::prelude::*;
 use types::*;
 
-use component::time::{ThisFrame, StartTime};
+use component::time::{ThisFrame, StartTime, MobSpawnTime};
 use component::flag::IsMissile;
 use component::reference::PlayerRef;
 
@@ -29,7 +29,8 @@ pub struct MissileFireHandlerData<'a> {
 	pub owner: WriteStorage<'a, PlayerRef>,
 	pub conns: Read<'a, Connections>,
 	pub starttime: Read<'a, StartTime>,
-	pub thisframe: Read<'a, ThisFrame>
+	pub thisframe: Read<'a, ThisFrame>,
+	pub spawntime: WriteStorage<'a, MobSpawnTime>
 }
 
 impl<'a> System<'a> for MissileFireHandler {
@@ -37,6 +38,7 @@ impl<'a> System<'a> for MissileFireHandler {
 
 	fn run(&mut self, data: Self::SystemData) {
 		let clock = (data.thisframe.0 - data.starttime.0).to_clock();
+		let thisframe = data.thisframe;
 		
 		let MissileFireHandlerData {
 		 	ents,
@@ -52,6 +54,7 @@ impl<'a> System<'a> for MissileFireHandler {
 			mut mobs,
 			mut owner,
 			conns,
+			mut spawntime,
 			..
 		} = data;
 
@@ -62,7 +65,10 @@ impl<'a> System<'a> for MissileFireHandler {
 				let ref missile = config.mobs[info.missile_type].missile.unwrap();
 
 				if keystate.fire && *energy > info.fire_energy {
-					let m_dir = Vector2::new(rot.cos(), rot.sin());
+					// Rotate starting angle 90 degrees so that
+					// it's inline with the plane. Change this
+					// and missiles will shoot sideways :)
+					let m_dir = Vector2::new(rot.sin(), -rot.cos());
 
 					// Component of velocity parallel to direction
 					let vel_par = *vel * (
@@ -121,6 +127,7 @@ impl<'a> System<'a> for MissileFireHandler {
 			flags.insert(v.0, IsMissile{}).unwrap();
 			teams.insert(v.0, v.4).unwrap();
 			owner.insert(v.0, PlayerRef(v.5)).unwrap();
+			spawntime.insert(v.0, MobSpawnTime(thisframe.0)).unwrap();
 		} 
 	}
 }

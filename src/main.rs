@@ -62,6 +62,7 @@ fn build_dispatcher<'a, 'b>(
         .with(systems::PacketHandler::new(event_recv), "packet",   &[])
         .with(systems::TimerHandler::new(timer_recv),  "timer",    &[])
 				.with(systems::TimeWarn{},                     "timewarn", &[])
+				.with(systems::MissileCull{},                  "missile_cull", &[])
 
         // Add handlers here
         .with(handlers::OnOpenHandler::new(),  "onopen",  &["packet"])
