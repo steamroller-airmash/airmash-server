@@ -121,7 +121,7 @@ impl<'a> System<'a> for MissileFireHandler {
 			.collect::<Vec<(Entity, Mob, Position, Velocity, Team, Entity)>>();
 
 		for v in new {
-			info!(
+			trace!(
 				target: "",
 				"Fired missile: {:?}",
 				v

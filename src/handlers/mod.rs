@@ -7,6 +7,7 @@ mod say;
 mod scoreboard;
 mod ping;
 mod pong;
+mod command;
 
 pub use self::chat::ChatHandler;
 pub use self::key::KeyHandler;
@@ -17,3 +18,4 @@ pub use self::say::SayHandler;
 pub use self::scoreboard::ScoreBoardTimerHandler;
 pub use self::ping::PingTimerHandler;
 pub use self::pong::PongHandler;
+pub use self::command::CommandHandler;

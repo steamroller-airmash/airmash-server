@@ -74,6 +74,7 @@ fn build_dispatcher<'a, 'b>(
 				.with(handlers::PongHandler::new(),    "onpong",  &["onclose"])
         .with(handlers::ScoreBoardTimerHandler::new(), "scoreboard", &["timer"])
 				.with(handlers::PingTimerHandler::new(), "ping",  &["timer"])
+				.with(handlers::CommandHandler::new(), "command", &["onclose"])
 
         // Systems with dependencies on handlers
         .with(systems::PositionUpdate::new(),  "pos_update", &["onkey"])
