@@ -78,9 +78,9 @@ impl PositionUpdate {
 				if keystate.up {
 					if let Some(angle) = movement_angle {
 						if keystate.right {
-							movement_angle = Some(angle + PI * (0.25));
-						} else if keystate.left {
 							movement_angle = Some(angle + PI * (-0.25));
+						} else if keystate.left {
+							movement_angle = Some(angle + PI * (0.25));
 						}
 					} else {
 						movement_angle = Some(*rot);
@@ -88,9 +88,9 @@ impl PositionUpdate {
 				} else if keystate.down {
 					if let Some(angle) = movement_angle {
 						if keystate.right {
-							movement_angle = Some(angle + PI * (-0.25));
-						} else if keystate.left {
 							movement_angle = Some(angle + PI * (0.25));
+						} else if keystate.left {
+							movement_angle = Some(angle + PI * (-0.25));
 						}
 					} else {
 						movement_angle = Some(*rot + PI);
