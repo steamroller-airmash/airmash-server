@@ -7,6 +7,9 @@ authors = ["STEAMROLLER"]
 debug = true
 lto = true
 
+[build-dependencies]
+phf_codegen = "^0.7"
+
 [dependencies]
 simple_logger = "*"
 log = "0.4.1"
@@ -22,6 +25,8 @@ shrev = "*"
 tokio = "*"
 tokio-core = "*"
 rayon = "*"
+phf = "*"
+bit_field = "*"
 
 [dependencies.uuid]
 version = "*"
@@ -31,8 +36,3 @@ features=["v5"]
 version = "*"
 default-features = false
 features = [ "async", "async-ssl" ]
-
-[dependencies.airmash-protocol]
-git = "https://github.com/steamroller-airmash/airmash-protocol-rs"
-branch = "dev"
-features = [ "specs" ]

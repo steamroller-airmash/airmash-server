@@ -6,8 +6,9 @@ that can be done with an airmash server.
 
 ### Protocol
 
- - Use [WebRCT](https://webrtc.org/) as a primary 
- channel for communications.
+- Use [WebRCT](https://webrtc.org/) as a primary 
+  channel for communications.
+- Generate protocol bindings from JSON declaration
 
 ### Anti-Cheat
 

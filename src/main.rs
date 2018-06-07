@@ -12,9 +12,13 @@ extern crate specs_derive;
 extern crate shred_derive;
 #[macro_use]
 extern crate lazy_static;
+#[cfg_attr(feature="serde", macro_use)]
+#[cfg(feature="serde")]
+extern crate serde;
 
 // Regular Dependencies
-extern crate airmash_protocol;
+extern crate phf;
+extern crate bit_field;
 extern crate fnv;
 extern crate rand;
 extern crate rayon;
@@ -38,6 +42,9 @@ mod timeloop;
 mod timers;
 mod types;
 mod component;
+mod protocol;
+
+use protocol as airmash_protocol;
 
 use std::env;
 use std::sync::mpsc::{channel, Receiver};
