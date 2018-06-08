@@ -8,6 +8,7 @@ mod scoreboard;
 mod ping;
 mod pong;
 mod command;
+mod signal;
 
 pub use self::chat::ChatHandler;
 pub use self::key::KeyHandler;
@@ -19,3 +20,4 @@ pub use self::scoreboard::ScoreBoardTimerHandler;
 pub use self::ping::PingTimerHandler;
 pub use self::pong::PongHandler;
 pub use self::command::CommandHandler;
+pub use self::signal::SignalHandler;

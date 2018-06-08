@@ -27,6 +27,7 @@ tokio-core = "*"
 rayon = "*"
 phf = "*"
 bit_field = "*"
+ctrlc = "*"
 
 [dependencies.uuid]
 version = "*"

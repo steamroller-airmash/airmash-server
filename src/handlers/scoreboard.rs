@@ -1,6 +1,8 @@
 use shrev::*;
 use specs::*;
 use types::*;
+
+use component::flag::IsPlayer;
 use component::event::ScoreBoardTimerEvent;
 
 use airmash_protocol::server::{ScoreBoard, ScoreBoardData, ScoreBoardRanking};
@@ -27,6 +29,7 @@ pub struct ScoreBoardSystemData<'a> {
 	scores: ReadStorage<'a, Score>,
 	levels: ReadStorage<'a, Level>,
 	pos: ReadStorage<'a, Position>,
+	flag: ReadStorage<'a, IsPlayer>
 }
 
 impl<'a> System<'a> for ScoreBoardTimerHandler {
@@ -44,9 +47,9 @@ impl<'a> System<'a> for ScoreBoardTimerHandler {
 	fn run(&mut self, data: Self::SystemData) {
 		if let Some(ref mut reader) = self.reader {
 			for _ in data.channel.read(reader) {
-				let mut packet_data = (&*data.entities, &data.scores, &data.levels)
+				let mut packet_data = (&*data.entities, &data.scores, &data.levels, &data.flag)
 					.join()
-					.map(|(ent, score, level)| ScoreBoardData {
+					.map(|(ent, score, level, _)| ScoreBoardData {
 						id: ent.id() as u16,
 						score: score.0,
 						level: level.0,
@@ -64,8 +67,8 @@ impl<'a> System<'a> for ScoreBoardTimerHandler {
 					.join()
 					.map(|(ent, pos)| ScoreBoardRanking {
 						id: ent.id() as u16,
-						x: ((pos.x.inner() / 16384.0) as i32 + 128) as u8,
-						y: ((pos.y.inner() / 8192.0) as i32 + 128) as u8,
+						x: ((pos.x.inner() / 128.0) as i32 + 128) as u8,
+						y: ((pos.y.inner() / 64.0) as i32 + 128) as u8,
 					})
 					.collect::<Vec<ScoreBoardRanking>>();
 

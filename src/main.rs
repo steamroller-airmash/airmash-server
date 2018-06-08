@@ -30,6 +30,7 @@ extern crate tokio;
 extern crate tokio_core;
 extern crate uuid;
 extern crate websocket;
+extern crate ctrlc;
 
 use websocket::futures;
 
@@ -53,6 +54,7 @@ use std::time::{Duration, Instant};
 
 use specs::{Dispatcher, DispatcherBuilder, World};
 use tokio::runtime::current_thread::Runtime;
+use futures::{Future, Stream};
 
 use timeloop::timeloop;
 use component::time::{ThisFrame, LastFrame, StartTime};
@@ -82,6 +84,7 @@ fn build_dispatcher<'a, 'b>(
         .with(handlers::ScoreBoardTimerHandler::new(), "scoreboard", &["timer"])
 				.with(handlers::PingTimerHandler::new(), "ping",  &["timer"])
 				.with(handlers::CommandHandler::new(), "command", &["onclose"])
+				.with(handlers::SignalHandler::default(), "handler", &[])
 
         // Systems with dependencies on handlers
         .with(systems::PositionUpdate::new(),  "pos_update", &["onkey"])
@@ -118,11 +121,19 @@ fn setup_panic_handler() {
 	}));
 }
 
+fn setup_interrupt_handler() {
+	ctrlc::set_handler(move || {
+		consts::SHUTDOWN.store(true, 
+			std::sync::atomic::Ordering::Relaxed);
+	}).expect("Error setting iterrupt handler");
+}
+
 fn main() {
 	simple_logger::init_with_level(log::Level::Info).unwrap();
 	env::set_var("RUST_BACKTRACE", "1");
 
 	setup_panic_handler();
+	setup_interrupt_handler();
 
 	let addr = "0.0.0.0:3501";
 
@@ -184,7 +195,7 @@ fn main() {
 		},
 		Duration::from_nanos(16666667),
 	));
-
+	
 	runtime.run().unwrap();
 
 	// Shut down

@@ -20,7 +20,9 @@ pub struct KeyState {
 
 impl KeyState {
 	pub fn boost(&self, plane: &Plane) -> bool {
-		*plane == PlaneType::Predator && self.special
+		*plane == PlaneType::Predator && self.special && (
+			self.up || self.down
+		)
 	}
 	pub fn strafe(&self, plane: &Plane) -> bool {
 		*plane == PlaneType::Mohawk && self.special
@@ -28,18 +30,17 @@ impl KeyState {
 
 	pub fn to_server(&self, plane: &Plane) -> ServerKeyState {
 		use airmash_protocol::ServerKeyState as Key;
-		let mut state = ServerKeyState(0);
-
-		state.set(Key::UP, self.up);
-		state.set(Key::DOWN, self.down);
-		state.set(Key::LEFT, self.left);
-		state.set(Key::RIGHT, self.right);
-		state.set(Key::BOOST, self.boost(plane));
-		state.set(Key::STRAFE, self.strafe(plane));
-		state.set(Key::STEALTH, self.stealthed);
-		state.set(Key::FLAGSPEED, self.flagspeed);
-
-		state
+		
+		ServerKeyState {
+			up: self.up,
+			down: self.down,
+			left: self.left,
+			right: self.right,
+			boost: self.boost(plane),
+			strafe: self.strafe(plane),
+			stealth: self.stealthed,
+			flagspeed: self.flagspeed
+		}
 	}
 }
 

@@ -191,7 +191,7 @@ impl LoginHandler {
 		let resp = server::Login {
 			clock: 0,
 			id: entity.id() as u16,
-			room: "test".to_string(),
+			room: "matrix".to_string(),
 			success: true,
 			token: login.session,
 			team: 0,

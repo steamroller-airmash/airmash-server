@@ -6,58 +6,45 @@ use bit_field::BitField;
 /// Key state bitfield for PlayerUpdate packet
 #[derive(Debug, Copy, Clone, Eq, PartialEq, Default, Hash)]
 #[cfg_attr(features="serde", derive(Serialize, Deserialize))]
-pub struct ServerKeyState(pub u8);
-
-impl ServerKeyState {
-	pub const UP:        usize = 0;
-	pub const DOWN:      usize = 1;
-	pub const LEFT:      usize = 2;
-	pub const RIGHT:     usize = 3;
-	pub const BOOST:     usize = 4;
-	pub const STRAFE:    usize = 5;
-	pub const STEALTH:   usize = 6;
-	pub const FLAGSPEED: usize = 7;
-
-	pub fn up(&self) -> bool {
-		self.0.get_bit(Self::UP)
-	}
-	pub fn down(&self) -> bool {
-		self.0.get_bit(Self::DOWN)
-	}
-	pub fn left(&self) -> bool {
-		self.0.get_bit(Self::LEFT)
-	}
-	pub fn right(&self) -> bool {
-		self.0.get_bit(Self::RIGHT)
-	}
-	pub fn boost(&self) -> bool {
-		self.0.get_bit(Self::BOOST)
-	}
-	pub fn strafe(&self) -> bool {
-		self.0.get_bit(Self::STRAFE)
-	}
-	pub fn stealthed(&self) -> bool {
-		self.0.get_bit(Self::STEALTH)
-	}
-	pub fn flagspeed(&self) -> bool {
-		self.0.get_bit(Self::FLAGSPEED)
-	}
-
-	pub fn set(&mut self, bit: usize, state: bool) {
-		self.0.set_bit(bit, state);
-	}
-	pub fn get(&mut self, bit: usize) -> bool {
-		self.0.get_bit(bit)
-	}
+pub struct ServerKeyState {
+	pub up : bool,
+	pub down : bool,
+	pub left : bool,
+	pub right : bool,
+	pub boost : bool,
+	pub strafe : bool,
+	pub stealth : bool,
+	pub flagspeed : bool,
 }
 
 impl Serialize for ServerKeyState {
 	fn serialize(&self, ser: &mut Serializer) -> Result<()> {
-		ser.serialize_u8(self.0)
+		let val = 0
+			| (self.up as u8)        << 0
+			| (self.down as u8)      << 1
+			| (self.left as u8)      << 2
+			| (self.right as u8)     << 3
+			| (self.boost as u8)     << 4
+			| (self.strafe as u8)    << 5
+			| (self.stealth as u8)   << 6
+			| (self.flagspeed as u8) << 7;
+
+		ser.serialize_u8(val)
 	}
 }
 impl<'de> Deserialize<'de> for ServerKeyState {
 	fn deserialize(de: &mut Deserializer<'de>) -> Result<Self> {
-		Ok(ServerKeyState(de.deserialize_u8()?))
+		let val = de.deserialize_u8()?;
+
+		Ok(ServerKeyState {
+			up:       (val & 0b00000001) != 0,
+			down:     (val & 0b00000010) != 0,
+			left:     (val & 0b00000100) != 0,
+			right:    (val & 0b00001000) != 0,
+			boost:    (val & 0b00010000) != 0,
+			strafe:   (val & 0b00100000) != 0,
+			stealth:  (val & 0b01000000) != 0,
+			flagspeed:(val & 0b10000000) != 0
+		})
 	}
 }
