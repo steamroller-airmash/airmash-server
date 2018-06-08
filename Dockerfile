@@ -14,6 +14,7 @@ RUN echo > src/main.rs
 RUN cargo fetch
 RUN rm -rf src
 
+ADD build.rs /build
 ADD src /build/src
 
 RUN cargo build --release
