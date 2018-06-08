@@ -1,3 +1,4 @@
+
 #![allow(dead_code, unused_imports)]
 #![feature(optin_builtin_traits)]
 
@@ -51,6 +52,7 @@ use std::env;
 use std::sync::mpsc::{channel, Receiver};
 use std::thread;
 use std::time::{Duration, Instant};
+use std::sync::atomic::Ordering;
 
 use specs::{Dispatcher, DispatcherBuilder, World};
 use tokio::runtime::current_thread::Runtime;
@@ -106,6 +108,11 @@ fn setup_panic_handler() {
 
 	let orig_handler = panic::take_hook();
 	panic::set_hook(Box::new(move |panic_info| {
+		if consts::SHUTDOWN.load(Ordering::Relaxed) {
+			// This is a normal shutdown
+			// no need to print to the log
+			process::exit(0);
+		}
 		error!(
 			target: "server",
 			"A fatal error occurred within a server thread. Aborting!",
@@ -123,8 +130,7 @@ fn setup_panic_handler() {
 
 fn setup_interrupt_handler() {
 	ctrlc::set_handler(move || {
-		consts::SHUTDOWN.store(true, 
-			std::sync::atomic::Ordering::Relaxed);
+		consts::SHUTDOWN.store(true, Ordering::Relaxed);
 	}).expect("Error setting iterrupt handler");
 }
 

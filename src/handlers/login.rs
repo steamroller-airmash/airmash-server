@@ -65,7 +65,7 @@ impl LoginHandler {
 			pos_y: 0.0,
 			rot: 0.0,
 			flag: FlagCode::UnitedNations,
-			upgrades: ProtocolUpgrades(0),
+			upgrades: ProtocolUpgrades::default(),
 		};
 
 		data.conns.send_to_all(OwnedMessage::Binary(
@@ -104,10 +104,11 @@ impl LoginHandler {
 		).join()
 			.map({
 				|(ent, pos, rot, plane, name, flag, upgrades, level, status, team, powerups)| {
-					let mut upgrade_field = ProtocolUpgrades(0);
-					upgrade_field.set_speed(upgrades.speed);
-					upgrade_field.set(ProtocolUpgrades::INFERNO, powerups.inferno);
-					upgrade_field.set(ProtocolUpgrades::SHIELD, powerups.shield);
+					let upgrade_field = ProtocolUpgrades {
+						speed: upgrades.speed,
+						shield: powerups.shield,
+						inferno: powerups.inferno
+					};
 
 					server::LoginPlayer {
 						id: ent.id() as u16,

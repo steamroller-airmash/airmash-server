@@ -169,10 +169,11 @@ impl PositionUpdate {
 
 					let state = keystate.to_server(&plane);
 
-					let mut ups = ServerUpgrades(0);
-					ups.set_speed(upgrades.speed);
-					ups.set(ServerUpgrades::INFERNO, powerups.inferno);
-					ups.set(ServerUpgrades::SHIELD, powerups.shield);
+					let ups = ServerUpgrades {
+						speed: upgrades.speed,
+						shield: powerups.shield,
+						inferno: powerups.inferno
+					};
 
 					let packet = PlayerUpdate {
 						clock: (thisframe - starttime).to_clock(),
@@ -222,10 +223,11 @@ impl PositionUpdate {
 
 					let state = keystate.to_server(&plane);
 
-					let mut ups = ServerUpgrades(0);
-					ups.set_speed(upgrades.speed);
-					ups.set(ServerUpgrades::INFERNO, powerups.inferno);
-					ups.set(ServerUpgrades::SHIELD, powerups.shield);
+					let ups = ServerUpgrades {
+						speed: upgrades.speed,
+						shield: powerups.shield,
+						inferno: powerups.inferno	
+					};
 
 					let packet = PlayerUpdate {
 						clock: (data.thisframe.0 - data.starttime.0).to_clock(),

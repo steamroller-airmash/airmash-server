@@ -86,7 +86,7 @@ impl<'a> System<'a> for CommandHandler {
 						pos_x: data.pos.get(player).unwrap().x.inner(),
 						pos_y: data.pos.get(player).unwrap().y.inner(),
 						rot: data.rot.get(player).unwrap().inner(),
-						upgrades: ProtocolUpgrades(0)
+						upgrades: ProtocolUpgrades::default()
 					})).unwrap()
 				));
 
