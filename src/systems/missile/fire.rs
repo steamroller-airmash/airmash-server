@@ -90,14 +90,13 @@ impl<'a> System<'a> for MissileFireHandler {
 						projectiles: vec![
 							PlayerFireProjectile {
 								id: m_ent.id() as u16,
-								accel_x: m_accel.x.inner(),
-								accel_y: m_accel.y.inner(),
+								accel: m_accel,
 								pos_x: pos.x.inner(),
 								pos_y: pos.y.inner(),
-								speed_x: m_vel.x.inner(),
-								speed_y: m_vel.y.inner(),
+								speed_x: m_vel.x,
+								speed_y: m_vel.y,
 								ty: info.missile_type,
-								max_speed: missile.max_speed.inner()
+								max_speed: missile.max_speed
 							}
 						]
 					};

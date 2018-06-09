@@ -192,10 +192,8 @@ serde_decls! {
         pub speed_x: speed,
         /// Current projectile speed in Y direction
         pub speed_y: speed,
-        /// Current projectile acceleration in X direction
-        pub accel_x: accel,
-        /// Current projectile acceleration in Y direction
-        pub accel_y: accel,
+        /// Current projectile acceleration
+        pub accel: accel,
         /// The maximum speed that the projectile
         /// can attain
         pub max_speed: speed
@@ -436,8 +434,7 @@ serde_decls! {
         pub pos_y: coordy,
         pub speed_x: speed,
         pub speed_y: speed,
-        pub accel_x: accel,
-        pub accel_y: accel,
+        pub accel: accel,
         pub max_speed: speed
     }
 
@@ -525,8 +522,7 @@ serde_decls! {
         pub pos_y: coordy,
         pub speed_x: speed,
         pub speed_y: speed,
-        pub accel_x: accel,
-        pub accel_y: accel,
+        pub accel: accel,
         pub max_speed: speed
     }
 
@@ -890,5 +886,4 @@ impl ServerPacket {
         }
     }
 }
-
 

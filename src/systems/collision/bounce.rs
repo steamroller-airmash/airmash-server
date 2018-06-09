@@ -88,8 +88,8 @@ impl<'a> System<'a> for BounceSystem {
 					pos_x: pos.x.inner(),
 					pos_y: pos.y.inner(),
 					rot: *rot,
-					speed_x: vel.x.inner(),
-					speed_y: vel.y.inner(),
+					speed_x: vel.x,
+					speed_y: vel.y,
 					keystate: state,
 				};
 

@@ -3,6 +3,7 @@ macro_rules! special_field_serialize {
         ::protocol::field::$type::serialize(&$self.$name, $ser)?
     };
 }
+
 macro_rules! special_field_deserialize {
     ($de:expr, $type:ident) => {
         ::protocol::field::$type::deserialize($de)?
@@ -125,14 +126,17 @@ macro_rules! get_field_type {
     (array[$subty:ty]) => { ::std::vec::Vec<get_field_type!($subty)> };
     (arraysmall[$subty:ty]) => { ::std::vec::Vec<get_field_type!($subty)> };
     (rotation) => { ::types::Rotation };
+    (health) => { ::types::Health };
+    (energy) => { ::types::Energy };
     (healthnergy) => { f32 };
     (uint24) => { u32 };
     (coordy) => { f32 };
     (coordx) => { f32 };
     (coord24) => { f32 };
     (regen) => { f32 };
-    (accel) => { f32 };
-    (speed) => { f32 };
+    (accel) => { ::types::Accel };
+    (speed) => { ::types::Speed };
+    (velocity) => { ::types::Velocity };
 
     ($type:ty) => { $type };
 }
@@ -140,19 +144,15 @@ macro_rules! get_field_type {
 macro_rules! serde_decl {
     ($(#[$attr:meta])* struct $name:ident { $($( #[$fattr:meta] )* $field:ident : $type:tt $([ $targs:ty ])*),* }) => {
         impl ::protocol::serde_am::Serialize for $name {
-            fn serialize(&self, ser: &mut ::protocol::serde_am::Serializer) -> ::protocol::serde_am::Result<()> {
+            fn serialize(&self, _ser: &mut ::protocol::serde_am::Serializer) -> ::protocol::serde_am::Result<()> {
                 #[allow(unused_imports)]
                 use ::protocol::serde_am::*;
 
-                // This is harmless, since unit 
-                // serializes to nothing
-                let _result = ser.serialize_unit()?;
-
                 $(
-                    let _result = field_serialize!(self, ser, $field : $type);
+                    field_serialize!(self, _ser, $field : $type);
                 )*
 
-                Ok(_result)
+                Ok(())
             }
         }
 

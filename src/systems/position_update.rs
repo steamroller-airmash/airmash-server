@@ -182,8 +182,8 @@ impl PositionUpdate {
 						pos_x: pos.x.inner(),
 						pos_y: pos.y.inner(),
 						rot: *rot,
-						speed_x: vel.x.inner(),
-						speed_y: vel.y.inner(),
+						speed_x: vel.x,
+						speed_y: vel.y,
 						upgrades: ups,
 					};
 
@@ -236,8 +236,8 @@ impl PositionUpdate {
 						pos_x: pos.x.inner(),
 						pos_y: pos.y.inner(),
 						rot: *rot,
-						speed_x: vel.x.inner(),
-						speed_y: vel.y.inner(),
+						speed_x: vel.x,
+						speed_y: vel.y,
 						upgrades: ups,
 					};
 
