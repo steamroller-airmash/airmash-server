@@ -63,7 +63,7 @@ impl LoginHandler {
 			team: 0,
 			pos_x: 0.0,
 			pos_y: 0.0,
-			rot: 0.0,
+			rot: Rotation::new(0.0),
 			flag: FlagCode::UnitedNations,
 			upgrades: ProtocolUpgrades::default(),
 		};
@@ -119,7 +119,7 @@ impl LoginHandler {
 						team: team.0,
 						pos_x: pos.x.inner(),
 						pos_y: pos.y.inner(),
-						rot: rot.inner(),
+						rot:  *rot,
 						flag: *flag,
 						upgrades: upgrade_field,
 					}

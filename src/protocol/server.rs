@@ -112,6 +112,7 @@ serde_decls! {
     #[derive(Clone, Debug)]
     #[cfg_attr(feature="serde", derive(Serialize, Deserialize))]
     pub struct CommandReply {
+        /// TODO: Change to type
         pub ty: u8,
         pub text: textbig
     }
@@ -771,10 +772,6 @@ serde_decls! {
     }
 }
 
-/// Typoed type, use [`ScoreBoardRanking`] instead
-#[deprecated]
-pub type ScoreBoardRankings = ScoreBoardRanking;
-
 /// All possible server packets.
 /// 
 /// This is an enum of all possible packet 
@@ -893,3 +890,5 @@ impl ServerPacket {
         }
     }
 }
+
+

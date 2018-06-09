@@ -60,3 +60,10 @@ Multiple ideas here
 - Duplicate flag taken/returned message to chatbox
 - Add Flag Dropped server message (maybe)
 
+### Custom Commands
+- Align to ship?
+- Server-time, game stats
+
+### Votemutes
+- Remove votemute and make it identical to ignore
+

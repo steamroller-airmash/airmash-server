@@ -124,7 +124,7 @@ macro_rules! get_field_type {
     (textbig) => { String };
     (array[$subty:ty]) => { ::std::vec::Vec<get_field_type!($subty)> };
     (arraysmall[$subty:ty]) => { ::std::vec::Vec<get_field_type!($subty)> };
-    (rotation) => { f32 };
+    (rotation) => { ::types::Rotation };
     (healthnergy) => { f32 };
     (uint24) => { u32 };
     (coordy) => { f32 };

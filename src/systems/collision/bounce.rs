@@ -87,7 +87,7 @@ impl<'a> System<'a> for BounceSystem {
 					id: ent.id() as u16,
 					pos_x: pos.x.inner(),
 					pos_y: pos.y.inner(),
-					rot: rot.inner(),
+					rot: *rot,
 					speed_x: vel.x.inner(),
 					speed_y: vel.y.inner(),
 					keystate: state,

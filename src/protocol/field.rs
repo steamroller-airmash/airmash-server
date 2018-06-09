@@ -112,14 +112,15 @@ pub mod arraysmall {
 
 pub mod rotation {
     use protocol::field::*;
+    use types::*;
 
     const MULT: f32 = 6553.6;
 
-    pub fn serialize(val: &f32, ser: &mut Serializer) -> SerResult {
-        ser.serialize_u16((*val * MULT) as u16)
+    pub fn serialize(val: &Rotation, ser: &mut Serializer) -> SerResult {
+        ser.serialize_u16((val.inner() * MULT) as u16)
     }
-    pub fn deserialize<'de>(de: &mut Deserializer<'de>) -> Result<f32> {
-        Ok((de.deserialize_u16()? as f32) / MULT)
+    pub fn deserialize<'de>(de: &mut Deserializer<'de>) -> Result<Rotation> {
+        Ok(Rotation::new(de.deserialize_u16()? as f32) / MULT)
     }
 }
 
