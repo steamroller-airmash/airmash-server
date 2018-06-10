@@ -190,41 +190,50 @@ mod protocol {
 		s.to_owned()
 	}
 
-	fn serde_map(s: &FieldType) -> String {
+	fn serde_map(s: &FieldType) -> &'static str {
 		match s {
 			FieldType::Simple(name) => {
 				match name {
-					&"Text" =>        return "::protocol::field::text".to_owned(),
-					&"TextBig" =>     return "::protocol::field::text".to_owned(),
-					&"Entity" =>      return "::protocol::field::entity".to_owned(),
-					&"Score" =>       return "::protocol::field::score".to_owned(),
-					&"Level" =>       return "::protocol::field::level".to_owned(),
-					&"Team" =>        return "::protocol::field::team".to_owned(),
-					&"Position" =>    return "::protocol::field::pos".to_owned(),
-					&"Position24" =>  return "::protocol::field::pos24".to_owned(),
-					&"Position_f32" =>return "::protocol::field::pos_f32".to_owned(),
-					&"Speed" =>       return "::protocol::field::speed".to_owned(),
-					&"Velocity" =>    return "::protocol::field::vel_u".to_owned(),
-					&"Accel" =>       return "::protocol::field::accel".to_owned(),
-					&"LowResPos" =>   return "::protocol::field::lowrespos".to_owned(),
-					&"Health" =>      return "::protocol::field::health".to_owned(),
-					&"Energy" =>      return "::protocol::field::energy".to_owned(),
-					&"HealthRegen" => return "::protocol::field::health_regen".to_owned(),
-					&"EnergyRegen" => return "::protocol::field::energy_regen".to_owned(),
-					&"Rotation" =>    return "::protocol::field::rotation".to_owned(),
+					&"Text" =>        return "::protocol::field::text",
+					&"TextBig" =>     return "::protocol::field::text",
+					&"Entity" =>      return "::protocol::field::entity",
+					&"Score" =>       return "::protocol::field::score",
+					&"Level" =>       return "::protocol::field::level",
+					&"Team" =>        return "::protocol::field::team",
+					&"Position" =>    return "::protocol::field::pos",
+					&"Position24" =>  return "::protocol::field::pos24",
+					&"Position_f32" =>return "::protocol::field::pos_f32",
+					&"Speed" =>       return "::protocol::field::speed",
+					&"Velocity" =>    return "::protocol::field::vel_u",
+					&"Accel" =>       return "::protocol::field::accel",
+					&"LowResPos" =>   return "::protocol::field::lowrespos",
+					&"Health" =>      return "::protocol::field::health",
+					&"Energy" =>      return "::protocol::field::energy",
+					&"HealthRegen" => return "::protocol::field::health_regen",
+					&"EnergyRegen" => return "::protocol::field::energy_regen",
+					&"Rotation" =>    return "::protocol::field::rotation",
 					_ => ()
 				}
 			},
-			FieldType::Compound(name, _) => {
+			FieldType::Compound(name, rest) => {
 				match name {
-					&"Array" => return "::protocol::field::array".to_owned(),
-					&"ArraySmall" => return "::protocol::field::arraysmall".to_owned(),
+					&"Array" => return "::protocol::field::array",
+					&"ArraySmall" => return "::protocol::field::arraysmall",
+					&"Option" => {
+						if rest.len() != 1 {
+							panic!("Found Option type with multiple or zero arguments!");
+						}
+
+						if rest[0].to_str() == "Entity" {
+							return "::protocol::field::option_entity";
+						}
+					}	,				
 					_ => ()
 				}
 			}
 		}
 
-		"default".to_owned()
+		"default"
 	}
 	fn type_map(s: &FieldType) -> String {
 		match s {
@@ -245,10 +254,10 @@ mod protocol {
 	}
 
 	fn ser_map(s: &FieldType) -> String {
-		serde_map(s) + "::serialize"
+		serde_map(s).to_owned() + "::serialize"
 	}
 	fn de_map(s: &FieldType) -> String {
-		serde_map(s) + "::deserialize"
+		serde_map(s).to_owned() + "::deserialize"
 	}
 	
 	pub fn write() {

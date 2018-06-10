@@ -425,9 +425,7 @@ spec server {
 	GameFlag {
 		type: FlagUpdateType,
 		flag: Team,
-		# Make this optional?
-		# 0 means no player
-		id:   Entity,
+		id:   Option[Entity],
 		pos:  Position24,
 		# Team scores
 		blueteam: u8,
