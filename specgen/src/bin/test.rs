@@ -16,7 +16,7 @@ fn main() {
 	env::set_var("RUST_BACKTRACE", "1");
 
 	let mut bytes = vec![];
-	File::open("proto.spec")
+	File::open("../server/airmash.prtcl")
 		.unwrap()
 		.read_to_end(&mut bytes)
 		.unwrap();

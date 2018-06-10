@@ -46,7 +46,7 @@ impl<'a> System<'a> for ChatHandler {
 			};
 
 			let chat = ChatPublic {
-				id: player.id() as u16,
+				id: player,
 				text: evt.1.text.clone(),
 			};
 

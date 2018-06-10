@@ -54,15 +54,14 @@ impl LoginHandler {
 		Self { reader: None }
 	}
 
-	fn send_new<'a>(data: &LoginSystemData<'a>, entity: u32, login: &Login) {
+	fn send_new<'a>(data: &LoginSystemData<'a>, entity: Entity, login: &Login) {
 		let player_new = PlayerNew {
-			id: entity as u16,
+			id: entity,
 			status: PlayerStatus::Alive,
 			name: login.name.clone(),
 			ty: PlaneType::Predator,
-			team: 0,
-			pos_x: 0.0,
-			pos_y: 0.0,
+			team: Team(0),
+			pos: Position::default(),
 			rot: Rotation::new(0.0),
 			flag: FlagCode::UnitedNations,
 			upgrades: ProtocolUpgrades::default(),
@@ -73,11 +72,11 @@ impl LoginHandler {
 		));
 	}
 
-	fn send_level<'a>(data: &LoginSystemData<'a>, entity: u32, _login: &Login) {
+	fn send_level<'a>(data: &LoginSystemData<'a>, entity: Entity, _login: &Login) {
 		let player_level = PlayerLevel {
-			id: entity as u16,
+			id: entity,
 			ty: PlayerLevelType::Login,
-			level: 0,
+			level: Level(0),
 		};
 
 		data.conns.send_to_all(OwnedMessage::Binary(
@@ -111,14 +110,13 @@ impl LoginHandler {
 					};
 
 					server::LoginPlayer {
-						id: ent.id() as u16,
+						id: ent,
 						status: *status,
-						level: level.0,
+						level: *level,
 						name: name.0.clone(),
-						ty: *plane,
-						team: team.0,
-						pos_x: pos.x.inner(),
-						pos_y: pos.y.inner(),
+						ty:   *plane,
+						team: *team,
+						pos:  *pos,
 						rot:  *rot,
 						flag: *flag,
 						upgrades: upgrade_field,
@@ -145,8 +143,8 @@ impl LoginHandler {
 			conn, login.name, entity.id()
 		);
 
-		Self::send_new(data, entity.id(), &login);
-		Self::send_level(data, entity.id(), &login);
+		Self::send_new(data, entity, &login);
+		Self::send_level(data, entity, &login);
 
 		let session = match Uuid::from_str(&login.session) {
 			Ok(s) => Some(s),
@@ -191,11 +189,11 @@ impl LoginHandler {
 		// Actually send login packet
 		let resp = server::Login {
 			clock: 0,
-			id: entity.id() as u16,
+			id: entity,
 			room: "matrix".to_string(),
 			success: true,
 			token: login.session,
-			team: 0,
+			team: Team(0),
 			ty: PlaneType::Predator,
 			players: Self::get_player_data(data),
 		};

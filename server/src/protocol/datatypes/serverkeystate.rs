@@ -18,7 +18,7 @@ pub struct ServerKeyState {
 }
 
 impl Serialize for ServerKeyState {
-	fn serialize(&self, ser: &mut Serializer) -> Result<()> {
+	fn serialize(&self, ser: &mut Serializer) -> Result<(), SerError> {
 		let val = 0
 			| (self.up as u8)        << 0
 			| (self.down as u8)      << 1
@@ -33,7 +33,7 @@ impl Serialize for ServerKeyState {
 	}
 }
 impl<'de> Deserialize<'de> for ServerKeyState {
-	fn deserialize(de: &mut Deserializer<'de>) -> Result<Self> {
+	fn deserialize(de: &mut Deserializer<'de>) -> Result<Self, DeError> {
 		let val = de.deserialize_u8()?;
 
 		Ok(ServerKeyState {

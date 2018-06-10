@@ -177,13 +177,11 @@ impl PositionUpdate {
 
 					let packet = PlayerUpdate {
 						clock: (thisframe - starttime).to_clock(),
-						id: ent.id() as u16,
+						id: ent,
 						keystate: state,
-						pos_x: pos.x.inner(),
-						pos_y: pos.y.inner(),
+						pos: *pos,
 						rot: *rot,
-						speed_x: vel.x,
-						speed_y: vel.y,
+						speed: *vel,
 						upgrades: ups,
 					};
 
@@ -231,13 +229,11 @@ impl PositionUpdate {
 
 					let packet = PlayerUpdate {
 						clock: (data.thisframe.0 - data.starttime.0).to_clock(),
-						id: ent.id() as u16,
+						id: ent,
 						keystate: state,
-						pos_x: pos.x.inner(),
-						pos_y: pos.y.inner(),
+						pos: *pos,
 						rot: *rot,
-						speed_x: vel.x,
-						speed_y: vel.y,
+						speed: *vel,
 						upgrades: ups,
 					};
 

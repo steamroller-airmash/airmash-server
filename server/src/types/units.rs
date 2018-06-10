@@ -94,13 +94,13 @@ pub type RotationRate = detail::RotationRate<BaseType>;
 pub type Speed = detail::Speed<BaseType>;
 pub type AccelScalar = detail::Accel<BaseType>;
 
-#[derive(Copy, Clone, Debug, Eq, PartialEq, Hash, Default, Component)]
+#[derive(Copy, Clone, Debug, Eq, PartialEq, Hash, Default, Component, Ord, PartialOrd)]
 pub struct Team(pub u16);
-#[derive(Copy, Clone, Debug, Eq, PartialEq, Hash, Default, Component)]
+#[derive(Copy, Clone, Debug, Eq, PartialEq, Hash, Default, Component, Ord, PartialOrd)]
 pub struct Level(pub u8);
-#[derive(Copy, Clone, Debug, Eq, PartialEq, Hash, Default, Component)]
+#[derive(Copy, Clone, Debug, Eq, PartialEq, Hash, Default, Component, Ord, PartialOrd)]
 pub struct Score(pub u32);
-#[derive(Copy, Clone, Debug, Eq, PartialEq, Hash, Default, Component)]
+#[derive(Copy, Clone, Debug, Eq, PartialEq, Hash, Default, Component, Ord, PartialOrd)]
 pub struct ConnectionId(pub usize);
 
 impl From<Duration> for Time {

@@ -69,9 +69,6 @@
 //   [`field.rs`](../src/airmash_protocol/field.rs.html) too.
 // 
 
-#[macro_use]
-mod macros;
-
 mod serde_am;
 
 mod de;
@@ -82,17 +79,43 @@ mod ser;
 mod impls;
 mod packet_impls;
 mod codes;
+mod include;
+mod packet;
 
 mod datatypes;
 
-mod field_tests;
+pub mod server {
+	pub use protocol::include::server::*;
+	pub use protocol::packet::ServerPacket;
+}
+pub mod client {
+	pub use protocol::include::client::*;
+	pub use protocol::packet::ClientPacket;
+}
 
-pub mod client;
-pub mod server;
+pub use protocol::include::{
+	PlayerStatus,
+	PlaneType,
+	KeyCode,
+	MobType,
+	CommandReplyType,
+	UpgradeType,
+	PowerupType,
+	FlagUpdateType,
+	FirewallUpdateType,
+	FirewallStatus,
+	LeaveHorizonType,
+	ErrorType,
+	ServerCustomType,
+	ServerMessageType,
+	PlayerLevelType,
+	FlagCode
+};
 
 pub use self::ser::to_bytes;
 pub use self::de::from_bytes;
-pub use self::error::Error;
+pub use self::error::SerError as Error;
+pub use self::error::DeError;
 
 pub use self::client::ClientPacket;
 pub use self::server::ServerPacket;

@@ -1,8 +1,8 @@
 use std::mem;
 use std::str;
 
-use protocol::error::{Error, Result};
-use protocol::serde_am::{Deserialize};
+use protocol::error::DeError;
+use protocol::serde_am::Deserialize;
 
 pub struct Deserializer<'a> {
     pub bytes: &'a [u8],
@@ -52,7 +52,7 @@ pub struct Deserializer<'a> {
 /// }
 /// # }
 /// ```
-pub fn from_bytes<'a, T>(b: &'a [u8]) -> Result<T>
+pub fn from_bytes<'a, T>(b: &'a [u8]) -> Result<T, DeError>
 where
     T: Deserialize<'a>,
 {
@@ -62,7 +62,7 @@ where
     if deserializer.bytes.is_empty() {
         Ok(t)
     } else {
-        Err(Error::TrailingBytes)
+        Err(DeError::TrailingBytes)
     }
 }
 
@@ -73,72 +73,72 @@ impl<'a> Deserializer<'a> {
 }
 
 impl<'de> Deserializer<'de> {
-    pub fn deserialize_i8(&mut self) -> Result<i8> {
+    pub fn deserialize_i8(&mut self) -> Result<i8, DeError> {
         Ok(self.deserialize_u8()? as i8)
     }
-    pub fn deserialize_i16(&mut self) -> Result<i16> {
+    pub fn deserialize_i16(&mut self) -> Result<i16, DeError> {
         Ok(self.deserialize_u16()? as i16)
     }
-    pub fn deserialize_i32(&mut self) -> Result<i32> {
+    pub fn deserialize_i32(&mut self) -> Result<i32, DeError> {
         Ok(self.deserialize_u32()? as i32)
     }
-    pub fn deserialize_i64(&mut self) -> Result<i64> {
+    pub fn deserialize_i64(&mut self) -> Result<i64, DeError> {
         Ok(self.deserialize_u64()? as i64)
     }
 
-    pub fn deserialize_u8(&mut self) -> Result<u8> {
+    pub fn deserialize_u8(&mut self) -> Result<u8, DeError> {
         if self.bytes.len() == 0 {
-            return Err(Error::Eof);
+            return Err(DeError::Eof);
         }
 
         let b = self.bytes[0];
         self.bytes = &self.bytes[1..];
         Ok(b)
     }
-    pub fn deserialize_u16(&mut self) -> Result<u16> {
+    pub fn deserialize_u16(&mut self) -> Result<u16, DeError> {
         let lo = self.deserialize_u8()?;
         let hi = self.deserialize_u8()?;
 
         Ok(((hi as u16) << 8) | (lo as u16))
     }
-    pub fn deserialize_u32(&mut self) -> Result<u32> {
+    pub fn deserialize_u32(&mut self) -> Result<u32, DeError> {
         let lo = self.deserialize_u16()?;
         let hi = self.deserialize_u16()?;
 
         Ok(((hi as u32) << 16) | (lo as u32))
     }
-    pub fn deserialize_u64(&mut self) -> Result<u64> {
+    pub fn deserialize_u64(&mut self) -> Result<u64, DeError> {
         let lo = self.deserialize_u32()?;
         let hi = self.deserialize_u32()?;
 
         Ok(((hi as u64) << 32) | (lo as u64))
     }
 
-    pub fn deserialize_f32(&mut self) -> Result<f32> {
+    pub fn deserialize_f32(&mut self) -> Result<f32, DeError> {
         Ok(unsafe { mem::transmute::<u32, f32>(self.deserialize_u32()?) })
     }
-    pub fn deserialize_f64(&mut self) -> Result<f64> {
+    pub fn deserialize_f64(&mut self) -> Result<f64, DeError> {
         Ok(unsafe { mem::transmute::<u64, f64>(self.deserialize_u64()?) })
     }
 
-    pub fn deserialize_unit(&mut self) -> Result<()> {
+    pub fn deserialize_unit(&mut self) -> Result<(), DeError> {
         Ok(())
     }
-    pub fn deserialize_bytes(&mut self, len: usize) -> Result<&'de [u8]> {
+    pub fn deserialize_bytes(&mut self, len: usize) -> Result<&'de [u8], DeError> {
         if self.bytes.len() < len {
-            return Err(Error::Eof);
+            return Err(DeError::Eof);
         }
 
         let slice = &self.bytes[0..len];
         self.bytes = &self.bytes[len..];
         Ok(slice)
     }
-    pub fn deserialize_str(&mut self, len: usize) -> Result<&'de str> {
+    pub fn deserialize_str(&mut self, len: usize) -> Result<&'de str, DeError> {
         let bytes = self.deserialize_bytes(len)?;
 
         match str::from_utf8(bytes) {
             Ok(val) => Ok(val),
-            Err(e) => Err(Error::Utf8Error(e)),
+            Err(e) => Err(DeError::Utf8Error(e)),
         }
     }
 }

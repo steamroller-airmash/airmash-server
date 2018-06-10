@@ -5,7 +5,7 @@ use protocol::server::ServerPacket;
 use protocol::serde_am::*;
 use protocol::error;
 
-fn ser_w_code<T>(code: u8, v: &T, ser: &mut Serializer) -> Result<()>
+fn ser_w_code<T>(code: u8, v: &T, ser: &mut Serializer) -> Result<(), SerError>
 where
     T: Serialize
 {
@@ -14,7 +14,7 @@ where
 }
 
 impl Serialize for ClientPacket {
-    fn serialize(&self, ser: &mut Serializer) -> Result<()> {
+    fn serialize(&self, ser: &mut Serializer) -> Result<(), SerError> {
         use ::protocol::codes::client::*;
 
         match self {
@@ -36,7 +36,7 @@ impl Serialize for ClientPacket {
     }
 }
 impl<'de> Deserialize<'de> for ClientPacket {
-    fn deserialize(de: &mut Deserializer<'de>) -> Result<ClientPacket> {
+    fn deserialize(de: &mut Deserializer<'de>) -> Result<ClientPacket, DeError> {
         use protocol::codes::client::*;
         use protocol::client::*;
 
@@ -55,13 +55,13 @@ impl<'de> Deserialize<'de> for ClientPacket {
             TEAMCHAT => ClientPacket::TeamChat(TeamChat::deserialize(de)?),
             VOTEMUTE => ClientPacket::VoteMute(VoteMute::deserialize(de)?),
             LOCALPING => ClientPacket::LocalPing(LocalPing::deserialize(de)?),
-            _ => return Err(error::Error::InvalidPacketType)
+            _ => return Err(error::DeError::InvalidPacketType)
         })
     }
 }
 
 impl Serialize for ServerPacket {
-    fn serialize(&self, ser: &mut Serializer) -> Result<()> {
+    fn serialize(&self, ser: &mut Serializer) -> Result<(), SerError> {
         use protocol::codes::server::*;
 
         match self {
@@ -115,7 +115,7 @@ impl Serialize for ServerPacket {
     }
 }
 impl<'de> Deserialize<'de> for ServerPacket {
-    fn deserialize(de: &mut Deserializer<'de>) -> Result<ServerPacket> {
+    fn deserialize(de: &mut Deserializer<'de>) -> Result<ServerPacket, DeError> {
         use protocol::codes::server::*;
         use protocol::server::*;
         use protocol::server;
@@ -144,7 +144,7 @@ impl<'de> Deserialize<'de> for ServerPacket {
             GAME_FLAG => ServerPacket::GameFlag(GameFlag::deserialize(de)?),
             GAME_SPECTATE => ServerPacket::GameSpectate(GameSpectate::deserialize(de)?),
             GAME_PLAYERSALIVE => ServerPacket::GamePlayersAlive(GamePlayersAlive::deserialize(de)?),
-            GAME_FIREWALL => ServerPacket::GameFireWall(GameFireWall::deserialize(de)?),
+            GAME_FIREWALL => ServerPacket::GameFireWall(GameFirewall::deserialize(de)?),
             EVENT_REPEL => ServerPacket::EventRepel(EventRepel::deserialize(de)?),
             EVENT_BOOST => ServerPacket::EventBoost(EventBoost::deserialize(de)?),
             EVENT_BOUNCE => ServerPacket::EventBounce(EventBounce::deserialize(de)?),
@@ -158,7 +158,7 @@ impl<'de> Deserialize<'de> for ServerPacket {
             CHAT_TEAM => ServerPacket::ChatTeam(ChatTeam::deserialize(de)?),
             CHAT_SAY => ServerPacket::ChatSay(ChatSay::deserialize(de)?),
             CHAT_WHISPER => ServerPacket::ChatWhisper(ChatWhisper::deserialize(de)?),
-            CHAT_VOTEMUTEPASSED => ServerPacket::ChatVoteMutePassed(ChatVoteMutePassed::deserialize(de)?),
+            CHAT_VOTEMUTEPASSED => ServerPacket::ChatVoteMutePassed(ChatVotemutePassed::deserialize(de)?),
             CHAT_VOTEMUTED => ServerPacket::ChatVoteMuted,
             SCORE_UPDATE => ServerPacket::ScoreUpdate(ScoreUpdate::deserialize(de)?),
             SCORE_BOARD => ServerPacket::ScoreBoard(ScoreBoard::deserialize(de)?),
@@ -167,7 +167,7 @@ impl<'de> Deserialize<'de> for ServerPacket {
             SCORE_DETAILED_BTR => ServerPacket::ScoreDetailedBTR(ScoreDetailedBTR::deserialize(de)?),
             SERVER_MESSAGE => ServerPacket::ServerMessage(ServerMessage::deserialize(de)?),
             SERVER_CUSTOM => ServerPacket::ServerCustom(ServerCustom::deserialize(de)?),
-            _ => return Err(error::Error::InvalidPacketType)
+            _ => return Err(error::DeError::InvalidPacketType)
         })
     }
 }

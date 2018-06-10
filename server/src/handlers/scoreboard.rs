@@ -50,9 +50,9 @@ impl<'a> System<'a> for ScoreBoardTimerHandler {
 				let mut packet_data = (&*data.entities, &data.scores, &data.levels, &data.flag)
 					.join()
 					.map(|(ent, score, level, _)| ScoreBoardData {
-						id: ent.id() as u16,
-						score: score.0,
-						level: level.0,
+						id: ent,
+						score: *score,
+						level: *level,
 					})
 					.collect::<Vec<ScoreBoardData>>();
 
@@ -66,9 +66,8 @@ impl<'a> System<'a> for ScoreBoardTimerHandler {
 				let rankings = (&*data.entities, &data.pos)
 					.join()
 					.map(|(ent, pos)| ScoreBoardRanking {
-						id: ent.id() as u16,
-						x: ((pos.x.inner() / 128.0) as i32 + 128) as u8,
-						y: ((pos.y.inner() / 64.0) as i32 + 128) as u8,
+						id: ent,
+						pos: *pos,
 					})
 					.collect::<Vec<ScoreBoardRanking>>();
 

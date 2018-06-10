@@ -191,7 +191,7 @@ impl Default for PlaneInfos {
 				fire_energy: Energy::new(0.0),
 				special_energy: Energy::new(0.0),
 
-				missile_type: MobType::MohawkRocket,
+				missile_type: MobType::MohawkMissile,
 
 				hit_circles: vec![
 					hit_circle(0, -12, 15),
@@ -309,7 +309,7 @@ impl Default for MobInfos {
 		);
 
 		map.insert(
-			MobType::MohawkRocket,
+			MobType::MohawkMissile,
 			MobInfo {
 				lifetime: Duration::from_secs(10),
 				missile: Some(MissileInfo {

@@ -14,6 +14,15 @@ enum PlaneType : u8 {
 	Prowler = 5
 }
 
+enum KeyCode : u8 {
+	Up = 1,
+	Down = 2,
+	Left = 3,
+	Right = 4,
+	Fire = 5,
+	Special = 6
+}
+
 enum MobType : u8 {
 	PredatorMissile = 1,
 	GoliathMissile = 2,
@@ -61,14 +70,19 @@ enum LeaveHorizonType : u8 {
 
 }
 
-# TODO: rev-eng or determine if is MobType
-enum MobUpdateType : u8 {
+# TODO: transcribe from statsbot
+enum ErrorType : u8 {
+	
+}
+
+# TODO: rev-eng
+enum ServerCustomType : u8 {
 
 }
 
-# TODO: rev-eng or determine if is MobType
-enum MobDespawnType : u8 {
-	
+# TODO: rev-eng
+enum ServerMessageType : u8 {
+	ShutdownMessage = 15
 }
 
 enum PlayerLevelType : u8 {
@@ -218,6 +232,9 @@ spec server {
 		id:       Entity,
 		status:   PlayerStatus,
 		level:    Level,
+		name:     Text,
+		type:     PlaneType,
+		team:     Team,
 		pos:      Position,
 		rot:      Rotation,
 		flag:     FlagCode,
@@ -233,7 +250,7 @@ spec server {
 		token:   Text,
 		type:    PlaneType,
 		room:    Text,
-		players: array[LoginPlayer]
+		players: Array[LoginPlayer]
 	}
 
 	# A ping request by the server. 
@@ -314,7 +331,7 @@ spec server {
 		id:     Entity,
 		energy: Energy,
 		energy_regen: EnergyRegen,
-		projectiles:  SmallArray[PlayerFireProjectile]
+		projectiles:  ArraySmall[PlayerFireProjectile]
 	}
 
 	# Event indicating that a player respawned
@@ -330,6 +347,13 @@ spec server {
 	PlayerFlag {
 		id:   Entity,
 		flag: FlagCode
+	}
+
+	# Assign a level to a player
+	PlayerLevel {
+		id:    Entity,
+		type:  PlayerLevelType,
+		level: Level
 	}
 
   # Data on a player that has been
@@ -394,7 +418,7 @@ spec server {
 		# teams. Note that this does not 
 		# include players that have remained
 		# on the same team.
-		players: array[PlayerReteamPlayer]
+		players: Array[PlayerReteamPlayer]
 	}
 
 	# Update position of a flag in CTF
@@ -514,8 +538,7 @@ spec server {
 	MobUpdate {
 		clock:     u32,
 		id:        Entity,
-		# Is this MobType?
-		type:      MobUpdateType,
+		type:      MobType,
 		pos:       Position,
 		speed:     Velocity,
 		accel:     Accel,
@@ -525,8 +548,7 @@ spec server {
 	# Update for powerups
 	MobUpdateStationary {
 		id:   Entity,
-		# is this MobType?
-		type: MobUpdateType,
+		type: MobType,
 		# Why is this f32!?!
 		pos:  Position_f32
 	}
@@ -534,15 +556,13 @@ spec server {
 	# A mob despawned
 	MobDespawn {
 		id:   Entity,
-		# is this MobType?
-		type: MobDespawnType
+		type: MobType
 	}
 
 	# a mob despawned at coords
 	MobDespawnCoords {
 		id:   Entity,
-		# Is this MobType?
-		type: MobDespawnType,
+		type: MobType,
 		pos:  Position
 	}
 
@@ -562,7 +582,7 @@ spec server {
   # packet.
 	ScoreBoardData {
 		id:    Entity,
-		score: u32,
+		score: Score,
 		level: Level
 	}
 
@@ -629,6 +649,10 @@ spec server {
 		deaths: u16,
 		damage: f32,
 		ping:   u16
+	}
+
+	ScoreDetailedBTR {
+		scores: Array[ScoreDetailedBTRScore]
 	}
 
 	# Event for when a team chat has been received

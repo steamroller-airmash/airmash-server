@@ -57,7 +57,7 @@ impl<'a> System<'a> for OnCloseHandler {
 
 						// Send out PlayerLeave message
 						let player_leave = PlayerLeave {
-							id: ent.id() as u16,
+							id: ent,
 						};
 						connections.send_to_all(OwnedMessage::Binary(
 							to_bytes(&ServerPacket::PlayerLeave(player_leave)).unwrap(),

@@ -19,7 +19,7 @@ impl Upgrades {
 }
 
 impl Serialize for Upgrades {
-	fn serialize(&self, ser: &mut Serializer) -> Result<()> {
+	fn serialize(&self, ser: &mut Serializer) -> Result<(), SerError> {
 		let val = 0
 			| (self.speed & 7)
 			| (self.shield as u8) << 3
@@ -29,7 +29,7 @@ impl Serialize for Upgrades {
 	}
 }
 impl<'de> Deserialize<'de> for Upgrades {
-	fn deserialize(de: &mut Deserializer<'de>) -> Result<Self> {
+	fn deserialize(de: &mut Deserializer<'de>) -> Result<Self, DeError> {
 		let val = de.deserialize_u8()?;
 
 		Ok(Self {

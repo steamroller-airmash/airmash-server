@@ -1,8 +1,10 @@
-use protocol::error::{Result};
-use protocol::serde_am::{Serialize};
+use protocol::serde_am::{Serialize, SerError};
 
 use std::mem;
 use std::vec::Vec;
+use std::result;
+
+type Result<T> = result::Result<T, SerError>;
 
 pub struct Serializer {
     pub output: Vec<u8>,

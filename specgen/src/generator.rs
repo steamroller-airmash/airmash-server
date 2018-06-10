@@ -2,24 +2,6 @@
 use parser::*;
 use std::io::{Write, Error};
 
-
-const DEFAULT_DECL: &'static str = "
-	mod default {
-		use protocol::serde_am::*;
-
-		fn serialize<T>(v: &T, ser: &mut Serializer) -> Result<(), Serializer::Error>
-		where T: Serialize
-		{
-			v.serialize(ser)
-		}
-
-		fn deserialize<'de, T>(de: &mut Deserializer<'de>) -> Result<T, Deserializer::Error>
-		where T: Deserialize<'de>
-		{
-			T::deserialize(de)
-		}
-	}";
-
 pub struct Generator {
 	prelude: Option<String>,
 	attrs: Vec<String>,
@@ -71,6 +53,10 @@ impl Generator {
 		self.attrs.push(attr.to_owned());
 		self
 	}
+	pub fn prelude(mut self, prelude: &str) -> Self {
+		self.prelude = Some(prelude.to_owned());
+		self
+	}
 
 	fn print_docs<'a, W>(writer: &mut W, docs: &[&'a str]) -> Result<(), Error>
 	where W: Write
@@ -96,9 +82,13 @@ impl Generator {
 	{
 		let Protocol{ specs, types } = parse(specdata).unwrap();
 
+		writeln!(writer, "use std::convert::From;")?;
+
 		for ty in types {
 			match ty.class {
 				TypeClass::Enum(branches, base_ty) => {
+					self.print_attrs(writer)?;
+
 					writeln!(writer, "#[derive(Copy, Clone, Debug, Eq, PartialEq, Hash)]")?;
 					writeln!(writer, "pub enum {name} {{", name=ty.name)?;
 
@@ -112,14 +102,18 @@ impl Generator {
 
 					writeln!(writer, "}}")?;
 
-					writeln!(writer, "impl Serialize for {name} {{", name=ty.name)?;
-					writeln!(writer, "fn serialize(&self, ser: &mut Serializer) -> Result<(), SerError> {{")?;
+					writeln!(writer, 
+						"impl From<{name}> for {base} {{",
+						name = ty.name,
+						base = base_ty.to_str()
+					)?;
 
+					writeln!(writer, "fn from(_v: {}) -> {} {{", ty.name, base_ty.to_str())?;
 					if branches.len() == 0 {
 						writeln!(writer, "unimplemented!();")?;
 					}
 					else {
-						writeln!(writer, "let val: {} = match *self {{", base_ty.to_str())?;
+						writeln!(writer, "match _v {{")?;
 
 						for branch in branches.iter() {
 							writeln!(writer, 
@@ -130,29 +124,41 @@ impl Generator {
 							)?;
 						}
 
-						writeln!(writer, "}};")?;
-						writeln!(writer, "val.serialize(ser)")?;
+						writeln!(writer, "}}")?;
 					}
+
 					writeln!(writer, "}}\n}}")?;
 
-					writeln!(writer, "impl<'de> Deserialize for {name} {{", name=ty.name)?;
-					writeln!(writer, "fn deserialize(de: &mut Deserializer) -> Result<(), DeError> {{")?;
-					writeln!(writer, "let val = {base}::deserialize(de)?;", base=base_ty.to_str())?;
-
+					writeln!(writer, "impl {} {{", ty.name)?;
+					writeln!(writer, "pub fn try_from(val: {}) -> Option<Self> {{", base_ty.to_str())?;
+					
 					writeln!(writer, "match val {{")?;
 					for branch in branches.iter() {
 						writeln!(writer,
-							"{num} => Ok({name}::{branch}),",
+							"{num} => Some({name}::{branch}),",
 							num    = branch.value,
 							branch = branch.name,
 							name   = ty.name
 						)?;
 					}
-					writeln!(writer, 
-						"_ => Err(DeError::InvalidEnumValue(\"{name}\", val))",
-						name=ty.name
-					)?;
+					writeln!(writer, "_ => None")?;
 					writeln!(writer, "}}")?;
+					writeln!(writer, "}}\n}}")?;
+
+					writeln!(writer, "impl Serialize for {name} {{", name=ty.name)?;
+					writeln!(writer, "fn serialize(&self, ser: &mut Serializer) -> Result<(), SerError> {{")?;
+					writeln!(writer, "{}::from(*self).serialize(ser)", base_ty.to_str())?;
+					writeln!(writer, "}}\n}}")?;
+
+					writeln!(writer, "impl<'de> Deserialize<'de> for {name} {{", name=ty.name)?;
+					writeln!(writer, "fn deserialize(de: &mut Deserializer<'de>) -> Result<Self, DeError> {{")?;
+					writeln!(writer, "let val = {base}::deserialize(de)?;", base=base_ty.to_str())?;
+
+					writeln!(writer, "
+						match Self::try_from(val) {{
+							Some(v) => Ok(v),
+							None => Err(DeError::InvalidEnumValue(\"{name}\", val as u64))
+						}}", name=ty.name)?;
 					writeln!(writer, "}}\n}}")?;
 				}
 			}
@@ -166,20 +172,37 @@ impl Generator {
 				writeln!(writer, "{}", prelude)?
 			}
 
-			writeln!(writer, "{}", DEFAULT_DECL)?;
+			writeln!(writer, "
+				mod default {{
+					{prelude}
+
+					pub fn serialize<T>(v: &T, ser: &mut Serializer) -> Result<(), SerError>
+					where T: Serialize
+					{{
+						v.serialize(ser)
+					}}
+
+					pub fn deserialize<'de, T>(de: &mut Deserializer<'de>) -> Result<T, DeError>
+					where T: Deserialize<'de>
+					{{
+						T::deserialize(de)
+					}}
+				}}",	
+				prelude=self.prelude.clone().unwrap_or("".to_string())
+			)?;
 
 			for def in spec.defs {
 				Self::print_docs(writer, &def.docs)?;
 				self.print_attrs(writer)?;
 				writeln!(writer, 
-					r"#[derive(Clone, Debug)]	pub struct {name} {{",
+					"#[derive(Clone, Debug)] pub struct {name} {{",
 					name=def.name
 				)?;
 				
 				for field in def.fields.iter() {
 					Self::print_docs(writer, &field.docs)?;
 					writeln!(writer, 
-						"{name}: {type},",
+						"pub {name}: {type},",
 						name=(self.namemap)(&field.name),
 						type=(self.typemap)(&field.ty)
 					)?;
@@ -192,16 +215,16 @@ impl Generator {
 				
 				for field in def.fields.iter() {
 					writeln!(writer, 
-						"{ser}(self.{name}, ser)?;",
+						"{ser}(&self.{name}, ser)?;",
 						name=(self.namemap)(&field.name),
 						ser= (self.ser)(&field.ty)
 					)?;
 				}
 
-				writeln!(writer, "}}\n}}")?;
+				writeln!(writer, "Ok(())\n}}\n}}")?;
 
 				writeln!(writer, "impl<'de> Deserialize<'de> for {name} {{", name=def.name)?;
-				writeln!(writer, "fn deserialize(de: &mut Deserializer<'de>) -> Result<(), DeError> {{")?;
+				writeln!(writer, "fn deserialize(de: &mut Deserializer<'de>) -> Result<Self, DeError> {{")?;
 				writeln!(writer, "Ok(Self {{")?;
 
 				for field in def.fields.iter() {

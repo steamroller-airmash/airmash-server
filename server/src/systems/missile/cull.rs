@@ -41,7 +41,7 @@ impl<'a> System<'a> for MissileCull {
 				data.ents.delete(ent).unwrap();
 
 				let packet = MobDespawn {
-					id: ent.id() as u16,
+					id: ent,
 					ty: mob
 				};
 

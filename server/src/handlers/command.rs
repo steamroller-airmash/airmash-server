@@ -59,7 +59,7 @@ impl<'a> System<'a> for CommandHandler {
 				let flag = Flag::from_str(&evt.1.data).unwrap_or(FlagCode::UnitedNations);
 
 				packet = ServerPacket::PlayerFlag(PlayerFlag {
-					id: player.id() as u16,
+					id: player,
 					flag: flag
 				});
 
@@ -70,7 +70,7 @@ impl<'a> System<'a> for CommandHandler {
 					Ok(n) => n,
 					Err(_) => continue
 				};
-				let ty = match Plane::from_u8(num) {
+				let ty = match Plane::try_from(num) {
 					Some(n) => n,
 					None => continue
 				};
@@ -82,16 +82,15 @@ impl<'a> System<'a> for CommandHandler {
 
 				data.conns.send_to_all(OwnedMessage::Binary(
 					to_bytes(&ServerPacket::PlayerRespawn(PlayerRespawn {
-						id: player.id() as u16,
-						pos_x: data.pos.get(player).unwrap().x.inner(),
-						pos_y: data.pos.get(player).unwrap().y.inner(),
+						id: player,
+						pos: *data.pos.get(player).unwrap(),
 						rot: *data.rot.get(player).unwrap(),
 						upgrades: ProtocolUpgrades::default()
 					})).unwrap()
 				));
 
 				packet = ServerPacket::PlayerType(PlayerType {
-					id: player.id() as u16,
+					id: player,
 					ty: ty
 				});
 			}

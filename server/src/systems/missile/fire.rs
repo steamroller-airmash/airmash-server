@@ -1,6 +1,7 @@
 
 use specs::*;
 use specs::prelude::*;
+use rayon::prelude::FromParallelIterator;
 use types::*;
 
 use component::time::{ThisFrame, StartTime, MobSpawnTime};
@@ -76,25 +77,21 @@ impl<'a> System<'a> for MissileFireHandler {
 					let m_vel = m_dir * 
 						(vel_par * missile.speed_factor	+ missile.base_speed);
 					let m_accel = m_dir * missile.accel;
-
 					let m_ent = ents.create();
-
 
 					*energy -= info.fire_energy;
 
 					let packet = PlayerFire {
 						clock: clock,
-						id: ent.id() as u16,
-						energy: energy.inner(),
-						energy_regen: info.energy_regen.inner(),
+						id: ent,
+						energy: *energy,
+						energy_regen: info.energy_regen,
 						projectiles: vec![
 							PlayerFireProjectile {
-								id: m_ent.id() as u16,
+								id: m_ent,
 								accel: m_accel,
-								pos_x: pos.x.inner(),
-								pos_y: pos.y.inner(),
-								speed_x: m_vel.x,
-								speed_y: m_vel.y,
+								pos: *pos,
+								speed: m_vel,
 								ty: info.missile_type,
 								max_speed: missile.max_speed
 							}

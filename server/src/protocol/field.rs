@@ -1,7 +1,7 @@
 use protocol::serde_am::*;
-use protocol::error::Error;
+use protocol::error::SerError as Error;
 
-pub type SerResult = Result<()>;
+pub type SerResult = Result<(), SerError>;
 
 pub mod textbig {
 	use protocol::field::*;
@@ -16,7 +16,7 @@ pub mod textbig {
 		ser.serialize_u16(bytes.len() as u16)?;
 		ser.serialize_bytes(bytes)
 	}
-	pub fn deserialize<'de>(de: &mut Deserializer<'de>) -> Result<String> {
+	pub fn deserialize<'de>(de: &mut Deserializer<'de>) -> Result<String, DeError> {
 		let len = de.deserialize_u16()?;
 		Ok(de.deserialize_str(len as usize)?.to_string())
 	}
@@ -35,7 +35,7 @@ pub mod text {
 		ser.serialize_u8(bytes.len() as u8)?;
 		ser.serialize_bytes(bytes)
 	}
-	pub fn deserialize<'de>(de: &mut Deserializer<'de>) -> Result<String> {
+	pub fn deserialize<'de>(de: &mut Deserializer<'de>) -> Result<String, DeError> {
 		let len = de.deserialize_u8()?;
 		Ok(de.deserialize_str(len as usize)?.to_string())
 	}
@@ -61,7 +61,7 @@ pub mod array {
 
 		Ok(s)
 	}
-	pub fn deserialize<'de, T>(de: &mut Deserializer<'de>) -> Result<Vec<T>>
+	pub fn deserialize<'de, T>(de: &mut Deserializer<'de>) -> Result<Vec<T>, DeError>
 	where
 		T: Deserialize<'de>,
 	{
@@ -95,7 +95,7 @@ pub mod arraysmall {
 
 		Ok(s)
 	}
-	pub fn deserialize<'de, T>(de: &mut Deserializer<'de>) -> Result<Vec<T>>
+	pub fn deserialize<'de, T>(de: &mut Deserializer<'de>) -> Result<Vec<T>, DeError>
 	where
 		T: Deserialize<'de>,
 	{
@@ -119,7 +119,7 @@ pub mod rotation {
 	pub fn serialize(val: &Rotation, ser: &mut Serializer) -> SerResult {
 		ser.serialize_u16((val.inner() * MULT) as u16)
 	}
-	pub fn deserialize<'de>(de: &mut Deserializer<'de>) -> Result<Rotation> {
+	pub fn deserialize<'de>(de: &mut Deserializer<'de>) -> Result<Rotation, DeError> {
 		Ok(Rotation::new(de.deserialize_u16()? as f32) / MULT)
 	}
 }
@@ -132,7 +132,7 @@ pub mod healthnergy {
 	pub fn serialize(val: &f32, ser: &mut Serializer) -> SerResult {
 		ser.serialize_u8((*val * MULT) as u8)
 	}
-	pub fn deserialize<'de>(de: &mut Deserializer<'de>) -> Result<f32> {
+	pub fn deserialize<'de>(de: &mut Deserializer<'de>) -> Result<f32, DeError> {
 		Ok((de.deserialize_u8()? as f32) / MULT)
 	}
 }
@@ -144,7 +144,7 @@ pub mod uint24 {
 		ser.serialize_u16((val >> 8) as u16)?;
 		ser.serialize_u8(val as u8)
 	}
-	pub fn deserialize<'de>(de: &mut Deserializer<'de>) -> Result<u32> {
+	pub fn deserialize<'de>(de: &mut Deserializer<'de>) -> Result<u32, DeError> {
 		let hi = de.deserialize_u16()?;
 		let lo = de.deserialize_u8()?;
 
@@ -164,7 +164,7 @@ pub mod coord24 {
 	pub fn serialize(val: &f32, ser: &mut Serializer) -> SerResult  {
 		uint24::serialize(((*val * MULT) as i32 + SHIFT) as u32, ser)
 	}
-	pub fn deserialize<'de>(de: &mut Deserializer<'de>) -> Result<f32> {
+	pub fn deserialize<'de>(de: &mut Deserializer<'de>) -> Result<f32, DeError> {
 		Ok((((uint24::deserialize(de)? as i32) - SHIFT) as f32) / MULT)
 	}
 }
@@ -183,7 +183,7 @@ pub mod accel {
 		ser.serialize_u16(((val.x.inner() * MULT) as i32 + SHIFT) as u16)?;
 		ser.serialize_u16(((val.y.inner() * MULT) as i32 + SHIFT) as u16)
 	}
-	pub fn deserialize<'de>(de: &mut Deserializer<'de>) -> Result<Accel> {
+	pub fn deserialize<'de>(de: &mut Deserializer<'de>) -> Result<Accel, DeError> {
 		let x: f32 = (((de.deserialize_u16()? as i32) - SHIFT) as f32) / MULT;
 		let y: f32 = (((de.deserialize_u16()? as i32) - SHIFT) as f32) / MULT;
 
@@ -208,7 +208,7 @@ pub mod velocity {
 		ser.serialize_u16(((val.x.inner() * MULT) as i32 + SHIFT) as u16)?;
 		ser.serialize_u16(((val.y.inner() * MULT) as i32 + SHIFT) as u16)
 	}
-	pub fn deserialize<'de>(de: &mut Deserializer<'de>) -> Result<Velocity> {
+	pub fn deserialize<'de>(de: &mut Deserializer<'de>) -> Result<Velocity, DeError> {
 		let x: f32 = (((de.deserialize_u16()? as i32) - SHIFT) as f32) / MULT;
 		let y: f32 = (((de.deserialize_u16()? as i32) - SHIFT) as f32) / MULT;
 
@@ -232,7 +232,7 @@ pub mod speed {
 	pub fn serialize(val: &Speed, ser: &mut Serializer) -> SerResult {
 		ser.serialize_u16(((val.inner() * MULT) as i32 + SHIFT) as u16)
 	}
-	pub fn deserialize<'de>(de: &mut Deserializer<'de>) -> Result<Speed> {
+	pub fn deserialize<'de>(de: &mut Deserializer<'de>) -> Result<Speed, DeError> {
 		Ok(Speed::new((((de.deserialize_u16()? as i32) - SHIFT) as f32) / MULT))
 	}
 }
@@ -251,7 +251,7 @@ macro_rules! shift_mult_decode {
 			pub fn serialize(val: &f32, ser: &mut Serializer) -> SerResult {
 				ser.serialize_u16(((*val * MULT) as i32 + SHIFT) as u16)
 			}
-			pub fn deserialize<'de>(de: &mut Deserializer<'de>) -> Result<f32> {
+			pub fn deserialize<'de>(de: &mut Deserializer<'de>) -> Result<f32, DeError> {
 				Ok((((de.deserialize_u16()? as i32) - SHIFT) as f32) / MULT)
 			}
 		}
@@ -261,3 +261,171 @@ macro_rules! shift_mult_decode {
 shift_mult_decode!(coordy, 32768, 4.0);
 shift_mult_decode!(coordx, 32768, 2.0);
 shift_mult_decode!(regen, 32768, 1.0e6);
+
+pub mod entity {
+	use protocol::field::*;
+	use specs::Entity;
+
+	pub fn serialize(val: &Entity, ser: &mut Serializer) -> SerResult {
+		assert!(val.id() < 0xFFFF);
+		ser.serialize_u16(val.id() as u16)
+	}
+	pub fn deserialize<'de>(_: &mut Deserializer<'de>) -> Result<Entity, DeError> {
+		Err(DeError::EntityMayNotBeDeserialized)
+	}
+}
+
+macro_rules! serde_inner {
+	($name:ident, $type:ident) => {
+		pub mod $name {
+			use protocol::field::*;
+			use types::*;
+			
+			pub fn deserialize_inner<'de, T>(de: &mut Deserializer<'de>) -> Result<T, DeError>
+				where T: Deserialize<'de>
+			{
+				T::deserialize(de)
+			}
+
+			pub fn serialize(val: &$type, ser: &mut Serializer) -> SerResult {
+				val.0.serialize(ser)
+			}
+			pub fn deserialize<'de>(de: &mut Deserializer<'de>) -> Result<$type, DeError> {
+				Ok($type(deserialize_inner(de)?))
+			}
+		}
+	}
+}
+
+serde_inner!(score, Score);
+serde_inner!(level, Level);
+serde_inner!(team, Team);
+
+pub mod pos {
+	use protocol::field::*;
+	use types::*;
+
+	pub fn serialize(val: &Position, ser: &mut Serializer) -> SerResult {
+		coordx::serialize(&val.x.inner(), ser)?;
+		coordy::serialize(&val.y.inner(), ser)
+	}
+	pub fn deserialize<'de>(de: &mut Deserializer<'de>) -> Result<Position, DeError> {
+		Ok(Position::new(
+			Distance::new(coordx::deserialize(de)?),
+			Distance::new(coordy::deserialize(de)?)
+		))
+	}
+}
+
+pub mod pos24 {
+	use protocol::field::*;
+	use types::*;
+
+	pub fn serialize(val: &Position, ser: &mut Serializer) -> SerResult {
+		coord24::serialize(&val.x.inner(), ser)?;
+		coord24::serialize(&val.y.inner(), ser)
+	}
+	pub fn deserialize<'de>(de: &mut Deserializer<'de>) -> Result<Position, DeError> {
+		Ok(Position::new(
+			Distance::new(coord24::deserialize(de)?),
+			Distance::new(coord24::deserialize(de)?)
+		))
+	}
+}
+
+pub mod pos_f32 {
+	use protocol::field::*;
+	use types::*;
+
+	pub fn serialize(val: &Position, ser: &mut Serializer) -> SerResult {
+		ser.serialize_f32(val.x.inner())?;
+		ser.serialize_f32(val.y.inner())
+	}
+	pub fn deserialize<'de>(de: &mut Deserializer<'de>) -> Result<Position, DeError> {
+		Ok(Position::new(
+			Distance::new(de.deserialize_f32()?),
+			Distance::new(de.deserialize_f32()?)
+		))
+	}
+}
+
+pub mod vel_u {
+	use protocol::field::*;
+	use types::*;
+
+	pub fn serialize(val: &Velocity, ser: &mut Serializer) -> SerResult {
+		speed::serialize(&val.x, ser)?;
+		speed::serialize(&val.y, ser)
+	}
+	pub fn deserialize<'de>(de: &mut Deserializer<'de>) -> Result<Velocity, DeError> {
+		Ok(Velocity::new(
+			speed::deserialize(de)?,
+			speed::deserialize(de)?
+		))
+	}
+}
+
+pub mod lowrespos {
+	use protocol::field::*;
+	use types::*;
+
+	pub fn serialize(pos: &Position, ser: &mut Serializer) -> SerResult {
+		ser.serialize_u8(((pos.x.inner() / 128.0) as i32 + 128) as u8)?;
+		ser.serialize_u8(((pos.y.inner() / 64.0) as i32 + 128) as u8)
+	}
+	pub fn deserialize<'de>(de: &mut Deserializer<'de>) -> Result<Position, DeError> {
+		Ok(Position::new(
+			Distance::new(((de.deserialize_u8()? as i32 - 128) * 128) as f32),
+			Distance::new(((de.deserialize_u8()? as i32 - 128) * 64) as f32)
+		))
+	}
+}
+
+pub mod health {
+	use protocol::field::*;
+	use types::*;
+
+	pub fn serialize(val: &Health, ser: &mut Serializer) -> SerResult {
+		healthnergy::serialize(&val.inner(), ser)
+	}
+	pub fn deserialize<'de>(de: &mut Deserializer<'de>) -> Result<Health, DeError> {
+		Ok(Health::new(healthnergy::deserialize(de)?))
+	}
+}
+
+pub mod energy {
+	use protocol::field::*;
+	use types::*;
+
+	pub fn serialize(val: &Energy, ser: &mut Serializer) -> SerResult {
+		healthnergy::serialize(&val.inner(), ser)
+	}
+	pub fn deserialize<'de>(de: &mut Deserializer<'de>) -> Result<Energy, DeError> {
+		Ok(Energy::new(healthnergy::deserialize(de)?))
+	}
+}
+
+pub mod health_regen {
+	use protocol::field::*;
+	use types::*;
+
+	pub fn serialize(val: &HealthRegen, ser: &mut Serializer) -> SerResult {
+		regen::serialize(&val.inner(), ser)
+	}
+	pub fn deserialize<'de>(de: &mut Deserializer<'de>) -> Result<HealthRegen, DeError> {
+		Ok(HealthRegen::new(regen::deserialize(de)?))
+	}
+}
+
+pub mod energy_regen {
+	use protocol::field::*;
+	use types::*;
+
+	pub fn serialize(val: &EnergyRegen, ser: &mut Serializer) -> SerResult {
+		regen::serialize(&val.inner(), ser)
+	}
+	pub fn deserialize<'de>(de: &mut Deserializer<'de>) -> Result<EnergyRegen, DeError> {
+		Ok(EnergyRegen::new(regen::deserialize(de)?))
+	}
+}
+

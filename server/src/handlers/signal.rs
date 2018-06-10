@@ -9,6 +9,7 @@ use std::sync::atomic::Ordering;
 use websocket::OwnedMessage;
 use protocol::{to_bytes, ServerPacket};
 use protocol::server::ServerMessage;
+use protocol::ServerMessageType;
 
 #[derive(Default)]
 pub struct SignalHandler {
@@ -26,7 +27,7 @@ impl<'a> System<'a> for SignalHandler {
 
 				let msg = ServerMessage {
 					duration: 15,
-					ty: 15,
+					ty: ServerMessageType::ShutdownMessage,
 					text: "Server shutting down in 30 seconds!".to_string()
 				};
 
