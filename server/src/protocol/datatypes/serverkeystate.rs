@@ -1,9 +1,6 @@
 
 use protocol::serde_am::*;
 
-use bit_field::BitField;
-
-/// Key state bitfield for PlayerUpdate packet
 #[derive(Debug, Copy, Clone, Eq, PartialEq, Default, Hash)]
 #[cfg_attr(features="serde", derive(Serialize, Deserialize))]
 pub struct ServerKeyState {

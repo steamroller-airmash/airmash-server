@@ -7,7 +7,7 @@ use component::time::{ThisFrame, StartTime};
 use systems::collision::bucket::Collision;
 
 use airmash_protocol::server::EventBounce;
-use airmash_protocol::{to_bytes, ServerKeyState, ServerPacket};
+use airmash_protocol::{to_bytes, ServerPacket};
 use websocket::OwnedMessage;
 
 pub struct BounceSystem {

@@ -29,8 +29,6 @@ impl KeyState {
 	}
 
 	pub fn to_server(&self, plane: &Plane) -> ServerKeyState {
-		use airmash_protocol::ServerKeyState as Key;
-		
 		ServerKeyState {
 			up: self.up,
 			down: self.down,

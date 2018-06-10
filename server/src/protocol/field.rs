@@ -371,7 +371,7 @@ pub mod lowrespos {
 
 	pub fn serialize(pos: &Position, ser: &mut Serializer) -> SerResult {
 		ser.serialize_u8(((pos.x.inner() / 128.0) as i32 + 128) as u8)?;
-		ser.serialize_u8(((pos.y.inner() / 64.0) as i32 + 128) as u8)
+		ser.serialize_u8(((pos.y.inner() / 128.0) as i32 + 128) as u8)
 	}
 	pub fn deserialize<'de>(de: &mut Deserializer<'de>) -> Result<Position, DeError> {
 		Ok(Position::new(

@@ -1,6 +1,4 @@
 
-use std::ops::Deref;
-
 use specs::world::*;
 use types::*;
 use consts::TERRAIN;
@@ -17,7 +15,6 @@ use systems::collision::collision::{
 pub struct Terrain {
 	pub buckets: Array2D<Bucket>
 }
-
 
 impl Terrain {
 	pub fn new<'a, I>(it: I, ents: &EntitiesRes) -> Self 

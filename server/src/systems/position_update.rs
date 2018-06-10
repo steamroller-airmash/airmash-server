@@ -7,7 +7,7 @@ use std::marker::PhantomData;
 use std::time::Duration;
 
 use airmash_protocol::server::{PlayerUpdate, ServerPacket};
-use airmash_protocol::{to_bytes, PlaneType, ServerKeyState, Upgrades as ServerUpgrades};
+use airmash_protocol::{to_bytes, ServerKeyState, Upgrades as ServerUpgrades};
 use websocket::OwnedMessage;
 
 const PI: Rotation = Rotation {

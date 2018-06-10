@@ -681,7 +681,7 @@ spec server {
 	}
 
 	# A player has been votemuted
-	ChatVotemutePassed {
+	ChatVoteMutePassed {
 		id:   Entity,
 	}
 

@@ -12,7 +12,6 @@ use std::io::Write;
 
 use futures::{Future, Stream};
 use websocket::server::async::Server;
-use websocket::server::InvalidConnection;
 use websocket::OwnedMessage;
 
 use tokio_core::reactor::Core;

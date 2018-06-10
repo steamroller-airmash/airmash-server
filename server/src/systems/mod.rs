@@ -6,6 +6,8 @@ mod timer_handler;
 mod timewarn;
 mod missile;
 
+pub mod ctf;
+
 pub use self::collision::*;
 pub use self::missile::*;
 pub use self::timewarn::TimeWarn;

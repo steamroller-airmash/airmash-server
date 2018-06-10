@@ -1,5 +1,4 @@
 
-use protocol::serde_am::*;
 use protocol::include::FlagCode;
 
 const COUNTRY_CODES: [Option<&'static str>; 126] = [

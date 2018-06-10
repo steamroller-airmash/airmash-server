@@ -9,6 +9,7 @@ use std::sync::mpsc::Receiver;
 use types::*;
 use types::event::*;
 use component::event::*;
+use component::channel::*;
 
 pub struct PacketHandler {
 	channel: Receiver<ConnectionEvent>,
@@ -16,23 +17,23 @@ pub struct PacketHandler {
 
 #[derive(SystemData)]
 pub struct PacketHandlerData<'a> {
-	pub onopen: Write<'a, EventChannel<ConnectionOpen>>,
-	pub onclose: Write<'a, EventChannel<ConnectionClose>>,
-	pub onbinary: Write<'a, EventChannel<Message>>,
-	pub login: Write<'a, EventChannel<(ConnectionId, Login)>>,
-	pub backup: Write<'a, EventChannel<(ConnectionId, Backup)>>,
-	pub command: Write<'a, EventChannel<(ConnectionId, Command)>>,
-	pub horizon: Write<'a, EventChannel<(ConnectionId, Horizon)>>,
-	pub key: Write<'a, EventChannel<(ConnectionId, Key)>>,
-	pub pong: Write<'a, EventChannel<(ConnectionId, Pong)>>,
-	pub say: Write<'a, EventChannel<(ConnectionId, Say)>>,
-	pub chat: Write<'a, EventChannel<(ConnectionId, Chat)>>,
-	pub teamchat: Write<'a, EventChannel<(ConnectionId, TeamChat)>>,
-	pub votemute: Write<'a, EventChannel<(ConnectionId, VoteMute)>>,
-	pub whisper: Write<'a, EventChannel<(ConnectionId, Whisper)>>,
-	pub localping: Write<'a, EventChannel<(ConnectionId, LocalPing)>>,
-	pub scoredetailed: Write<'a, EventChannel<ScoreDetailedEvent>>,
-	pub ack: Write<'a, EventChannel<AckEvent>>,
+	pub onopen:   Write<'a, OnOpen>,
+	pub onclose:  Write<'a, OnClose>,
+	pub onbinary: Write<'a, OnBinary>,
+	pub login:    Write<'a, OnLogin>,
+	pub backup:   Write<'a, OnBackup>,
+	pub command:  Write<'a, OnCommand>,
+	pub horizon:  Write<'a, OnHorizon>,
+	pub key:      Write<'a, OnKey>,
+	pub pong:     Write<'a, OnPong>,
+	pub say:      Write<'a, OnSay>,
+	pub chat:     Write<'a, OnChat>,
+	pub teamchat: Write<'a, OnTeamChat>,
+	pub votemute: Write<'a, OnVotemute>,
+	pub whisper:  Write<'a, OnWhisper>,
+	pub localping: Write<'a, OnLocalPing>,
+	pub scoredetailed: Write<'a, OnScoreDetailed>,
+	pub ack: Write<'a, OnAck>,
 }
 
 impl PacketHandler {

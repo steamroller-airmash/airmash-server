@@ -1,4 +1,3 @@
-use std;
 use std::str::Utf8Error;
 
 /// All the errors that can occur 

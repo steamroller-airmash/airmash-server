@@ -1,6 +1,5 @@
 
 use specs::*;
-use types::*;
 
 use std::time::Instant;
 use std::collections::VecDeque;

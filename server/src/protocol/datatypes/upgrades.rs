@@ -1,9 +1,6 @@
 
 use protocol::serde_am::*;
 
-use bit_field::BitField;
-
-/// Key state bitfield for PlayerUpdate packet
 #[derive(Debug, Copy, Clone, Eq, PartialEq, Default, Hash)]
 #[cfg_attr(features="serde", derive(Serialize, Deserialize))]
 pub struct Upgrades {
@@ -12,14 +9,10 @@ pub struct Upgrades {
 	pub inferno: bool
 }
 
-impl Upgrades {
-	pub fn new() -> Self {
-		Self::default()
-	}
-}
-
 impl Serialize for Upgrades {
 	fn serialize(&self, ser: &mut Serializer) -> Result<(), SerError> {
+		assert!(self.speed < 8);
+
 		let val = 0
 			| (self.speed & 7)
 			| (self.shield as u8) << 3

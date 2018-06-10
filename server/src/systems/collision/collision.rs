@@ -4,10 +4,8 @@ use shrev::*;
 use specs::*;
 use specs::world::EntitiesRes;
 
-use fnv::FnvHashMap;
 use types::*;
 
-use systems::collision::array2d::Array2D;
 use systems::collision::bucket::*;
 use systems::collision::terrain::Terrain;
 

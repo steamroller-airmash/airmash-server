@@ -6,7 +6,6 @@ use airmash_protocol::server::{
 	PlayerType,
 	PlayerRespawn,
 	PlayerFlag,
-	ServerMessage
 };
 use airmash_protocol::client::Command;
 use airmash_protocol::{to_bytes, ServerPacket, FlagCode, Upgrades as ProtocolUpgrades};

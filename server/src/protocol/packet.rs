@@ -1,7 +1,6 @@
 
 use protocol::server::*;
 use protocol::client::*;
-use protocol::serde_am::*;
 
 use protocol::client::Login as ClientLogin;
 use protocol::server::Login as ServerLogin;
@@ -62,7 +61,7 @@ pub enum ServerPacket {
     ChatPublic(ChatPublic),
     ChatSay(ChatSay),
     ChatWhisper(ChatWhisper),
-    ChatVoteMutePassed(ChatVotemutePassed),
+    ChatVoteMutePassed(ChatVoteMutePassed),
     ChatVoteMuted,
     ServerMessage(ServerMessage),
     ServerCustom(ServerCustom),

@@ -77,6 +77,7 @@ impl Serializer {
         self.serialize_u64(unsafe { mem::transmute::<f64, u64>(v) })
     }
 
+    #[allow(dead_code)]
     pub fn serialize_unit(&mut self) -> Result<()> {
         Ok(())
     }
@@ -85,6 +86,7 @@ impl Serializer {
         self.output.extend_from_slice(v);
         Ok(())
     }
+    #[allow(dead_code)]
     pub fn serialize_bool(&mut self, v: bool) -> Result<()> {
         self.serialize_u8(if v { 1 } else { 0 })
     }

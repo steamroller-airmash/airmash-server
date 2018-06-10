@@ -5,7 +5,7 @@ use specs::*;
 
 use types::ConnectionId;
 
-use std::time::{Duration, Instant};
+use std::time::Duration;
 
 pub type Flag = FlagCode;
 pub type Plane = protocol::PlaneType;

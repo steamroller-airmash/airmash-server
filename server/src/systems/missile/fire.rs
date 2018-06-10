@@ -1,7 +1,6 @@
 
 use specs::*;
 use specs::prelude::*;
-use rayon::prelude::FromParallelIterator;
 use types::*;
 
 use component::time::{ThisFrame, StartTime, MobSpawnTime};

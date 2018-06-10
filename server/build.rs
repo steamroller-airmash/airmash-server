@@ -163,6 +163,7 @@ mod protocol {
 	use specgen::*;
 
 	const PRELUDE: &'static str = "
+	#![allow(unused_imports)]
 	use specs::*;
 	use protocol::serde_am::{Serializer, Deserializer, Serialize, Deserialize};
 	use protocol::error::{SerError, DeError};

@@ -1,5 +1,5 @@
 
-#![allow(dead_code, unused_imports)]
+#![allow(dead_code)]
 #![feature(optin_builtin_traits)]
 #![feature(trace_macros)]
 
@@ -57,7 +57,6 @@ use std::sync::atomic::Ordering;
 
 use specs::{Dispatcher, DispatcherBuilder, World};
 use tokio::runtime::current_thread::Runtime;
-use futures::{Future, Stream};
 
 use timeloop::timeloop;
 use component::time::{ThisFrame, LastFrame, StartTime};

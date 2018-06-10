@@ -158,7 +158,7 @@ impl<'de> Deserialize<'de> for ServerPacket {
             CHAT_TEAM => ServerPacket::ChatTeam(ChatTeam::deserialize(de)?),
             CHAT_SAY => ServerPacket::ChatSay(ChatSay::deserialize(de)?),
             CHAT_WHISPER => ServerPacket::ChatWhisper(ChatWhisper::deserialize(de)?),
-            CHAT_VOTEMUTEPASSED => ServerPacket::ChatVoteMutePassed(ChatVotemutePassed::deserialize(de)?),
+            CHAT_VOTEMUTEPASSED => ServerPacket::ChatVoteMutePassed(ChatVoteMutePassed::deserialize(de)?),
             CHAT_VOTEMUTED => ServerPacket::ChatVoteMuted,
             SCORE_UPDATE => ServerPacket::ScoreUpdate(ScoreUpdate::deserialize(de)?),
             SCORE_BOARD => ServerPacket::ScoreBoard(ScoreBoard::deserialize(de)?),
