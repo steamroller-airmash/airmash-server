@@ -9,6 +9,7 @@ lto = true
 
 [build-dependencies]
 phf_codegen = "^0.7"
+specgen = { path = "../specgen" }
 
 [dependencies]
 simple_logger = "*"

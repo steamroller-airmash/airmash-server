@@ -7,7 +7,7 @@ WORKDIR /build/server
 # changed on the server. Since this project downloads
 # a large number of dependencies, this should save 
 # a decent amount of bandwith
-ADD Cargo.toml Cargo.lock /build/server/
+ADD server/Cargo.toml server/Cargo.lock /build/server/
 RUN mkdir src
 # Fetch all dependencies to save bandwith
 RUN echo > src/main.rs
@@ -16,8 +16,7 @@ RUN rm -rf src
 
 ADD specgen /build/specgen
 
-ADD build.rs /build/server
-ADD src /build/server/src
+ADD server /build/server
 
 RUN cargo build --release
 RUN mkdir /artifacts

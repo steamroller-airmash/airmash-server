@@ -1,6 +1,4 @@
 
-extern crate backtrace;
-
 mod parser;
 mod generator;
 
