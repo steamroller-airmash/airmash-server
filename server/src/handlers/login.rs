@@ -63,7 +63,7 @@ impl LoginHandler {
 			team: Team(0),
 			pos: Position::default(),
 			rot: Rotation::new(0.0),
-			flag: FlagCode::UnitedNations,
+			flag: FlagCode::from_str(&login.flag).unwrap_or(FlagCode::UnitedNations),
 			upgrades: ProtocolUpgrades::default(),
 		};
 
