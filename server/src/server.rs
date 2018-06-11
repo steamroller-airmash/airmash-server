@@ -74,6 +74,7 @@ where
 			// set TCP_NODELAY. If this fails,
 			// then the client will just be 
 			// using a less optimal stream.
+			#[cfg(nodelay)]
 			upgrade.stream.set_nodelay(true).err();
 
 			let f = upgrade.accept()

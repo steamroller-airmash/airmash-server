@@ -76,9 +76,6 @@ impl<'a> System<'a> for ScoreBoardTimerHandler {
 					rankings: rankings,
 				};
 
-
-				info!("{:?}", score_board);
-
 				data.conns.send_to_all(OwnedMessage::Binary(
 					to_bytes(&ServerPacket::ScoreBoard(score_board)).unwrap(),
 				));

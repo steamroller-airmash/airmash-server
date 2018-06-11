@@ -35,6 +35,7 @@ pub struct PlaneInfo {
 	// Energy requirement
 	pub fire_energy: Energy,
 	pub special_energy: Energy,
+	pub fire_delay: Duration,
 
 	// Type of missile that the plane fires
 	pub missile_type: Mob,
@@ -116,6 +117,7 @@ impl Default for PlaneInfos {
 				// TODO: Set these
 				health_regen: HealthRegen::new(0.0),
 				energy_regen: EnergyRegen::new(0.0),
+				fire_delay: Duration::from_millis(200),
 
 				// TODO
 				fire_energy: Energy::new(0.0),
@@ -148,6 +150,7 @@ impl Default for PlaneInfos {
 				// TODO: Set these
 				health_regen: HealthRegen::new(0.0),
 				energy_regen: EnergyRegen::new(0.0),
+				fire_delay: Duration::from_millis(200),
 
 				// TODO
 				fire_energy: Energy::new(0.0),
@@ -186,6 +189,7 @@ impl Default for PlaneInfos {
 				// TODO: Set these
 				health_regen: HealthRegen::new(0.0),
 				energy_regen: EnergyRegen::new(0.0),
+				fire_delay: Duration::from_millis(200),
 
 				// TODO
 				fire_energy: Energy::new(0.0),
@@ -219,6 +223,7 @@ impl Default for PlaneInfos {
 				// TODO: Set these
 				health_regen: HealthRegen::new(0.0),
 				energy_regen: EnergyRegen::new(0.0),
+				fire_delay: Duration::from_millis(200),
 
 				// TODO
 				fire_energy: Energy::new(0.0),
@@ -254,6 +259,7 @@ impl Default for PlaneInfos {
 				// TODO: Set these
 				health_regen: HealthRegen::new(0.0),
 				energy_regen: EnergyRegen::new(0.0),
+				fire_delay: Duration::from_millis(200),
 
 				// TODO
 				fire_energy: Energy::new(0.0),

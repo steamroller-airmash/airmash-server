@@ -44,7 +44,9 @@ pub struct LoginSystemData<'a> {
 	pub isplayer: WriteStorage<'a, IsPlayer>,
 	pub pingdata: WriteStorage<'a, PingData>,
 	pub playersgame: Write<'a, PlayersGame>,
+	pub lastshot: WriteStorage<'a, LastShotTime>,
 
+	pub startime: Read<'a, StartTime>,
 	pub player_join: Write<'a, OnPlayerJoin>,
 }
 
@@ -186,6 +188,7 @@ impl LoginHandler {
 			.unwrap();
 		data.isplayer.insert(entity, IsPlayer {}).unwrap();
 		data.pingdata.insert(entity, PingData::default()).unwrap();
+		data.lastshot.insert(entity, LastShotTime(data.startime.0)).unwrap();
 
 		data.playersgame.0 += 1;
 		data.player_join.single_write(PlayerJoin(entity));

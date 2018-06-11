@@ -3,6 +3,9 @@ name = "airmash-server"
 version = "0.1.0"
 authors = ["STEAMROLLER"]
 
+[features]
+nodelay = []
+
 [profile.release]
 debug = true
 lto = true

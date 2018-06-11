@@ -3,7 +3,7 @@ use specs::*;
 use specs::prelude::*;
 use types::*;
 
-use component::time::{ThisFrame, StartTime, MobSpawnTime};
+use component::time::*;
 use component::flag::IsMissile;
 use component::reference::PlayerRef;
 
@@ -30,7 +30,8 @@ pub struct MissileFireHandlerData<'a> {
 	pub conns: Read<'a, Connections>,
 	pub starttime: Read<'a, StartTime>,
 	pub thisframe: Read<'a, ThisFrame>,
-	pub spawntime: WriteStorage<'a, MobSpawnTime>
+	pub spawntime: WriteStorage<'a, MobSpawnTime>,
+	pub lastshot:  WriteStorage<'a, LastShotTime>
 }
 
 impl<'a> System<'a> for MissileFireHandler {
@@ -55,63 +56,77 @@ impl<'a> System<'a> for MissileFireHandler {
 			mut owner,
 			conns,
 			mut spawntime,
+			mut lastshot,
 			..
 		} = data;
 
-		let new = (&*ents, &pos, &vel, &rot, &keystate, &mut energy, &plane, &teams)
-			.par_join()
-			.filter_map(|(ent, pos, vel, rot, keystate, energy, plane, team)| {
+		let new = (
+			&*ents, 
+			&pos, 
+			&vel, 
+			&rot, 
+			&keystate, 
+			&mut energy,
+			&plane, 
+			&teams, 
+			&mut lastshot
+		).par_join()
+			.filter_map(|(ent, pos, vel, rot, keystate, energy, plane, team, lastshot)| {
 				let ref info = config.planes[*plane];
 				let ref missile = config.mobs[info.missile_type].missile.unwrap();
 
-				if keystate.fire && *energy > info.fire_energy {
-					// Rotate starting angle 90 degrees so that
-					// it's inline with the plane. Change this
-					// and missiles will shoot sideways :)
-					let m_dir = Vector2::new(rot.sin(), -rot.cos());
-
-					// Component of velocity parallel to direction
-					let vel_par = Vector2::dot(m_dir, *vel).max(Speed::new(0.0));
-
-					let m_vel = m_dir * 
-						(vel_par * missile.speed_factor	+ missile.base_speed);
-					let m_accel = m_dir * missile.accel;
-					let m_ent = ents.create();
-
-					*energy -= info.fire_energy;
-
-					let packet = PlayerFire {
-						clock: clock,
-						id: ent,
-						energy: *energy,
-						energy_regen: info.energy_regen,
-						projectiles: vec![
-							PlayerFireProjectile {
-								id: m_ent,
-								accel: m_accel,
-								pos: *pos,
-								speed: m_vel,
-								ty: info.missile_type,
-								max_speed: missile.max_speed
-							}
-						]
-					};
-
-					conns.send_to_all(OwnedMessage::Binary(
-						to_bytes(&ServerPacket::PlayerFire(packet)).unwrap()
-					));
-
-					return Some((
-						m_ent,
-						info.missile_type,
-						*pos,
-						m_vel,
-						*team,
-						ent
-					));
+				if thisframe.0 - lastshot.0 < info.fire_delay
+					|| !keystate.fire
+					|| *energy < info.fire_energy
+				{
+					return None;
 				}
 
-				None
+				// Rotate starting angle 90 degrees so that
+				// it's inline with the plane. Change this
+				// and missiles will shoot sideways :)
+				let m_dir = Vector2::new(rot.sin(), -rot.cos());
+
+				// Component of velocity parallel to direction
+				let vel_par = Vector2::dot(m_dir, *vel).max(Speed::new(0.0));
+
+				let m_vel = m_dir * 
+					(vel_par * missile.speed_factor	+ missile.base_speed);
+				let m_accel = m_dir * missile.accel;
+				let m_ent = ents.create();
+
+				*energy -= info.fire_energy;
+				*lastshot = LastShotTime(thisframe.0);
+
+				let packet = PlayerFire {
+					clock: clock,
+					id: ent,
+					energy: *energy,
+					energy_regen: info.energy_regen,
+					projectiles: vec![
+						PlayerFireProjectile {
+							id: m_ent,
+							accel: m_accel,
+							pos: *pos,
+							speed: m_vel,
+							ty: info.missile_type,
+							max_speed: missile.max_speed
+						}
+					]
+				};
+
+				conns.send_to_all(OwnedMessage::Binary(
+					to_bytes(&ServerPacket::PlayerFire(packet)).unwrap()
+				));
+
+				return Some((
+					m_ent,
+					info.missile_type,
+					*pos,
+					m_vel,
+					*team,
+					ent
+				));
 			})
 			.collect::<Vec<(Entity, Mob, Position, Velocity, Team, Entity)>>();
 
