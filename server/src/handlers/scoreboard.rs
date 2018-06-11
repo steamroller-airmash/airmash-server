@@ -63,9 +63,9 @@ impl<'a> System<'a> for ScoreBoardTimerHandler {
 					.take(10)
 					.collect::<Vec<ScoreBoardData>>();
 
-				let rankings = (&*data.entities, &data.pos)
+				let rankings = (&*data.entities, &data.pos, &data.flag)
 					.join()
-					.map(|(ent, pos)| ScoreBoardRanking {
+					.map(|(ent, pos, _)| ScoreBoardRanking {
 						id: ent,
 						pos: *pos,
 					})
@@ -75,6 +75,9 @@ impl<'a> System<'a> for ScoreBoardTimerHandler {
 					data: packet_data,
 					rankings: rankings,
 				};
+
+
+				info!("{:?}", score_board);
 
 				data.conns.send_to_all(OwnedMessage::Binary(
 					to_bytes(&ServerPacket::ScoreBoard(score_board)).unwrap(),
