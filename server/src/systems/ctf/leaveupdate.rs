@@ -15,6 +15,7 @@ pub struct LeaveUpdateSystem {
 
 #[derive(SystemData)]
 pub struct LeaveUpdateSystemData<'a> {
+	pub entities: Entities<'a>,
 	pub channel: Read<'a, OnPlayerLeave>,
 	pub conns:   Read<'a, Connections>,
 	pub pos:     WriteStorage<'a, Position>,
@@ -47,18 +48,19 @@ impl<'a> System<'a> for LeaveUpdateSystem {
 			mut pos,
 			is_flag,
 			teams,
-			mut carrier
+			mut carrier,
+			entities
 		} = data;
 
 		for evt in channel.read(self.reader.as_mut().unwrap()) {
 			let player_pos = *pos.get(evt.0).unwrap();
 
-			(&mut pos, &mut carrier, &is_flag).join()
-				.filter(|(_, carrier, _)| {
+			(&mut pos, &mut carrier, &is_flag, &*entities).join()
+				.filter(|(_, carrier, _, _)| {
 					carrier.0.is_some() && carrier.0.unwrap() == evt.0
 				})
-				.for_each(|(pos, carrier, _)| {
-					let team = teams.get(evt.0).unwrap();
+				.for_each(|(pos, carrier, _, ent)| {
+					let team = teams.get(ent).unwrap();
 
 					let packet = GameFlag {
 						ty: FlagUpdateType::Position,
