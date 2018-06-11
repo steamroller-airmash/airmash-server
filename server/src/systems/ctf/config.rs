@@ -3,6 +3,7 @@ use types::*;
 use protocol::PlaneType;
 
 use fnv::FnvHashMap;
+use std::time::Duration;
 
 lazy_static! {
 	pub static ref FLAG_RADIUS: FnvHashMap<Plane, Distance> = {
@@ -48,4 +49,6 @@ lazy_static! {
 
 		map
 	};
+
+	pub static ref FLAG_NO_REGRAB_TIME: Duration = Duration::from_secs(5);
 }

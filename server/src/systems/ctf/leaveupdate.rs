@@ -4,6 +4,7 @@ use types::*;
 
 use component::channel::*;
 use component::ctf::*;
+use component::time::ThisFrame;
 
 use websocket::OwnedMessage;
 use protocol::server::GameFlag;
@@ -22,6 +23,8 @@ pub struct LeaveUpdateSystemData<'a> {
 	pub is_flag: ReadStorage<'a, IsFlag>,
 	pub carrier: WriteStorage<'a, FlagCarrier>,
 	pub teams:   ReadStorage<'a, Team>,
+	pub lastdrop: WriteStorage<'a, LastDrop>,
+	pub thisframe: Read<'a, ThisFrame>
 }
 
 impl LeaveUpdateSystem {
@@ -49,17 +52,25 @@ impl<'a> System<'a> for LeaveUpdateSystem {
 			is_flag,
 			teams,
 			mut carrier,
-			entities
+			entities,
+			mut lastdrop,
+			thisframe,
 		} = data;
 
 		for evt in channel.read(self.reader.as_mut().unwrap()) {
 			let player_pos = *pos.get(evt.0).unwrap();
 
-			(&mut pos, &mut carrier, &is_flag, &*entities).join()
-				.filter(|(_, carrier, _, _)| {
+			(
+				&mut pos, 
+				&mut carrier, 
+				&is_flag, 
+				&*entities, 
+				&mut lastdrop
+			).join()
+				.filter(|(_, carrier, _, _, _)| {
 					carrier.0.is_some() && carrier.0.unwrap() == evt.0
 				})
-				.for_each(|(pos, carrier, _, ent)| {
+				.for_each(|(pos, carrier, _, ent, lastdrop)| {
 					let team = teams.get(ent).unwrap();
 
 					let packet = GameFlag {
@@ -73,6 +84,15 @@ impl<'a> System<'a> for LeaveUpdateSystem {
 
 					*pos = player_pos;
 					*carrier = FlagCarrier(None);
+					*lastdrop = LastDrop {
+						// None doesn't do what we want, so pick an entity
+						// that we won't see again. (i.e. the player that
+						// is leaving). This also prevents the player from
+						// picking the flag up again if the pickup update
+						// runs after this system
+						player: Some(ent),
+						time: thisframe.0
+					};
 
 					conns.send_to_all(OwnedMessage::Binary(
 						to_bytes(&ServerPacket::GameFlag(packet)).unwrap()

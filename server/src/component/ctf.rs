@@ -3,6 +3,8 @@ use specs::*;
 use shrev::*;
 use types::Position;
 
+use std::time::Instant;
+
 #[derive(Copy, Clone, Debug, Default, Component)]
 #[storage(NullStorage)]
 pub struct IsFlag;
@@ -25,6 +27,12 @@ pub struct FlagEvent {
 	pub ty: FlagEventType,
 	pub carrier: Option<Entity>,
 	pub flag: Entity,
+}
+
+#[derive(Copy, Clone, Debug, Component)]
+pub struct LastDrop {
+	pub player: Option<Entity>,
+	pub time:   Instant
 }
 
 pub type OnFlag = EventChannel<FlagEvent>;

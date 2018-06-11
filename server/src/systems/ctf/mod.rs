@@ -1,4 +1,5 @@
 
+mod drop;
 mod config;
 mod register;
 mod pickupflag;
