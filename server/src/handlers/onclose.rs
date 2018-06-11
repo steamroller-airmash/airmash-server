@@ -82,12 +82,6 @@ impl<'a> System<'a> for OnCloseHandler {
 				} else {
 					connections.remove(evt.conn);
 				}
-
-				info!(
-					target: "server",
-					"{:?} closed",
-					evt.conn
-				);
 			}
 		}
 	}
