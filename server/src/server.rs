@@ -71,7 +71,20 @@ where
 		.for_each(move |(upgrade, addr)| {
 			let id = ConnectionId::new();
 
-			let f = upgrade.accept().and_then({
+			// Make a best-effort attempt to 
+			// set TCP_NODELAY. If this fails,
+			// then the client will just be 
+			// using a less optimal stream.
+			upgrade.stream.set_nodelay(true).err();
+
+			info!(
+				target: "server",
+				"Origin: {:?}",
+				upgrade.origin()
+			);
+
+			let f = upgrade.accept()
+			.and_then({
 				let channel = channel.clone();
 				move |(s, _)| {
 					info!(
