@@ -275,6 +275,26 @@ pub mod entity {
 	}
 }
 
+pub mod option_entity {
+	use protocol::field::*;
+	use specs::Entity;
+
+	pub fn serialize(val: &Option<Entity>, ser: &mut Serializer) -> SerResult {
+		match val {
+			Some(val) => {
+				assert!(val.id() < 0xFFFF);
+				ser.serialize_u16(val.id() as u16)
+			},
+			None => {
+				ser.serialize_u16(0)
+			}
+		}
+	}
+	pub fn deserialize<'de>(_: &mut Deserializer<'de>) -> Result<Option<Entity>, DeError> {
+		Err(DeError::EntityMayNotBeDeserialized)
+	}
+}
+
 macro_rules! serde_inner {
 	($name:ident, $type:ident) => {
 		pub mod $name {
@@ -426,6 +446,20 @@ pub mod energy_regen {
 	}
 	pub fn deserialize<'de>(de: &mut Deserializer<'de>) -> Result<EnergyRegen, DeError> {
 		Ok(EnergyRegen::new(regen::deserialize(de)?))
+	}
+}
+
+pub mod flag {
+	use protocol::field::*;
+	use types::*;
+
+	pub fn serialize(val: &Team, ser: &mut Serializer) -> SerResult {
+		assert!(val.0 < 0xFF);
+
+		ser.serialize_u8(val.0 as u8)
+	}
+	pub fn deserialize<'de>(de: &mut Deserializer<'de>) -> Result<Team, DeError> {
+		Ok(Team(de.deserialize_u8()? as u16))
 	}
 }
 

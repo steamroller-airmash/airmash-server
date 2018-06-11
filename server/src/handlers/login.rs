@@ -2,9 +2,8 @@ use airmash_protocol::client::Login;
 use airmash_protocol::server::{PlayerLevel, PlayerNew, ServerPacket};
 use airmash_protocol::{
 	server, to_bytes, FlagCode, PlaneType, PlayerLevelType, PlayerStatus,
-	Upgrades as ProtocolUpgrades,
+	Upgrades as ProtocolUpgrades, GameType
 };
-use shrev::{EventChannel, ReaderId};
 use specs::*;
 use uuid::Uuid;
 use websocket::OwnedMessage;
@@ -13,6 +12,8 @@ use std::str::FromStr;
 use std::time::Instant;
 
 use types::*;
+use component::channel::*;
+use component::event::PlayerJoin;
 use component::counter::PlayersGame;
 use component::time::*;
 
@@ -43,10 +44,12 @@ pub struct LoginSystemData<'a> {
 	pub isplayer: WriteStorage<'a, IsPlayer>,
 	pub pingdata: WriteStorage<'a, PingData>,
 	pub playersgame: Write<'a, PlayersGame>,
+
+	pub player_join: Write<'a, OnPlayerJoin>,
 }
 
 pub struct LoginHandler {
-	reader: Option<ReaderId<(ConnectionId, Login)>>,
+	reader: Option<OnLoginReader>,
 }
 
 impl LoginHandler {
@@ -185,6 +188,7 @@ impl LoginHandler {
 		data.pingdata.insert(entity, PingData::default()).unwrap();
 
 		data.playersgame.0 += 1;
+		data.player_join.single_write(PlayerJoin(entity));
 
 		// Actually send login packet
 		let resp = server::Login {
@@ -194,7 +198,7 @@ impl LoginHandler {
 			success: true,
 			token: login.session,
 			team: Team(0),
-			ty: PlaneType::Predator,
+			ty: GameType::CTF,
 			players: Self::get_player_data(data),
 		};
 
@@ -207,14 +211,13 @@ impl LoginHandler {
 
 impl<'a> System<'a> for LoginHandler {
 	type SystemData = (
-		Read<'a, EventChannel<(ConnectionId, Login)>>,
+		Read<'a, OnLogin>,
 		LoginSystemData<'a>,
 	);
 
 	fn setup(&mut self, res: &mut Resources) {
 		self.reader = Some(
-			res.fetch_mut::<EventChannel<(ConnectionId, Login)>>()
-				.register_reader(),
+			res.fetch_mut::<OnLogin>().register_reader(),
 		);
 
 		Self::SystemData::setup(res);

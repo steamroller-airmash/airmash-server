@@ -28,10 +28,10 @@ impl<'a> System<'a> for PollComplete {
 				// The connection probably closed,
 				// do nothing
 				None => trace!(
-                    target: "server",
-                    "Tried to send message to closed connection {:?}",
-                    id
-                ),
+						target: "server",
+						"Tried to send message to closed connection {:?}",
+						id
+				),
 			}
 		}
 

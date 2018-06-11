@@ -1,0 +1,35 @@
+
+use systems::ctf::*;
+use component::ctf::{IsFlag, FlagCarrier};
+
+use specs::*;
+use types::{
+	Team,
+	Position
+};
+
+pub fn register<'a, 'b>(world: &mut World, disp: DispatcherBuilder<'a, 'b>) -> DispatcherBuilder<'a, 'b> {
+	world.register::<Team>();
+	world.register::<Position>();
+	world.register::<IsFlag>();
+	world.register::<FlagCarrier>();
+
+	world.create_entity()
+		.with(Team(1))
+		.with(config::FLAG_POS[&Team(1)])
+		.with(IsFlag{})
+		.with(FlagCarrier(None))
+		.build();
+	world.create_entity()
+		.with(Team(2))
+		.with(config::FLAG_POS[&Team(2)])
+		.with(IsFlag{})
+		.with(FlagCarrier(None))
+		.build();
+
+	disp
+		.with(loginupdate::LoginUpdateSystem::new(),     "ctf_loginupdate", &[])
+		.with(pickupflag::PickupFlagSystem{},            "ctf_pickupflag",  &["position_update", "ctf_loginupdate"])
+		.with(sendmessage::SendFlagMessageSystem::new(), "ctf_sendmessage", &["ctf_pickupflag"])
+		.with(leaveupdate::LeaveUpdateSystem::new(),     "ctf_leaveupdate", &["position_update"])
+}

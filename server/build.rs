@@ -212,6 +212,7 @@ mod protocol {
 					&"HealthRegen" => return "::protocol::field::health_regen",
 					&"EnergyRegen" => return "::protocol::field::energy_regen",
 					&"Rotation" =>    return "::protocol::field::rotation",
+					&"Flag" =>        return "::protocol::field::flag",
 					_ => ()
 				}
 			},
@@ -244,6 +245,7 @@ mod protocol {
 					&"Text" => return "String".to_owned(),
 					&"TextBig" => return "String".to_owned(),
 					&"LowResPos" => return "Position".to_owned(),
+					&"Flag" => return "Team".to_owned(),
 					_ => ()
 				}
 			},

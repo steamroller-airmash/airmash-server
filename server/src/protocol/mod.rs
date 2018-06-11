@@ -109,7 +109,8 @@ pub use protocol::include::{
 	ServerCustomType,
 	ServerMessageType,
 	PlayerLevelType,
-	FlagCode
+	FlagCode,
+	GameType
 };
 
 pub use self::ser::to_bytes;

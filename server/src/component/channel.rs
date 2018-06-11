@@ -26,6 +26,10 @@ pub type OnLocalPing = EventChannel<(ConnectionId, LocalPing)>;
 pub type OnScoreDetailed = EventChannel<ScoreDetailedEvent>;
 pub type OnAck    = EventChannel<AckEvent>;
 
+// In-game events
+pub type OnPlayerJoin  = EventChannel<PlayerJoin>;
+pub type OnPlayerLeave = EventChannel<PlayerLeave>;
+
 // Readers
 pub type OnOpenReader  = ReaderId<ConnectionOpen>;
 pub type OnCloseReader = ReaderId<ConnectionClose>;
@@ -45,3 +49,7 @@ pub type OnVotemuteReader = ReaderId<(ConnectionId, VoteMute)>;
 pub type OnLocalPingReader = ReaderId<(ConnectionId, LocalPing)>;
 pub type OnScoreDetailedReader = ReaderId<ScoreDetailedEvent>;
 pub type OnAckReader    = ReaderId<AckEvent>;
+
+// In-game events
+pub type OnPlayerJoinReader  = ReaderId<PlayerJoin>;
+pub type OnPlayerLeaveReader = ReaderId<PlayerLeave>;

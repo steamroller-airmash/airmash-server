@@ -64,42 +64,27 @@ use component::time::{ThisFrame, LastFrame, StartTime};
 use types::event::{ConnectionEvent, TimerEvent};
 
 fn build_dispatcher<'a, 'b>(
+	world: &mut World,
 	event_recv: Receiver<ConnectionEvent>,
 	timer_recv: Receiver<TimerEvent>,
 	msg_recv: Receiver<(types::ConnectionId, websocket::OwnedMessage)>,
 ) -> Dispatcher<'a, 'b> {
-	DispatcherBuilder::new()
-        // Add systems here
-        .with(systems::PacketHandler::new(event_recv), "packet",   &[])
-        .with(systems::TimerHandler::new(timer_recv),  "timer",    &[])
-				.with(systems::TimeWarn{},                     "timewarn", &[])
-				.with(systems::MissileCull{},                  "missile_cull", &[])
+	let disp = DispatcherBuilder::new()
+		// Add systems here
+		.with(systems::PacketHandler::new(event_recv), "packet",   &[])
+		.with(systems::TimerHandler::new(timer_recv),  "timer",    &[])
+		.with(systems::TimeWarn{},                     "timewarn", &[])
+		.with(systems::MissileCull{},                  "missile_cull", &[]);
 
-        // Add handlers here
-        .with(handlers::OnOpenHandler::new(),  "onopen",  &["packet"])
-        .with(handlers::OnCloseHandler::new(), "onclose", &["onopen"])
-        .with(handlers::LoginHandler::new(),   "onlogin", &["onclose"])
-        .with(handlers::KeyHandler::new(),     "onkey",   &["onclose"])
-        .with(handlers::ChatHandler::new(),    "onchat",  &["onclose"])
-				.with(handlers::SayHandler::new(),     "onsay",   &["onclose"])
-				.with(handlers::PongHandler::new(),    "onpong",  &["onclose"])
-        .with(handlers::ScoreBoardTimerHandler::new(), "scoreboard", &["timer"])
-				.with(handlers::PingTimerHandler::new(), "ping",  &["timer"])
-				.with(handlers::CommandHandler::new(), "command", &["onclose"])
-				.with(handlers::SignalHandler::default(), "handler", &[])
+	let disp = systems::register(world, disp);
+	let disp = systems::ctf::register(world, disp);
 
-        // Systems with dependencies on handlers
-        .with(systems::PositionUpdate::new(),  "pos_update", &["onkey"])
-				.with(systems::MissileFireHandler{},   "missile_fire", &["pos_update"])
-				.with(systems::CollisionSystem::new(), "collisions", &["pos_update"])
-				.with(systems::BounceSystem::new(),    "bounces",    &["collisions"])
-				.with(systems::MissileUpdate{},        "missile_update", &["missile_fire"])
+	disp
+		// This needs to run after systems which send messages
+		.with_thread_local(systems::PollComplete::new(msg_recv))
 
-        // This needs to run after systems which send messages
-        .with_thread_local(systems::PollComplete::new(msg_recv))
-
-        // Build
-        .build()
+		// Build
+		.build()
 }
 
 fn setup_panic_handler() {
@@ -157,7 +142,7 @@ fn main() {
 	// Add systems
 	info!(target: "server", "Setting up systems");
 
-	let mut dispatcher = build_dispatcher(event_recv, timer_recv, msg_recv);
+	let mut dispatcher = build_dispatcher(&mut world, event_recv, timer_recv, msg_recv);
 
 	// Start websocket server
 	info!(target: "server", "Starting websocket server!");

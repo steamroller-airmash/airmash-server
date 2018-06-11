@@ -35,6 +35,12 @@ enum MobType : u8 {
 	Inferno = 9
 }
 
+enum GameType : u8 {
+	FFA = 1,
+	CTF = 2,
+	BTR = 3
+}
+
 # TODO: reverse-eng this
 enum CommandReplyType : u8 {
 
@@ -52,7 +58,8 @@ enum PowerupType : u8 {
 
 # TODO: rev-eng
 enum FlagUpdateType : u8 {
-
+	Position = 1,
+	Carrier = 2
 }
 
 # TODO: rev-eng
@@ -248,7 +255,7 @@ spec server {
 		team:    Team,
 		clock:   u32,
 		token:   Text,
-		type:    PlaneType,
+		type:    GameType,
 		room:    Text,
 		players: Array[LoginPlayer]
 	}
@@ -424,7 +431,7 @@ spec server {
 	# Update position of a flag in CTF
 	GameFlag {
 		type: FlagUpdateType,
-		flag: Team,
+		flag: Flag,
 		id:   Option[Entity],
 		pos:  Position24,
 		# Team scores
