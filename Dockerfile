@@ -22,7 +22,7 @@ ADD server /build/server
 
 RUN cargo build --release
 RUN mkdir /artifacts
-RUN mv starget/x86_64-unknown-linux-musl/release/airmash-server /artifacts/airmash-server
+RUN mv target/x86_64-unknown-linux-musl/release/airmash-server /artifacts/airmash-server
 
 FROM alpine:latest
 
