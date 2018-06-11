@@ -42,7 +42,6 @@ where
 		.incoming()
 		.map_err(|e| {
 			info!(
-				target: "server",
 				"A client failed to connect with error: {}",
 				e.error
 			);
@@ -77,18 +76,11 @@ where
 			// using a less optimal stream.
 			upgrade.stream.set_nodelay(true).err();
 
-			info!(
-				target: "server",
-				"Origin: {:?}",
-				upgrade.origin()
-			);
-
 			let f = upgrade.accept()
 			.and_then({
 				let channel = channel.clone();
 				move |(s, _)| {
 					info!(
-							target: "server",
 							"Created new connection with id {} and addr {}",
 							id.0, addr
 						);
@@ -111,21 +103,20 @@ where
 						move |m| {
 							if m != OwnedMessage::Binary(vec![5]) {
 								debug!(
-                                    target: "server",
-                                    "{:?} sent {:?}",
-                                    id, m
-                                );
+										"{:?} sent {:?}",
+										id, m
+								);
 							}
 
 							channel.send(ConnectionEvent::Message(Message{
-                                    conn: id,
-                                    msg: m
-                                })).map_err(|e| {
-                                    error!(target: "server", "Channel send error: {}", e)
-                                })
-                                // Swallow error since we logged it
-                                // and are probably shutting down.
-                                .err();
+										conn: id,
+										msg: m
+								})).map_err(|e| {
+										error!(target: "server", "Channel send error: {}", e)
+								})
+								// Swallow error since we logged it
+								// and are probably shutting down.
+								.err();
 							Ok(())
 						}
 					})
@@ -137,7 +128,6 @@ where
 					let channel = channel.clone();
 					move |e| {
 						info!(
-							target: "server",
 							"Connection {:?} closed with error: {}",
 							id, e
 						);
@@ -146,14 +136,13 @@ where
 							.send(ConnectionEvent::ConnectionClose(ConnectionClose {
 								conn: id,
 							}))
-							.map_err(|e| error!(target: "server", "Channel send error: {}", e))
+							.map_err(|e| error!("Channel send error: {}", e))
 							.unwrap();
 					}
 				}).map({
 					let channel = channel.clone();
 					move |_| {
 						info!(
-							target: "server",
 							"Connection {:?} closed",
 							id
 						);
@@ -162,7 +151,7 @@ where
 							.send(ConnectionEvent::ConnectionClose(ConnectionClose {
 								conn: id,
 							}))
-							.map_err(|e| error!(target: "server", "Channel send error: {}", e))
+							.map_err(|e| error!("Channel send error: {}", e))
 							.unwrap();
 					}
 				})

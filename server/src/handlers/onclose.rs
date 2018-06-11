@@ -71,11 +71,7 @@ impl<'a> System<'a> for OnCloseHandler {
 						entities.delete(ent).unwrap();
 
 						// Log
-						info!(
-							target: "server",
-							"Player {:?} left",
-							ent
-						);
+						info!("Player {:?} left", ent);
 					} else {
 						connections.remove(evt.conn);
 					}

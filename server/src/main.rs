@@ -99,11 +99,9 @@ fn setup_panic_handler() {
 			process::exit(0);
 		}
 		error!(
-			target: "server",
-			"A fatal error occurred within a server thread. Aborting!",
+			"A fatal error occurred within a server thread. Aborting!"
 		);
 		error!(
-			target: "server",
 			"Error Info: {}",
 			panic_info
 		);
@@ -135,23 +133,23 @@ fn main() {
 	let (msg_send, msg_recv) = channel::<(types::ConnectionId, websocket::OwnedMessage)>();
 
 	// Add resources
-	info!(target: "server", "Setting up resources");
+	info!("Setting up resources");
 
 	world.add_resource(types::Connections::new(msg_send));
 
 	// Add systems
-	info!(target: "server", "Setting up systems");
+	info!("Setting up systems");
 
 	let mut dispatcher = build_dispatcher(&mut world, event_recv, timer_recv, msg_recv);
 
 	// Start websocket server
-	info!(target: "server", "Starting websocket server!");
+	info!("Starting websocket server!");
 	let server_thread = thread::spawn(move || {
 		server::run_acceptor(addr, event_send);
 	});
 
 	// Start gameloop
-	info!(target: "server", "Starting gameloop!");
+	info!("Starting gameloop!");
 
 	// Need to run the event loop on the current
 	// thread since Dispatcher doesn't implement Send
