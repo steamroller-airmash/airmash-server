@@ -88,12 +88,19 @@ impl<'a> System<'a> for PickupFlagSystem {
 			}
 
 			let nearest = nearest.unwrap().0;
+			let team = *data.team.get(nearest).unwrap();
 
 			*data.carrier.get_mut(f_ent).unwrap() = FlagCarrier(Some(nearest));
 
+			let ty = if team == f_team {
+				FlagEventType::Return
+			} else {
+				FlagEventType::PickUp
+			};
+
 			data.channel.single_write(FlagEvent {
-				ty: FlagEventType::PickUp,
-				carrier: Some(nearest),
+				ty,
+				player: Some(nearest),
 				flag: f_ent
 			});
 		}

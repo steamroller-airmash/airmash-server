@@ -19,19 +19,16 @@ pub struct FlagPosition(pub Position);
 pub enum FlagEventType {
 	PickUp,
 	Return,
+	Capture,
 	Drop
 }
 
 #[derive(Copy, Clone, Debug)]
 pub struct FlagEvent {
 	pub ty: FlagEventType,
-	pub carrier: Option<Entity>,
+	/// Player that carried out the action (capturer, player that returned)
+	pub player: Option<Entity>,
 	pub flag: Entity,
-}
-
-pub struct CaptureEvent {
-	pub player: Entity,
-	pub flag: Entity
 }
 
 #[derive(Copy, Clone, Debug, Component)]
@@ -42,6 +39,3 @@ pub struct LastDrop {
 
 pub type OnFlag = EventChannel<FlagEvent>;
 pub type OnFlagReader = ReaderId<FlagEvent>;
-
-pub type OnCapture = EventChannel<CaptureEvent>;
-pub type OnCaptureReader = ReaderId<CaptureEvent>;

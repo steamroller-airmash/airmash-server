@@ -31,6 +31,7 @@ tokio-core = "*"
 rayon = "*"
 phf = "*"
 bit_field = "*"
+htmlescape = "*"
 
 [dependencies.ctrlc]
 version = "*"

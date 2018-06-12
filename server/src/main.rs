@@ -33,6 +33,7 @@ extern crate tokio_core;
 extern crate uuid;
 extern crate websocket;
 extern crate ctrlc;
+extern crate htmlescape;
 
 use websocket::futures;
 

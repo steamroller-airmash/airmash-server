@@ -69,4 +69,13 @@ lazy_static! {
 	};
 
 	pub static ref FLAG_NO_REGRAB_TIME: Duration = Duration::from_secs(5);
+
+	pub static ref FLAG_MESSAGE_TEAM: FnvHashMap<Team, &'static str> = {
+		let mut map = FnvHashMap::default();
+
+		map.insert(Team(1), "blueteam");
+		map.insert(Team(2), "redteam");
+
+		map
+	};
 }

@@ -20,7 +20,7 @@ pub struct ReturnFlagSystemData<'a> {
 	pub flag: ReadStorage<'a, IsFlag>,
 	pub carrier: WriteStorage<'a, FlagCarrier>,
 
-	pub channel: Write<'a, OnCapture>,
+	pub channel: Write<'a, OnFlag>,
 	pub conns: Read<'a, Connections>,
 }
 
@@ -62,8 +62,9 @@ impl<'a> System<'a> for ReturnFlagSystem {
 					to_bytes(&ServerPacket::GameFlag(packet)).unwrap()
 				));
 
-				channel.single_write(CaptureEvent {
-					player: captor,
+				channel.single_write(FlagEvent {
+					ty: FlagEventType::Capture,
+					player: Some(captor),
 					flag: ent
 				});
 			});

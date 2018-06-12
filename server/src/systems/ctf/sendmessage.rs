@@ -54,7 +54,7 @@ impl<'a> System<'a> for SendFlagMessageSystem {
 				ty,
 				flag: *team,
 				pos: *pos,
-				id: evt.carrier,
+				id: evt.player,
 				blueteam: 0,
 				redteam: 0
 			};
