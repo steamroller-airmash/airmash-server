@@ -31,7 +31,10 @@ tokio-core = "*"
 rayon = "*"
 phf = "*"
 bit_field = "*"
-ctrlc = "*"
+
+[dependencies.ctrlc]
+version = "*"
+features = [ "termination" ]
 
 [dependencies.uuid]
 version = "*"

@@ -13,6 +13,7 @@ pub mod textbig {
 			return Err(Error::ArrayLengthTooBig);
 		}
 
+		println!("{}", bytes.len());
 		ser.serialize_u16(bytes.len() as u16)?;
 		ser.serialize_bytes(bytes)
 	}

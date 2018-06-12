@@ -89,7 +89,7 @@ enum ServerCustomType : u8 {
 
 # TODO: rev-eng
 enum ServerMessageType : u8 {
-	ShutdownMessage = 15
+	ShutdownMessage = 2
 }
 
 enum PlayerLevelType : u8 {

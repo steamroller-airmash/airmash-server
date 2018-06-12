@@ -195,7 +195,7 @@ mod protocol {
 			FieldType::Simple(name) => {
 				match name {
 					&"Text" =>        return "::protocol::field::text",
-					&"TextBig" =>     return "::protocol::field::text",
+					&"TextBig" =>     return "::protocol::field::textbig",
 					&"Entity" =>      return "::protocol::field::entity",
 					&"Score" =>       return "::protocol::field::score",
 					&"Level" =>       return "::protocol::field::level",

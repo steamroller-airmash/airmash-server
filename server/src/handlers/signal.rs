@@ -11,6 +11,8 @@ use protocol::{to_bytes, ServerPacket};
 use protocol::server::ServerMessage;
 use protocol::ServerMessageType;
 
+use std::process;
+
 #[derive(Default)]
 pub struct SignalHandler {
 	time: Option<Instant>
@@ -20,13 +22,13 @@ impl<'a> System<'a> for SignalHandler {
 	type SystemData = Read<'a, Connections>;
 
 	fn run(&mut self, data: Self::SystemData) {
-		if SHUTDOWN.load(Ordering::Relaxed) {
+		if SHUTDOWN.swap(false, Ordering::Relaxed) {
 
 			if self.time.is_none() {
 				self.time = Some(Instant::now());
 
 				let msg = ServerMessage {
-					duration: 15,
+					duration: 15000,
 					ty: ServerMessageType::ShutdownMessage,
 					text: "Server shutting down in 30 seconds!".to_string()
 				};
@@ -41,11 +43,18 @@ impl<'a> System<'a> for SignalHandler {
 				);
 			}
 			else {
-				let t = self.time.unwrap();
+				info!(
+					"Received second interrupt, server shutting down NOW!"
+				);
 
-				if Instant::now() - t > Duration::from_secs(30) {
-					panic!("Server shutting down!");
-				}
+				process::exit(0);
+			}
+		}
+		else if self.time.is_some() {
+			let t = self.time.unwrap();
+
+			if Instant::now() - t > Duration::from_secs(30) {
+				process::exit(0);
 			}
 		}
 	}
