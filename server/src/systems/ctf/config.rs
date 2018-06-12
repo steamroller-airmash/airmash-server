@@ -38,6 +38,9 @@ lazy_static! {
 
 		map
 	};
+	// TODO: Actually determine this
+	/// Distance that the player must be within to cap
+	pub static ref CAP_RADIUS: Distance = Distance::new(50.0);
 
 	pub static ref FLAG_POS: FnvHashMap<Team, Position> = {
 		let mut map = FnvHashMap::default();
@@ -52,6 +55,15 @@ lazy_static! {
 			Distance::new(8600.0), 
 			Distance::new(-940.0))
 		);
+
+		map
+	};
+	pub static ref FLAG_RETURN_POS: FnvHashMap<Team, Position> = {
+		let mut map = FnvHashMap::default();
+
+		// Flags get returned at the opposite base
+		map.insert(Team(2), FLAG_POS[&Team(1)]);
+		map.insert(Team(1), FLAG_POS[&Team(2)]);
 
 		map
 	};

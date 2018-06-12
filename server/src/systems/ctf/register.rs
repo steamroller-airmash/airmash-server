@@ -43,4 +43,6 @@ pub fn register<'a, 'b>(world: &mut World, disp: DispatcherBuilder<'a, 'b>) -> D
 		.with(sendmessage::SendFlagMessageSystem::new(), "ctf_sendmessage", &["ctf_pickupflag"])
 		.with(leaveupdate::LeaveUpdateSystem::new(),     "ctf_leaveupdate", &["position_update"])
 		.with(drop::DropSystem::new(),                   "ctf_drop",        &["ctf_pickupflag"])
+		.with(return_flag::ReturnFlagSystem{},           "ctf_return_flag", &["ctf_pickupflag"])
+		.with(pos_update::PosUpdateSystem{},             "ctf_pos_update",  &["ctf_pickupflag"])
 }

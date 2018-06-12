@@ -29,6 +29,11 @@ pub struct FlagEvent {
 	pub flag: Entity,
 }
 
+pub struct CaptureEvent {
+	pub player: Entity,
+	pub flag: Entity
+}
+
 #[derive(Copy, Clone, Debug, Component)]
 pub struct LastDrop {
 	pub player: Option<Entity>,
@@ -37,3 +42,6 @@ pub struct LastDrop {
 
 pub type OnFlag = EventChannel<FlagEvent>;
 pub type OnFlagReader = ReaderId<FlagEvent>;
+
+pub type OnCapture = EventChannel<CaptureEvent>;
+pub type OnCaptureReader = ReaderId<CaptureEvent>;
