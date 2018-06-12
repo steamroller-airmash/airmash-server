@@ -73,8 +73,8 @@ lazy_static! {
 	pub static ref FLAG_MESSAGE_TEAM: FnvHashMap<Team, &'static str> = {
 		let mut map = FnvHashMap::default();
 
-		map.insert(Team(1), "blueteam");
-		map.insert(Team(2), "redteam");
+		map.insert(Team(1), "blueflag");
+		map.insert(Team(2), "redflag");
 
 		map
 	};
