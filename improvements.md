@@ -13,8 +13,10 @@ that can be done with an airmash server.
 ### Anti-Cheat
 
 - Do not send mimimap positions of prowlers that
-are nearby to the current player (counters prowler
-radar) (not sure if this is an improvement)
+  are nearby to the current player (counters prowler
+  radar) (not sure if this is an improvement)
+- Alternatively, turn up randomization for prowler
+  positions by a large amount
 
 ### Prowlers
 Multiple ideas here
