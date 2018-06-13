@@ -1,4 +1,3 @@
-
 use specs::*;
 use types::*;
 
@@ -6,30 +5,30 @@ use component::channel::*;
 use component::ctf::*;
 use component::time::ThisFrame;
 
-use websocket::OwnedMessage;
 use protocol::server::GameFlag;
-use protocol::{FlagUpdateType, ServerPacket, to_bytes};
+use protocol::{to_bytes, FlagUpdateType, ServerPacket};
+use websocket::OwnedMessage;
 
 pub struct LeaveUpdateSystem {
-	reader: Option<OnPlayerLeaveReader>
+	reader: Option<OnPlayerLeaveReader>,
 }
 
 #[derive(SystemData)]
 pub struct LeaveUpdateSystemData<'a> {
 	pub entities: Entities<'a>,
 	pub channel: Read<'a, OnPlayerLeave>,
-	pub conns:   Read<'a, Connections>,
-	pub pos:     WriteStorage<'a, Position>,
+	pub conns: Read<'a, Connections>,
+	pub pos: WriteStorage<'a, Position>,
 	pub is_flag: ReadStorage<'a, IsFlag>,
 	pub carrier: WriteStorage<'a, FlagCarrier>,
-	pub teams:   ReadStorage<'a, Team>,
+	pub teams: ReadStorage<'a, Team>,
 	pub lastdrop: WriteStorage<'a, LastDrop>,
-	pub thisframe: Read<'a, ThisFrame>
+	pub thisframe: Read<'a, ThisFrame>,
 }
 
 impl LeaveUpdateSystem {
 	pub fn new() -> Self {
-		 Self { reader: None }
+		Self { reader: None }
 	}
 }
 
@@ -39,9 +38,7 @@ impl<'a> System<'a> for LeaveUpdateSystem {
 	fn setup(&mut self, res: &mut Resources) {
 		Self::SystemData::setup(res);
 
-		self.reader = Some(
-			res.fetch_mut::<OnPlayerLeave>().register_reader()
-		);
+		self.reader = Some(res.fetch_mut::<OnPlayerLeave>().register_reader());
 	}
 
 	fn run(&mut self, data: Self::SystemData) {
@@ -60,16 +57,9 @@ impl<'a> System<'a> for LeaveUpdateSystem {
 		for evt in channel.read(self.reader.as_mut().unwrap()) {
 			let player_pos = *pos.get(evt.0).unwrap();
 
-			(
-				&mut pos, 
-				&mut carrier, 
-				&is_flag, 
-				&*entities, 
-				&mut lastdrop
-			).join()
-				.filter(|(_, carrier, _, _, _)| {
-					carrier.0.is_some() && carrier.0.unwrap() == evt.0
-				})
+			(&mut pos, &mut carrier, &is_flag, &*entities, &mut lastdrop)
+				.join()
+				.filter(|(_, carrier, _, _, _)| carrier.0.is_some() && carrier.0.unwrap() == evt.0)
 				.for_each(|(pos, carrier, _, ent, lastdrop)| {
 					let team = teams.get(ent).unwrap();
 
@@ -79,7 +69,7 @@ impl<'a> System<'a> for LeaveUpdateSystem {
 						id: None,
 						pos: player_pos,
 						blueteam: 0,
-						redteam: 0
+						redteam: 0,
 					};
 
 					*pos = player_pos;
@@ -91,11 +81,11 @@ impl<'a> System<'a> for LeaveUpdateSystem {
 						// picking the flag up again if the pickup update
 						// runs after this system
 						player: Some(ent),
-						time: thisframe.0
+						time: thisframe.0,
 					};
 
 					conns.send_to_all(OwnedMessage::Binary(
-						to_bytes(&ServerPacket::GameFlag(packet)).unwrap()
+						to_bytes(&ServerPacket::GameFlag(packet)).unwrap(),
 					));
 				});
 		}

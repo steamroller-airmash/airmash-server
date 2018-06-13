@@ -1,4 +1,3 @@
-
 use specs::*;
 use types::*;
 
@@ -11,15 +10,16 @@ pub struct PosUpdateSystemData<'a> {
 	pub ents: Entities<'a>,
 	pub pos: WriteStorage<'a, Position>,
 	pub flag: ReadStorage<'a, IsFlag>,
-	pub carrier: ReadStorage<'a, FlagCarrier>
+	pub carrier: ReadStorage<'a, FlagCarrier>,
 }
 
 impl<'a> System<'a> for PosUpdateSystem {
 	type SystemData = PosUpdateSystemData<'a>;
 
 	fn run(&mut self, mut data: Self::SystemData) {
-		let carriers = (&data.carrier, &*data.ents, &data.flag).join()
-			.filter(|(c, _,  _)| c.0.is_some())
+		let carriers = (&data.carrier, &*data.ents, &data.flag)
+			.join()
+			.filter(|(c, _, _)| c.0.is_some())
 			.map(|(c, ent, _)| (c.0.unwrap(), ent))
 			.collect::<Vec<(Entity, Entity)>>();
 

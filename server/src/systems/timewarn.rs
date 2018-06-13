@@ -1,16 +1,12 @@
-
+use component::time::{LastFrame, ThisFrame};
 use specs::*;
-use component::time::{ThisFrame, LastFrame};
 
 use std::time::Duration;
 
-pub struct TimeWarn{}
+pub struct TimeWarn {}
 
 impl<'a> System<'a> for TimeWarn {
-	type SystemData = (
-		Read<'a, ThisFrame>,
-		Read<'a, LastFrame>
-	);
+	type SystemData = (Read<'a, ThisFrame>, Read<'a, LastFrame>);
 
 	fn run(&mut self, (this, last): Self::SystemData) {
 		let millis = 18;

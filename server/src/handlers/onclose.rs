@@ -5,10 +5,10 @@ use specs::*;
 use types::*;
 use websocket::OwnedMessage;
 
-use types::event::ConnectionClose;
-use component::event::PlayerLeave as EvtPlayerLeave;
 use component::channel::{OnClose, OnPlayerLeave};
 use component::counter::PlayersGame;
+use component::event::PlayerLeave as EvtPlayerLeave;
+use types::event::ConnectionClose;
 
 pub struct OnCloseHandler {
 	reader: Option<ReaderId<ConnectionClose>>,
@@ -26,7 +26,7 @@ impl<'a> System<'a> for OnCloseHandler {
 		Read<'a, OnClose>,
 		Write<'a, Connections>,
 		Write<'a, PlayersGame>,
-		Write<'a, OnPlayerLeave>
+		Write<'a, OnPlayerLeave>,
 	);
 
 	fn setup(&mut self, res: &mut Resources) {
@@ -38,7 +38,10 @@ impl<'a> System<'a> for OnCloseHandler {
 		Self::SystemData::setup(res);
 	}
 
-	fn run(&mut self, (entities, channel, mut connections, mut players, mut onleave): Self::SystemData) {
+	fn run(
+		&mut self,
+		(entities, channel, mut connections, mut players, mut onleave): Self::SystemData,
+	) {
 		if let Some(ref mut reader) = self.reader {
 			for evt in channel.read(reader) {
 				let (player, ty) = {
@@ -59,9 +62,7 @@ impl<'a> System<'a> for OnCloseHandler {
 						players.0 -= 1;
 
 						// Send out PlayerLeave message
-						let player_leave = PlayerLeave {
-							id: ent,
-						};
+						let player_leave = PlayerLeave { id: ent };
 						connections.send_to_all(OwnedMessage::Binary(
 							to_bytes(&ServerPacket::PlayerLeave(player_leave)).unwrap(),
 						));

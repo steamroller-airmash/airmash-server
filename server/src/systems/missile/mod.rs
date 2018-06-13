@@ -1,8 +1,7 @@
-
-mod fire;
 mod cull;
+mod fire;
 mod update;
 
 pub use self::cull::MissileCull;
-pub use self::update::MissileUpdate;
 pub use self::fire::MissileFireHandler;
+pub use self::update::MissileUpdate;

@@ -1,4 +1,3 @@
-
 #![allow(dead_code)]
 #![feature(optin_builtin_traits)]
 #![feature(trace_macros)]
@@ -14,14 +13,16 @@ extern crate specs_derive;
 extern crate shred_derive;
 #[macro_use]
 extern crate lazy_static;
-#[cfg_attr(feature="serde", macro_use)]
-#[cfg(feature="serde")]
+#[cfg_attr(feature = "serde", macro_use)]
+#[cfg(feature = "serde")]
 extern crate serde;
 
 // Regular Dependencies
-extern crate phf;
 extern crate bit_field;
+extern crate ctrlc;
 extern crate fnv;
+extern crate htmlescape;
+extern crate phf;
 extern crate rand;
 extern crate rayon;
 extern crate shred;
@@ -32,35 +33,33 @@ extern crate tokio;
 extern crate tokio_core;
 extern crate uuid;
 extern crate websocket;
-extern crate ctrlc;
-extern crate htmlescape;
 
 use websocket::futures;
 
 // Modules
+mod component;
 mod consts;
 mod handlers;
+mod protocol;
 mod server;
 mod systems;
 mod timeloop;
 mod timers;
 mod types;
-mod component;
-mod protocol;
 
 use protocol as airmash_protocol;
 
 use std::env;
+use std::sync::atomic::Ordering;
 use std::sync::mpsc::{channel, Receiver};
 use std::thread;
 use std::time::{Duration, Instant};
-use std::sync::atomic::Ordering;
 
 use specs::{Dispatcher, DispatcherBuilder, World};
 use tokio::runtime::current_thread::Runtime;
 
+use component::time::{LastFrame, StartTime, ThisFrame};
 use timeloop::timeloop;
-use component::time::{ThisFrame, LastFrame, StartTime};
 
 use types::event::{ConnectionEvent, TimerEvent};
 
@@ -99,13 +98,8 @@ fn setup_panic_handler() {
 			// no need to print to the log
 			process::exit(0);
 		}
-		error!(
-			"A fatal error occurred within a server thread. Aborting!"
-		);
-		error!(
-			"Error Info: {}",
-			panic_info
-		);
+		error!("A fatal error occurred within a server thread. Aborting!");
+		error!("Error Info: {}", panic_info);
 
 		orig_handler(panic_info);
 		process::exit(1);
@@ -185,7 +179,7 @@ fn main() {
 		},
 		Duration::from_nanos(16666667),
 	));
-	
+
 	runtime.run().unwrap();
 
 	// Shut down

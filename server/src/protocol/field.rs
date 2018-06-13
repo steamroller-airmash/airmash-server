@@ -1,5 +1,5 @@
-use protocol::serde_am::*;
 use protocol::error::SerError as Error;
+use protocol::serde_am::*;
 
 pub type SerResult = Result<(), SerError>;
 
@@ -161,7 +161,7 @@ pub mod coord24 {
 	const SHIFT: i32 = 8388608;
 	const MULT: f32 = 512.0;
 
-	pub fn serialize(val: &f32, ser: &mut Serializer) -> SerResult  {
+	pub fn serialize(val: &f32, ser: &mut Serializer) -> SerResult {
 		uint24::serialize(((*val * MULT) as i32 + SHIFT) as u32, ser)
 	}
 	pub fn deserialize<'de>(de: &mut Deserializer<'de>) -> Result<f32, DeError> {
@@ -187,10 +187,7 @@ pub mod accel {
 		let x: f32 = (((de.deserialize_u16()? as i32) - SHIFT) as f32) / MULT;
 		let y: f32 = (((de.deserialize_u16()? as i32) - SHIFT) as f32) / MULT;
 
-		Ok(Accel::new(
-			AccelScalar::new(x),
-			AccelScalar::new(y)
-		))
+		Ok(Accel::new(AccelScalar::new(x), AccelScalar::new(y)))
 	}
 }
 
@@ -212,10 +209,7 @@ pub mod velocity {
 		let x: f32 = (((de.deserialize_u16()? as i32) - SHIFT) as f32) / MULT;
 		let y: f32 = (((de.deserialize_u16()? as i32) - SHIFT) as f32) / MULT;
 
-		Ok(Velocity::new(
-			Speed::new(x),
-			Speed::new(y)
-		))
+		Ok(Velocity::new(Speed::new(x), Speed::new(y)))
 	}
 }
 
@@ -233,7 +227,9 @@ pub mod speed {
 		ser.serialize_u16(((val.inner() * MULT) as i32 + SHIFT) as u16)
 	}
 	pub fn deserialize<'de>(de: &mut Deserializer<'de>) -> Result<Speed, DeError> {
-		Ok(Speed::new((((de.deserialize_u16()? as i32) - SHIFT) as f32) / MULT))
+		Ok(Speed::new(
+			(((de.deserialize_u16()? as i32) - SHIFT) as f32) / MULT,
+		))
 	}
 }
 
@@ -284,10 +280,8 @@ pub mod option_entity {
 			Some(val) => {
 				assert!(val.id() < 0xFFFF);
 				ser.serialize_u16(val.id() as u16)
-			},
-			None => {
-				ser.serialize_u16(0)
 			}
+			None => ser.serialize_u16(0),
 		}
 	}
 	pub fn deserialize<'de>(_: &mut Deserializer<'de>) -> Result<Option<Entity>, DeError> {
@@ -300,9 +294,10 @@ macro_rules! serde_inner {
 		pub mod $name {
 			use protocol::field::*;
 			use types::*;
-			
+
 			pub fn deserialize_inner<'de, T>(de: &mut Deserializer<'de>) -> Result<T, DeError>
-				where T: Deserialize<'de>
+			where
+				T: Deserialize<'de>,
 			{
 				T::deserialize(de)
 			}
@@ -314,7 +309,7 @@ macro_rules! serde_inner {
 				Ok($type(deserialize_inner(de)?))
 			}
 		}
-	}
+	};
 }
 
 serde_inner!(score, Score);
@@ -332,7 +327,7 @@ pub mod pos {
 	pub fn deserialize<'de>(de: &mut Deserializer<'de>) -> Result<Position, DeError> {
 		Ok(Position::new(
 			Distance::new(coordx::deserialize(de)?),
-			Distance::new(coordy::deserialize(de)?)
+			Distance::new(coordy::deserialize(de)?),
 		))
 	}
 }
@@ -348,7 +343,7 @@ pub mod pos24 {
 	pub fn deserialize<'de>(de: &mut Deserializer<'de>) -> Result<Position, DeError> {
 		Ok(Position::new(
 			Distance::new(coord24::deserialize(de)?),
-			Distance::new(coord24::deserialize(de)?)
+			Distance::new(coord24::deserialize(de)?),
 		))
 	}
 }
@@ -364,7 +359,7 @@ pub mod pos_f32 {
 	pub fn deserialize<'de>(de: &mut Deserializer<'de>) -> Result<Position, DeError> {
 		Ok(Position::new(
 			Distance::new(de.deserialize_f32()?),
-			Distance::new(de.deserialize_f32()?)
+			Distance::new(de.deserialize_f32()?),
 		))
 	}
 }
@@ -380,7 +375,7 @@ pub mod vel_u {
 	pub fn deserialize<'de>(de: &mut Deserializer<'de>) -> Result<Velocity, DeError> {
 		Ok(Velocity::new(
 			speed::deserialize(de)?,
-			speed::deserialize(de)?
+			speed::deserialize(de)?,
 		))
 	}
 }
@@ -396,7 +391,7 @@ pub mod lowrespos {
 	pub fn deserialize<'de>(de: &mut Deserializer<'de>) -> Result<Position, DeError> {
 		Ok(Position::new(
 			Distance::new(((de.deserialize_u8()? as i32 - 128) * 128) as f32),
-			Distance::new(((de.deserialize_u8()? as i32 - 128) * 64) as f32)
+			Distance::new(((de.deserialize_u8()? as i32 - 128) * 64) as f32),
 		))
 	}
 }
@@ -462,4 +457,3 @@ pub mod flag {
 		Ok(Team(de.deserialize_u8()? as u16))
 	}
 }
-

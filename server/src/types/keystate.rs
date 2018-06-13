@@ -20,9 +20,7 @@ pub struct KeyState {
 
 impl KeyState {
 	pub fn boost(&self, plane: &Plane) -> bool {
-		*plane == PlaneType::Predator && self.special && (
-			self.up || self.down
-		)
+		*plane == PlaneType::Predator && self.special && (self.up || self.down)
 	}
 	pub fn strafe(&self, plane: &Plane) -> bool {
 		*plane == PlaneType::Mohawk && self.special
@@ -37,7 +35,7 @@ impl KeyState {
 			boost: self.boost(plane),
 			strafe: self.strafe(plane),
 			stealth: self.stealthed,
-			flagspeed: self.flagspeed
+			flagspeed: self.flagspeed,
 		}
 	}
 }

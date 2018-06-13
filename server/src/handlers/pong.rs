@@ -1,8 +1,8 @@
+use component::counter::PlayersGame;
+use component::time::ThisFrame;
 use shrev::*;
 use specs::*;
 use types::*;
-use component::counter::PlayersGame;
-use component::time::ThisFrame;
 
 use std::time::Instant;
 
@@ -20,7 +20,7 @@ pub struct PongHandlerData<'a> {
 	channel: Read<'a, EventChannel<(ConnectionId, Pong)>>,
 	conns: Read<'a, Connections>,
 	thisframe: Read<'a, ThisFrame>,
-	playersgame: Read<'a, PlayersGame>
+	playersgame: Read<'a, PlayersGame>,
 }
 
 impl PongHandler {
@@ -30,10 +30,7 @@ impl PongHandler {
 }
 
 impl<'a> System<'a> for PongHandler {
-	type SystemData = (
-		PongHandlerData<'a>,
-		WriteStorage<'a, PingData>,
-	);
+	type SystemData = (PongHandlerData<'a>, WriteStorage<'a, PingData>);
 
 	fn setup(&mut self, res: &mut Resources) {
 		self.reader = Some(
@@ -46,22 +43,23 @@ impl<'a> System<'a> for PongHandler {
 
 	fn run(&mut self, (data, mut pingdata): Self::SystemData) {
 		let now = Instant::now();
-		
+
 		for evt in data.channel.read(self.reader.as_mut().unwrap()) {
 			let player = match data.conns.0.get(&evt.0) {
 				Some(p) => match p.player {
 					Some(p) => p,
-					None => continue
+					None => continue,
 				},
-				None => continue
+				None => continue,
 			};
 
-			let ping = match pingdata.get_mut(player)
+			let ping = match pingdata
+				.get_mut(player)
 				.unwrap()
 				.receive_ping(evt.1.num, now)
 			{
 				Some(ping) => ping,
-				None => continue
+				None => continue,
 			};
 
 			let result = PingResult {
@@ -70,9 +68,10 @@ impl<'a> System<'a> for PongHandler {
 				players_total: data.playersgame.0,
 			};
 
-			data.conns.send_to(evt.0, OwnedMessage::Binary(
-				to_bytes(&ServerPacket::PingResult(result)).unwrap()
-			));
+			data.conns.send_to(
+				evt.0,
+				OwnedMessage::Binary(to_bytes(&ServerPacket::PingResult(result)).unwrap()),
+			);
 		}
 	}
 }

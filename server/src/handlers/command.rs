@@ -2,13 +2,9 @@ use shrev::*;
 use specs::*;
 use types::*;
 
-use airmash_protocol::server::{
-	PlayerType,
-	PlayerRespawn,
-	PlayerFlag,
-};
 use airmash_protocol::client::Command;
-use airmash_protocol::{to_bytes, ServerPacket, FlagCode, Upgrades as ProtocolUpgrades};
+use airmash_protocol::server::{PlayerFlag, PlayerRespawn, PlayerType};
+use airmash_protocol::{to_bytes, FlagCode, ServerPacket, Upgrades as ProtocolUpgrades};
 use websocket::OwnedMessage;
 
 pub struct CommandHandler {
@@ -24,7 +20,7 @@ pub struct CommandHandlerData<'a> {
 
 	pos: WriteStorage<'a, Position>,
 	rot: WriteStorage<'a, Rotation>,
-	vel: WriteStorage<'a, Velocity>
+	vel: WriteStorage<'a, Velocity>,
 }
 
 impl CommandHandler {
@@ -49,7 +45,7 @@ impl<'a> System<'a> for CommandHandler {
 		for evt in data.channel.read(self.reader.as_mut().unwrap()) {
 			let player = match data.conns.0[&evt.0].player {
 				Some(p) => p,
-				None => continue
+				None => continue,
 			};
 
 			let packet;
@@ -59,19 +55,18 @@ impl<'a> System<'a> for CommandHandler {
 
 				packet = ServerPacket::PlayerFlag(PlayerFlag {
 					id: player,
-					flag: flag
+					flag: flag,
 				});
 
 				*data.flags.get_mut(player).unwrap() = flag;
-			}
-			else if evt.1.com == "respawn" {
+			} else if evt.1.com == "respawn" {
 				let num = match evt.1.data.parse() {
 					Ok(n) => n,
-					Err(_) => continue
+					Err(_) => continue,
 				};
 				let ty = match Plane::try_from(num) {
 					Some(n) => n,
-					None => continue
+					None => continue,
 				};
 
 				*data.pos.get_mut(player).unwrap() = Position::default();
@@ -84,22 +79,17 @@ impl<'a> System<'a> for CommandHandler {
 						id: player,
 						pos: *data.pos.get(player).unwrap(),
 						rot: *data.rot.get(player).unwrap(),
-						upgrades: ProtocolUpgrades::default()
-					})).unwrap()
+						upgrades: ProtocolUpgrades::default(),
+					})).unwrap(),
 				));
 
-				packet = ServerPacket::PlayerType(PlayerType {
-					id: player,
-					ty: ty
-				});
-			}
-			else {
+				packet = ServerPacket::PlayerType(PlayerType { id: player, ty: ty });
+			} else {
 				continue;
 			}
 
-			data.conns.send_to_all(OwnedMessage::Binary(
-				to_bytes(&packet).unwrap()
-			));
+			data.conns
+				.send_to_all(OwnedMessage::Binary(to_bytes(&packet).unwrap()));
 		}
 	}
 }

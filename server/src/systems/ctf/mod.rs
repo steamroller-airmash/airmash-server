@@ -1,13 +1,12 @@
-
-mod drop;
 mod config;
-mod register;
-mod pickupflag;
-mod sendmessage;
-mod loginupdate;
-mod leaveupdate;
-mod return_flag;
-mod pos_update;
+mod drop;
 mod flag_message;
+mod leaveupdate;
+mod loginupdate;
+mod pickupflag;
+mod pos_update;
+mod register;
+mod return_flag;
+mod sendmessage;
 
 pub use self::register::register;

@@ -1,9 +1,11 @@
-
+use handlers;
 use specs::*;
 use systems::*;
-use handlers;
 
-pub fn register<'a, 'b>(_: &mut World, disp: DispatcherBuilder<'a, 'b>) -> DispatcherBuilder<'a, 'b> {
+pub fn register<'a, 'b>(
+	_: &mut World,
+	disp: DispatcherBuilder<'a, 'b>,
+) -> DispatcherBuilder<'a, 'b> {
 	disp
 		// Add handlers here
 		.with(handlers::OnOpenHandler::new(),  "onopen",  &["packet"])

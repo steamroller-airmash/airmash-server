@@ -109,12 +109,9 @@ impl Connections {
 	}
 
 	pub fn send_to_player(&self, player: Entity, msg: OwnedMessage) {
-		let conn = self.0.iter()
-			.find(|(_, c)| {
-				c.player.is_some()
-					&& c.ty == ConnectionType::Primary
-					&& c.player.unwrap() == player 
-			});
+		let conn = self.0.iter().find(|(_, c)| {
+			c.player.is_some() && c.ty == ConnectionType::Primary && c.player.unwrap() == player
+		});
 
 		if conn.is_none() {
 			warn!(

@@ -1,4 +1,3 @@
-
 use specs::*;
 
 #[derive(Clone, Debug, Copy, Component, Default)]

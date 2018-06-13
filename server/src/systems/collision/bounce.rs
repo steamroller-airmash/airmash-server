@@ -2,7 +2,7 @@ use shrev::*;
 use specs::*;
 use types::*;
 
-use component::time::{ThisFrame, StartTime};
+use component::time::{StartTime, ThisFrame};
 
 use systems::collision::bucket::Collision;
 
@@ -46,7 +46,7 @@ impl<'a> System<'a> for BounceSystem {
 
 	fn run(&mut self, mut data: Self::SystemData) {
 		for evt in data.channel.read(self.reader.as_mut().unwrap()) {
-			if evt.0.layer == 0 || evt.1.layer == 0  {
+			if evt.0.layer == 0 || evt.1.layer == 0 {
 				assert!(evt.1.layer != evt.0.layer);
 
 				let rel;

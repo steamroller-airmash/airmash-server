@@ -1,6 +1,6 @@
+use component::time::*;
 use specs::*;
 use types::*;
-use component::time::*;
 
 use std::f32::consts;
 use std::marker::PhantomData;
@@ -172,7 +172,7 @@ impl PositionUpdate {
 					let ups = ServerUpgrades {
 						speed: upgrades.speed,
 						shield: powerups.shield,
-						inferno: powerups.inferno
+						inferno: powerups.inferno,
 					};
 
 					let packet = PlayerUpdate {
@@ -224,7 +224,7 @@ impl PositionUpdate {
 					let ups = ServerUpgrades {
 						speed: upgrades.speed,
 						shield: powerups.shield,
-						inferno: powerups.inferno	
+						inferno: powerups.inferno,
 					};
 
 					let packet = PlayerUpdate {

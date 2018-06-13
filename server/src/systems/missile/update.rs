@@ -1,9 +1,8 @@
-
 use specs::*;
 use types::*;
 
-use component::time::{LastFrame, ThisFrame};
 use component::flag::IsMissile;
+use component::time::{LastFrame, ThisFrame};
 
 pub struct MissileUpdate;
 
@@ -21,24 +20,17 @@ pub struct MissileUpdateSystemData<'a> {
 	pub mob: ReadStorage<'a, Mob>,
 	pub flag: ReadStorage<'a, IsMissile>,
 	pub thisframe: Read<'a, ThisFrame>,
-	pub lastframe: Read<'a, LastFrame>
+	pub lastframe: Read<'a, LastFrame>,
 }
 
 impl<'a> System<'a> for MissileUpdate {
-	type SystemData = (
-		Read<'a, Config>, 
-		MissileUpdateSystemData<'a>
-	);
+	type SystemData = (Read<'a, Config>, MissileUpdateSystemData<'a>);
 
 	fn run(&mut self, (config, mut data): Self::SystemData) {
 		let delta = Time::from(data.thisframe.0 - data.lastframe.0) * 60.0;
 
-		(
-			&mut data.pos,
-			&mut data.vel,
-			&data.mob,
-			&data.flag
-		).join()
+		(&mut data.pos, &mut data.vel, &data.mob, &data.flag)
+			.join()
 			.for_each(move |(pos, vel, mob, _)| {
 				let info = config.mobs[*mob].missile.unwrap();
 
@@ -56,10 +48,18 @@ impl<'a> System<'a> for MissileUpdate {
 
 				*pos += speed * delta + (*vel - speed) * delta * 0.5;
 
-				if pos.x < -*BOUNDARY_X { pos.x += *SIZE_X }
-				if pos.x > *BOUNDARY_X  { pos.x -= *SIZE_X }
-				if pos.y < -*BOUNDARY_Y { pos.y += *SIZE_Y }
-				if pos.y < *BOUNDARY_Y  { pos.y -= *SIZE_Y }
+				if pos.x < -*BOUNDARY_X {
+					pos.x += *SIZE_X
+				}
+				if pos.x > *BOUNDARY_X {
+					pos.x -= *SIZE_X
+				}
+				if pos.y < -*BOUNDARY_Y {
+					pos.y += *SIZE_Y
+				}
+				if pos.y < *BOUNDARY_Y {
+					pos.y -= *SIZE_Y
+				}
 			});
 	}
 }

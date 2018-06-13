@@ -1,4 +1,3 @@
-
 use specs::*;
 use types::*;
 
@@ -7,21 +6,21 @@ use systems::ctf::config as ctfconfig;
 
 use htmlescape;
 
-use websocket::OwnedMessage;
-use protocol::server::{ServerPacket, ServerMessage};
+use protocol::server::{ServerMessage, ServerPacket};
 use protocol::{to_bytes, ServerMessageType};
+use websocket::OwnedMessage;
 
 pub struct PickupMessageSystem {
-	reader: Option<OnFlagReader>
+	reader: Option<OnFlagReader>,
 }
 
 #[derive(SystemData)]
 pub struct PickupMessageSystemData<'a> {
 	pub channel: Read<'a, OnFlag>,
-	pub conns:   Read<'a, Connections>,
+	pub conns: Read<'a, Connections>,
 
 	pub names: ReadStorage<'a, Name>,
-	pub teams: ReadStorage<'a, Team>
+	pub teams: ReadStorage<'a, Team>,
 }
 
 impl PickupMessageSystem {
@@ -36,9 +35,7 @@ impl<'a> System<'a> for PickupMessageSystem {
 	fn setup(&mut self, res: &mut Resources) {
 		Self::SystemData::setup(res);
 
-		self.reader = Some(
-			res.fetch_mut::<OnFlag>().register_reader()
-		);
+		self.reader = Some(res.fetch_mut::<OnFlag>().register_reader());
 	}
 
 	fn run(&mut self, data: Self::SystemData) {
@@ -47,7 +44,7 @@ impl<'a> System<'a> for PickupMessageSystem {
 				FlagEventType::Return => "Returned",
 				FlagEventType::PickUp => "Taken",
 				FlagEventType::Capture => "Captured",
-				FlagEventType::Drop => continue
+				FlagEventType::Drop => continue,
 			};
 
 			let flag_team = data.teams.get(evt.flag).unwrap();
@@ -63,11 +60,11 @@ impl<'a> System<'a> for PickupMessageSystem {
 			let packet = ServerMessage {
 				ty: ServerMessageType::FlagMessage,
 				duration: 3000,
-				text: msg
+				text: msg,
 			};
 
 			data.conns.send_to_all(OwnedMessage::Binary(
-				to_bytes(&ServerPacket::ServerMessage(packet)).unwrap()
+				to_bytes(&ServerPacket::ServerMessage(packet)).unwrap(),
 			));
 		}
 	}

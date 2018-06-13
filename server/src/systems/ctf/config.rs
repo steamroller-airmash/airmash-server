@@ -1,6 +1,5 @@
-
-use types::*;
 use protocol::PlaneType;
+use types::*;
 
 use fnv::FnvHashMap;
 use std::time::Duration;
@@ -44,15 +43,15 @@ lazy_static! {
 
 	pub static ref FLAG_POS: FnvHashMap<Team, Position> = {
 		let mut map = FnvHashMap::default();
-	
+
 		// Blue team
 		map.insert(Team(1), Position::new(
-			Distance::new(-9670.0), 
+			Distance::new(-9670.0),
 			Distance::new(-1470.0))
 		);
 		// Red team
 		map.insert(Team(2), Position::new(
-			Distance::new(8600.0), 
+			Distance::new(8600.0),
 			Distance::new(-940.0))
 		);
 

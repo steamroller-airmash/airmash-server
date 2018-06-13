@@ -1,32 +1,29 @@
-
 use specs::*;
 use types::*;
 
 use component::ctf::*;
-use websocket::OwnedMessage;
-use protocol::FlagUpdateType;
 use protocol::server::GameFlag;
+use protocol::FlagUpdateType;
 use protocol::{to_bytes, ServerPacket};
+use websocket::OwnedMessage;
 
 pub struct SendFlagMessageSystem {
-	reader: Option<OnFlagReader>
+	reader: Option<OnFlagReader>,
 }
 
 impl SendFlagMessageSystem {
 	pub fn new() -> Self {
-		Self {
-			reader: None
-		}
+		Self { reader: None }
 	}
 }
 
 #[derive(SystemData)]
 pub struct SendFlagMessageSystemData<'a> {
-	pub conns:   Read<'a, Connections>,
+	pub conns: Read<'a, Connections>,
 	pub channel: Read<'a, OnFlag>,
 
 	pub team: ReadStorage<'a, Team>,
-	pub pos:  ReadStorage<'a, Position>
+	pub pos: ReadStorage<'a, Position>,
 }
 
 impl<'a> System<'a> for SendFlagMessageSystem {
@@ -35,16 +32,14 @@ impl<'a> System<'a> for SendFlagMessageSystem {
 	fn setup(&mut self, res: &mut Resources) {
 		Self::SystemData::setup(res);
 
-		self.reader = Some(
-			res.fetch_mut::<OnFlag>().register_reader()
-		);
+		self.reader = Some(res.fetch_mut::<OnFlag>().register_reader());
 	}
 
 	fn run(&mut self, data: Self::SystemData) {
 		for evt in data.channel.read(self.reader.as_mut().unwrap()) {
 			let ty = match evt.ty {
 				FlagEventType::PickUp => FlagUpdateType::Carrier,
-				_ => FlagUpdateType::Position
+				_ => FlagUpdateType::Position,
 			};
 
 			let team = data.team.get(evt.flag).unwrap();
@@ -56,11 +51,11 @@ impl<'a> System<'a> for SendFlagMessageSystem {
 				pos: *pos,
 				id: evt.player,
 				blueteam: 0,
-				redteam: 0
+				redteam: 0,
 			};
 
 			data.conns.send_to_all(OwnedMessage::Binary(
-				to_bytes(&ServerPacket::GameFlag(packet)).unwrap()
+				to_bytes(&ServerPacket::GameFlag(packet)).unwrap(),
 			));
 		}
 	}

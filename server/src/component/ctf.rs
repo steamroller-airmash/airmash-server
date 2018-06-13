@@ -1,6 +1,5 @@
-
-use specs::*;
 use shrev::*;
+use specs::*;
 use types::Position;
 
 use std::time::Instant;
@@ -20,7 +19,7 @@ pub enum FlagEventType {
 	PickUp,
 	Return,
 	Capture,
-	Drop
+	Drop,
 }
 
 #[derive(Copy, Clone, Debug)]
@@ -34,7 +33,7 @@ pub struct FlagEvent {
 #[derive(Copy, Clone, Debug, Component)]
 pub struct LastDrop {
 	pub player: Option<Entity>,
-	pub time:   Instant
+	pub time: Instant,
 }
 
 pub type OnFlag = EventChannel<FlagEvent>;

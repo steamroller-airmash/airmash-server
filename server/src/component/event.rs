@@ -1,7 +1,6 @@
-
 use specs::*;
-use types::ConnectionId;
 use std::time::Instant;
+use types::ConnectionId;
 
 #[derive(Copy, Clone, Debug, Default, Component)]
 pub struct ScoreDetailedEvent(pub ConnectionId);

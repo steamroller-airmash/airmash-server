@@ -1,8 +1,8 @@
-use airmash_protocol::{PlaneType, MobType};
+use airmash_protocol::{MobType, PlaneType};
 use fnv::FnvHashMap;
 use std::ops::Index;
-use std::vec::Vec;
 use std::time::Duration;
+use std::vec::Vec;
 
 use types::*;
 
@@ -49,14 +49,14 @@ pub struct MissileInfo {
 	pub max_speed: Speed,
 	pub accel: AccelScalar,
 	pub base_speed: Speed,
-	pub speed_factor: f32
+	pub speed_factor: f32,
 }
 
 #[derive(Clone, Debug, Default)]
 pub struct MobInfo {
 	pub lifetime: Duration,
 	pub hit_circles: Vec<HitCircle>,
-	pub missile: Option<MissileInfo>
+	pub missile: Option<MissileInfo>,
 }
 
 #[derive(Clone)]
@@ -67,7 +67,7 @@ pub struct MobInfos(pub FnvHashMap<MobType, MobInfo>);
 #[derive(Clone, Default)]
 pub struct Config {
 	pub planes: PlaneInfos,
-	pub mobs: MobInfos
+	pub mobs: MobInfos,
 }
 
 impl Index<Plane> for PlaneInfos {
@@ -88,11 +88,8 @@ impl Index<Mob> for MobInfos {
 
 fn hit_circle(x: i16, y: i16, r: i16) -> HitCircle {
 	HitCircle {
-		offset: Position::new(
-			Distance::new(x as f32),
-			Distance::new(y as f32)
-		),
-		radius: Distance::new(r as f32)
+		offset: Position::new(Distance::new(x as f32), Distance::new(y as f32)),
+		radius: Distance::new(r as f32),
 	}
 }
 
@@ -159,7 +156,7 @@ impl Default for PlaneInfos {
 				missile_type: MobType::GoliathMissile,
 
 				hit_circles: vec![
-					hit_circle( 0, 0, 35),
+					hit_circle(0, 0, 35),
 					hit_circle(50, 14, 16),
 					hit_circle(74, 26, 14),
 					hit_circle(30, 8, 23),
@@ -167,9 +164,9 @@ impl Default for PlaneInfos {
 					hit_circle(-50, 14, 16),
 					hit_circle(-74, 26, 14),
 					hit_circle(-30, 8, 23),
-					hit_circle(-63, 22, 15)
-				]
-			}
+					hit_circle(-63, 22, 15),
+				],
+			},
 		);
 
 		map.insert(
@@ -182,10 +179,10 @@ impl Default for PlaneInfos {
 				boost_factor: 1.0,
 
 				max_speed: Speed::new(6.0),
-				min_speed: Speed::new(0.001),	
+				min_speed: Speed::new(0.001),
 				flag_speed: Speed::new(5.0),
 				inferno_factor: 0.75,
-				
+
 				// TODO: Set these
 				health_regen: HealthRegen::new(0.0),
 				energy_regen: EnergyRegen::new(0.0),
@@ -201,9 +198,9 @@ impl Default for PlaneInfos {
 					hit_circle(0, -12, 15),
 					hit_circle(0, 0, 17),
 					hit_circle(0, 13, 15),
-					hit_circle(0, 26, 15)
-				]
-			}
+					hit_circle(0, 26, 15),
+				],
+			},
 		);
 
 		map.insert(
@@ -219,7 +216,7 @@ impl Default for PlaneInfos {
 				min_speed: Speed::new(0.001),
 				flag_speed: Speed::new(5.0),
 				inferno_factor: 0.75,
-				
+
 				// TODO: Set these
 				health_regen: HealthRegen::new(0.0),
 				energy_regen: EnergyRegen::new(0.0),
@@ -237,9 +234,9 @@ impl Default for PlaneInfos {
 					hit_circle(-14, 12, 13),
 					hit_circle(0, -12, 16),
 					hit_circle(0, -26, 14),
-					hit_circle(0, -35, 12)
-				]
-			}
+					hit_circle(0, -35, 12),
+				],
+			},
 		);
 
 		map.insert(
@@ -272,9 +269,9 @@ impl Default for PlaneInfos {
 					hit_circle(0, -8, 18),
 					hit_circle(19, 20, 10),
 					hit_circle(-19, 20, 10),
-					hit_circle(0, -20, 14)
-				]
-			}
+					hit_circle(0, -20, 14),
+				],
+			},
 		);
 
 		PlaneInfos(map)
@@ -294,10 +291,10 @@ impl Default for MobInfos {
 					max_speed: Speed::new(9.0),
 					accel: AccelScalar::new(0.105),
 					base_speed: Speed::new(4.05),
-					speed_factor: 0.3
+					speed_factor: 0.3,
 				}),
-				hit_circles: vec![]
-			}
+				hit_circles: vec![],
+			},
 		);
 
 		map.insert(
@@ -308,10 +305,10 @@ impl Default for MobInfos {
 					max_speed: Speed::new(6.0),
 					accel: AccelScalar::new(0.0375),
 					base_speed: Speed::new(2.1),
-					speed_factor: 0.3
+					speed_factor: 0.3,
 				}),
-				hit_circles: vec![]
-			}
+				hit_circles: vec![],
+			},
 		);
 
 		map.insert(
@@ -322,10 +319,10 @@ impl Default for MobInfos {
 					max_speed: Speed::new(9.0),
 					accel: AccelScalar::new(0.14),
 					base_speed: Speed::new(5.7),
-					speed_factor: 0.3
+					speed_factor: 0.3,
 				}),
-				hit_circles: vec![]
-			}
+				hit_circles: vec![],
+			},
 		);
 
 		map.insert(
@@ -336,10 +333,10 @@ impl Default for MobInfos {
 					max_speed: Speed::new(7.0),
 					accel: AccelScalar::new(0.0875),
 					base_speed: Speed::new(3.5),
-					speed_factor: 0.3
+					speed_factor: 0.3,
 				}),
-				hit_circles: vec![]
-			}
+				hit_circles: vec![],
+			},
 		);
 
 		map.insert(
@@ -350,10 +347,10 @@ impl Default for MobInfos {
 					max_speed: Speed::new(7.0),
 					accel: AccelScalar::new(0.0875),
 					base_speed: Speed::new(3.5),
-					speed_factor: 0.3
+					speed_factor: 0.3,
 				}),
-				hit_circles: vec![]
-			}
+				hit_circles: vec![],
+			},
 		);
 
 		map.insert(
@@ -364,10 +361,10 @@ impl Default for MobInfos {
 					max_speed: Speed::new(7.0),
 					accel: AccelScalar::new(0.07),
 					base_speed: Speed::new(2.8),
-					speed_factor: 0.3
+					speed_factor: 0.3,
 				}),
-				hit_circles: vec![]
-			}
+				hit_circles: vec![],
+			},
 		);
 
 		// TODO: Powerups

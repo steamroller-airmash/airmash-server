@@ -1,7 +1,6 @@
-
+use consts::TERRAIN;
 use specs::world::*;
 use types::*;
-use consts::TERRAIN;
 
 use systems::collision::array2d::Array2D;
 use systems::collision::bucket::{Bucket, HitCircle};
@@ -15,26 +14,21 @@ pub const BUCKET_HEIGHT: f32 = (32768.0 / (BUCKETS_Y as f64)) as f32;
 
 #[derive(Debug)]
 pub struct Terrain {
-	pub buckets: Array2D<Bucket>
+	pub buckets: Array2D<Bucket>,
 }
 
 impl Terrain {
-	pub fn new<'a, I>(it: I, ents: &EntitiesRes) -> Self 
-	where I: Iterator<Item=&'a [i16; 3]>
+	pub fn new<'a, I>(it: I, ents: &EntitiesRes) -> Self
+	where
+		I: Iterator<Item = &'a [i16; 3]>,
 	{
 		let mut buckets = Array2D::<Bucket>::new(BUCKETS_Y, BUCKETS_X);
-		it.map(|var| {
-			HitCircle {
-				pos: Position::new(
-					Distance::new(var[0] as f32),
-					Distance::new(var[1] as f32)
-				),
-				rad: Distance::new(var[2] as f32),
-				layer: 0,
-				ent: ents.entity(0)
-			}
-		})
-		.for_each(|hc| {
+		it.map(|var| HitCircle {
+			pos: Position::new(Distance::new(var[0] as f32), Distance::new(var[1] as f32)),
+			rad: Distance::new(var[2] as f32),
+			layer: 0,
+			ent: ents.entity(0),
+		}).for_each(|hc| {
 			for coord in intersected_buckets(hc.pos, hc.rad) {
 				buckets[coord].push(hc);
 			}
@@ -50,7 +44,8 @@ impl Terrain {
 
 impl Default for Terrain {
 	fn default() -> Self {
-		Self { buckets: Array2D::new(0, 0) }
+		Self {
+			buckets: Array2D::new(0, 0),
+		}
 	}
 }
-

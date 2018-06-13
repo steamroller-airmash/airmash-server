@@ -1,14 +1,14 @@
 //! Loop for accepting new connections
 //! and passing on all network packets
 
-use types::*;
 use types::event::*;
+use types::*;
 
 use std::fmt::Debug;
+use std::io::Write;
 use std::net::ToSocketAddrs;
 use std::sync::mpsc::Sender;
 use std::sync::Mutex;
-use std::io::Write;
 
 use futures::{Future, Stream};
 use websocket::server::async::Server;

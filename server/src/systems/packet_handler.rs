@@ -6,10 +6,10 @@ use websocket::OwnedMessage;
 
 use std::sync::mpsc::Receiver;
 
-use types::*;
-use types::event::*;
-use component::event::*;
 use component::channel::*;
+use component::event::*;
+use types::event::*;
+use types::*;
 
 pub struct PacketHandler {
 	channel: Receiver<ConnectionEvent>,
@@ -17,20 +17,20 @@ pub struct PacketHandler {
 
 #[derive(SystemData)]
 pub struct PacketHandlerData<'a> {
-	pub onopen:   Write<'a, OnOpen>,
-	pub onclose:  Write<'a, OnClose>,
+	pub onopen: Write<'a, OnOpen>,
+	pub onclose: Write<'a, OnClose>,
 	pub onbinary: Write<'a, OnBinary>,
-	pub login:    Write<'a, OnLogin>,
-	pub backup:   Write<'a, OnBackup>,
-	pub command:  Write<'a, OnCommand>,
-	pub horizon:  Write<'a, OnHorizon>,
-	pub key:      Write<'a, OnKey>,
-	pub pong:     Write<'a, OnPong>,
-	pub say:      Write<'a, OnSay>,
-	pub chat:     Write<'a, OnChat>,
+	pub login: Write<'a, OnLogin>,
+	pub backup: Write<'a, OnBackup>,
+	pub command: Write<'a, OnCommand>,
+	pub horizon: Write<'a, OnHorizon>,
+	pub key: Write<'a, OnKey>,
+	pub pong: Write<'a, OnPong>,
+	pub say: Write<'a, OnSay>,
+	pub chat: Write<'a, OnChat>,
 	pub teamchat: Write<'a, OnTeamChat>,
 	pub votemute: Write<'a, OnVotemute>,
-	pub whisper:  Write<'a, OnWhisper>,
+	pub whisper: Write<'a, OnWhisper>,
 	pub localping: Write<'a, OnLocalPing>,
 	pub scoredetailed: Write<'a, OnScoreDetailed>,
 	pub ack: Write<'a, OnAck>,

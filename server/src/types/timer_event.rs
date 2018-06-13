@@ -4,7 +4,7 @@ use std::time::Instant;
 pub enum TimerEventType {
 	ScoreBoard,
 	AFKTimeout,
-	PingDispatch
+	PingDispatch,
 }
 
 #[derive(Copy, Clone, Debug)]

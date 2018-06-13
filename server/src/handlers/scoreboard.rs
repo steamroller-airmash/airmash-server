@@ -2,8 +2,8 @@ use shrev::*;
 use specs::*;
 use types::*;
 
-use component::flag::IsPlayer;
 use component::event::ScoreBoardTimerEvent;
+use component::flag::IsPlayer;
 
 use airmash_protocol::server::{ScoreBoard, ScoreBoardData, ScoreBoardRanking};
 use airmash_protocol::{to_bytes, ServerPacket};
@@ -29,7 +29,7 @@ pub struct ScoreBoardSystemData<'a> {
 	scores: ReadStorage<'a, Score>,
 	levels: ReadStorage<'a, Level>,
 	pos: ReadStorage<'a, Position>,
-	flag: ReadStorage<'a, IsPlayer>
+	flag: ReadStorage<'a, IsPlayer>,
 }
 
 impl<'a> System<'a> for ScoreBoardTimerHandler {
@@ -65,10 +65,7 @@ impl<'a> System<'a> for ScoreBoardTimerHandler {
 
 				let rankings = (&*data.entities, &data.pos, &data.flag)
 					.join()
-					.map(|(ent, pos, _)| ScoreBoardRanking {
-						id: ent,
-						pos: *pos,
-					})
+					.map(|(ent, pos, _)| ScoreBoardRanking { id: ent, pos: *pos })
 					.collect::<Vec<ScoreBoardRanking>>();
 
 				let score_board = ScoreBoard {

@@ -1,12 +1,11 @@
-
+use dimensioned::Sqrt;
 use specs::*;
 use types::*;
-use dimensioned::Sqrt;
 
-use systems::ctf::config as ctfconfig;
 use component::ctf::*;
 use component::flag::IsPlayer;
 use component::time::ThisFrame;
+use systems::ctf::config as ctfconfig;
 
 use std::cmp::Ordering;
 
@@ -14,9 +13,9 @@ pub struct PickupFlagSystem;
 
 #[derive(SystemData)]
 pub struct PickupFlagSystemData<'a> {
-	pub config:   Read<'a, Config>,
+	pub config: Read<'a, Config>,
 	pub entities: Entities<'a>,
-	pub channel:  Write<'a, OnFlag>,
+	pub channel: Write<'a, OnFlag>,
 	pub thisframe: Read<'a, ThisFrame>,
 
 	// Player data
@@ -24,7 +23,7 @@ pub struct PickupFlagSystemData<'a> {
 	pub is_player: ReadStorage<'a, IsPlayer>,
 
 	// These ones are for both
-	pub pos:  ReadStorage<'a, Position>,
+	pub pos: ReadStorage<'a, Position>,
 	pub team: ReadStorage<'a, Team>,
 
 	// Flag Data
@@ -43,22 +42,22 @@ impl<'a> System<'a> for PickupFlagSystem {
 			&data.team,
 			&data.carrier,
 			&data.is_flag,
-			&data.lastdrop
+			&data.lastdrop,
 		).join()
-			.map(|(ent, pos, team, carrier, _, lastdrop)| {
-				(ent, *pos, *team, *carrier, *lastdrop)
-			})
+			.map(|(ent, pos, team, carrier, _, lastdrop)| (ent, *pos, *team, *carrier, *lastdrop))
 			.collect::<Vec<(Entity, Position, Team, FlagCarrier, LastDrop)>>();
 
 		for (f_ent, f_pos, f_team, carrier, lastdrop) in flags {
-			if carrier.0.is_some() { continue; }
+			if carrier.0.is_some() {
+				continue;
+			}
 
 			let nearest = (
 				&*data.entities,
 				&data.pos,
 				&data.team,
 				&data.is_player,
-				&data.plane
+				&data.plane,
 			).join()
 				.filter(|(_, _, p_team, _, _)| f_team != **p_team)
 				.filter(|(ent, _, _, _, _)| {
@@ -73,15 +72,20 @@ impl<'a> System<'a> for PickupFlagSystem {
 
 					// Quickly filter out negative distances
 					// without doing a sqrt
-					if dst > rad * rad { 
+					if dst > rad * rad {
 						None
-					}
-					else {
+					} else {
 						// Only calculate actual distance if necessary
-						Some((p_ent, dst.sqrt() - rad))						
+						Some((p_ent, dst.sqrt() - rad))
 					}
 				})
-				.min_by(|a, b| if a.1 < b.1 { Ordering::Less } else { Ordering::Greater });
+				.min_by(|a, b| {
+					if a.1 < b.1 {
+						Ordering::Less
+					} else {
+						Ordering::Greater
+					}
+				});
 
 			if nearest.is_none() {
 				continue;
@@ -101,7 +105,7 @@ impl<'a> System<'a> for PickupFlagSystem {
 			data.channel.single_write(FlagEvent {
 				ty,
 				player: Some(nearest),
-				flag: f_ent
+				flag: f_ent,
 			});
 		}
 	}

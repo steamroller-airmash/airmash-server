@@ -1,8 +1,8 @@
 use airmash_protocol::client::Login;
 use airmash_protocol::server::{PlayerLevel, PlayerNew, ServerPacket};
 use airmash_protocol::{
-	server, to_bytes, FlagCode, PlaneType, PlayerLevelType, PlayerStatus,
-	Upgrades as ProtocolUpgrades, GameType
+	server, to_bytes, FlagCode, GameType, PlaneType, PlayerLevelType, PlayerStatus,
+	Upgrades as ProtocolUpgrades,
 };
 use specs::*;
 use uuid::Uuid;
@@ -11,11 +11,11 @@ use websocket::OwnedMessage;
 use std::str::FromStr;
 use std::time::Instant;
 
-use types::*;
 use component::channel::*;
-use component::event::PlayerJoin;
 use component::counter::PlayersGame;
+use component::event::PlayerJoin;
 use component::time::*;
+use types::*;
 
 // Login needs write access to just
 // about everything
@@ -111,7 +111,7 @@ impl LoginHandler {
 					let upgrade_field = ProtocolUpgrades {
 						speed: upgrades.speed,
 						shield: powerups.shield,
-						inferno: powerups.inferno
+						inferno: powerups.inferno,
 					};
 
 					server::LoginPlayer {
@@ -119,10 +119,10 @@ impl LoginHandler {
 						status: *status,
 						level: *level,
 						name: name.0.clone(),
-						ty:   *plane,
+						ty: *plane,
 						team: *team,
-						pos:  *pos,
-						rot:  *rot,
+						pos: *pos,
+						rot: *rot,
 						flag: *flag,
 						upgrades: upgrade_field,
 					}
@@ -188,7 +188,9 @@ impl LoginHandler {
 			.unwrap();
 		data.isplayer.insert(entity, IsPlayer {}).unwrap();
 		data.pingdata.insert(entity, PingData::default()).unwrap();
-		data.lastshot.insert(entity, LastShotTime(data.startime.0)).unwrap();
+		data.lastshot
+			.insert(entity, LastShotTime(data.startime.0))
+			.unwrap();
 
 		data.playersgame.0 += 1;
 		data.player_join.single_write(PlayerJoin(entity));
@@ -213,15 +215,10 @@ impl LoginHandler {
 }
 
 impl<'a> System<'a> for LoginHandler {
-	type SystemData = (
-		Read<'a, OnLogin>,
-		LoginSystemData<'a>,
-	);
+	type SystemData = (Read<'a, OnLogin>, LoginSystemData<'a>);
 
 	fn setup(&mut self, res: &mut Resources) {
-		self.reader = Some(
-			res.fetch_mut::<OnLogin>().register_reader(),
-		);
+		self.reader = Some(res.fetch_mut::<OnLogin>().register_reader());
 
 		Self::SystemData::setup(res);
 	}
