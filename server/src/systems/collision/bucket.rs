@@ -41,22 +41,14 @@ impl Bucket {
 	/// a collision multiple times. Note that
 	/// hit circles within the same layer cannot
 	/// collide with each other.
-	pub fn collide(&self, out: &mut Vec<Collision>) {
+	pub fn collide(&self, hc: HitCircle, out: &mut Vec<Collision>) {
 		let len = self.elems.len();
 
 		for i in 0..len {
 			let a = &self.elems[i];
 
-			for j in (i + 1)..len {
-				let b = &self.elems[j];
-
-				if a.layer != b.layer {
-					trace!(target: "server", "checking collision {:?} {:?}", a, b);
-				}
-
-				if a.layer != b.layer && HitCircle::intersects(a, b) {
-					out.push(Collision(*a, *b))
-				}
+			if HitCircle::intersects(a, &hc) {
+				out.push(Collision(*a, hc))
 			}
 		}
 	}

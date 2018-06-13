@@ -3,17 +3,18 @@
 use shrev::*;
 use specs::*;
 use specs::world::EntitiesRes;
+use specs::prelude::*;
 
 use types::*;
 
 use systems::collision::bucket::*;
-use systems::collision::terrain::Terrain;
-
-// Buckets are configurable here
-pub const BUCKETS_Y: usize = 64;
-pub const BUCKETS_X: usize = BUCKETS_Y * 2;
-pub const BUCKET_WIDTH: f32 = (32768.0 / ((BUCKETS_Y * 2) as f64)) as f32;
-pub const BUCKET_HEIGHT: f32 = (32768.0 / (BUCKETS_Y as f64)) as f32;
+use systems::collision::terrain::{
+	Terrain,
+	BUCKETS_X,
+	BUCKETS_Y,
+	BUCKET_HEIGHT,
+	BUCKET_WIDTH
+};
 
 #[derive(Default)]
 pub struct CollisionSystem {
@@ -85,41 +86,41 @@ impl<'a> System<'a> for CollisionSystem {
 	}
 
 	fn run(&mut self, mut data: Self::SystemData) {
-		let mut buckets = self.terrain.buckets.clone();
-
-		(
+		let vec = (
 			&*data.entities,
 			&data.pos,
 			&data.rot,
 			&data.planes,
 			&data.teams,
-		).join()
-			.for_each(|(ent, pos, rot, plane, team)| {
+		).par_join()
+			.map(|(ent, pos, rot, plane, team)| {
 				let ref cfg = data.config.planes[*plane];
 
-				for hc in cfg.hit_circles.iter() {
-					let offset = hc.offset.rotate(*rot);
+				let mut collisions = vec![];
 
-					let circle = HitCircle {
-						pos: *pos + offset,
-						rad: hc.radius,
-						layer: team.0,
-						ent: ent,
-					};
+				cfg.hit_circles.iter()
+					.for_each(|hc| {
+						let offset = hc.offset.rotate(*rot);
 
-					for coord in intersected_buckets(*pos + offset, hc.radius) {
-						trace!(target: "server", "Added to bucket {:?}", coord);
-						buckets[coord].push(circle);
-					}
-				}
-			});
+						let circle = HitCircle {
+							pos: *pos + offset,
+							rad: hc.radius,
+							layer: team.0,
+							ent: ent,
+						};
 
-		// TODO: Parallelize this (figure out par_iter with aggregation)
-		let mut isects = vec![];
-		buckets.iter().for_each(|bucket| {
-			bucket.collide(&mut isects);
-		});
+						for coord in intersected_buckets(*pos + offset, hc.radius) {
+							trace!(target: "server", "Added to bucket {:?}", coord);
+							self.terrain.buckets[coord]
+								.collide(circle, &mut collisions);
+						}
+					});
 
-		data.collisions.iter_write(isects.into_iter());
+				collisions
+			})
+			.flatten()
+			.collect::<Vec<Collision>>();
+
+		data.collisions.iter_write(vec.into_iter());
 	}
 }

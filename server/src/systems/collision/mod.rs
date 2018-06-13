@@ -1,8 +1,8 @@
 mod array2d;
 mod bounce;
 mod bucket;
-mod collision;
+mod plane;
 mod terrain;
 
-pub use self::collision::CollisionSystem;
+pub use self::plane::CollisionSystem;
 pub use self::bounce::BounceSystem;

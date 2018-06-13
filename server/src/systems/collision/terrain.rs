@@ -5,11 +5,13 @@ use consts::TERRAIN;
 
 use systems::collision::array2d::Array2D;
 use systems::collision::bucket::{Bucket, HitCircle};
-use systems::collision::collision::{
-	BUCKETS_Y,
-	BUCKETS_X,
-	intersected_buckets
-};
+use systems::collision::plane::intersected_buckets;
+
+// Buckets are configurable here
+pub const BUCKETS_Y: usize = 64;
+pub const BUCKETS_X: usize = BUCKETS_Y * 2;
+pub const BUCKET_WIDTH: f32 = (32768.0 / ((BUCKETS_Y * 2) as f64)) as f32;
+pub const BUCKET_HEIGHT: f32 = (32768.0 / (BUCKETS_Y as f64)) as f32;
 
 #[derive(Debug)]
 pub struct Terrain {
