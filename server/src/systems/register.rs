@@ -1,6 +1,6 @@
 
 use specs::*;
-use systems;
+use systems::*;
 use handlers;
 
 pub fn register<'a, 'b>(_: &mut World, disp: DispatcherBuilder<'a, 'b>) -> DispatcherBuilder<'a, 'b> {
@@ -19,9 +19,9 @@ pub fn register<'a, 'b>(_: &mut World, disp: DispatcherBuilder<'a, 'b>) -> Dispa
 		.with(handlers::SignalHandler::default(), "handler", &[])
 
 		// Systems with dependencies on handlers
-		.with(systems::PositionUpdate::new(),  "position_update", &["onkey"])
-		.with(systems::MissileFireHandler{},   "missile_fire", &["position_update"])
-		.with(systems::CollisionSystem::new(), "collisions", &["position_update"])
-		.with(systems::BounceSystem::new(),    "bounces",    &["collisions"])
-		.with(systems::MissileUpdate{},        "missile_update", &["missile_fire"])
+		.with(PositionUpdate::new(),       "position_update", &["onkey"])
+		.with(MissileFireHandler{},        "missile_fire",    &["position_update"])
+		.with(PlaneCollisionSystem::new(), "collisions",      &["position_update"])
+		.with(BounceSystem::new(),         "bounces",         &["collisions"])
+		.with(MissileUpdate{},             "missile_update",  &["missile_fire"])
 }

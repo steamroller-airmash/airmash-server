@@ -17,12 +17,12 @@ use systems::collision::terrain::{
 };
 
 #[derive(Default)]
-pub struct CollisionSystem {
+pub struct PlaneCollisionSystem {
 	terrain: Terrain
 }
 
 #[derive(SystemData)]
-pub struct CollisionSystemData<'a> {
+pub struct PlaneCollisionSystemData<'a> {
 	pub entities: Entities<'a>,
 	pub collisions: Write<'a, EventChannel<Collision>>,
 	pub config: Read<'a, Config>,
@@ -32,7 +32,7 @@ pub struct CollisionSystemData<'a> {
 	pub teams: ReadStorage<'a, Team>,
 }
 
-impl CollisionSystem {
+impl PlaneCollisionSystem {
 	pub fn new() -> Self {
 		Self::default()
 	}
@@ -69,8 +69,8 @@ pub fn intersected_buckets(pos: Position, rad: Distance) -> impl Iterator<Item =
 	vals.into_iter()
 }
 
-impl<'a> System<'a> for CollisionSystem {
-	type SystemData = CollisionSystemData<'a>;
+impl<'a> System<'a> for PlaneCollisionSystem {
+	type SystemData = PlaneCollisionSystemData<'a>;
 
 	fn setup(&mut self, res: &mut Resources) {
 		Self::SystemData::setup(res);
