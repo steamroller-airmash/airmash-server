@@ -1,5 +1,4 @@
 use specs::prelude::*;
-use specs::*;
 use types::*;
 
 use component::flag::IsMissile;
