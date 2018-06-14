@@ -6,6 +6,7 @@ mod position_update;
 mod register;
 mod timer_handler;
 mod timewarn;
+mod energy_regen;
 
 pub mod ctf;
 

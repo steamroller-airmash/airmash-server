@@ -102,6 +102,8 @@ pub struct Level(pub u8);
 pub struct Score(pub u32);
 #[derive(Copy, Clone, Debug, Eq, PartialEq, Hash, Default, Component, Ord, PartialOrd)]
 pub struct ConnectionId(pub usize);
+#[derive(Copy, Clone, Debug, Eq, PartialEq, Hash, Default, Component, Ord, PartialOrd)]
+pub struct UpgradeCount(pub u16);
 
 impl From<Duration> for Time {
 	fn from(dt: Duration) -> Time {

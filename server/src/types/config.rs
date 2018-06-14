@@ -59,15 +59,30 @@ pub struct MobInfo {
 	pub missile: Option<MissileInfo>,
 }
 
-#[derive(Clone)]
+#[derive(Clone, Debug, Default)]
+pub struct UpgradeInfo {
+	pub cost: [UpgradeCount; 6],
+	pub factor: [f32; 6]
+}
+
+#[derive(Clone, Debug)]
 pub struct PlaneInfos(pub FnvHashMap<Plane, PlaneInfo>);
-#[derive(Clone)]
+#[derive(Clone, Debug)]
 pub struct MobInfos(pub FnvHashMap<MobType, MobInfo>);
+
+#[derive(Clone, Debug)]
+pub struct UpgradeInfos {
+	pub speed: UpgradeInfo,
+	pub missile: UpgradeInfo,
+	pub energy: UpgradeInfo,
+	pub defense: UpgradeInfo
+}
 
 #[derive(Clone, Default)]
 pub struct Config {
 	pub planes: PlaneInfos,
 	pub mobs: MobInfos,
+	pub upgrades: UpgradeInfo
 }
 
 impl Index<Plane> for PlaneInfos {
@@ -370,5 +385,31 @@ impl Default for MobInfos {
 		// TODO: Powerups
 
 		MobInfos(map)
+	}
+}
+
+impl Default for UpgradeInfos {
+	fn default() -> Self {
+		const N0: UpgradeCount = UpgradeCount(0);
+		const N1: UpgradeCount = UpgradeCount(1);
+
+		Self {
+			speed: UpgradeInfo {
+				cost: [N0, N1, N1, N1, N1, N1],
+				factor: [1.0, 1.05, 1.1, 1.15, 1.2, 1.25]
+			},
+			defense: UpgradeInfo {
+				cost: [N0, N1, N1, N1, N1, N1],
+				factor: [1.0, 1.05, 1.1, 1.15, 1.2, 1.25]
+			},
+			energy: UpgradeInfo {
+				cost: [N0, N1, N1, N1, N1, N1],
+				factor: [1.0, 1.05, 1.1, 1.15, 1.2, 1.25]
+			},
+			missile: UpgradeInfo {
+				cost: [N0, N1, N1, N1, N1, N1],
+				factor: [1.0, 1.05, 1.1, 1.15, 1.2, 1.25]
+			}
+		}
 	}
 }
