@@ -114,7 +114,7 @@ impl Default for PlaneInfos {
 				// TODO: Set these
 				health_regen: HealthRegen::new(0.0),
 				energy_regen: EnergyRegen::new(0.0),
-				fire_delay: Duration::from_millis(200),
+				fire_delay: Duration::from_millis(300),
 
 				// TODO
 				fire_energy: Energy::new(0.0),
@@ -147,7 +147,7 @@ impl Default for PlaneInfos {
 				// TODO: Set these
 				health_regen: HealthRegen::new(0.0),
 				energy_regen: EnergyRegen::new(0.0),
-				fire_delay: Duration::from_millis(200),
+				fire_delay: Duration::from_millis(300),
 
 				// TODO
 				fire_energy: Energy::new(0.0),
@@ -186,7 +186,7 @@ impl Default for PlaneInfos {
 				// TODO: Set these
 				health_regen: HealthRegen::new(0.0),
 				energy_regen: EnergyRegen::new(0.0),
-				fire_delay: Duration::from_millis(200),
+				fire_delay: Duration::from_millis(300),
 
 				// TODO
 				fire_energy: Energy::new(0.0),
@@ -220,7 +220,7 @@ impl Default for PlaneInfos {
 				// TODO: Set these
 				health_regen: HealthRegen::new(0.0),
 				energy_regen: EnergyRegen::new(0.0),
-				fire_delay: Duration::from_millis(200),
+				fire_delay: Duration::from_millis(300),
 
 				// TODO
 				fire_energy: Energy::new(0.0),
@@ -256,7 +256,7 @@ impl Default for PlaneInfos {
 				// TODO: Set these
 				health_regen: HealthRegen::new(0.0),
 				energy_regen: EnergyRegen::new(0.0),
-				fire_delay: Duration::from_millis(200),
+				fire_delay: Duration::from_millis(300),
 
 				// TODO
 				fire_energy: Energy::new(0.0),
