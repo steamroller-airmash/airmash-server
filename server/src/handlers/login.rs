@@ -45,9 +45,11 @@ pub struct LoginSystemData<'a> {
 	pub pingdata: WriteStorage<'a, PingData>,
 	pub playersgame: Write<'a, PlayersGame>,
 	pub lastshot: WriteStorage<'a, LastShotTime>,
+	pub energyregen: WriteStorage<'a, EnergyRegen>,
 
 	pub startime: Read<'a, StartTime>,
 	pub player_join: Write<'a, OnPlayerJoin>,
+	pub config: Read<'a, Config>
 }
 
 pub struct LoginHandler {
@@ -66,7 +68,10 @@ impl LoginHandler {
 			name: login.name.clone(),
 			ty: PlaneType::Predator,
 			team: Team(0),
-			pos: Position::default(),
+			pos: Position::new(
+				Distance::new(0.0),
+				Distance::new(200.0)
+			),
 			rot: Rotation::new(0.0),
 			flag: FlagCode::from_str(&login.flag).unwrap_or(FlagCode::UnitedNations),
 			upgrades: ProtocolUpgrades::default(),
@@ -190,6 +195,11 @@ impl LoginHandler {
 		data.pingdata.insert(entity, PingData::default()).unwrap();
 		data.lastshot
 			.insert(entity, LastShotTime(data.startime.0))
+			.unwrap();
+		data.energyregen
+			.insert(
+				entity,			
+				data.config.planes[PlaneType::Predator].energy_regen)
 			.unwrap();
 
 		data.playersgame.0 += 1;

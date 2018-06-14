@@ -26,4 +26,5 @@ pub fn register<'a, 'b>(
 		.with(PlaneCollisionSystem::new(), "collisions",      &["position_update"])
 		.with(BounceSystem::new(),         "bounces",         &["collisions"])
 		.with(MissileUpdate{},             "missile_update",  &["missile_fire"])
+		.with(EnergyRegenSystem{},         "energy_regen",    &["missile_fire"])
 }

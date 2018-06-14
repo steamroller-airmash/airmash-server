@@ -82,7 +82,7 @@ pub struct UpgradeInfos {
 pub struct Config {
 	pub planes: PlaneInfos,
 	pub mobs: MobInfos,
-	pub upgrades: UpgradeInfo
+	pub upgrades: UpgradeInfos
 }
 
 impl Index<Plane> for PlaneInfos {
@@ -126,14 +126,13 @@ impl Default for PlaneInfos {
 				flag_speed: Speed::new(5.0),
 				inferno_factor: 0.75,
 
-				// TODO: Set these
-				health_regen: HealthRegen::new(0.0),
-				energy_regen: EnergyRegen::new(0.0),
+				health_regen: HealthRegen::new(0.001),
+				energy_regen: EnergyRegen::new(0.01),
 				fire_delay: Duration::from_millis(300),
 
 				// TODO
-				fire_energy: Energy::new(0.0),
-				special_energy: Energy::new(0.0),
+				fire_energy: Energy::new(0.6),
+				special_energy: Energy::new(0.0), // Actually regen -0.01
 
 				missile_type: MobType::PredatorMissile,
 
@@ -160,13 +159,13 @@ impl Default for PlaneInfos {
 				inferno_factor: 0.75,
 
 				// TODO: Set these
-				health_regen: HealthRegen::new(0.0),
-				energy_regen: EnergyRegen::new(0.0),
+				health_regen: HealthRegen::new(0.0005),
+				energy_regen: EnergyRegen::new(0.005),
 				fire_delay: Duration::from_millis(300),
 
 				// TODO
-				fire_energy: Energy::new(0.0),
-				special_energy: Energy::new(0.0),
+				fire_energy: Energy::new(0.9),
+				special_energy: Energy::new(0.5),
 
 				missile_type: MobType::GoliathMissile,
 
@@ -198,13 +197,12 @@ impl Default for PlaneInfos {
 				flag_speed: Speed::new(5.0),
 				inferno_factor: 0.75,
 
-				// TODO: Set these
-				health_regen: HealthRegen::new(0.0),
-				energy_regen: EnergyRegen::new(0.0),
+				health_regen: HealthRegen::new(0.001),
+				energy_regen: EnergyRegen::new(0.01),
 				fire_delay: Duration::from_millis(300),
 
 				// TODO
-				fire_energy: Energy::new(0.0),
+				fire_energy: Energy::new(0.3),
 				special_energy: Energy::new(0.0),
 
 				missile_type: MobType::MohawkMissile,
@@ -233,13 +231,13 @@ impl Default for PlaneInfos {
 				inferno_factor: 0.75,
 
 				// TODO: Set these
-				health_regen: HealthRegen::new(0.0),
-				energy_regen: EnergyRegen::new(0.0),
+				health_regen: HealthRegen::new(0.001),
+				energy_regen: EnergyRegen::new(0.006),
 				fire_delay: Duration::from_millis(300),
 
 				// TODO
-				fire_energy: Energy::new(0.0),
-				special_energy: Energy::new(0.0),
+				fire_energy: Energy::new(0.5),
+				special_energy: Energy::new(0.9),
 
 				missile_type: MobType::TornadoSingleMissile,
 
@@ -269,13 +267,13 @@ impl Default for PlaneInfos {
 				inferno_factor: 0.75,
 
 				// TODO: Set these
-				health_regen: HealthRegen::new(0.0),
-				energy_regen: EnergyRegen::new(0.0),
+				health_regen: HealthRegen::new(0.001),
+				energy_regen: EnergyRegen::new(0.006),
 				fire_delay: Duration::from_millis(300),
 
 				// TODO
-				fire_energy: Energy::new(0.0),
-				special_energy: Energy::new(0.0),
+				fire_energy: Energy::new(0.75),
+				special_energy: Energy::new(0.6),
 
 				missile_type: MobType::ProwlerMissile,
 
