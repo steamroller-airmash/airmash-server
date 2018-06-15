@@ -2,9 +2,7 @@ use consts::TERRAIN;
 use specs::world::*;
 use types::*;
 
-use systems::collision::array2d::Array2D;
-use systems::collision::bucket::{Bucket, HitCircle};
-use systems::collision::plane::intersected_buckets;
+use types::collision::*;
 
 // Buckets are configurable here
 pub const BUCKETS_Y: usize = 64;

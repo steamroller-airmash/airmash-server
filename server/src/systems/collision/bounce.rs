@@ -2,9 +2,8 @@ use shrev::*;
 use specs::*;
 use types::*;
 
+use types::collision::Collision;
 use component::time::{StartTime, ThisFrame};
-
-use systems::collision::bucket::Collision;
 
 use airmash_protocol::server::EventBounce;
 use airmash_protocol::{to_bytes, ServerPacket};
