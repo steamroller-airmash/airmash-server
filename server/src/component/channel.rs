@@ -29,6 +29,12 @@ pub type OnAck = EventChannel<AckEvent>;
 pub type OnPlayerJoin = EventChannel<PlayerJoin>;
 pub type OnPlayerLeave = EventChannel<PlayerLeave>;
 
+// Collision events
+pub type OnPlayerTerrainCollision = EventChannel<PlayerTerrainCollision>;
+pub type OnPlayerMissileCollision = EventChannel<PlayerMissileCollision>;
+pub type OnPlayerPowerupCollision = EventChannel<PlayerPowerupCollision>;
+pub type OnMissileTerrainCollision = EventChannel<MissileTerrainCollision>;
+
 // Readers
 pub type OnOpenReader = ReaderId<ConnectionOpen>;
 pub type OnCloseReader = ReaderId<ConnectionClose>;
@@ -52,3 +58,9 @@ pub type OnAckReader = ReaderId<AckEvent>;
 // In-game events
 pub type OnPlayerJoinReader = ReaderId<PlayerJoin>;
 pub type OnPlayerLeaveReader = ReaderId<PlayerLeave>;
+
+// Collision events
+pub type OnPlayerMissileCollisionReader = ReaderId<PlayerMissileCollision>;
+pub type OnPlayerTerrainCollisionReader = ReaderId<PlayerTerrainCollision>;
+pub type OnPlayerPowerupCollisionReader = ReaderId<PlayerPowerupCollision>;
+pub type OnMissileTerrainCollisionReader = ReaderId<MissileTerrainCollision>;
