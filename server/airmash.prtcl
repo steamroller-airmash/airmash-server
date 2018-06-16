@@ -562,12 +562,19 @@ spec server {
 	}
 
 	# A mob despawned
+	# This is used when a powerup despawns
+	# and when a missile despawns without
+	# hitting anything. It does not cause 
+	# an explosion to be shown at the location.
 	MobDespawn {
 		id:   Entity,
 		type: MobType
 	}
 
-	# a mob despawned at coords
+	# A missile despawned with an explosion
+	# This is used when a missile 
+	# collides with a mountain to
+	# generate an explosion client-side
 	MobDespawnCoords {
 		id:   Entity,
 		type: MobType,
