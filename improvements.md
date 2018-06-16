@@ -69,3 +69,6 @@ Multiple ideas here
 ### Votemutes
 - Remove votemute and make it identical to ignore
 
+### Custom Gamemodes
+## Tag
+- Drop flag when hit with missile
