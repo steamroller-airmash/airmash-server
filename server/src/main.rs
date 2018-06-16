@@ -187,12 +187,8 @@ fn main() {
 					"Frame took {} ms! (longer than 16.67 ms)",
 					1000 * duration.as_secs() + (duration.subsec_millis() as u64)
 				);
-			}
-			else {
-				trace!(
-					"Frame time: {} ms",
-					duration.subsec_millis()
-				);
+			} else {
+				trace!("Frame time: {} ms", duration.subsec_millis());
 			}
 		},
 		Duration::from_nanos(16666667),
