@@ -111,6 +111,8 @@ impl<'a> System<'a> for MissileFireHandler {
 						}],
 					};
 
+					info!("{:?} {:?}", team, pos);
+
 					conns.send_to_all(OwnedMessage::Binary(
 						to_bytes(&ServerPacket::PlayerFire(packet)).unwrap(),
 					));

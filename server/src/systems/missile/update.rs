@@ -57,7 +57,7 @@ impl<'a> System<'a> for MissileUpdate {
 				if pos.y < -*BOUNDARY_Y {
 					pos.y += *SIZE_Y
 				}
-				if pos.y < *BOUNDARY_Y {
+				if pos.y > *BOUNDARY_Y {
 					pos.y -= *SIZE_Y
 				}
 			});
