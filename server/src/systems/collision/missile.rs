@@ -4,34 +4,9 @@ use specs::world::EntitiesRes;
 use types::collision::*;
 use types::*;
 
-use protocol::MobType;
-
 use component::channel::OnMissileTerrainCollision;
 use component::event::MissileTerrainCollision;
 use component::flag::IsMissile;
-
-use fnv::FnvHashMap;
-
-lazy_static! {
-	static ref COLLIDERS: FnvHashMap<Mob, Vec<(Position, Distance)>> = {
-		let mut map = FnvHashMap::default();
-
-		let vals = [
-			MobType::PredatorMissile,
-			MobType::GoliathMissile,
-			MobType::MohawkMissile,
-			MobType::TornadoSingleMissile,
-			MobType::TornadoTripleMissile,
-			MobType::ProwlerMissile,
-		];
-
-		for val in vals.iter() {
-			map.insert(*val, vec![(Position::default(), Distance::new(1.0))]);
-		}
-
-		map
-	};
-}
 
 #[derive(Default)]
 pub struct MissileTerrainCollisionSystem {
@@ -89,7 +64,10 @@ impl<'a> System<'a> for MissileTerrainCollisionSystem {
 					};
 
 					for coord in intersected_buckets(hc.pos, hc.rad) {
-						self.terrain.buckets[coord].collide(hc, &mut collisions);
+						match self.terrain.buckets.get(coord) {
+							Some(bucket) => bucket.collide(hc, &mut collisions),
+							None => (),
+						}
 					}
 				}
 

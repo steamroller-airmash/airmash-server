@@ -20,7 +20,7 @@ impl Terrain {
 	where
 		I: Iterator<Item = &'a [i16; 3]>,
 	{
-		let mut buckets = Array2D::<Bucket>::new(BUCKETS_Y, BUCKETS_X);
+		let mut buckets = Array2D::<Bucket>::new(BUCKETS_X, BUCKETS_Y);
 		it.map(|var| HitCircle {
 			pos: Position::new(Distance::new(var[0] as f32), Distance::new(var[1] as f32)),
 			rad: Distance::new(var[2] as f32),
@@ -28,7 +28,7 @@ impl Terrain {
 			ent: ents.entity(0),
 		}).for_each(|hc| {
 			for coord in intersected_buckets(hc.pos, hc.rad) {
-				buckets[coord].push(hc);
+				buckets.get_or_insert(coord).push(hc);
 			}
 		});
 

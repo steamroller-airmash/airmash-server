@@ -4,6 +4,7 @@ use systems::collision::bounce::BounceSystem;
 use systems::collision::explode::MissileExplodeSystem;
 use systems::collision::missile::MissileTerrainCollisionSystem;
 use systems::collision::plane::PlaneCollisionSystem;
+use systems::collision::player_missile::PlayerMissileCollisionSystem;
 
 pub fn register<'a, 'b>(
 	_: &mut World,
@@ -19,6 +20,11 @@ pub fn register<'a, 'b>(
 			// I don't think this is right
 			// TODO: Determine actual system
 			&["position_update"],
+		)
+		.with(
+			PlayerMissileCollisionSystem::new(),
+			"collision_player-missile",
+			&["position_update"]
 		)
 		.with(
 			BounceSystem::new(),

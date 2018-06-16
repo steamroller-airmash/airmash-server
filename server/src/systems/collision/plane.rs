@@ -70,7 +70,10 @@ impl<'a> System<'a> for PlaneCollisionSystem {
 
 					for coord in intersected_buckets(circle.pos, hc.radius) {
 						trace!(target: "server", "Added to bucket {:?}", coord);
-						self.terrain.buckets[coord].collide(circle, &mut collisions);
+						match self.terrain.buckets.get(coord) {
+							Some(bucket) => bucket.collide(circle, &mut collisions),
+							None => (),
+						}
 					}
 				});
 
