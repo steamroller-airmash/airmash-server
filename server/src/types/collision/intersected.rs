@@ -1,6 +1,5 @@
-
-use types::{Position, Distance};
 use types::collision::*;
+use types::{Distance, Position};
 
 /// TODO: Replace this with something that doesn't
 /// need to allocate (a generator most likely).

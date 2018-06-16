@@ -62,7 +62,7 @@ pub struct MobInfo {
 #[derive(Clone, Debug, Default)]
 pub struct UpgradeInfo {
 	pub cost: [UpgradeCount; 6],
-	pub factor: [f32; 6]
+	pub factor: [f32; 6],
 }
 
 #[derive(Clone, Debug)]
@@ -75,14 +75,14 @@ pub struct UpgradeInfos {
 	pub speed: UpgradeInfo,
 	pub missile: UpgradeInfo,
 	pub energy: UpgradeInfo,
-	pub defense: UpgradeInfo
+	pub defense: UpgradeInfo,
 }
 
 #[derive(Clone, Default)]
 pub struct Config {
 	pub planes: PlaneInfos,
 	pub mobs: MobInfos,
-	pub upgrades: UpgradeInfos
+	pub upgrades: UpgradeInfos,
 }
 
 impl Index<Plane> for PlaneInfos {
@@ -394,20 +394,20 @@ impl Default for UpgradeInfos {
 		Self {
 			speed: UpgradeInfo {
 				cost: [N0, N1, N1, N1, N1, N1],
-				factor: [1.0, 1.05, 1.1, 1.15, 1.2, 1.25]
+				factor: [1.0, 1.05, 1.1, 1.15, 1.2, 1.25],
 			},
 			defense: UpgradeInfo {
 				cost: [N0, N1, N1, N1, N1, N1],
-				factor: [1.0, 1.05, 1.1, 1.15, 1.2, 1.25]
+				factor: [1.0, 1.05, 1.1, 1.15, 1.2, 1.25],
 			},
 			energy: UpgradeInfo {
 				cost: [N0, N1, N1, N1, N1, N1],
-				factor: [1.0, 1.05, 1.1, 1.15, 1.2, 1.25]
+				factor: [1.0, 1.05, 1.1, 1.15, 1.2, 1.25],
 			},
 			missile: UpgradeInfo {
 				cost: [N0, N1, N1, N1, N1, N1],
-				factor: [1.0, 1.05, 1.1, 1.15, 1.2, 1.25]
-			}
+				factor: [1.0, 1.05, 1.1, 1.15, 1.2, 1.25],
+			},
 		}
 	}
 }

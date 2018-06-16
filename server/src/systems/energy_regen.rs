@@ -1,9 +1,8 @@
-
 use specs::prelude::*;
 use types::*;
 
-use component::time::{LastFrame, ThisFrame};
 use component::flag::IsPlayer;
+use component::time::{LastFrame, ThisFrame};
 
 pub struct EnergyRegenSystem;
 
@@ -16,7 +15,7 @@ pub struct EnergyRegenSystemData<'a> {
 	pub energy: WriteStorage<'a, Energy>,
 	pub plane: ReadStorage<'a, Plane>,
 	pub flag: ReadStorage<'a, IsPlayer>,
-	pub upgrades: ReadStorage<'a, Upgrades>
+	pub upgrades: ReadStorage<'a, Upgrades>,
 }
 
 impl<'a> System<'a> for EnergyRegenSystem {
@@ -30,19 +29,13 @@ impl<'a> System<'a> for EnergyRegenSystem {
 			mut energy,
 			plane,
 			flag,
-			upgrades
+			upgrades,
 		} = data;
 
-		let dt = Time::new(
-			(thisframe.0 - lastframe.0).subsec_nanos() as f32 * (60.0 / 1.0e9)
-		);
+		let dt = Time::new((thisframe.0 - lastframe.0).subsec_nanos() as f32 * (60.0 / 1.0e9));
 
-		(
-			&mut energy,
-			&plane,
-			&flag,
-			&upgrades
-		).join()
+		(&mut energy, &plane, &flag, &upgrades)
+			.join()
 			.map(|(energy, plane, _, upgrades)| {
 				let regen = config.planes[*plane].energy_regen;
 				let mult = config.upgrades.energy.factor[upgrades.energy as usize];

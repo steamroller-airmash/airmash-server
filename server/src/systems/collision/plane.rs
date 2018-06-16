@@ -3,11 +3,11 @@
 use specs::prelude::*;
 use specs::world::EntitiesRes;
 
-use types::*;
 use types::collision::*;
+use types::*;
 
-use component::event::PlayerTerrainCollision;
 use component::channel::*;
+use component::event::PlayerTerrainCollision;
 
 #[derive(Default)]
 pub struct PlaneCollisionSystem {
@@ -42,9 +42,7 @@ impl<'a> System<'a> for PlaneCollisionSystem {
 		// Hopefully 1000 collision events is enough during
 		// each 16ms frame. If not, this number should be
 		// increased.
-		res.insert::<OnPlayerTerrainCollision>(
-			OnPlayerTerrainCollision::with_capacity(1000)
-		);
+		res.insert::<OnPlayerTerrainCollision>(OnPlayerTerrainCollision::with_capacity(1000));
 	}
 
 	fn run(&mut self, mut data: Self::SystemData) {
@@ -72,8 +70,7 @@ impl<'a> System<'a> for PlaneCollisionSystem {
 
 					for coord in intersected_buckets(circle.pos, hc.radius) {
 						trace!(target: "server", "Added to bucket {:?}", coord);
-						self.terrain.buckets[coord]
-							.collide(circle, &mut collisions);
+						self.terrain.buckets[coord].collide(circle, &mut collisions);
 					}
 				});
 

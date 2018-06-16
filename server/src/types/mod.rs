@@ -11,8 +11,8 @@ mod vector2;
 
 mod connection_events;
 
-pub mod config;
 pub mod collision;
+pub mod config;
 
 pub use self::components::*;
 pub use self::config::Config;

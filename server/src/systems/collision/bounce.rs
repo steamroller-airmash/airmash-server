@@ -1,9 +1,9 @@
 use specs::*;
 use types::*;
 
-use component::time::{StartTime, ThisFrame};
 use component::channel::OnPlayerTerrainCollision;
 use component::channel::OnPlayerTerrainCollisionReader;
+use component::time::{StartTime, ThisFrame};
 
 use airmash_protocol::server::EventBounce;
 use airmash_protocol::{to_bytes, ServerPacket};
@@ -40,14 +40,15 @@ impl<'a> System<'a> for BounceSystem {
 	fn setup(&mut self, res: &mut Resources) {
 		self.reader = Some(
 			res.fetch_mut::<OnPlayerTerrainCollision>()
-				.register_reader()
+				.register_reader(),
 		);
 
 		Self::SystemData::setup(res);
 	}
 
 	fn run(&mut self, mut data: Self::SystemData) {
-		let channel_reader = data.channel
+		let channel_reader = data
+			.channel
 			.read(self.reader.as_mut().unwrap())
 			.map(|x| x.0);
 
