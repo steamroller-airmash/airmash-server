@@ -3,6 +3,7 @@ use specs::*;
 use systems::collision::bounce::BounceSystem;
 use systems::collision::missile::MissileTerrainCollisionSystem;
 use systems::collision::plane::PlaneCollisionSystem;
+use systems::collision::explode::MissileExplodeSystem;
 
 pub fn register<'a, 'b>(
 	_: &mut World,
@@ -23,5 +24,10 @@ pub fn register<'a, 'b>(
 			BounceSystem::new(),
 			"collision_bounce",
 			&["collision_plane-terrain"],
+		)
+		.with(
+			MissileExplodeSystem::new(),
+			"collision_missile_explode",
+			&["collision_missile-terrain"]
 		)
 }

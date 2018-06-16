@@ -37,7 +37,7 @@ impl<'a> System<'a> for MissileUpdate {
 				let accel = info.accel;
 				let speed = *vel;
 
-				*vel += accel * delta;
+				*vel += vel.normalized() * accel * delta;
 
 				{
 					let speed = vel.length();

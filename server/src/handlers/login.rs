@@ -158,6 +158,8 @@ impl LoginHandler {
 			Err(_) => None,
 		};
 
+		let team = Team(entity.id() as u16);
+
 		data.conns.associate(conn, entity, ConnectionType::Primary);
 
 		// Set all possible pieces of state for a plane
@@ -173,7 +175,7 @@ impl LoginHandler {
 		data.upgrades.insert(entity, Upgrades::default()).unwrap();
 		data.score.insert(entity, Score(0)).unwrap();
 		data.level.insert(entity, Level(0)).unwrap();
-		data.team.insert(entity, Team(3)).unwrap();
+		data.team.insert(entity, team).unwrap();
 		data.flag
 			.insert(
 				entity,
@@ -207,7 +209,7 @@ impl LoginHandler {
 			room: "matrix".to_string(),
 			success: true,
 			token: login.session,
-			team: Team(0),
+			team,
 			ty: GameType::CTF,
 			players: Self::get_player_data(data),
 		};
