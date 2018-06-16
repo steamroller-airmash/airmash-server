@@ -73,7 +73,6 @@ fn build_dispatcher<'a, 'b>(
 		// Add systems here
 		.with(systems::PacketHandler::new(event_recv), "packet",   &[])
 		.with(systems::TimerHandler::new(timer_recv),  "timer",    &[])
-		.with(systems::TimeWarn{},                     "timewarn", &[])
 		.with(systems::MissileCull{},                  "missile_cull", &[]);
 
 	let disp = systems::register(world, disp);
@@ -172,10 +171,29 @@ fn main() {
 	// Run the gameloop at 60 Hz
 	runtime.spawn(timeloop(
 		move |now| {
+			if Instant::now() - now > Duration::from_millis(30) {
+				warn!("Time has drifted more than 30 ms, skipping frame!");
+				return;
+			}
+
 			world.add_resource(ThisFrame(now));
 			dispatcher.dispatch(&mut world.res);
 			world.maintain();
 			world.add_resource(LastFrame(now));
+
+			let duration = Instant::now() - now;
+			if duration > Duration::from_millis(17) {
+				warn!(
+					"Frame took {} ms! (longer than 16.67 ms)",
+					1000 * duration.as_secs() + (duration.subsec_millis() as u64)
+				);
+			}
+			else {
+				trace!(
+					"Frame time: {} ms",
+					duration.subsec_millis()
+				);
+			}
 		},
 		Duration::from_nanos(16666667),
 	));
