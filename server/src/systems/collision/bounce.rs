@@ -1,16 +1,16 @@
-use shrev::*;
 use specs::*;
 use types::*;
 
-use types::collision::Collision;
 use component::time::{StartTime, ThisFrame};
+use component::channel::OnPlayerTerrainCollision;
+use component::channel::OnPlayerTerrainCollisionReader;
 
 use airmash_protocol::server::EventBounce;
 use airmash_protocol::{to_bytes, ServerPacket};
 use websocket::OwnedMessage;
 
 pub struct BounceSystem {
-	reader: Option<ReaderId<Collision>>,
+	reader: Option<OnPlayerTerrainCollisionReader>,
 }
 
 #[derive(SystemData)]
@@ -23,7 +23,7 @@ pub struct BounceSystemData<'a> {
 	pub keystate: ReadStorage<'a, KeyState>,
 	pub conns: Read<'a, Connections>,
 	pub config: Read<'a, Config>,
-	pub channel: Read<'a, EventChannel<Collision>>,
+	pub channel: Read<'a, OnPlayerTerrainCollision>,
 	pub thisframe: Read<'a, ThisFrame>,
 	pub starttime: Read<'a, StartTime>,
 }
@@ -38,13 +38,20 @@ impl<'a> System<'a> for BounceSystem {
 	type SystemData = BounceSystemData<'a>;
 
 	fn setup(&mut self, res: &mut Resources) {
-		self.reader = Some(res.fetch_mut::<EventChannel<Collision>>().register_reader());
+		self.reader = Some(
+			res.fetch_mut::<OnPlayerTerrainCollision>()
+				.register_reader()
+		);
 
 		Self::SystemData::setup(res);
 	}
 
 	fn run(&mut self, mut data: Self::SystemData) {
-		for evt in data.channel.read(self.reader.as_mut().unwrap()) {
+		let channel_reader = data.channel
+			.read(self.reader.as_mut().unwrap())
+			.map(|x| x.0);
+
+		for evt in channel_reader {
 			if evt.0.layer == 0 || evt.1.layer == 0 {
 				assert!(evt.1.layer != evt.0.layer);
 

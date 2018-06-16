@@ -1,11 +1,13 @@
 //! This module contains a system to
 
-use shrev::*;
 use specs::prelude::*;
 use specs::world::EntitiesRes;
 
 use types::*;
 use types::collision::*;
+
+use component::event::PlayerTerrainCollision;
+use component::channel::*;
 
 #[derive(Default)]
 pub struct PlaneCollisionSystem {
@@ -15,7 +17,7 @@ pub struct PlaneCollisionSystem {
 #[derive(SystemData)]
 pub struct PlaneCollisionSystemData<'a> {
 	pub entities: Entities<'a>,
-	pub collisions: Write<'a, EventChannel<Collision>>,
+	pub collisions: Write<'a, OnPlayerTerrainCollision>,
 	pub config: Read<'a, Config>,
 	pub pos: ReadStorage<'a, Position>,
 	pub rot: ReadStorage<'a, Rotation>,
@@ -40,7 +42,9 @@ impl<'a> System<'a> for PlaneCollisionSystem {
 		// Hopefully 1000 collision events is enough during
 		// each 16ms frame. If not, this number should be
 		// increased.
-		res.insert::<EventChannel<Collision>>(EventChannel::with_capacity(1000));
+		res.insert::<OnPlayerTerrainCollision>(
+			OnPlayerTerrainCollision::with_capacity(1000)
+		);
 	}
 
 	fn run(&mut self, mut data: Self::SystemData) {
@@ -66,16 +70,20 @@ impl<'a> System<'a> for PlaneCollisionSystem {
 						ent: ent,
 					};
 
-					for coord in intersected_buckets(*pos + offset, hc.radius) {
+					for coord in intersected_buckets(circle.pos, hc.radius) {
 						trace!(target: "server", "Added to bucket {:?}", coord);
-						self.terrain.buckets[coord].collide(circle, &mut collisions);
+						self.terrain.buckets[coord]
+							.collide(circle, &mut collisions);
 					}
 				});
 
 				collisions
+					.into_iter()
+					.map(|x| PlayerTerrainCollision(x))
+					.collect::<Vec<PlayerTerrainCollision>>()
 			})
 			.flatten()
-			.collect::<Vec<Collision>>();
+			.collect::<Vec<PlayerTerrainCollision>>();
 
 		data.collisions.iter_write(vec.into_iter());
 	}

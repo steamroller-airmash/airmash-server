@@ -1,6 +1,6 @@
 mod bounce;
 mod missile;
 mod plane;
+mod register;
 
-pub use self::bounce::BounceSystem;
-pub use self::plane::PlaneCollisionSystem;
+pub use self::register::register;
