@@ -1,6 +1,5 @@
 use specs::prelude::*;
 use specs::world::EntitiesRes;
-use specs::*;
 
 use types::collision::*;
 use types::*;
