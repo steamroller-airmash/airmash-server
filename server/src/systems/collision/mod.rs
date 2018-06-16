@@ -1,7 +1,7 @@
 mod bounce;
+mod explode;
 mod missile;
 mod plane;
-mod explode;
 
 mod register;
 

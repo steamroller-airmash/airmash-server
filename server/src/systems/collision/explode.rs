@@ -1,17 +1,16 @@
-
 use specs::*;
 
-use types::*;
 use types::collision::Collision;
+use types::*;
 
 use component::channel::*;
 
+use protocol::server::{MobDespawnCoords, ServerPacket};
+use protocol::to_bytes;
 use websocket::OwnedMessage;
-use protocol::{to_bytes};
-use protocol::server::{ServerPacket, MobDespawnCoords};
 
 pub struct MissileExplodeSystem {
-	reader: Option<OnMissileTerrainCollisionReader>
+	reader: Option<OnMissileTerrainCollisionReader>,
 }
 
 #[derive(SystemData)]
@@ -38,7 +37,7 @@ impl<'a> System<'a> for MissileExplodeSystem {
 
 		self.reader = Some(
 			res.fetch_mut::<OnMissileTerrainCollision>()
-				.register_reader()
+				.register_reader(),
 		);
 	}
 
@@ -50,8 +49,7 @@ impl<'a> System<'a> for MissileExplodeSystem {
 
 			if c1.ent.id() == 0 {
 				missile_ent = c2.ent;
-			}
-			else {
+			} else {
 				missile_ent = c1.ent;
 			}
 
@@ -60,11 +58,11 @@ impl<'a> System<'a> for MissileExplodeSystem {
 			let packet = MobDespawnCoords {
 				id: missile_ent,
 				ty: *data.types.get(missile_ent).unwrap(),
-				pos: *data.pos.get(missile_ent).unwrap()
+				pos: *data.pos.get(missile_ent).unwrap(),
 			};
 
 			data.conns.send_to_all(OwnedMessage::Binary(
-				to_bytes(&ServerPacket::MobDespawnCoords(packet)).unwrap()
+				to_bytes(&ServerPacket::MobDespawnCoords(packet)).unwrap(),
 			));
 		}
 	}
