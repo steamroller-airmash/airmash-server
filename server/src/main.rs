@@ -162,7 +162,7 @@ fn main() {
 	world.add_resource(LastFrame(Instant::now()));
 
 	// Add some dummmy entities so that there are no players with id 0, 1, or 2
-	// this makes FFA team logic easier. The airmash client also appears to
+	// this makes FFA team logic easier. StarMash also appears to
 	// make all players mimic the player with id 0
 	for _ in 0..3 {
 		world.create_entity().build();
