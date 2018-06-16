@@ -47,7 +47,7 @@ impl Bucket {
 		for i in 0..len {
 			let a = &self.elems[i];
 
-			if HitCircle::intersects(a, &hc) {
+			if a.layer != hc.layer && HitCircle::intersects(a, &hc) {
 				out.push(Collision(*a, hc))
 			}
 		}

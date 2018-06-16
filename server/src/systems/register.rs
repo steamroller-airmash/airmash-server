@@ -24,7 +24,8 @@ pub fn register<'a, 'b>(
 		.with(PositionUpdate::new(),       "position_update", &["onkey"])
 		.with(MissileFireHandler{},        "missile_fire",    &["position_update"])
 		.with(MissileUpdate{},             "missile_update",  &["missile_fire"])
-		.with(EnergyRegenSystem{},         "energy_regen",    &["missile_fire"]);
+		.with(EnergyRegenSystem{},         "energy_regen",    &["missile_fire"])
+		.with(MissileHit::new(),           "missile_hit",     &["missile_fire"]);
 
 	collision::register(world, disp)
 }

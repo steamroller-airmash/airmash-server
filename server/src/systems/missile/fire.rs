@@ -115,7 +115,14 @@ impl<'a> System<'a> for MissileFireHandler {
 						to_bytes(&ServerPacket::PlayerFire(packet)).unwrap(),
 					));
 
-					return Some((m_ent, info.missile_type, *pos, m_vel, *team, ent));
+					return Some((
+						m_ent, 
+						info.missile_type, 
+						*pos, 
+						m_vel, 
+						*team, 
+						ent
+					));
 				},
 			)
 			.collect::<Vec<(Entity, Mob, Position, Velocity, Team, Entity)>>();

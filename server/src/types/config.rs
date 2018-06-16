@@ -50,12 +50,12 @@ pub struct MissileInfo {
 	pub accel: AccelScalar,
 	pub base_speed: Speed,
 	pub speed_factor: f32,
+	pub damage: Health,
 }
 
 #[derive(Clone, Debug, Default)]
 pub struct MobInfo {
 	pub lifetime: Duration,
-	pub hit_circles: Vec<HitCircle>,
 	pub missile: Option<MissileInfo>,
 }
 
@@ -305,8 +305,8 @@ impl Default for MobInfos {
 					accel: AccelScalar::new(0.105),
 					base_speed: Speed::new(4.05),
 					speed_factor: 0.3,
+					damage: Health::new(0.0),
 				}),
-				hit_circles: vec![],
 			},
 		);
 
@@ -319,8 +319,8 @@ impl Default for MobInfos {
 					accel: AccelScalar::new(0.0375),
 					base_speed: Speed::new(2.1),
 					speed_factor: 0.3,
+					damage: Health::new(0.0),
 				}),
-				hit_circles: vec![],
 			},
 		);
 
@@ -333,8 +333,8 @@ impl Default for MobInfos {
 					accel: AccelScalar::new(0.14),
 					base_speed: Speed::new(5.7),
 					speed_factor: 0.3,
+					damage: Health::new(0.0),
 				}),
-				hit_circles: vec![],
 			},
 		);
 
@@ -347,8 +347,8 @@ impl Default for MobInfos {
 					accel: AccelScalar::new(0.0875),
 					base_speed: Speed::new(3.5),
 					speed_factor: 0.3,
+					damage: Health::new(0.0),
 				}),
-				hit_circles: vec![],
 			},
 		);
 
@@ -361,8 +361,8 @@ impl Default for MobInfos {
 					accel: AccelScalar::new(0.0875),
 					base_speed: Speed::new(3.5),
 					speed_factor: 0.3,
+					damage: Health::new(0.0),
 				}),
-				hit_circles: vec![],
 			},
 		);
 
@@ -375,12 +375,27 @@ impl Default for MobInfos {
 					accel: AccelScalar::new(0.07),
 					base_speed: Speed::new(2.8),
 					speed_factor: 0.3,
+					damage: Health::new(0.0),
 				}),
-				hit_circles: vec![],
 			},
 		);
 
-		// TODO: Powerups
+		// TODO: Determine actual powerup lifetime
+		map.insert(
+			MobType::Inferno,
+			MobInfo {
+				lifetime: Duration::from_secs(60),
+				missile: None,
+			}
+		);
+
+		map.insert(
+			MobType::Shield,
+			MobInfo {
+				lifetime: Duration::from_secs(60),
+				missile: None
+			}
+		);
 
 		MobInfos(map)
 	}

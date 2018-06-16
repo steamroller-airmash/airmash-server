@@ -20,7 +20,10 @@ pub struct PlayerJoin(pub Entity);
 #[derive(Copy, Clone, Debug)]
 pub struct PlayerLeave(pub Entity);
 #[derive(Copy, Clone, Debug)]
-pub struct PlayerKilled(pub Entity);
+pub struct PlayerKilled {
+	pub player: Entity,
+	pub killer: Entity	
+}
 
 #[derive(Copy, Clone, Debug)]
 pub struct PlayerTerrainCollision(pub Collision);

@@ -100,7 +100,9 @@ impl<'a> System<'a> for PlayerMissileCollisionSystem {
 
 					for coord in intersected_buckets(hc.pos, hc.rad) {
 						match buckets.get(coord) {
-							Some(bucket) => bucket.collide(hc, &mut collisions),
+							Some(bucket) => {
+								bucket.collide(hc, &mut collisions)
+							},
 							None => (),
 						}
 					}
