@@ -5,6 +5,7 @@ authors = ["STEAMROLLER"]
 
 [features]
 nodelay = []
+geoip = [ "geolocate-ip" ]
 
 [profile.release]
 debug = true
@@ -45,3 +46,7 @@ features=["v5"]
 version = "*"
 default-features = false
 features = [ "async", "async-ssl" ]
+
+[dependencies.geolocate-ip]
+git = "https://github.com/phantomical/rust-geolocate-ip"
+optional = true
