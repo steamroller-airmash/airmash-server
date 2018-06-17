@@ -1,10 +1,14 @@
 use std::sync::Mutex;
+use std::net::IpAddr;
+
 use types::{ConnectionId, ConnectionSink};
 use websocket::OwnedMessage;
 
 pub struct ConnectionOpen {
 	pub conn: ConnectionId,
 	pub sink: Mutex<Option<ConnectionSink>>,
+	pub addr: IpAddr,
+	pub origin: Option<String>,
 }
 
 #[derive(Copy, Clone, Debug)]

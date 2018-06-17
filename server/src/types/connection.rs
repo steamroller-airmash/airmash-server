@@ -10,6 +10,7 @@ use websocket::OwnedMessage;
 
 use std::sync::mpsc::Sender;
 use std::sync::Mutex;
+use std::net::IpAddr;
 
 pub type ConnectionSink = SplitSink<Framed<TcpStream, MessageCodec<OwnedMessage>>>;
 
@@ -18,6 +19,8 @@ pub struct ConnectionData {
 	pub id: ConnectionId,
 	pub ty: ConnectionType,
 	pub player: Option<Entity>,
+	pub addr: IpAddr,
+	pub origin: Option<String>,
 }
 
 #[derive(Copy, Clone, Debug, Eq, PartialEq, Hash)]
@@ -43,12 +46,20 @@ impl Connections {
 		Connections(FnvHashMap::default(), Mutex::new(channel))
 	}
 
-	pub fn add(&mut self, id: ConnectionId, sink: ConnectionSink) {
+	pub fn add(
+		&mut self, 
+		id: ConnectionId, 
+		sink: ConnectionSink,
+		addr: IpAddr,
+		origin: Option<String>) 
+	{
 		let data = ConnectionData {
 			sink: sink,
 			ty: ConnectionType::Inactive,
 			player: None,
 			id: id,
+			addr,
+			origin
 		};
 
 		self.0.insert(id, data);

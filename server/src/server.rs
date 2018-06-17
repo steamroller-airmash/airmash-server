@@ -77,6 +77,8 @@ where
 			#[cfg(nodelay)]
 			upgrade.stream.set_nodelay(true).err();
 
+			let origin = upgrade.origin().map(|x| x.to_owned());
+
 			let f = upgrade.accept()
 			.and_then({
 				let channel = channel.clone();
@@ -90,7 +92,9 @@ where
 
 					channel.send(ConnectionEvent::ConnectionOpen(ConnectionOpen {
 							conn: id,
-							sink: Mutex::new(Some(sink))
+							sink: Mutex::new(Some(sink)),
+							addr: addr.ip(),
+							origin: origin
 						})).map_err(|e| {
 							error!(target: "server", "Channel send error: {}", e)
 						})

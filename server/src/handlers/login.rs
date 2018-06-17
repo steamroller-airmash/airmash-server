@@ -16,6 +16,7 @@ use component::counter::PlayersGame;
 use component::event::PlayerJoin;
 use component::time::*;
 use types::*;
+use utils::geoip;
 
 // Login needs write access to just
 // about everything
@@ -61,7 +62,12 @@ impl LoginHandler {
 		Self { reader: None }
 	}
 
-	fn send_new<'a>(data: &LoginSystemData<'a>, entity: Entity, login: &Login) {
+	fn send_new<'a>(
+		data: &LoginSystemData<'a>,
+		entity: Entity, 
+		login: &Login,
+		flag: FlagCode
+	) {
 		let player_new = PlayerNew {
 			id: entity,
 			status: PlayerStatus::Alive,
@@ -70,7 +76,7 @@ impl LoginHandler {
 			team: Team(0),
 			pos: Position::new(Distance::new(0.0), Distance::new(200.0)),
 			rot: Rotation::new(0.0),
-			flag: FlagCode::from_str(&login.flag).unwrap_or(FlagCode::UnitedNations),
+			flag: flag,
 			upgrades: ProtocolUpgrades::default(),
 		};
 
@@ -133,7 +139,11 @@ impl LoginHandler {
 			.collect()
 	}
 
-	fn do_login<'a>(data: &mut LoginSystemData<'a>, conn: ConnectionId, login: Login) {
+	fn do_login<'a>(
+		data: &mut LoginSystemData<'a>, 
+		conn: ConnectionId, 
+		login: Login
+	) {
 		let entity = data.entities.create();
 
 		if entity.id() > 0xFFFF {
@@ -150,7 +160,13 @@ impl LoginHandler {
 			conn, login.name, entity.id()
 		);
 
-		Self::send_new(data, entity, &login);
+		let flag = match FlagCode::from_str(&login.flag) {
+			Some(v) => v,
+			None => geoip::locate(&data.conns.0[&conn].addr)
+				.unwrap_or(FlagCode::UnitedNations)
+		};
+
+		Self::send_new(data, entity, &login, flag);
 		Self::send_level(data, entity, &login);
 
 		let session = match Uuid::from_str(&login.session) {
@@ -176,12 +192,7 @@ impl LoginHandler {
 		data.score.insert(entity, Score(0)).unwrap();
 		data.level.insert(entity, Level(0)).unwrap();
 		data.team.insert(entity, team).unwrap();
-		data.flag
-			.insert(
-				entity,
-				FlagCode::from_str(&login.flag).unwrap_or(FlagCode::UnitedNations),
-			)
-			.unwrap();
+		data.flag.insert(entity, flag).unwrap();
 		data.plane.insert(entity, PlaneType::Predator).unwrap();
 		data.status.insert(entity, PlayerStatus::Alive).unwrap();
 		data.associated_conn

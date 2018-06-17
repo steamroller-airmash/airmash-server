@@ -5,7 +5,7 @@ mod default_geoip {
 	use protocol::FlagCode;
 
 	/// An empty lookup that always returns None
-	fn locate(_: &IpAddr) -> Option<FlagCode> {
+	pub fn locate(_: &IpAddr) -> Option<FlagCode> {
 		None
 	}
 }
@@ -18,7 +18,7 @@ mod full_geoip {
 	use protocol::FlagCode;
 
 	/// Look up ISO-2 country code
-	fn locate(addr: &IpAddr) -> Option<FlagCode> {
+	pub fn locate(addr: &IpAddr) -> Option<FlagCode> {
 		match *addr {
 			IpAddr::V4(a) => match geolocate_ip::lookup_ip(&a) {
 				Some(s) => FlagCode::from_str(s),

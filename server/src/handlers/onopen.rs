@@ -36,7 +36,11 @@ impl<'a> System<'a> for OnOpenHandler {
 			for evt in channel.read(reader) {
 				let sink = mem::replace(&mut *evt.sink.lock().unwrap(), None);
 
-				connections.add(evt.conn, sink.unwrap());
+				connections.add(
+					evt.conn,
+					sink.unwrap(),
+					evt.addr,
+					evt.origin.clone());
 			}
 		}
 	}
