@@ -5,6 +5,8 @@ authors = ["STEAMROLLER"]
 
 [features]
 nodelay = []
+# Enable using the client's IP to determine
+# a default flag if they don't provide one.
 geoip = [ "geolocate-ip" ]
 # Enable looking for the X-Forwarded-For header
 # when determining client IP address
