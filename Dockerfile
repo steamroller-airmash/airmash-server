@@ -20,7 +20,7 @@ RUN rm -rf src
 
 ADD server /build/server
 
-RUN cargo build --release
+RUN cargo build --release --features geoip
 RUN mkdir /artifacts
 RUN mv target/x86_64-unknown-linux-musl/release/airmash-server /artifacts/airmash-server
 
