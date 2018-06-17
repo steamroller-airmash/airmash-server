@@ -6,6 +6,9 @@ authors = ["STEAMROLLER"]
 [features]
 nodelay = []
 geoip = [ "geolocate-ip" ]
+# Enable looking for the X-Forwarded-For header
+# when determining client IP address
+proxied = [ "hyper" ]
 
 [profile.release]
 debug = true
@@ -33,6 +36,10 @@ rayon = "*"
 phf = "*"
 bit_field = "*"
 htmlescape = "*"
+
+[dependencies.hyper]
+version = "*"
+optional = true
 
 [dependencies.ctrlc]
 version = "*"

@@ -33,6 +33,8 @@ extern crate tokio;
 extern crate tokio_core;
 extern crate uuid;
 extern crate websocket;
+#[cfg(features="hyper")]
+extern crate hyper;
 
 use websocket::futures;
 
