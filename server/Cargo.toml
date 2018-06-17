@@ -4,6 +4,7 @@ version = "0.1.0"
 authors = ["STEAMROLLER"]
 
 [features]
+# If enabled, set TCP_NODELAY on incoming connections
 nodelay = []
 # Enable using the client's IP to determine
 # a default flag if they don't provide one.
