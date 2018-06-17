@@ -5,6 +5,8 @@ use futures::stream::SplitSink;
 use futures::{AsyncSink, Sink};
 use specs::Entity;
 use websocket::async::{MessageCodec, TcpStream};
+// Can't change this yet since websocket has not updated
+#[allow(deprecated)]
 use websocket::client::async::Framed;
 use websocket::OwnedMessage;
 
@@ -12,6 +14,8 @@ use std::sync::mpsc::Sender;
 use std::sync::Mutex;
 use std::net::IpAddr;
 
+// Websocket hasn't updated, can't change this yet
+#[allow(deprecated)]
 pub type ConnectionSink = SplitSink<Framed<TcpStream, MessageCodec<OwnedMessage>>>;
 
 pub struct ConnectionData {
