@@ -46,6 +46,7 @@ mod systems;
 mod timeloop;
 mod timers;
 mod types;
+mod utils;
 
 use protocol as airmash_protocol;
 
