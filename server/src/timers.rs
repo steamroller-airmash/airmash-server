@@ -23,9 +23,7 @@ pub fn start_timer_events(channel: Sender<TimerEvent>) {
 		)
 	});
 
-	// 250ms timer for ping, in the official
-	// server this goes at 50ms, but that isn't
-	// necessary for now
+	// 5s timer for ping packets
 	tokio::spawn({
 		let channel = channel.clone();
 		timeloop(
@@ -37,7 +35,7 @@ pub fn start_timer_events(channel: Sender<TimerEvent>) {
 					})
 					.unwrap();
 			},
-			Duration::from_millis(250),
+			Duration::from_secs(5),
 		)
 	});
 }
