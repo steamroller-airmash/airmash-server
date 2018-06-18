@@ -14,19 +14,56 @@ use futures::{Future, Stream};
 use websocket::server::async::Server;
 use websocket::OwnedMessage;
 
-#[cfg(features="hyper")]
+#[cfg(feature="proxied")]
 mod hyperuse {
 	pub use hyper::header::{Header, HeaderFormat};
-	pub use hyper::error::{
-		Result as HyperResult,
-		Error as HyperError,
-	};
-	pub use std::str;
+	use hyper::Error as HyperError;
+	use std::str;
 	pub use std::net::IpAddr;
-	pub use std::fmt::{Result as FmtResult, Formatter};
+	use std::fmt::{Result as FmtResult, Formatter};
+
+	#[derive(Clone, Debug)]
+	pub struct XForwardedFor {
+		pub addrs: Vec<IpAddr>
+	}
+
+	impl Header for XForwardedFor {
+		fn header_name() -> &'static str {
+			return "X-Forwarded-For";
+		}
+
+		fn parse_header(raw: &[Vec<u8>]) -> Result<Self, HyperError> {
+			if raw.len() != 1 {
+				return Err(HyperError::Header);
+			}
+
+			let s = match str::from_utf8(&raw[0]) {
+				Ok(s) => s,
+				Err(e) => return Err(HyperError::Utf8(e))
+			};
+
+			let mut addrs = vec![];
+
+			for s in s.split(',') {
+				addrs.push(match s.parse() {
+					Ok(v) => v,
+					Err(_) => return Err(HyperError::Header)
+				});
+			}
+
+			Ok(Self { addrs })
+		}
+	}
+
+	impl HeaderFormat for XForwardedFor {
+		fn fmt_header(&self, fmt: &mut Formatter) -> FmtResult {
+			let strs = self.addrs.iter().map(|x| x.to_string()).collect::<Vec<String>>();
+			write!(fmt, "{}", strs.join(", "))
+		}
+	}
 }
 
-#[cfg(features="hyper")]
+#[cfg(feature="proxied")]
 use self::hyperuse::*;
 
 use tokio_core::reactor::Core;
@@ -38,41 +75,6 @@ Content-Type: text/html\n\
 <body>\
 	<img src=\"https://upload.wikimedia.org/wikipedia/commons/thumb/4/44/Black_tea_pot_cropped.jpg/330px-Black_tea_pot_cropped.jpg\"\
 </body>";
-
-#[derive(Clone, Debug)]
-#[cfg(features="hyper")]
-struct XForwardedFor {
-	pub addr: IpAddr
-}
-
-#[cfg(features="hyper")]
-impl Header for XForwardedFor {
-	fn header_name() -> &'static str {
-		"X-Forwarded-For"
-	}
-	fn parse_header(raw: &[Vec<u8>]) -> HyperResult<Self> {
-		if raw.len() != 1 {
-			return Err(HyperError::Header);
-		}
-
-		let val = match str::from_utf8(&raw[0]) {
-			Ok(v) => v,
-			Err(e) => return Err(HyperError::Utf8(e)),
-		};
-
-		match val.parse() {
-			Ok(v) => Ok(Self{ addr: v }),
-			Err(_) => Err(HyperError::Header)
-		}
-	}
-}
-
-#[cfg(features="hyper")]
-impl HeaderFormat for XForwardedFor {
-	fn fmt_header(&self, fmt: &mut Formatter) -> FmtResult {
-		write!(fmt, "{}", self.addr.to_string())
-	}
-}
 
 pub fn run_acceptor<A>(addr: A, channel: Sender<ConnectionEvent>)
 where
@@ -125,17 +127,21 @@ where
 			// set TCP_NODELAY. If this fails,
 			// then the client will just be 
 			// using a less optimal stream.
-			#[cfg(features="nodelay")]
+			#[cfg(feature="nodelay")]
 			upgrade.stream.set_nodelay(true).err();
 
 			let origin = upgrade.origin().map(|x| x.to_owned());
 
-			#[cfg(features="proxied")]
-			let realaddr = upgrade.headers.get::<XForwardedFor>()
-				.map(|x| x.addr)
-				.unwrap_or(addr.ip());
+			#[cfg(feature="proxied")]
+			let realaddr = match upgrade.request.headers.get::<XForwardedFor>() {
+				Some(v) => match v.addrs.get(0) {
+					Some(v) => *v,
+					None => addr.ip()
+				},
+				None => addr.ip()
+			};
 
-			#[cfg(not(features="proxied"))]
+			#[cfg(not(feature="proxied"))]
 			let realaddr = addr.ip();
 
 			let f = upgrade.accept()

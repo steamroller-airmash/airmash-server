@@ -11,7 +11,7 @@ nodelay = []
 geoip = [ "geolocate-ip" ]
 # Enable looking for the X-Forwarded-For header
 # when determining client IP address
-proxied = [ "hyper" ]
+proxied = [ ]# "hyper" ]
 
 [profile.release]
 debug = true
@@ -40,10 +40,6 @@ phf = "*"
 bit_field = "*"
 htmlescape = "*"
 
-[dependencies.hyper]
-version = "*"
-optional = true
-
 [dependencies.ctrlc]
 version = "*"
 features = [ "termination" ]
@@ -52,8 +48,12 @@ features = [ "termination" ]
 version = "*"
 features=["v5"]
 
+# This and websocket must be versioned together
+[dependencies.hyper]
+version = "0.10"
+
 [dependencies.websocket]
-version = "*"
+version = "0.20"
 default-features = false
 features = [ "async", "async-ssl" ]
 
