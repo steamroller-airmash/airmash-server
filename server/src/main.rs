@@ -49,6 +49,7 @@ mod timers;
 mod types;
 mod utils;
 mod metrics;
+mod dispatch;
 
 use protocol as airmash_protocol;
 
@@ -65,8 +66,6 @@ use component::time::{LastFrame, StartTime, ThisFrame};
 use timeloop::timeloop;
 
 use types::event::{ConnectionEvent, TimerEvent};
-
-use metrics::*;
 
 fn build_dispatcher<'a, 'b>(
 	world: &mut World,
