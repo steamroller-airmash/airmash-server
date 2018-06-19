@@ -48,6 +48,7 @@ mod timeloop;
 mod timers;
 mod types;
 mod utils;
+mod metrics;
 
 use protocol as airmash_protocol;
 
@@ -64,6 +65,8 @@ use component::time::{LastFrame, StartTime, ThisFrame};
 use timeloop::timeloop;
 
 use types::event::{ConnectionEvent, TimerEvent};
+
+use metrics::*;
 
 fn build_dispatcher<'a, 'b>(
 	world: &mut World,
@@ -131,6 +134,9 @@ fn main() {
 	// Add resources
 	info!("Setting up resources");
 
+	let metric_handler = metrics::handler();
+
+	world.add_resource(metric_handler.clone());
 	world.add_resource(types::Connections::new(msg_send));
 
 	// Add systems
@@ -192,6 +198,9 @@ fn main() {
 			} else {
 				trace!("Frame time: {} ms", duration.subsec_millis());
 			}
+
+			// Don't crash server if metric recording fails
+			metric_handler.time_duration("frame-time", duration).unwrap();
 		},
 		Duration::from_nanos(16666667),
 	));
