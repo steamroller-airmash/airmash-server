@@ -39,6 +39,7 @@ macro_rules! decl_tuple {
 
 // Alphabet pyramid, implement for every tuple up to 26 elements
 decl_tuple! {
+	();
 	(A);
 	(A, B);
 	(A, B, C);

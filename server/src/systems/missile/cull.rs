@@ -1,11 +1,14 @@
 use specs::*;
 use types::*;
 
+use dispatch::SystemInfo;
 use component::time::{MobSpawnTime, ThisFrame};
 
 use airmash_protocol::server::MobDespawn;
 use airmash_protocol::{to_bytes, ServerPacket};
 use websocket::OwnedMessage;
+
+use std::any::Any;
 
 pub struct MissileCull;
 
@@ -45,5 +48,17 @@ impl<'a> System<'a> for MissileCull {
 					to_bytes(&ServerPacket::MobDespawn(packet)).unwrap(),
 				));
 			});
+	}
+}
+
+impl SystemInfo for MissileCull {
+	type Dependencies = ();
+
+	fn name() -> &'static str {
+		module_path!()
+	}
+
+	fn new(_: Box<Any>) -> Self {
+		Self{}
 	}
 }

@@ -4,12 +4,15 @@ use shrev::EventChannel;
 use specs::*;
 use websocket::OwnedMessage;
 
-use std::sync::mpsc::Receiver;
+use std::mem;
+use std::any::Any;
+use std::sync::mpsc::{Receiver, channel};
 
 use component::channel::*;
 use component::event::*;
 use types::event::*;
 use types::*;
+use dispatch::*;
 
 pub struct PacketHandler {
 	channel: Receiver<ConnectionEvent>,
@@ -101,5 +104,18 @@ impl<'a> System<'a> for PacketHandler {
 				}
 			}
 		}
+	}
+}
+
+impl SystemInfo for PacketHandler {
+	type Dependencies = ();
+
+	fn name() -> &'static str {
+		module_path!()
+	}
+
+	fn new(mut a: Box<Any>) -> Self {
+		let r = a.downcast_mut::<Receiver<ConnectionEvent>>().unwrap();
+		Self::new(mem::replace(r, channel().1))
 	}
 }
