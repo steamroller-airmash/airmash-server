@@ -43,8 +43,10 @@ impl<T: Default> Array2D<T> {
 			idx.0 < self.dims.0 && idx.1 < self.dims.1,
 			"{}: {:?} >= {:?} || {:?} >= {:?}",
 			"Out of bounds index in Array2D",
-			idx.0, self.dims.0,
-			idx.1, self.dims.1
+			idx.0,
+			self.dims.0,
+			idx.1,
+			self.dims.1
 		);
 
 		self.elems.insert(idx, T::default());

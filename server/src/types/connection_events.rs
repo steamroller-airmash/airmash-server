@@ -1,5 +1,5 @@
-use std::sync::Mutex;
 use std::net::IpAddr;
+use std::sync::Mutex;
 
 use types::{ConnectionId, ConnectionSink};
 use websocket::OwnedMessage;

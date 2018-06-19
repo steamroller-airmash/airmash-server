@@ -1,5 +1,3 @@
-
-
 /*
 extern crate cadence;
 
@@ -26,15 +24,15 @@ pub fn handler() -> MetricsHandler {
 }
 */
 
-use std::io::{Write, Error};
 use std::fs::File;
-use std::sync::{Mutex, Arc};
+use std::io::{Error, Write};
+use std::sync::{Arc, Mutex};
 
 use std::time::Duration;
 
 #[derive(Clone)]
 pub struct MetricsHandler {
-	file: Arc<Mutex<File>>
+	file: Arc<Mutex<File>>,
 }
 
 impl MetricsHandler {
@@ -49,21 +47,14 @@ impl MetricsHandler {
 	}
 
 	pub fn count(&self, tag: &str, d: i64) -> Result<(), Error> {
-		writeln!(
-			&mut *self.file.lock().unwrap(),
-			"{}: {}",
-			tag,
-			d
-		)
+		writeln!(&mut *self.file.lock().unwrap(), "{}: {}", tag, d)
 	}
 }
 
 pub fn handler() -> MetricsHandler {
 	let file = File::create("logs.txt").unwrap();
 
-	MetricsHandler{
-		file: Arc::new(Mutex::new(file))
+	MetricsHandler {
+		file: Arc::new(Mutex::new(file)),
 	}
 }
-
-

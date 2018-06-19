@@ -1,8 +1,7 @@
-
-#[cfg(not(feature="geoip"))]
+#[cfg(not(feature = "geoip"))]
 mod default_geoip {
-	use std::net::IpAddr;
 	use protocol::FlagCode;
+	use std::net::IpAddr;
 
 	/// An empty lookup that always returns None
 	pub fn locate(_: &IpAddr) -> Option<FlagCode> {
@@ -10,12 +9,12 @@ mod default_geoip {
 	}
 }
 
-#[cfg(feature="geoip")]
+#[cfg(feature = "geoip")]
 mod full_geoip {
 	extern crate geolocate_ip;
 
-	use std::net::IpAddr;
 	use protocol::FlagCode;
+	use std::net::IpAddr;
 
 	/// Look up ISO-2 country code
 	pub fn locate(addr: &IpAddr) -> Option<FlagCode> {
@@ -25,13 +24,13 @@ mod full_geoip {
 				None => None,
 			},
 			// IP lookups not done for Ipv6 addresses yet
-			IpAddr::V6(_) => None
+			IpAddr::V6(_) => None,
 		}
 	}
 }
 
-#[cfg(feature="geoip")]
+#[cfg(feature = "geoip")]
 pub use self::full_geoip::*;
 
-#[cfg(not(feature="geoip"))]
+#[cfg(not(feature = "geoip"))]
 pub use self::default_geoip::*;

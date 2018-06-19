@@ -386,15 +386,15 @@ impl Default for MobInfos {
 			MobInfo {
 				lifetime: Duration::from_secs(60),
 				missile: None,
-			}
+			},
 		);
 
 		map.insert(
 			MobType::Shield,
 			MobInfo {
 				lifetime: Duration::from_secs(60),
-				missile: None
-			}
+				missile: None,
+			},
 		);
 
 		MobInfos(map)

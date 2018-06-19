@@ -14,17 +14,17 @@ use futures::{Future, Stream};
 use websocket::server::async::Server;
 use websocket::OwnedMessage;
 
-#[cfg(feature="proxied")]
+#[cfg(feature = "proxied")]
 mod hyperuse {
 	pub use hyper::header::{Header, HeaderFormat};
 	use hyper::Error as HyperError;
-	use std::str;
+	use std::fmt::{Formatter, Result as FmtResult};
 	pub use std::net::IpAddr;
-	use std::fmt::{Result as FmtResult, Formatter};
+	use std::str;
 
 	#[derive(Clone, Debug)]
 	pub struct XForwardedFor {
-		pub addrs: Vec<IpAddr>
+		pub addrs: Vec<IpAddr>,
 	}
 
 	impl Header for XForwardedFor {
@@ -39,7 +39,7 @@ mod hyperuse {
 
 			let s = match str::from_utf8(&raw[0]) {
 				Ok(s) => s,
-				Err(e) => return Err(HyperError::Utf8(e))
+				Err(e) => return Err(HyperError::Utf8(e)),
 			};
 
 			let mut addrs = vec![];
@@ -47,7 +47,7 @@ mod hyperuse {
 			for s in s.split(',') {
 				addrs.push(match s.parse() {
 					Ok(v) => v,
-					Err(_) => return Err(HyperError::Header)
+					Err(_) => return Err(HyperError::Header),
 				});
 			}
 
@@ -57,13 +57,17 @@ mod hyperuse {
 
 	impl HeaderFormat for XForwardedFor {
 		fn fmt_header(&self, fmt: &mut Formatter) -> FmtResult {
-			let strs = self.addrs.iter().map(|x| x.to_string()).collect::<Vec<String>>();
+			let strs = self
+				.addrs
+				.iter()
+				.map(|x| x.to_string())
+				.collect::<Vec<String>>();
 			write!(fmt, "{}", strs.join(", "))
 		}
 	}
 }
 
-#[cfg(feature="proxied")]
+#[cfg(feature = "proxied")]
 use self::hyperuse::*;
 
 use tokio_core::reactor::Core;

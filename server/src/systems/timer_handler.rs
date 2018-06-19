@@ -1,12 +1,12 @@
-use std::mem;
 use std::any::Any;
-use std::sync::mpsc::{Receiver, channel};
+use std::mem;
+use std::sync::mpsc::{channel, Receiver};
 
 use component::event::*;
+use dispatch::SystemInfo;
 use shrev::*;
 use specs::*;
 use types::event::*;
-use dispatch::SystemInfo;
 
 pub struct TimerHandler {
 	channel: Receiver<TimerEvent>,
@@ -55,7 +55,7 @@ impl SystemInfo for TimerHandler {
 
 	fn new(mut a: Box<Any>) -> Self {
 		let r = a.downcast_mut::<Receiver<TimerEvent>>().unwrap();
-		// Replace the channel within the box with a 
+		// Replace the channel within the box with a
 		// dummy one, which will be dropped immediately
 		// anyway
 		Self::new(mem::replace(r, channel().1))

@@ -1,8 +1,8 @@
+use metrics::*;
 use specs::prelude::*;
+use std::time::Instant;
 use tokio::prelude::Sink;
 use types::*;
-use metrics::*;
-use std::time::Instant;
 
 use websocket::OwnedMessage;
 
@@ -19,17 +19,14 @@ impl PollComplete {
 }
 
 impl<'a> System<'a> for PollComplete {
-	type SystemData = (
-		Write<'a, Connections>,
-		ReadExpect<'a, MetricsHandler>
-	);
+	type SystemData = (Write<'a, Connections>, ReadExpect<'a, MetricsHandler>);
 
 	fn run(&mut self, (mut conns, metrics): Self::SystemData) {
 		let start = Instant::now();
 		let mut cnt = 0;
 		while let Ok((id, msg)) = self.channel.try_recv() {
 			cnt += 1;
-			
+
 			match conns.0.get_mut(&id) {
 				Some(ref mut conn) => {
 					Connections::send_sink(&mut conn.sink, msg);
@@ -55,6 +52,8 @@ impl<'a> System<'a> for PollComplete {
 				.err();
 		}
 
-		metrics.time_duration("poll-complete", Instant::now() - start).err();
+		metrics
+			.time_duration("poll-complete", Instant::now() - start)
+			.err();
 	}
 }

@@ -1,4 +1,3 @@
-
 use std::any::Any;
 
 pub trait SystemDeps {
@@ -12,17 +11,16 @@ pub trait SystemInfo {
 	fn new(args: Box<Any>) -> Self;
 }
 
-
 macro_rules! decl_tuple {
-	{ 
+	{
 		$(
-			( 
+			(
 				$($param:ident),*
 			);
 		)*
 	} => {
 		$(
-		impl<$($param,)*> SystemDeps for ($($param,)*) 
+		impl<$($param,)*> SystemDeps for ($($param,)*)
 		where $($param: SystemInfo,)*
 		{
 			fn dependencies() -> Vec<&'static str> {

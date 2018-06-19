@@ -1,8 +1,7 @@
-
 use fnv::FnvHashMap;
 
 use protocol::MobType;
-use types::{Position, Distance, Mob};
+use types::{Distance, Mob, Position};
 
 lazy_static! {
 	pub static ref COLLIDERS: FnvHashMap<Mob, Vec<(Position, Distance)>> = {

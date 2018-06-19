@@ -1,8 +1,8 @@
 use specs::*;
 use types::*;
 
-use dispatch::SystemInfo;
 use component::time::{MobSpawnTime, ThisFrame};
+use dispatch::SystemInfo;
 
 use airmash_protocol::server::MobDespawn;
 use airmash_protocol::{to_bytes, ServerPacket};
@@ -59,6 +59,6 @@ impl SystemInfo for MissileCull {
 	}
 
 	fn new(_: Box<Any>) -> Self {
-		Self{}
+		Self {}
 	}
 }

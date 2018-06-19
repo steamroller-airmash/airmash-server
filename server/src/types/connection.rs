@@ -10,9 +10,9 @@ use websocket::async::{MessageCodec, TcpStream};
 use websocket::client::async::Framed;
 use websocket::OwnedMessage;
 
+use std::net::IpAddr;
 use std::sync::mpsc::Sender;
 use std::sync::Mutex;
-use std::net::IpAddr;
 
 // Websocket hasn't updated, can't change this yet
 #[allow(deprecated)]
@@ -51,19 +51,19 @@ impl Connections {
 	}
 
 	pub fn add(
-		&mut self, 
-		id: ConnectionId, 
+		&mut self,
+		id: ConnectionId,
 		sink: ConnectionSink,
 		addr: IpAddr,
-		origin: Option<String>) 
-	{
+		origin: Option<String>,
+	) {
 		let data = ConnectionData {
 			sink: sink,
 			ty: ConnectionType::Inactive,
 			player: None,
 			id: id,
 			addr,
-			origin
+			origin,
 		};
 
 		self.0.insert(id, data);

@@ -22,6 +22,7 @@ extern crate bit_field;
 extern crate ctrlc;
 extern crate fnv;
 extern crate htmlescape;
+extern crate hyper;
 extern crate phf;
 extern crate rand;
 extern crate rayon;
@@ -33,14 +34,15 @@ extern crate tokio;
 extern crate tokio_core;
 extern crate uuid;
 extern crate websocket;
-extern crate hyper;
 
 use websocket::futures;
 
 // Modules
 mod component;
 mod consts;
+mod dispatch;
 mod handlers;
+mod metrics;
 mod protocol;
 mod server;
 mod systems;
@@ -48,8 +50,6 @@ mod timeloop;
 mod timers;
 mod types;
 mod utils;
-mod metrics;
-mod dispatch;
 
 use protocol as airmash_protocol;
 
@@ -199,7 +199,9 @@ fn main() {
 			}
 
 			// Don't crash server if metric recording fails
-			metric_handler.time_duration("frame-time", duration).unwrap();
+			metric_handler
+				.time_duration("frame-time", duration)
+				.unwrap();
 		},
 		Duration::from_nanos(16666667),
 	));

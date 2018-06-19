@@ -24,7 +24,7 @@ pub fn register<'a, 'b>(
 		.with(
 			PlayerMissileCollisionSystem::new(),
 			"collision_player-missile",
-			&["position_update"]
+			&["position_update"],
 		)
 		.with(
 			BounceSystem::new(),

@@ -1,17 +1,16 @@
-
 use specs::*;
-use types::*;
 use types::collision::*;
+use types::*;
 
 use component::channel::*;
 use component::reference::PlayerRef;
 
-use websocket::OwnedMessage;
 use protocol::server::{PlayerHit, PlayerHitPlayer};
 use protocol::{to_bytes, ServerPacket};
+use websocket::OwnedMessage;
 
 pub struct MissileHitSystem {
-	reader: Option<OnPlayerMissileCollisionReader>
+	reader: Option<OnPlayerMissileCollisionReader>,
 }
 
 #[derive(SystemData)]
@@ -52,7 +51,7 @@ impl<'a> System<'a> for MissileHitSystem {
 
 	fn run(&mut self, mut data: Self::SystemData) {
 		for evt in data.channel.read(self.reader.as_mut().unwrap()) {
-			let Collision (c1, c2) = evt.0;
+			let Collision(c1, c2) = evt.0;
 			let player;
 			let missile;
 
@@ -60,7 +59,7 @@ impl<'a> System<'a> for MissileHitSystem {
 				Some(_) => {
 					player = c1;
 					missile = c2;
-				},
+				}
 				None => {
 					missile = c1;
 					player = c2;
@@ -74,7 +73,7 @@ impl<'a> System<'a> for MissileHitSystem {
 			let plane = data.plane.get(player.ent).unwrap();
 			let health = data.health.get_mut(player.ent).unwrap();
 			let upgrades = data.upgrades.get(player.ent).unwrap();
-			
+
 			let mob = data.mob.get(missile.ent).unwrap();
 			let pos = data.pos.get(missile.ent).unwrap();
 			let owner = data.owner.get(missile.ent).unwrap();
@@ -91,19 +90,17 @@ impl<'a> System<'a> for MissileHitSystem {
 				owner: owner.0,
 				pos: *pos,
 				ty: *mob,
-				players: vec![
-					PlayerHitPlayer {
-						id: player.ent,
-						health: *health,
-						health_regen: planeconf.health_regen,
-					}
-				]
+				players: vec![PlayerHitPlayer {
+					id: player.ent,
+					health: *health,
+					health_regen: planeconf.health_regen,
+				}],
 			};
 
 			data.entities.delete(missile.ent).unwrap();
 
 			data.conns.send_to_all(OwnedMessage::Binary(
-				to_bytes(&ServerPacket::PlayerHit(packet)).unwrap()
+				to_bytes(&ServerPacket::PlayerHit(packet)).unwrap(),
 			));
 		}
 	}

@@ -22,7 +22,7 @@ pub struct PlayerLeave(pub Entity);
 #[derive(Copy, Clone, Debug)]
 pub struct PlayerKilled {
 	pub player: Entity,
-	pub killer: Entity	
+	pub killer: Entity,
 }
 
 #[derive(Copy, Clone, Debug)]

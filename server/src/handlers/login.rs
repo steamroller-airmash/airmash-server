@@ -62,12 +62,7 @@ impl LoginHandler {
 		Self { reader: None }
 	}
 
-	fn send_new<'a>(
-		data: &LoginSystemData<'a>,
-		entity: Entity, 
-		login: &Login,
-		flag: FlagCode
-	) {
+	fn send_new<'a>(data: &LoginSystemData<'a>, entity: Entity, login: &Login, flag: FlagCode) {
 		let player_new = PlayerNew {
 			id: entity,
 			status: PlayerStatus::Alive,
@@ -139,11 +134,7 @@ impl LoginHandler {
 			.collect()
 	}
 
-	fn do_login<'a>(
-		data: &mut LoginSystemData<'a>, 
-		conn: ConnectionId, 
-		login: Login
-	) {
+	fn do_login<'a>(data: &mut LoginSystemData<'a>, conn: ConnectionId, login: Login) {
 		let entity = data.entities.create();
 
 		if entity.id() > 0xFFFF {
@@ -162,8 +153,7 @@ impl LoginHandler {
 
 		let flag = match FlagCode::from_str(&login.flag) {
 			Some(v) => v,
-			None => geoip::locate(&data.conns.0[&conn].addr)
-				.unwrap_or(FlagCode::UnitedNations)
+			None => geoip::locate(&data.conns.0[&conn].addr).unwrap_or(FlagCode::UnitedNations),
 		};
 
 		Self::send_new(data, entity, &login, flag);
