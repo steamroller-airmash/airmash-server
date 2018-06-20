@@ -1,18 +1,16 @@
-mod collision;
 mod energy_regen;
 mod health_regen;
-mod missile;
 mod packet_handler;
 mod poll_complete;
 mod position_update;
 mod register;
 mod timer_handler;
 
+pub mod collision;
 pub mod ctf;
+pub mod missile;
 
-pub use self::collision::*;
 pub use self::energy_regen::EnergyRegenSystem;
-pub use self::missile::*;
 pub use self::packet_handler::PacketHandler;
 pub use self::poll_complete::PollComplete;
 pub use self::position_update::PositionUpdate;

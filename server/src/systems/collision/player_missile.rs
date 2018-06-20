@@ -1,5 +1,4 @@
 use specs::prelude::*;
-use specs::*;
 
 use types::collision::*;
 use types::*;
@@ -101,5 +100,21 @@ impl<'a> System<'a> for PlayerMissileCollisionSystem {
 			.collect::<Vec<PlayerMissileCollision>>();
 
 		channel.iter_write(vec.into_iter());
+	}
+}
+
+use dispatch::SystemInfo;
+use std::any::Any;
+use systems::PositionUpdate;
+
+impl SystemInfo for PlayerMissileCollisionSystem {
+	type Dependencies = PositionUpdate;
+
+	fn name() -> &'static str {
+		concat!(module_path!(), "::", line!())
+	}
+
+	fn new(_: Box<Any>) -> Self {
+		Self::new()
 	}
 }

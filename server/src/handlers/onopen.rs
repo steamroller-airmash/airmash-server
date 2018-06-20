@@ -2,9 +2,13 @@ use shrev::*;
 use specs::*;
 use types::*;
 
+use std::any::Any;
 use std::mem;
 
+use dispatch::SystemInfo;
 use types::event::ConnectionOpen;
+
+use systems::PacketHandler;
 
 pub struct OnOpenHandler {
 	reader: Option<ReaderId<ConnectionOpen>>,
@@ -39,5 +43,17 @@ impl<'a> System<'a> for OnOpenHandler {
 				connections.add(evt.conn, sink.unwrap(), evt.addr, evt.origin.clone());
 			}
 		}
+	}
+}
+
+impl SystemInfo for OnOpenHandler {
+	type Dependencies = PacketHandler;
+
+	fn new(_: Box<Any>) -> Self {
+		Self::new()
+	}
+
+	fn name() -> &'static str {
+		module_path!()
 	}
 }

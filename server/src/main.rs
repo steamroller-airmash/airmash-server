@@ -59,10 +59,11 @@ use std::sync::mpsc::{channel, Receiver};
 use std::thread;
 use std::time::{Duration, Instant};
 
-use specs::{Dispatcher, DispatcherBuilder, World};
+use specs::{Dispatcher, World};
 use tokio::runtime::current_thread::Runtime;
 
 use component::time::{LastFrame, StartTime, ThisFrame};
+use dispatch::Builder;
 use timeloop::timeloop;
 
 use types::event::{ConnectionEvent, TimerEvent};
@@ -73,18 +74,17 @@ fn build_dispatcher<'a, 'b>(
 	timer_recv: Receiver<TimerEvent>,
 	msg_recv: Receiver<(types::ConnectionId, websocket::OwnedMessage)>,
 ) -> Dispatcher<'a, 'b> {
-	let disp = DispatcherBuilder::new()
+	let disp = Builder::new()
 		// Add systems here
-		.with(systems::PacketHandler::new(event_recv), "packet",   &[])
-		.with(systems::TimerHandler::new(timer_recv),  "timer",    &[])
-		.with(systems::MissileCull{},                  "missile_cull", &[]);
+		.with_args::<systems::PacketHandler, _>(event_recv)
+		.with_args::<systems::TimerHandler, _>(timer_recv);
 
-	let disp = systems::register(world, disp);
+	let disp = systems::register(disp);
 	let disp = systems::ctf::register(world, disp);
 
 	disp
 		// This needs to run after systems which send messages
-		.with_thread_local(systems::PollComplete::new(msg_recv))
+		.with_thread_local_args::<systems::PollComplete, _>(msg_recv)
 
 		// Build
 		.build()

@@ -67,3 +67,17 @@ impl<'a> System<'a> for MissileExplodeSystem {
 		}
 	}
 }
+
+use dispatch::SystemInfo;
+use std::any::Any;
+impl SystemInfo for MissileExplodeSystem {
+	type Dependencies = ();
+
+	fn name() -> &'static str {
+		concat!(module_path!(), "::", line!())
+	}
+
+	fn new(_: Box<Any>) -> Self {
+		Self::new()
+	}
+}

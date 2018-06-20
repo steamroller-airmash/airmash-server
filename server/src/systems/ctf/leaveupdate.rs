@@ -91,3 +91,19 @@ impl<'a> System<'a> for LeaveUpdateSystem {
 		}
 	}
 }
+
+use dispatch::SystemInfo;
+use std::any::Any;
+use systems::PositionUpdate;
+
+impl SystemInfo for LeaveUpdateSystem {
+	type Dependencies = PositionUpdate;
+
+	fn name() -> &'static str {
+		concat!(module_path!(), "::", line!())
+	}
+
+	fn new(_: Box<Any>) -> Self {
+		Self::new()
+	}
+}

@@ -1,3 +1,4 @@
+use specs::World;
 use std::any::Any;
 
 pub trait SystemDeps {
@@ -9,6 +10,8 @@ pub trait SystemInfo {
 
 	fn name() -> &'static str;
 	fn new(args: Box<Any>) -> Self;
+
+	fn static_setup(_: &mut World) {}
 }
 
 macro_rules! decl_tuple {
@@ -32,6 +35,15 @@ macro_rules! decl_tuple {
 			}
 		}
 		)*
+	}
+}
+
+impl<T> SystemDeps for T
+where
+	T: SystemInfo,
+{
+	fn dependencies() -> Vec<&'static str> {
+		vec![T::name()]
 	}
 }
 

@@ -88,3 +88,19 @@ impl<'a> System<'a> for PlaneCollisionSystem {
 		data.collisions.iter_write(vec.into_iter());
 	}
 }
+
+use dispatch::SystemInfo;
+use std::any::Any;
+use systems::PositionUpdate;
+
+impl SystemInfo for PlaneCollisionSystem {
+	type Dependencies = PositionUpdate;
+
+	fn name() -> &'static str {
+		concat!(module_path!(), "::", line!())
+	}
+
+	fn new(_: Box<Any>) -> Self {
+		Self::new()
+	}
+}

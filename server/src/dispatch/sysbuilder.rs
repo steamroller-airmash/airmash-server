@@ -4,15 +4,13 @@ use std::marker::PhantomData;
 use specs::*;
 
 use dispatch::sysinfo::*;
-use dispatch::syswrapper::*;
 
-pub trait AbstractBuilder {
-	fn build<'a, 'b>(self, disp: DispatcherBuilder<'a, 'b>) -> DispatcherBuilder<'a, 'b>;
+pub trait AbstractBuilder<'a> {
+	fn build<'b>(self, disp: DispatcherBuilder<'a, 'b>) -> DispatcherBuilder<'a, 'b>;
+}
 
-	fn build_thread_local<'a, 'b>(
-		self,
-		disp: DispatcherBuilder<'a, 'b>,
-	) -> DispatcherBuilder<'a, 'b>;
+pub trait AbstractThreadLocalBuilder<'b> {
+	fn build_thread_local<'a>(self, disp: DispatcherBuilder<'a, 'b>) -> DispatcherBuilder<'a, 'b>;
 }
 
 pub struct SystemBuilder<T> {
@@ -29,23 +27,27 @@ impl<T: SystemInfo> SystemBuilder<T> {
 	}
 }
 
-impl<T: 'static> AbstractBuilder for SystemBuilder<T>
+impl<'a, T> AbstractBuilder<'a> for SystemBuilder<T>
 where
-	T: SystemInfo + SystemDeps + Send + for<'c> System<'c>,
-	for<'d> <T as System<'d>>::SystemData: SystemData<'d>,
+	T: for<'c> System<'c> + Send + 'a,
+	T: SystemInfo,
+	T::Dependencies: SystemDeps,
 {
-	fn build<'a, 'b>(self, disp: DispatcherBuilder<'a, 'b>) -> DispatcherBuilder<'a, 'b> {
+	fn build<'b>(self, disp: DispatcherBuilder<'a, 'b>) -> DispatcherBuilder<'a, 'b> {
 		disp.with(
-			SystemWrapper(T::new(self.args)),
+			T::new(self.args),
 			T::name(),
-			&T::dependencies(),
+			&T::Dependencies::dependencies(),
 		)
 	}
+}
 
-	fn build_thread_local<'a, 'b>(
-		self,
-		disp: DispatcherBuilder<'a, 'b>,
-	) -> DispatcherBuilder<'a, 'b> {
-		disp.with_thread_local(SystemWrapper(T::new(self.args)))
+impl<'b, T> AbstractThreadLocalBuilder<'b> for SystemBuilder<T>
+where
+	T: for<'c> System<'c> + 'b,
+	T: SystemInfo,
+{
+	fn build_thread_local<'a>(self, disp: DispatcherBuilder<'a, 'b>) -> DispatcherBuilder<'a, 'b> {
+		disp.with_thread_local(T::new(self.args))
 	}
 }

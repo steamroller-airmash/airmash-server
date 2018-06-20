@@ -80,3 +80,18 @@ impl<'a> System<'a> for ScoreBoardTimerHandler {
 		}
 	}
 }
+
+use dispatch::SystemInfo;
+use std::any::Any;
+use systems::TimerHandler;
+impl SystemInfo for ScoreBoardTimerHandler {
+	type Dependencies = (TimerHandler);
+
+	fn new(_: Box<Any>) -> Self {
+		Self::new()
+	}
+
+	fn name() -> &'static str {
+		concat!(module_path!(), "::", line!())
+	}
+}

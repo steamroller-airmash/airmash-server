@@ -6,7 +6,8 @@ use types::*;
 
 use websocket::OwnedMessage;
 
-use std::sync::mpsc::Receiver;
+use std::mem;
+use std::sync::mpsc::{channel, Receiver};
 
 pub struct PollComplete {
 	channel: Receiver<(ConnectionId, OwnedMessage)>,
@@ -55,5 +56,26 @@ impl<'a> System<'a> for PollComplete {
 		metrics
 			.time_duration("poll-complete", Instant::now() - start)
 			.err();
+	}
+}
+
+use dispatch::SystemInfo;
+use std::any::Any;
+
+impl SystemInfo for PollComplete {
+	type Dependencies = ();
+
+	fn name() -> &'static str {
+		concat!(module_path!(), "::", line!())
+	}
+
+	fn new(mut a: Box<Any>) -> Self {
+		let r = a
+			.downcast_mut::<Receiver<(ConnectionId, OwnedMessage)>>()
+			.unwrap();
+		// Replace the channel within the box with a
+		// dummy one, which will be dropped immediately
+		// anyway
+		Self::new(mem::replace(r, channel().1))
 	}
 }

@@ -53,3 +53,17 @@ impl<'a> System<'a> for SignalHandler {
 		}
 	}
 }
+
+use dispatch::SystemInfo;
+use std::any::Any;
+impl SystemInfo for SignalHandler {
+	type Dependencies = ();
+
+	fn new(_: Box<Any>) -> Self {
+		Self::default()
+	}
+
+	fn name() -> &'static str {
+		concat!(module_path!(), "::", line!())
+	}
+}

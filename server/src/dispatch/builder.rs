@@ -18,18 +18,16 @@ impl<'a, 'b> Builder<'a, 'b> {
 
 	pub fn with<T: 'static>(self) -> Self
 	where
-		T: SystemInfo + SystemDeps + Send + for<'c> System<'c>,
-		for<'d> <T as System<'d>>::SystemData: SystemData<'d>,
+		T: for<'c> System<'c> + Send + SystemInfo + 'a,
+		T::Dependencies: SystemDeps,
 	{
-		Self {
-			builder: SystemBuilder::<T>::new(()).build(self.builder),
-		}
+		self.with_args::<T, ()>(())
 	}
 
-	pub fn with_args<T: 'static, U: Any>(self, args: U) -> Self
+	pub fn with_args<T, U: Any>(self, args: U) -> Self
 	where
-		T: SystemInfo + SystemDeps + Send + for<'c> System<'c>,
-		for<'d> <T as System<'d>>::SystemData: SystemData<'d>,
+		T: for<'c> System<'c> + Send + SystemInfo + 'a,
+		T::Dependencies: SystemDeps,
 	{
 		Self {
 			builder: SystemBuilder::<T>::new(args).build(self.builder),
@@ -38,18 +36,14 @@ impl<'a, 'b> Builder<'a, 'b> {
 
 	pub fn with_thread_local<T: 'static>(self) -> Self
 	where
-		T: SystemInfo + SystemDeps + Send + for<'c> System<'c>,
-		for<'d> <T as System<'d>>::SystemData: SystemData<'d>,
+		T: for<'c> System<'c> + SystemInfo + 'b,
 	{
-		Self {
-			builder: SystemBuilder::<T>::new(()).build_thread_local(self.builder),
-		}
+		self.with_thread_local_args::<T, _>(())
 	}
 
 	pub fn with_thread_local_args<T: 'static, U: Any>(self, args: U) -> Self
 	where
-		T: SystemInfo + SystemDeps + Send + for<'c> System<'c>,
-		for<'d> <T as System<'d>>::SystemData: SystemData<'d>,
+		T: for<'c> System<'c> + SystemInfo + 'b,
 	{
 		Self {
 			builder: SystemBuilder::<T>::new(args).build_thread_local(self.builder),

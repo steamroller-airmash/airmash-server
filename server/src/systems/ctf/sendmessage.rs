@@ -60,3 +60,19 @@ impl<'a> System<'a> for SendFlagMessageSystem {
 		}
 	}
 }
+
+use super::PickupFlagSystem;
+use dispatch::SystemInfo;
+use std::any::Any;
+
+impl SystemInfo for SendFlagMessageSystem {
+	type Dependencies = PickupFlagSystem;
+
+	fn name() -> &'static str {
+		concat!(module_path!(), "::", line!())
+	}
+
+	fn new(_: Box<Any>) -> Self {
+		Self::new()
+	}
+}

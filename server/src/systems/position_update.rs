@@ -287,3 +287,19 @@ impl<'a> System<'a> for PositionUpdate {
 		self.send_outdated(&mut data, &mut lastupdate);
 	}
 }
+
+use dispatch::SystemInfo;
+use handlers::KeyHandler;
+use std::any::Any;
+
+impl SystemInfo for PositionUpdate {
+	type Dependencies = KeyHandler;
+
+	fn name() -> &'static str {
+		concat!(module_path!(), "::", line!())
+	}
+
+	fn new(_: Box<Any>) -> Self {
+		Self::new()
+	}
+}

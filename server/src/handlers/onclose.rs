@@ -8,7 +8,11 @@ use websocket::OwnedMessage;
 use component::channel::{OnClose, OnPlayerLeave};
 use component::counter::PlayersGame;
 use component::event::PlayerLeave as EvtPlayerLeave;
+use dispatch::SystemInfo;
+use handlers::OnOpenHandler;
 use types::event::ConnectionClose;
+
+use std::any::Any;
 
 pub struct OnCloseHandler {
 	reader: Option<ReaderId<ConnectionClose>>,
@@ -81,5 +85,17 @@ impl<'a> System<'a> for OnCloseHandler {
 				}
 			}
 		}
+	}
+}
+
+impl SystemInfo for OnCloseHandler {
+	type Dependencies = OnOpenHandler;
+
+	fn new(_: Box<Any>) -> Self {
+		Self::new()
+	}
+
+	fn name() -> &'static str {
+		concat!(module_path!(), line!())
 	}
 }

@@ -95,3 +95,19 @@ impl<'a> System<'a> for DropSystem {
 		}
 	}
 }
+
+use super::PickupFlagSystem;
+use dispatch::SystemInfo;
+use std::any::Any;
+
+impl SystemInfo for DropSystem {
+	type Dependencies = PickupFlagSystem;
+
+	fn name() -> &'static str {
+		concat!(module_path!(), "::", line!())
+	}
+
+	fn new(_: Box<Any>) -> Self {
+		Self::new()
+	}
+}

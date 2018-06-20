@@ -1,7 +1,10 @@
 mod cull;
 mod fire;
 mod hit;
+mod register;
 mod update;
+
+pub use self::register::register;
 
 pub use self::cull::MissileCull;
 pub use self::fire::MissileFireHandler;

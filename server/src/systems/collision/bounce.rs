@@ -105,3 +105,19 @@ impl<'a> System<'a> for BounceSystem {
 		}
 	}
 }
+
+use super::PlaneCollisionSystem;
+use dispatch::SystemInfo;
+use std::any::Any;
+
+impl SystemInfo for BounceSystem {
+	type Dependencies = PlaneCollisionSystem;
+
+	fn name() -> &'static str {
+		concat!(module_path!(), "::", line!())
+	}
+
+	fn new(_: Box<Any>) -> Self {
+		Self::new()
+	}
+}

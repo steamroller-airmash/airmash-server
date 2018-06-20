@@ -75,3 +75,18 @@ impl<'a> System<'a> for PongHandler {
 		}
 	}
 }
+
+use dispatch::SystemInfo;
+use handlers::OnCloseHandler;
+use std::any::Any;
+impl SystemInfo for PongHandler {
+	type Dependencies = OnCloseHandler;
+
+	fn new(_: Box<Any>) -> Self {
+		Self::new()
+	}
+
+	fn name() -> &'static str {
+		concat!(module_path!(), "::", line!())
+	}
+}

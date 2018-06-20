@@ -63,3 +63,19 @@ impl<'a> System<'a> for MissileUpdate {
 			});
 	}
 }
+
+use super::MissileFireHandler;
+use dispatch::SystemInfo;
+use std::any::Any;
+
+impl SystemInfo for MissileUpdate {
+	type Dependencies = MissileFireHandler;
+
+	fn name() -> &'static str {
+		concat!(module_path!(), "::", line!())
+	}
+
+	fn new(_: Box<Any>) -> Self {
+		Self {}
+	}
+}

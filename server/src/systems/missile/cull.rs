@@ -55,7 +55,7 @@ impl SystemInfo for MissileCull {
 	type Dependencies = ();
 
 	fn name() -> &'static str {
-		module_path!()
+		concat!(module_path!(), "::", line!())
 	}
 
 	fn new(_: Box<Any>) -> Self {
