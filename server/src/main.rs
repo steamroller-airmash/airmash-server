@@ -118,6 +118,8 @@ fn setup_interrupt_handler() {
 fn main() {
 	simple_logger::init_with_level(log::Level::Info).unwrap();
 	env::set_var("RUST_BACKTRACE", "1");
+	// Quick hack to change threadpool size
+	env::set_var("RAYON_NUM_THREADS", "1");
 
 	setup_panic_handler();
 	setup_interrupt_handler();

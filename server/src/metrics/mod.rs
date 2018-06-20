@@ -1,7 +1,9 @@
-/*
+
 extern crate cadence;
 
 use std::net::UdpSocket;
+use std::time::Duration;
+use std::error::Error;
 
 pub use self::cadence::prelude::*;
 use self::cadence::{
@@ -11,7 +13,8 @@ use self::cadence::{
 	DEFAULT_PORT
 };
 
-pub type MetricsHandler = StatsdClient;
+#[derive(Clone)]
+pub struct MetricsHandler(StatsdClient);
 
 pub fn handler() -> MetricsHandler {
 	let socket = UdpSocket::bind("0.0.0.0:0").unwrap();
@@ -20,10 +23,22 @@ pub fn handler() -> MetricsHandler {
 	let host = ("127.0.0.1", DEFAULT_PORT);
 	let udp_sink = BufferedUdpMetricSink::from(host, socket).unwrap();
 	let sink = QueuingMetricSink::from(udp_sink);
-	StatsdClient::from_sink("airmash", sink)
+	MetricsHandler(StatsdClient::from_sink("airmash", sink))
 }
-*/
 
+impl MetricsHandler {
+	pub fn time_duration(&self, name: &str, time: Duration) -> Result<(), Box<Error>>{
+		self.0.time_duration(name, time)?;
+		Ok(())
+	}
+
+	pub fn count(&self, name: &str, count: i64) -> Result<(), Box<Error>> {
+		self.0.count(name, count)?;
+		Ok(())
+	}
+}
+
+/*
 use std::fs::File;
 use std::io::{Error, Write};
 use std::sync::{Arc, Mutex};
@@ -58,3 +73,4 @@ pub fn handler() -> MetricsHandler {
 		file: Arc::new(Mutex::new(file)),
 	}
 }
+*/
