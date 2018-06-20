@@ -4,6 +4,7 @@ use std::marker::PhantomData;
 use specs::*;
 
 use dispatch::sysinfo::*;
+use dispatch::syswrapper::*;
 
 pub trait AbstractBuilder<'a> {
 	fn build<'b>(self, disp: DispatcherBuilder<'a, 'b>) -> DispatcherBuilder<'a, 'b>;
@@ -29,13 +30,13 @@ impl<T: SystemInfo> SystemBuilder<T> {
 
 impl<'a, T> AbstractBuilder<'a> for SystemBuilder<T>
 where
-	T: for<'c> System<'c> + Send + 'a,
-	T: SystemInfo,
+	T: for<'c> System<'c> + Send + SystemInfo + 'a,
 	T::Dependencies: SystemDeps,
+	for<'c> <T as System<'c>>::SystemData: SystemData<'c>,
 {
 	fn build<'b>(self, disp: DispatcherBuilder<'a, 'b>) -> DispatcherBuilder<'a, 'b> {
 		disp.with(
-			T::new(self.args),
+			SystemWrapper(T::new(self.args)),
 			T::name(),
 			&T::Dependencies::dependencies(),
 		)

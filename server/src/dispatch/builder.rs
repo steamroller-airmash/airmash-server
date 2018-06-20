@@ -4,6 +4,7 @@ use std::any::Any;
 
 use dispatch::sysbuilder::*;
 use dispatch::sysinfo::*;
+use dispatch::syswrapper::*;
 
 pub struct Builder<'a, 'b> {
 	builder: DispatcherBuilder<'a, 'b>,
@@ -16,7 +17,7 @@ impl<'a, 'b> Builder<'a, 'b> {
 		}
 	}
 
-	pub fn with<T: 'static>(self) -> Self
+	pub fn with<T>(self) -> Self
 	where
 		T: for<'c> System<'c> + Send + SystemInfo + 'a,
 		T::Dependencies: SystemDeps,
@@ -30,7 +31,14 @@ impl<'a, 'b> Builder<'a, 'b> {
 		T::Dependencies: SystemDeps,
 	{
 		Self {
-			builder: SystemBuilder::<T>::new(args).build(self.builder),
+			builder: self.builder
+				.with(
+					SystemWrapper(T::new(Box::new(args))),
+					T::name(),
+					&T::Dependencies::dependencies()
+				)
+				//	SystemBuilder::<SystemWrapper<T>>::new(args)
+				//.build(self.builder),
 		}
 	}
 

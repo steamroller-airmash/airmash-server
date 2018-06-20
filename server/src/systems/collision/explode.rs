@@ -70,8 +70,10 @@ impl<'a> System<'a> for MissileExplodeSystem {
 
 use dispatch::SystemInfo;
 use std::any::Any;
+use super::MissileTerrainCollisionSystem;
+
 impl SystemInfo for MissileExplodeSystem {
-	type Dependencies = ();
+	type Dependencies = MissileTerrainCollisionSystem;
 
 	fn name() -> &'static str {
 		concat!(module_path!(), "::", line!())

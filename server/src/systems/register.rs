@@ -20,9 +20,10 @@ pub fn register<'a, 'b>(disp: Builder<'a, 'b>) -> Builder<'a, 'b> {
 		.with::<handlers::SignalHandler>()
 
 		// Systems with dependencies on handlers
-		.with::<PositionUpdate>()
-		.with::<EnergyRegenSystem>();
+		.with::<PositionUpdate>();
 
-	let disp = missile::register(disp);
+	let disp = missile::register(disp)
+		// EnergyRegen depends on MissileHit
+		.with::<EnergyRegenSystem>();
 	collision::register(disp)
 }
