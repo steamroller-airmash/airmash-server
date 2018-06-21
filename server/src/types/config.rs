@@ -32,6 +32,9 @@ pub struct PlaneInfo {
 	pub health_regen: HealthRegen,
 	pub energy_regen: EnergyRegen,
 
+	// Health
+	pub damage_factor: f32,
+
 	// Energy requirement
 	pub fire_energy: Energy,
 	pub special_energy: Energy,
@@ -130,6 +133,8 @@ impl Default for PlaneInfos {
 				energy_regen: EnergyRegen::new(0.01),
 				fire_delay: Duration::from_millis(300),
 
+				damage_factor: 2.0,
+
 				// TODO
 				fire_energy: Energy::new(0.6),
 				special_energy: Energy::new(0.0), // Actually regen -0.01
@@ -162,6 +167,8 @@ impl Default for PlaneInfos {
 				health_regen: HealthRegen::new(0.0005),
 				energy_regen: EnergyRegen::new(0.005),
 				fire_delay: Duration::from_millis(300),
+
+				damage_factor: 1.0,
 
 				// TODO
 				fire_energy: Energy::new(0.9),
@@ -201,6 +208,8 @@ impl Default for PlaneInfos {
 				energy_regen: EnergyRegen::new(0.01),
 				fire_delay: Duration::from_millis(300),
 
+				damage_factor: 2.6375,
+
 				// TODO
 				fire_energy: Energy::new(0.3),
 				special_energy: Energy::new(0.0),
@@ -234,6 +243,8 @@ impl Default for PlaneInfos {
 				health_regen: HealthRegen::new(0.001),
 				energy_regen: EnergyRegen::new(0.006),
 				fire_delay: Duration::from_millis(300),
+
+				damage_factor: 5.0 / 3.0,
 
 				// TODO
 				fire_energy: Energy::new(0.5),
@@ -270,6 +281,8 @@ impl Default for PlaneInfos {
 				health_regen: HealthRegen::new(0.001),
 				energy_regen: EnergyRegen::new(0.006),
 				fire_delay: Duration::from_millis(300),
+
+				damage_factor: 5.0 / 3.0,
 
 				// TODO
 				fire_energy: Energy::new(0.75),
