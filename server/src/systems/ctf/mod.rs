@@ -8,6 +8,7 @@ mod pos_update;
 mod register;
 mod return_flag;
 mod sendmessage;
+mod flagspeed;
 
 pub use self::register::register;
 
@@ -19,3 +20,4 @@ pub use self::pickupflag::PickupFlagSystem;
 pub use self::pos_update::PosUpdateSystem;
 pub use self::return_flag::ReturnFlagSystem;
 pub use self::sendmessage::SendFlagMessageSystem;
+pub use self::flagspeed::FlagSpeedSystem;

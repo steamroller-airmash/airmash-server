@@ -1,5 +1,4 @@
 use component::ctf::{FlagCarrier, IsFlag, LastDrop};
-use systems::ctf::*;
 
 use dispatch::Builder;
 use specs::*;
@@ -7,14 +6,7 @@ use types::{Position, Team};
 
 use std::time::Instant;
 
-use super::drop::DropSystem;
-use super::flag_message::PickupMessageSystem;
-use super::leaveupdate::LeaveUpdateSystem;
-use super::loginupdate::LoginUpdateSystem;
-use super::pickupflag::PickupFlagSystem;
-use super::pos_update::PosUpdateSystem;
-use super::return_flag::ReturnFlagSystem;
-use super::sendmessage::SendFlagMessageSystem;
+use super::*;
 
 pub fn register<'a, 'b>(world: &mut World, disp: Builder<'a, 'b>) -> Builder<'a, 'b> {
 	world.register::<Team>();
@@ -53,4 +45,5 @@ pub fn register<'a, 'b>(world: &mut World, disp: Builder<'a, 'b>) -> Builder<'a,
 		.with::<ReturnFlagSystem>()
 		.with::<PosUpdateSystem>()
 		.with::<PickupMessageSystem>()
+		.with::<FlagSpeedSystem>()
 }

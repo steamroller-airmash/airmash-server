@@ -116,6 +116,10 @@ impl PositionUpdate {
 					max_speed *= info.inferno_factor;
 				}
 
+				if keystate.flagspeed {
+					max_speed = info.flag_speed;
+				}
+
 				if speed_len > max_speed {
 					*vel *= max_speed / speed_len;
 				} else {

@@ -19,11 +19,13 @@ pub struct DropSystemData<'a> {
 	pub conns: Read<'a, Connections>,
 	pub thisframe: Read<'a, ThisFrame>,
 
+	pub entities: Entities<'a>,
 	pub pos: WriteStorage<'a, Position>,
 	pub team: ReadStorage<'a, Team>,
 	pub is_flag: ReadStorage<'a, IsFlag>,
 	pub carrier: WriteStorage<'a, FlagCarrier>,
 	pub lastdrop: WriteStorage<'a, LastDrop>,
+	pub flagchannel: Write<'a, OnFlag>
 }
 
 impl DropSystem {
@@ -46,11 +48,13 @@ impl<'a> System<'a> for DropSystem {
 			channel,
 			conns,
 			thisframe,
+			entities,
 			mut pos,
 			team,
 			is_flag,
 			mut carrier,
 			mut lastdrop,
+			mut flagchannel,
 		} = data;
 
 		for evt in channel.read(self.reader.as_mut().unwrap()) {
@@ -68,10 +72,10 @@ impl<'a> System<'a> for DropSystem {
 
 			let p_pos = *pos.get(player).unwrap();
 
-			(&mut pos, &team, &is_flag, &mut carrier, &mut lastdrop)
+			(&mut pos, &team, &is_flag, &mut carrier, &mut lastdrop, &*entities)
 				.join()
-				.filter(|(_, _, _, carrier, _)| carrier.0.is_some() && carrier.0.unwrap() == player)
-				.for_each(|(fpos, team, _, carrier, lastdrop)| {
+				.filter(|(_, _, _, carrier, _, _)| carrier.0.is_some() && carrier.0.unwrap() == player)
+				.for_each(|(fpos, team, _, carrier, lastdrop, ent)| {
 					let packet = GameFlag {
 						ty: FlagUpdateType::Position,
 						flag: *team,
@@ -81,12 +85,19 @@ impl<'a> System<'a> for DropSystem {
 						redteam: 0,
 					};
 
+					flagchannel.single_write(FlagEvent {
+						ty: FlagEventType::Drop,
+						player: carrier.0,
+						flag: ent,
+					});
+
 					*fpos = p_pos;
 					*carrier = FlagCarrier(None);
 					*lastdrop = LastDrop {
 						player: Some(player),
 						time: thisframe.0,
 					};
+
 
 					conns.send_to_all(OwnedMessage::Binary(
 						to_bytes(&ServerPacket::GameFlag(packet)).unwrap(),
