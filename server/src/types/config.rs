@@ -295,6 +295,16 @@ impl Default for MobInfos {
 	fn default() -> Self {
 		let mut map = FnvHashMap::default();
 
+		/*
+		Notes:
+			- Damage is normalized to the amount of 
+			  damage that would be done to a goliath.
+			- This will then be multiplied by a factor
+			  specific to each plane type
+			- Missile lifetime should be replaced with
+			  a missile distance modifier
+		*/
+
 		map.insert(
 			MobType::PredatorMissile,
 			MobInfo {
@@ -305,7 +315,7 @@ impl Default for MobInfos {
 					accel: AccelScalar::new(0.105),
 					base_speed: Speed::new(4.05),
 					speed_factor: 0.3,
-					damage: Health::new(0.0),
+					damage: Health::new(0.4),
 				}),
 			},
 		);
@@ -319,7 +329,7 @@ impl Default for MobInfos {
 					accel: AccelScalar::new(0.0375),
 					base_speed: Speed::new(2.1),
 					speed_factor: 0.3,
-					damage: Health::new(0.0),
+					damage: Health::new(1.2),
 				}),
 			},
 		);
@@ -333,7 +343,7 @@ impl Default for MobInfos {
 					accel: AccelScalar::new(0.14),
 					base_speed: Speed::new(5.7),
 					speed_factor: 0.3,
-					damage: Health::new(0.0),
+					damage: Health::new(0.2),
 				}),
 			},
 		);
@@ -347,7 +357,7 @@ impl Default for MobInfos {
 					accel: AccelScalar::new(0.0875),
 					base_speed: Speed::new(3.5),
 					speed_factor: 0.3,
-					damage: Health::new(0.0),
+					damage: Health::new(0.4),
 				}),
 			},
 		);
@@ -375,7 +385,7 @@ impl Default for MobInfos {
 					accel: AccelScalar::new(0.07),
 					base_speed: Speed::new(2.8),
 					speed_factor: 0.3,
-					damage: Health::new(0.0),
+					damage: Health::new(0.45),
 				}),
 			},
 		);

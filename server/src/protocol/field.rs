@@ -401,7 +401,7 @@ pub mod health {
 	use types::*;
 
 	pub fn serialize(val: &Health, ser: &mut Serializer) -> SerResult {
-		healthnergy::serialize(&val.inner(), ser)
+		healthnergy::serialize(&val.inner().min(1.0).max(0.0), ser)
 	}
 	pub fn deserialize<'de>(de: &mut Deserializer<'de>) -> Result<Health, DeError> {
 		Ok(Health::new(healthnergy::deserialize(de)?))
@@ -413,7 +413,7 @@ pub mod energy {
 	use types::*;
 
 	pub fn serialize(val: &Energy, ser: &mut Serializer) -> SerResult {
-		healthnergy::serialize(&val.inner(), ser)
+		healthnergy::serialize(&val.inner().min(1.0).max(0.0), ser)
 	}
 	pub fn deserialize<'de>(de: &mut Deserializer<'de>) -> Result<Energy, DeError> {
 		Ok(Energy::new(healthnergy::deserialize(de)?))
