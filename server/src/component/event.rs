@@ -24,12 +24,14 @@ pub struct PlayerKilled {
 	pub player: Entity,
 	pub killer: Entity,
 }
+#[derive(Copy, Clone, Debug)]
+pub struct PlayerRespawn(pub Entity);
 
-#[derive(Copy, Clone, Debug)]
+#[derive(Copy, Clone, Debug, Hash, PartialEq, Eq)]
 pub struct PlayerTerrainCollision(pub Collision);
-#[derive(Copy, Clone, Debug)]
+#[derive(Copy, Clone, Debug, Hash, PartialEq, Eq)]
 pub struct PlayerMissileCollision(pub Collision);
-#[derive(Copy, Clone, Debug)]
+#[derive(Copy, Clone, Debug, Hash, PartialEq, Eq)]
 pub struct MissileTerrainCollision(pub Collision);
-#[derive(Copy, Clone, Debug)]
+#[derive(Copy, Clone, Debug, Hash, PartialEq, Eq)]
 pub struct PlayerPowerupCollision(pub Collision);

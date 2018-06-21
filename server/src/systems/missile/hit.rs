@@ -85,6 +85,8 @@ impl<'a> System<'a> for MissileHitSystem {
 			// TODO: Take into account different healths for planes
 			*health -= mobconf.damage / upgconf.defense.factor[upgrades.defense as usize];
 
+			info!("{:?}, {:?}", health, mobconf.damage);
+
 			let packet = PlayerHit {
 				id: missile.ent,
 				owner: owner.0,

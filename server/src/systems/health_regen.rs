@@ -49,7 +49,7 @@ impl<'a> System<'a> for HealthRegenSystem {
 				let newhealth: Health = *health + info.health_regen * dt;
 
 				// Units don't support max or min, have to unwrap
-				*health = Health::new(newhealth.inner().max(1.0));
+				*health = Health::new(newhealth.inner().min(1.0).max(0.0));
 			});
 	}
 }

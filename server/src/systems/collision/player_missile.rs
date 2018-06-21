@@ -1,4 +1,5 @@
 use specs::prelude::*;
+use fnv::FnvHashSet;
 
 use types::collision::*;
 use types::*;
@@ -72,7 +73,7 @@ impl<'a> System<'a> for PlayerMissileCollisionSystem {
 				});
 			});
 
-		let vec = (&*ent, &pos, &team, &mob, &missile_flag)
+		let collisions = (&*ent, &pos, &team, &mob, &missile_flag)
 			.par_join()
 			.map(|(ent, pos, team, mob, _)| {
 				let mut collisions = vec![];
@@ -97,9 +98,9 @@ impl<'a> System<'a> for PlayerMissileCollisionSystem {
 			})
 			.flatten()
 			.map(|x| PlayerMissileCollision(x))
-			.collect::<Vec<PlayerMissileCollision>>();
+			.collect::<FnvHashSet<PlayerMissileCollision>>();
 
-		channel.iter_write(vec.into_iter());
+		channel.iter_write(collisions.into_iter());
 	}
 }
 
