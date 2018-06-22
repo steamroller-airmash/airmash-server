@@ -384,7 +384,7 @@ impl Default for MobInfos {
 					accel: AccelScalar::new(0.0875),
 					base_speed: Speed::new(3.5),
 					speed_factor: 0.3,
-					damage: Health::new(0.0),
+					damage: Health::new(0.3),
 				}),
 			},
 		);
