@@ -9,6 +9,7 @@ mod timer_handler;
 pub mod collision;
 pub mod ctf;
 pub mod missile;
+pub mod spectate;
 
 pub use self::energy_regen::EnergyRegenSystem;
 pub use self::packet_handler::PacketHandler;

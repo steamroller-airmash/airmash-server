@@ -388,7 +388,7 @@ spec server {
 	# A player has been killed
 	PlayerKill {
 		id:     Entity,
-		killer: Entity,
+		killer: Option[Entity],
 		pos:    Position
 	}
 

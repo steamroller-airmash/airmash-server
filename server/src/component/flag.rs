@@ -11,3 +11,7 @@ pub struct IsMissile;
 #[derive(Copy, Clone, Debug, Default, Component)]
 #[storage(NullStorage)]
 pub struct IsPowerup;
+
+#[derive(Copy, Clone, Debug, Default, Component)]
+#[storage(NullStorage)]
+pub struct IsSpectating;

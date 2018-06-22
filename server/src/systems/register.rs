@@ -26,5 +26,9 @@ pub fn register<'a, 'b>(disp: Builder<'a, 'b>) -> Builder<'a, 'b> {
 		// EnergyRegen depends on MissileHit
 		.with::<EnergyRegenSystem>()
 		.with::<HealthRegenSystem>();
+		// Spectate handling
+	let disp = spectate::register(disp);
+
+	// Collision handling
 	collision::register(disp)
 }

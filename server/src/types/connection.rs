@@ -167,11 +167,34 @@ impl Connections {
 			});
 	}
 
+	pub fn send_to_others(&self, player: Entity, msg: OwnedMessage) {
+		self.0
+			.iter()
+			.filter_map(|(id, ref conn)| {
+				if let Some(ent) = conn.player {
+					if conn.ty == ConnectionType::Primary && ent != player {
+						return Some(id);
+					}
+				}
+				None
+			})
+			.for_each(|id| {
+				self.1.lock().unwrap().send((*id, msg.clone())).unwrap()
+			});
+	}
+
 	pub fn iter<'a>(&'a self) -> impl Iterator<Item = &'a ConnectionData> {
 		self.0.values()
 	}
 
 	pub fn iter_mut<'a>(&'a mut self) -> impl Iterator<Item = &'a mut ConnectionData> {
 		self.0.values_mut()
+	}
+
+	pub fn associated_player(&self, connid: ConnectionId) -> Option<Entity> {
+		match self.0.get(&connid) {
+			Some(ref v) => v.player,
+			None => None
+		}
 	}
 }

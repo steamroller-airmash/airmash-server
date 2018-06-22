@@ -16,9 +16,11 @@ pub struct LastUpdate(pub Instant);
 #[derive(Clone, Debug, Copy, Component)]
 pub struct LastShotTime(pub Instant);
 
-/// Time since a
 #[derive(Clone, Debug, Copy, Component)]
 pub struct MobSpawnTime(pub Instant);
+
+#[derive(Clone, Debug, Copy, Component)]
+pub struct SpectateStartTime(pub Instant);
 
 impl Default for LastFrame {
 	fn default() -> Self {
@@ -43,5 +45,10 @@ impl Default for LastUpdate {
 impl Default for MobSpawnTime {
 	fn default() -> Self {
 		MobSpawnTime(Instant::now())
+	}
+}
+impl Default for SpectateStartTime {
+	fn default() -> Self {
+		SpectateStartTime(Instant::now())
 	}
 }

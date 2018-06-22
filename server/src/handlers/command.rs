@@ -17,6 +17,7 @@ pub struct CommandHandlerData<'a> {
 	conns: Read<'a, Connections>,
 	planes: WriteStorage<'a, Plane>,
 	flags: WriteStorage<'a, Flag>,
+	isspec: WriteStorage<'a, IsSpectating>,
 
 	pos: WriteStorage<'a, Position>,
 	rot: WriteStorage<'a, Rotation>,
@@ -73,6 +74,7 @@ impl<'a> System<'a> for CommandHandler {
 				*data.vel.get_mut(player).unwrap() = Velocity::default();
 				*data.rot.get_mut(player).unwrap() = Rotation::default();
 				*data.planes.get_mut(player).unwrap() = ty;
+				data.isspec.remove(player);
 
 				data.conns.send_to_all(OwnedMessage::Binary(
 					to_bytes(&ServerPacket::PlayerRespawn(PlayerRespawn {
