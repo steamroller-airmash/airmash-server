@@ -1,12 +1,16 @@
 
 use specs::*;
+use shrev::*;
+
 use types::*;
+use types::event::{TimerEvent, TimerEventType};
 
 use std::any::Any;
 
 use dispatch::SystemInfo;
 
 use component::channel::*;
+use component::time::ThisFrame;
 use component::flag::{IsSpectating, IsPlayer};
 use component::reference::PlayerRef;
 
@@ -24,6 +28,8 @@ pub struct CommandHandler {
 pub struct CommandHandlerData<'a> {
 	pub channel: Read<'a, OnCommand>,
 	pub conns: Read<'a, Connections>,
+	pub timerchannel: Write<'a, EventChannel<TimerEvent>>,
+	pub thisframe: Read<'a, ThisFrame>,
 
 	pub isspec: WriteStorage<'a,IsSpectating>,
 	pub spectarget: WriteStorage<'a, PlayerRef>,
@@ -54,6 +60,8 @@ impl<'a> System<'a> for CommandHandler {
 		let Self::SystemData {
 			channel,
 			conns,
+			mut timerchannel,
+			thisframe,
 
 			mut isspec,
 			mut spectarget,
@@ -96,46 +104,51 @@ impl<'a> System<'a> for CommandHandler {
 								}
 							});
 
-						if let Some(ent) = it.next() {
+						let killed = PlayerKill {
+							id: player,
+							killer: None,
+							pos: *pos.get(player).unwrap()
+						};
+
+						conns.send_to_all(OwnedMessage::Binary(
+							to_bytes(&ServerPacket::PlayerKill(killed)).unwrap()
+						));
+
+						let ent = if let Some(ent) = it.next() {
 							let spectate = GameSpectate {
 								id: ent
 							};
 
-							let killed = PlayerKill {
-								id: player,
-								killer: None,
-								pos: *pos.get(player).unwrap()
-							};
-
-							conns.send_to_others(player, OwnedMessage::Binary(
-								to_bytes(&ServerPacket::PlayerKill(killed)).unwrap()
-							));
-
 							conns.send_to_player(player, OwnedMessage::Binary(
 								to_bytes(&ServerPacket::GameSpectate(spectate)).unwrap()
 							));
 
-							spectarget.insert(player, PlayerRef(ent)).unwrap();
-						}
-						else {
+							ent
+						} else {
 							// If there is nobody else to spectate,
-							// we make the player spectate themself
-							let spectate = GameSpectate {
-								id: player
-							};
-							
-							conns.send_to_player(player, OwnedMessage::Binary(
-								to_bytes(&ServerPacket::GameSpectate(spectate)).unwrap()
-							));
+							// we don't tell the player who to spectate
+							player
+						};
 
-							spectarget.insert(player, PlayerRef(player)).unwrap();
-						}
+						spectarget.insert(player, PlayerRef(ent)).unwrap();
 					},
 					// Do nothing if the player didn't pass 
 					// a value between -1 and -3, other values
 					// only apply for players already in spec
 					_ => continue,
 				}
+
+				// The way that a plane disappearing
+				// appears to be communicated back to
+				// the client is by sending a scoreboard
+				// update, this triggers that by writing 
+				// a scoreboard timer event. Scoreboard
+				// should most likely get a dedicated 
+				// event channel in the future.
+				timerchannel.single_write(TimerEvent{
+					ty: TimerEventType::ScoreBoard,
+					instant: thisframe.0,
+				});
 			} else {
 				match arg {
 					// Spectate next player

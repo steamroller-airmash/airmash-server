@@ -74,7 +74,8 @@ enum FirewallStatus : u8 {
 
 # TODO: rev-eng
 enum LeaveHorizonType : u8 {
-
+	Player = 0,
+	Mob = 1
 }
 
 # TODO: transcribe from statsbot

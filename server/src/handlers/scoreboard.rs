@@ -3,12 +3,19 @@ use specs::*;
 use types::*;
 
 use component::event::ScoreBoardTimerEvent;
-use component::flag::IsPlayer;
+use component::flag::{IsPlayer, IsSpectating};
 
 use airmash_protocol::server::{ScoreBoard, ScoreBoardData, ScoreBoardRanking};
 use airmash_protocol::{to_bytes, ServerPacket};
 use std::vec::Vec;
 use websocket::OwnedMessage;
+
+lazy_static! {
+	static ref SPEC_POSITION: Position = Position::new(
+		Distance::new(-16384.0),
+		Distance::new(-8192.0)
+	);
+}
 
 pub struct ScoreBoardTimerHandler {
 	reader: Option<ReaderId<ScoreBoardTimerEvent>>,
@@ -30,6 +37,7 @@ pub struct ScoreBoardSystemData<'a> {
 	levels: ReadStorage<'a, Level>,
 	pos: ReadStorage<'a, Position>,
 	flag: ReadStorage<'a, IsPlayer>,
+	isspec: ReadStorage<'a, IsSpectating>,
 }
 
 impl<'a> System<'a> for ScoreBoardTimerHandler {
@@ -65,7 +73,14 @@ impl<'a> System<'a> for ScoreBoardTimerHandler {
 
 				let rankings = (&*data.entities, &data.pos, &data.flag)
 					.join()
-					.map(|(ent, pos, _)| ScoreBoardRanking { id: ent, pos: *pos })
+					.map(|(ent, pos, _)| {
+						if data.isspec.get(ent).is_some() {
+							(ent, *SPEC_POSITION)
+						} else {
+							(ent, *pos)
+						}
+					})
+					.map(|(ent, pos)| ScoreBoardRanking { id: ent, pos: pos })
 					.collect::<Vec<ScoreBoardRanking>>();
 
 				let score_board = ScoreBoard {
