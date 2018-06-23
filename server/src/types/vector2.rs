@@ -1,10 +1,10 @@
-use std::mem;
 use std::ops::*;
 
 use dimensioned::Sqrt;
 use specs::*;
 
 /// Required trait to allow specialized impls for self
+/// TODO: Use specialization instead?
 #[doc(hidden)]
 // The current version of rustfmt will format this into
 // a syntax error
@@ -142,38 +142,34 @@ where
 
 impl<T, U> AddAssign<U> for Vector2<T>
 where
-	Self: Add<U, Output = Vector2<T>>,
+	Self: Add<U, Output = Vector2<T>> + Clone,
 {
 	fn add_assign(&mut self, rhs: U) {
-		let val = mem::replace(self, unsafe { mem::uninitialized() });
-		mem::forget(mem::replace(self, val + rhs));
+		*self = self.clone() + rhs;
 	}
 }
 impl<T, U> SubAssign<U> for Vector2<T>
 where
-	Self: Sub<U, Output = Vector2<T>>,
+	Self: Sub<U, Output = Vector2<T>> + Clone,
 {
 	fn sub_assign(&mut self, rhs: U) {
-		let val = mem::replace(self, unsafe { mem::uninitialized() });
-		mem::forget(mem::replace(self, val - rhs));
+		*self = self.clone() - rhs;
 	}
 }
 impl<T, U> MulAssign<U> for Vector2<T>
 where
-	Self: Mul<U, Output = Vector2<T>>,
+	Self: Mul<U, Output = Vector2<T>> + Clone,
 {
 	fn mul_assign(&mut self, rhs: U) {
-		let val = mem::replace(self, unsafe { mem::uninitialized() });
-		mem::forget(mem::replace(self, val * rhs));
+		*self = self.clone() * rhs;
 	}
 }
 impl<T, U> DivAssign<U> for Vector2<T>
 where
-	Self: Div<U, Output = Vector2<T>>,
+	Self: Div<U, Output = Vector2<T>> + Clone,
 {
 	fn div_assign(&mut self, rhs: U) {
-		let val = mem::replace(self, unsafe { mem::uninitialized() });
-		mem::forget(mem::replace(self, val / rhs));
+		*self = self.clone() / rhs;
 	}
 }
 
