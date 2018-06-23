@@ -108,7 +108,7 @@ impl<'a> System<'a> for CommandHandler {
 							pos: Position::default()
 						};
 
-						conns.send_to_all(OwnedMessage::Binary(
+						conns.send_to_player(player, OwnedMessage::Binary(
 							to_bytes(&ServerPacket::PlayerKill(killed)).unwrap()
 						));
 
