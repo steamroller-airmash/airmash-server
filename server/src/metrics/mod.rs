@@ -28,12 +28,12 @@ pub fn handler() -> MetricsHandler {
 
 impl MetricsHandler {
 	pub fn time_duration(&self, name: &str, time: Duration) -> Result<(), Box<Error>>{
-		self.0.time_duration(name, time)?;
+		self.0.time_duration(&name.replace("::", "."), time)?;
 		Ok(())
 	}
 
 	pub fn count(&self, name: &str, count: i64) -> Result<(), Box<Error>> {
-		self.0.count(name, count)?;
+		self.0.count(&name.replace("::", "."), count)?;
 		Ok(())
 	}
 }
