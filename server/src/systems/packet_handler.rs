@@ -111,7 +111,7 @@ impl SystemInfo for PacketHandler {
 	type Dependencies = ();
 
 	fn name() -> &'static str {
-		module_path!()
+		concat!(module_path!(), "::", line!())
 	}
 
 	fn new(mut a: Box<Any>) -> Self {
