@@ -92,6 +92,7 @@ impl<'a> System<'a> for MissileFireHandler {
 					let m_vel = m_dir * (vel_par * missile.speed_factor + missile.base_speed);
 					let m_accel = m_dir * missile.accel;
 					let m_ent = ents.create();
+					let m_pos = *pos + m_dir * info.missile_offset;
 
 					*energy -= info.fire_energy;
 					*lastshot = LastShotTime(thisframe.0);
@@ -104,7 +105,7 @@ impl<'a> System<'a> for MissileFireHandler {
 						projectiles: vec![PlayerFireProjectile {
 							id: m_ent,
 							accel: m_accel,
-							pos: *pos,
+							pos: m_pos,
 							speed: m_vel,
 							ty: info.missile_type,
 							max_speed: missile.max_speed,
@@ -115,7 +116,7 @@ impl<'a> System<'a> for MissileFireHandler {
 						to_bytes(&ServerPacket::PlayerFire(packet)).unwrap(),
 					));
 
-					return Some((m_ent, info.missile_type, *pos, m_vel, *team, ent));
+					return Some((m_ent, info.missile_type, m_pos, m_vel, *team, ent));
 				},
 			)
 			.collect::<Vec<(Entity, Mob, Position, Velocity, Team, Entity)>>();

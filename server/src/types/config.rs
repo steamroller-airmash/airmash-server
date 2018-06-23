@@ -42,8 +42,8 @@ pub struct PlaneInfo {
 
 	// Type of missile that the plane fires
 	pub missile_type: Mob,
-	// Offset of missile when fired
-	pub missile_offset: Position,
+	// Offset of missile (in the Y dir) when fired
+	pub missile_offset: Distance,
 
 	// Collisions
 	pub hit_circles: Vec<HitCircle>,
@@ -141,10 +141,7 @@ impl Default for PlaneInfos {
 				special_energy: Energy::new(0.0), // Actually regen -0.01
 
 				missile_type: MobType::PredatorMissile,
-				missile_offset: Position::new(
-					Distance::new(0.0),
-					Distance::new(25.0)
-				),
+				missile_offset: Distance::new(25.0),
 
 				hit_circles: vec![
 					hit_circle(0, 5, 23),
@@ -180,10 +177,7 @@ impl Default for PlaneInfos {
 				special_energy: Energy::new(0.5),
 
 				missile_type: MobType::GoliathMissile,
-				missile_offset: Position::new(
-					Distance::new(0.0),
-					Distance::new(35.0)
-				),
+				missile_offset: Distance::new(35.0),
 
 				hit_circles: vec![
 					hit_circle(0, 0, 35),
@@ -224,7 +218,7 @@ impl Default for PlaneInfos {
 
 				missile_type: MobType::MohawkMissile,
 				// This will have to be a special case
-				missile_offset: Position::default(),
+				missile_offset: Distance::default(),
 
 				hit_circles: vec![
 					hit_circle(0, -12, 15),
@@ -259,10 +253,7 @@ impl Default for PlaneInfos {
 				special_energy: Energy::new(0.9),
 
 				missile_type: MobType::TornadoSingleMissile,
-				missile_offset: Position::new(
-					Distance::new(0.0),
-					Distance::new(40.0)
-				),
+				missile_offset: Distance::new(40.0),
 
 				hit_circles: vec![
 					hit_circle(0, 8, 18),
@@ -300,10 +291,7 @@ impl Default for PlaneInfos {
 				special_energy: Energy::new(0.6),
 
 				missile_type: MobType::ProwlerMissile,
-				missile_offset: Position::new(
-					Distance::new(0.0),
-					Distance::new(35.0)
-				),
+				missile_offset: Distance::new(35.0),
 
 				hit_circles: vec![
 					hit_circle(0, 11, 25),
