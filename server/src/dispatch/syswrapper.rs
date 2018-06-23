@@ -54,9 +54,20 @@ where
 		} = data;
 
 		let start = Instant::now();
+
 		self.0.run(inner);
+
+		let time = Instant::now() - start;
+
 		metrics
-			.time_duration(T::name(), Instant::now() - start)
+			.time_duration(T::name(), time)
 			.unwrap();
+
+		trace!(
+			"System '{}' took {}.{:3} ms",
+			T::name(),
+			time.as_secs() * 1000 + time.subsec_millis() as u64,
+			time.subsec_nanos() % 1000
+		);
 	}
 }
