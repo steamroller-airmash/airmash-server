@@ -186,7 +186,7 @@ fn main() {
 			}
 
 			world.add_resource(ThisFrame(now));
-			dispatcher.dispatch(&mut world.res);
+			dispatcher.dispatch_seq(&mut world.res);
 			world.maintain();
 			world.add_resource(LastFrame(now));
 
