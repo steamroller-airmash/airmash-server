@@ -225,7 +225,7 @@ impl PositionUpdate {
 			lastupdate,
 		).join()
 			.filter(|(_, _, _, _, _, _, _, _, lastupdate)| {
-				lastupdate.0.elapsed() > Duration::from_secs(2)
+				lastupdate.0.elapsed() > Duration::from_secs(1)
 			})
 			.filter(|(_, _, _, _, _, _, _, ent, _)| {
 				data.isspec.get(*ent).is_none()
