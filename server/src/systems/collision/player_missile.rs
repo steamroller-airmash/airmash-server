@@ -57,8 +57,8 @@ impl<'a> System<'a> for PlayerMissileCollisionSystem {
 
 		(&*ent, &pos, &rot, &team, &plane, &player_flag)
 			.join()
-			.filter((|ent, _, _, _, _, _)| {
-				isspec.get(ent).is_none()
+			.filter(|(ent, _, _, _, _, _)| {
+				isspec.get(*ent).is_none()
 			})
 			.for_each(|(ent, pos, rot, team, plane, _)| {
 				let ref cfg = config.planes[*plane];
