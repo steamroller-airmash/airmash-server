@@ -42,6 +42,8 @@ pub struct PlaneInfo {
 
 	// Type of missile that the plane fires
 	pub missile_type: Mob,
+	// Offset of missile when fired
+	pub missile_offset: Position,
 
 	// Collisions
 	pub hit_circles: Vec<HitCircle>,
@@ -135,11 +137,14 @@ impl Default for PlaneInfos {
 
 				damage_factor: 2.0,
 
-				// TODO
 				fire_energy: Energy::new(0.6),
 				special_energy: Energy::new(0.0), // Actually regen -0.01
 
 				missile_type: MobType::PredatorMissile,
+				missile_offset: Position::new(
+					Distance::new(0.0),
+					Distance::new(25.0)
+				),
 
 				hit_circles: vec![
 					hit_circle(0, 5, 23),
@@ -175,6 +180,10 @@ impl Default for PlaneInfos {
 				special_energy: Energy::new(0.5),
 
 				missile_type: MobType::GoliathMissile,
+				missile_offset: Position::new(
+					Distance::new(0.0),
+					Distance::new(35.0)
+				),
 
 				hit_circles: vec![
 					hit_circle(0, 0, 35),
@@ -210,11 +219,12 @@ impl Default for PlaneInfos {
 
 				damage_factor: 2.6375,
 
-				// TODO
 				fire_energy: Energy::new(0.3),
 				special_energy: Energy::new(0.0),
 
 				missile_type: MobType::MohawkMissile,
+				// This will have to be a special case
+				missile_offset: Position::default(),
 
 				hit_circles: vec![
 					hit_circle(0, -12, 15),
@@ -239,18 +249,20 @@ impl Default for PlaneInfos {
 				flag_speed: Speed::new(5.0),
 				inferno_factor: 0.75,
 
-				// TODO: Set these
 				health_regen: HealthRegen::new(0.001),
 				energy_regen: EnergyRegen::new(0.006),
 				fire_delay: Duration::from_millis(300),
 
 				damage_factor: 5.0 / 3.0,
 
-				// TODO
 				fire_energy: Energy::new(0.5),
 				special_energy: Energy::new(0.9),
 
 				missile_type: MobType::TornadoSingleMissile,
+				missile_offset: Position::new(
+					Distance::new(0.0),
+					Distance::new(40.0)
+				),
 
 				hit_circles: vec![
 					hit_circle(0, 8, 18),
@@ -284,11 +296,14 @@ impl Default for PlaneInfos {
 
 				damage_factor: 5.0 / 3.0,
 
-				// TODO
 				fire_energy: Energy::new(0.75),
 				special_energy: Energy::new(0.6),
 
 				missile_type: MobType::ProwlerMissile,
+				missile_offset: Position::new(
+					Distance::new(0.0),
+					Distance::new(35.0)
+				),
 
 				hit_circles: vec![
 					hit_circle(0, 11, 25),

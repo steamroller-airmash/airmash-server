@@ -5,6 +5,7 @@ use types::collision::*;
 use types::*;
 
 use component::channel::*;
+use component::flag::IsSpectating;
 use component::event::PlayerMissileCollision;
 
 pub struct PlayerMissileCollisionSystem;
@@ -20,6 +21,7 @@ pub struct PlayerMissileCollisionSystemData<'a> {
 	pub team: ReadStorage<'a, Team>,
 	pub plane: ReadStorage<'a, Plane>,
 	pub player_flag: ReadStorage<'a, IsPlayer>,
+	pub isspec: ReadStorage<'a, IsSpectating>,
 
 	pub mob: ReadStorage<'a, Mob>,
 	pub missile_flag: ReadStorage<'a, IsMissile>,
@@ -45,6 +47,7 @@ impl<'a> System<'a> for PlayerMissileCollisionSystem {
 			team,
 			plane,
 			player_flag,
+			isspec,
 
 			mob,
 			missile_flag,
@@ -54,6 +57,9 @@ impl<'a> System<'a> for PlayerMissileCollisionSystem {
 
 		(&*ent, &pos, &rot, &team, &plane, &player_flag)
 			.join()
+			.filter((|ent, _, _, _, _, _)| {
+				isspec.get(ent).is_none()
+			})
 			.for_each(|(ent, pos, rot, team, plane, _)| {
 				let ref cfg = config.planes[*plane];
 
