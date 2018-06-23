@@ -1,6 +1,8 @@
-use component::time::*;
 use specs::*;
 use types::*;
+
+use component::time::*;
+use component::flag::IsSpectating;
 
 use std::f32::consts;
 use std::marker::PhantomData;
@@ -41,6 +43,8 @@ impl PositionUpdate {
 	fn step_players<'a>(data: &mut PositionUpdateData<'a>, config: &Read<'a, Config>) {
 		let delta = Time::from(data.thisframe.0 - data.lastframe.0) * 60.0;
 
+		let isspec = &data.isspec;
+
 		(
 			&mut data.pos,
 			&mut data.rot,
@@ -49,8 +53,13 @@ impl PositionUpdate {
 			&data.upgrades,
 			&data.powerups,
 			&data.planes,
+			&*data.entities,
 		).join()
-			.for_each(|(pos, rot, vel, keystate, upgrades, powerups, plane)| {
+			.for_each(|(pos, rot, vel, keystate, upgrades, powerups, plane, ent)| {
+				if isspec.get(ent).is_some() {
+					return;
+				}
+
 				let mut movement_angle = None;
 				let info = &config.planes[*plane];
 				let boost_factor = if keystate.boost(&plane) {
@@ -165,10 +174,11 @@ impl PositionUpdate {
 			&self.dirty,
 			lastupdate,
 		).join()
+			.filter(|(_, _, _, _, _, _, _, ent, _, _)| {
+				data.isspec.get(*ent).is_none()
+			})
 			.for_each(
 				|(pos, rot, vel, plane, keystate, upgrades, powerups, ent, _, lastupdate)| {
-					type Key = ServerKeyState;
-
 					*lastupdate = LastUpdate(thisframe);
 
 					let state = keystate.to_server(&plane);
@@ -216,6 +226,9 @@ impl PositionUpdate {
 		).join()
 			.filter(|(_, _, _, _, _, _, _, _, lastupdate)| {
 				lastupdate.0.elapsed() > Duration::from_secs(2)
+			})
+			.filter(|(_, _, _, _, _, _, _, ent, _)| {
+				data.isspec.get(*ent).is_none()
 			})
 			.for_each(
 				|(pos, rot, vel, plane, keystate, upgrades, powerups, ent, lastupdate)| {
@@ -265,6 +278,7 @@ pub struct PositionUpdateData<'a> {
 	starttime: Read<'a, StartTime>,
 	entities: Entities<'a>,
 	conns: Read<'a, Connections>,
+	isspec: ReadStorage<'a, IsSpectating>,
 }
 
 impl<'a> System<'a> for PositionUpdate {

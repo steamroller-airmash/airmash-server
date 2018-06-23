@@ -35,7 +35,6 @@ pub struct CommandHandlerData<'a> {
 	pub spectarget: WriteStorage<'a, PlayerRef>,
 	pub isplayer: ReadStorage<'a, IsPlayer>,
 	pub entities: Entities<'a>,
-	pub pos: ReadStorage<'a, Position>,
 }
 
 impl CommandHandler {
@@ -66,8 +65,7 @@ impl<'a> System<'a> for CommandHandler {
 			mut isspec,
 			mut spectarget,
 			isplayer,
-			entities,
-			pos
+			entities
 		} = data;
 
 		for (id, packet) in channel.read(self.reader.as_mut().unwrap()) {
@@ -107,7 +105,7 @@ impl<'a> System<'a> for CommandHandler {
 						let killed = PlayerKill {
 							id: player,
 							killer: None,
-							pos: *pos.get(player).unwrap()
+							pos: Position::default()
 						};
 
 						conns.send_to_all(OwnedMessage::Binary(
