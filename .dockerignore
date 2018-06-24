@@ -6,3 +6,6 @@ server/.vscode/
 
 specgen/target/
 specgen/.vscode/
+
+ctf/target/
+ctf/.vscode/
