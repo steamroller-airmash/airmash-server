@@ -41,7 +41,7 @@ impl PositionUpdate {
 	}
 
 	fn step_players<'a>(data: &mut PositionUpdateData<'a>, config: &Read<'a, Config>) {
-		let delta = Time::from(data.thisframe.0 - data.lastframe.0) * 60.0;
+		let delta = Time::from(data.thisframe.0 - data.lastframe.0);
 
 		let isspec = &data.isspec;
 		let isdead = &data.isdead;

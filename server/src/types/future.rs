@@ -5,20 +5,28 @@ use std::time::{Duration, Instant};
 
 use component::event::TimerEvent;
 
-use tokio;
+use tokio::timer::Delay;
+use tokio::executor::thread_pool::ThreadPool;
+
 use futures::Future;
 
 pub struct FutureDispatcher {
 	channel: Mutex<Sender<TimerEvent>>,
+	threadpool: ThreadPool,
 }
 
 /// Allow spawning of futures on the tokio event
 /// loop, these futures can communicate back with
 /// the main game loop via [`TimerEvent`]s
 impl FutureDispatcher {
-	pub fn new(channel: Sender<TimerEvent>) -> Self {
+	pub fn new(
+		channel: Sender<TimerEvent>, 
+		threadpool: ThreadPool
+	) -> Self 
+	{
 		Self {
-			channel: Mutex::new(channel)
+			channel: Mutex::new(channel),
+			threadpool
 		}
 	}
 
@@ -34,8 +42,8 @@ impl FutureDispatcher {
 		let channel = self.channel.lock().unwrap().clone();
 		let instant = Instant::now() + dur;
 
-		tokio::spawn(
-			tokio::timer::Delay::new(instant)
+		self.threadpool.spawn(
+			Delay::new(instant)
 				.map_err(|_| {})
 				.and_then(move |_| -> Result<(), ()> {
 					let retval = fun(instant);

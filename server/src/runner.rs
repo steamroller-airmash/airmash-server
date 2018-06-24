@@ -1,57 +1,3 @@
-#![allow(dead_code)]
-#![feature(optin_builtin_traits)]
-#![feature(specialization)]
-
-// Crates with macros
-#[macro_use]
-extern crate log;
-#[macro_use]
-extern crate dimensioned;
-#[macro_use]
-extern crate specs_derive;
-#[macro_use]
-extern crate shred_derive;
-#[macro_use]
-extern crate lazy_static;
-#[cfg_attr(feature = "serde", macro_use)]
-#[cfg(feature = "serde")]
-extern crate serde;
-
-// Regular Dependencies
-extern crate bit_field;
-extern crate ctrlc;
-extern crate fnv;
-extern crate htmlescape;
-extern crate hyper;
-extern crate phf;
-extern crate rand;
-extern crate rayon;
-extern crate shred;
-extern crate shrev;
-extern crate simple_logger;
-extern crate specs;
-extern crate tokio;
-extern crate tokio_core;
-extern crate uuid;
-extern crate websocket;
-
-use websocket::futures;
-
-// Modules
-mod component;
-mod consts;
-mod dispatch;
-mod handlers;
-mod metrics;
-mod protocol;
-mod server;
-mod systems;
-mod timeloop;
-mod timers;
-mod types;
-mod utils;
-
-use protocol as airmash_protocol;
 
 use std::env;
 use std::sync::atomic::Ordering;
@@ -67,8 +13,20 @@ use component::time::{LastFrame, StartTime, ThisFrame};
 use dispatch::Builder;
 use timeloop::timeloop;
 
-
 use types::event::ConnectionEvent;
+
+use types;
+use websocket;
+use systems;
+use consts;
+use ctrlc;
+use simple_logger;
+use tokio;
+use server;
+use timers;
+use futures;
+use log;
+use metrics;
 
 fn build_dispatcher<'a, 'b>(
 	world: &mut World,
@@ -117,7 +75,7 @@ fn setup_interrupt_handler() {
 	}).expect("Error setting iterrupt handler");
 }
 
-fn main() {
+pub fn run_server() {
 	simple_logger::init_with_level(log::Level::Info).unwrap();
 	env::set_var("RUST_BACKTRACE", "1");
 	// Quick hack to change threadpool size

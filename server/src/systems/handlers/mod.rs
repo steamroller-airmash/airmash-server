@@ -3,5 +3,6 @@
 mod register;
 
 pub mod game;
+pub mod packet;
 
 pub use self::register::register;

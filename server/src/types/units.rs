@@ -107,7 +107,7 @@ pub struct UpgradeCount(pub u16);
 
 impl From<Duration> for Time {
 	fn from(dt: Duration) -> Time {
-		Time::new(dt.as_secs() as BaseType + 1.0e-9 * (dt.subsec_nanos() as BaseType))
+		Time::new(dt.as_secs() as BaseType + 1.0e-9 * (dt.subsec_nanos() as BaseType)) * 60.0
 	}
 }
 

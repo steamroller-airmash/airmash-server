@@ -27,7 +27,7 @@ impl<'a> System<'a> for MissileUpdate {
 	type SystemData = (Read<'a, Config>, MissileUpdateSystemData<'a>);
 
 	fn run(&mut self, (config, mut data): Self::SystemData) {
-		let delta = Time::from(data.thisframe.0 - data.lastframe.0) * 60.0;
+		let delta = Time::from(data.thisframe.0 - data.lastframe.0);
 
 		(&mut data.pos, &mut data.vel, &data.mob, &data.flag)
 			.join()
