@@ -17,7 +17,7 @@ use systems;
 use dispatch::Builder;
 use timeloop::timeloop;
 
-use types::{ConnectionId, Connections, FutureDispatcher};
+use types::{ConnectionId, Connections, FutureDispatcher, GameMode};
 use types::event::ConnectionEvent;
 
 use component::event::TimerEvent;
@@ -176,6 +176,14 @@ where
 			.with_engine_systems()
 			.with_engine_resources()
 			.with_filler_entities()
+	}
+
+	pub fn with_gamemode<G>(mut self, mode: G) -> Self 
+	where
+		G: GameMode + 'static
+	{
+		self.world.add_resource::<Box<GameMode>>(Box::new(mode));
+		self
 	}
 
 	pub fn run(self) {
