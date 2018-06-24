@@ -44,6 +44,7 @@ impl PositionUpdate {
 		let delta = Time::from(data.thisframe.0 - data.lastframe.0) * 60.0;
 
 		let isspec = &data.isspec;
+		let isdead = &data.isdead;
 
 		(
 			&mut data.pos,
@@ -55,10 +56,10 @@ impl PositionUpdate {
 			&data.planes,
 			&*data.entities,
 		).join()
-			.for_each(|(pos, rot, vel, keystate, upgrades, powerups, plane, ent)| {
-				if isspec.get(ent).is_some() {
-					return;
-				}
+			.filter(|(_, _, _, _, _, _, _, ent)| {
+				isspec.get(*ent).is_none() || isdead.get(*ent).is_none()
+			})
+			.for_each(|(pos, rot, vel, keystate, upgrades, powerups, plane, _)| {
 
 				let mut movement_angle = None;
 				let info = &config.planes[*plane];
@@ -176,6 +177,7 @@ impl PositionUpdate {
 		).join()
 			.filter(|(_, _, _, _, _, _, _, ent, _, _)| {
 				data.isspec.get(*ent).is_none()
+				|| data.isdead.get(*ent).is_none()
 			})
 			.for_each(
 				|(pos, rot, vel, plane, keystate, upgrades, powerups, ent, _, lastupdate)| {
@@ -229,6 +231,7 @@ impl PositionUpdate {
 			})
 			.filter(|(_, _, _, _, _, _, _, ent, _)| {
 				data.isspec.get(*ent).is_none()
+				|| data.isdead.get(*ent).is_none()
 			})
 			.for_each(
 				|(pos, rot, vel, plane, keystate, upgrades, powerups, ent, lastupdate)| {
@@ -279,6 +282,7 @@ pub struct PositionUpdateData<'a> {
 	entities: Entities<'a>,
 	conns: Read<'a, Connections>,
 	isspec: ReadStorage<'a, IsSpectating>,
+	isdead: ReadStorage<'a, IsDead>,
 }
 
 impl<'a> System<'a> for PositionUpdate {

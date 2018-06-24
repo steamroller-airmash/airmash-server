@@ -8,6 +8,7 @@ mod units;
 mod upgrades;
 mod vector2;
 mod future;
+mod gamemode;
 
 mod connection_events;
 
@@ -29,3 +30,5 @@ pub use self::future::FutureDispatcher;
 pub mod event {
 	pub use types::connection_events::*;
 }
+
+pub use self::gamemode::*;

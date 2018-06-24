@@ -10,7 +10,7 @@ use dispatch::SystemInfo;
 
 use component::channel::*;
 use component::time::ThisFrame;
-use component::flag::IsSpectating;
+use component::flag::IsDead;
 
 use websocket::OwnedMessage;
 use protocol::{to_bytes, ServerPacket};
@@ -29,8 +29,10 @@ pub struct PlayerKilledCleanupData<'a> {
 
 	pub name: ReadStorage<'a, Name>,
 	pub level: ReadStorage<'a, Level>,
-	pub isspec: WriteStorage<'a, IsSpectating>,
+	pub isdead: WriteStorage<'a, IsDead>,
 	pub mob: ReadStorage<'a, Mob>,
+
+	pub futdispatch: ReadExpect<'a, FutureDispatcher>,
 }
 
 impl PlayerKilledCleanup {
@@ -52,7 +54,7 @@ impl<'a> System<'a> for PlayerKilledCleanup {
 
 	fn run(&mut self, mut data: Self::SystemData) {
 		for evt in data.channel.read(self.reader.as_mut().unwrap()) {
-			data.isspec.insert(evt.player, IsSpectating).unwrap();
+			data.isdead.insert(evt.player, IsDead).unwrap();
 
 			let despawn_packet = MobDespawnCoords {
 				id: evt.missile,

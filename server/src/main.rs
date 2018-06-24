@@ -1,6 +1,6 @@
 #![allow(dead_code)]
 #![feature(optin_builtin_traits)]
-#![feature(trace_macros)]
+#![feature(specialization)]
 
 // Crates with macros
 #[macro_use]
