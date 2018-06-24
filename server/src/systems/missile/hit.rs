@@ -27,6 +27,7 @@ pub struct MissileHitSystemData<'a> {
 	pub owner: ReadStorage<'a, PlayerRef>,
 	pub player_flag: ReadStorage<'a, IsPlayer>,
 	pub entities: Entities<'a>,
+	pub hitmarker: WriteStorage<'a, HitMarker>,
 
 	pub mob: ReadStorage<'a, Mob>,
 	pub pos: ReadStorage<'a, Position>,
@@ -70,6 +71,9 @@ impl<'a> System<'a> for MissileHitSystem {
 			if !data.entities.is_alive(missile.ent) {
 				continue;
 			}
+			if data.hitmarker.get(missile.ent).is_some() {
+				continue;
+			}
 
 			let plane = data.plane.get(player.ent).unwrap();
 			let health = data.health.get_mut(player.ent).unwrap();
@@ -86,7 +90,11 @@ impl<'a> System<'a> for MissileHitSystem {
 			*health -= mobconf.damage * planeconf.damage_factor 
 				/ upgconf.defense.factor[upgrades.defense as usize];
 
+			data.hitmarker.insert(missile.ent, HitMarker{}).unwrap();
 			data.entities.delete(missile.ent).unwrap();
+
+			info!("{} {}", *health, mobconf.damage * planeconf.damage_factor 
+				/ upgconf.defense.factor[upgrades.defense as usize]);
 
 			if health.inner() <= 0.0 {
 				data.kill_channel.single_write(PlayerKilled {

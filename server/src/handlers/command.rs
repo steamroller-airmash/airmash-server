@@ -22,6 +22,8 @@ pub struct CommandHandlerData<'a> {
 	pos: WriteStorage<'a, Position>,
 	rot: WriteStorage<'a, Rotation>,
 	vel: WriteStorage<'a, Velocity>,
+	health: WriteStorage<'a, Health>,
+	energy: WriteStorage<'a, Energy>,
 }
 
 impl CommandHandler {
@@ -73,6 +75,8 @@ impl<'a> System<'a> for CommandHandler {
 				*data.pos.get_mut(player).unwrap() = Position::default();
 				*data.vel.get_mut(player).unwrap() = Velocity::default();
 				*data.rot.get_mut(player).unwrap() = Rotation::default();
+				*data.health.get_mut(player).unwrap() = Health::new(1.0);
+				*data.energy.get_mut(player).unwrap() = Energy::new(1.0);
 				*data.planes.get_mut(player).unwrap() = ty;
 				data.isspec.remove(player);
 

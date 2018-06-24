@@ -12,6 +12,10 @@ use component::channel::*;
 use component::time::ThisFrame;
 use component::flag::IsSpectating;
 
+use websocket::OwnedMessage;
+use protocol::{to_bytes, ServerPacket};
+use protocol::server::MobDespawnCoords;
+
 pub struct PlayerKilledCleanup {
 	reader: Option<OnPlayerKilledReader>
 }
@@ -26,6 +30,7 @@ pub struct PlayerKilledCleanupData<'a> {
 	pub name: ReadStorage<'a, Name>,
 	pub level: ReadStorage<'a, Level>,
 	pub isspec: WriteStorage<'a, IsSpectating>,
+	pub mob: ReadStorage<'a, Mob>,
 }
 
 impl PlayerKilledCleanup {
@@ -48,6 +53,16 @@ impl<'a> System<'a> for PlayerKilledCleanup {
 	fn run(&mut self, mut data: Self::SystemData) {
 		for evt in data.channel.read(self.reader.as_mut().unwrap()) {
 			data.isspec.insert(evt.player, IsSpectating).unwrap();
+
+			let despawn_packet = MobDespawnCoords {
+				id: evt.missile,
+				ty: *data.mob.get(evt.missile).unwrap(),
+				pos: evt.pos
+			};
+
+			data.conns.send_to_all(OwnedMessage::Binary(
+				to_bytes(&ServerPacket::MobDespawnCoords(despawn_packet)).unwrap()
+			));
 
 			// TODO: Set a timer event to make the player respawn
 		}
