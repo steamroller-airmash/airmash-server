@@ -4,3 +4,13 @@ version = "0.1.0"
 authors = ["steamroller-airmash <38710707+steamroller-airmash@users.noreply.github.com>"]
 
 [dependencies]
+airmash-server = { path="../server" }
+specs = "*"
+shrev = "*"
+shred = "*"
+fnv = "*"
+log = "0.4"
+specs-derive = "*"
+shred-derive = "*"
+lazy_static = "*"
+htmlescape = "*"
