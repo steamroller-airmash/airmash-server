@@ -2,12 +2,15 @@ use std::any::Any;
 use std::mem;
 use std::sync::mpsc::{channel, Receiver};
 
-use component::event::*;
-use dispatch::SystemInfo;
-use shrev::*;
 use specs::*;
-use types::event::*;
 
+use dispatch::SystemInfo;
+use component::event::*;
+use component::channel::OnTimerEvent;
+
+/// Forwards out-of-band timer events
+/// into an EventChannel that can be
+/// accessed by other systems.
 pub struct TimerHandler {
 	channel: Receiver<TimerEvent>,
 }
@@ -20,9 +23,7 @@ impl TimerHandler {
 
 #[derive(SystemData)]
 pub struct TimerHandlerData<'a> {
-	pub scoreboard: Write<'a, EventChannel<ScoreBoardTimerEvent>>,
-	pub afk_timer: Write<'a, EventChannel<AFKTimerEvent>>,
-	pub ping_timer: Write<'a, EventChannel<PingTimerEvent>>,
+	pub channel: Write<'a, OnTimerEvent>,
 }
 
 impl<'a> System<'a> for TimerHandler {
@@ -30,18 +31,7 @@ impl<'a> System<'a> for TimerHandler {
 
 	fn run(&mut self, mut data: Self::SystemData) {
 		while let Ok(evt) = self.channel.try_recv() {
-			match evt.ty {
-				TimerEventType::ScoreBoard => {
-					data.scoreboard
-						.single_write(ScoreBoardTimerEvent(evt.instant));
-				}
-				TimerEventType::AFKTimeout => {
-					data.afk_timer.single_write(AFKTimerEvent(evt.instant));
-				}
-				TimerEventType::PingDispatch => {
-					data.ping_timer.single_write(PingTimerEvent(evt.instant));
-				}
-			}
+			data.channel.single_write(evt);
 		}
 	}
 }

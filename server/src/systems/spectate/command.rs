@@ -3,16 +3,17 @@ use specs::*;
 use shrev::*;
 
 use types::*;
-use types::event::{TimerEvent, TimerEventType};
 
 use std::any::Any;
 
+use consts::timer::SCORE_BOARD;
 use dispatch::SystemInfo;
 
 use component::channel::*;
 use component::time::ThisFrame;
 use component::flag::{IsSpectating, IsPlayer};
 use component::reference::PlayerRef;
+use component::event::TimerEvent;
 
 use websocket::OwnedMessage;
 use protocol::{to_bytes, ServerPacket};
@@ -144,7 +145,7 @@ impl<'a> System<'a> for CommandHandler {
 				// should most likely get a dedicated 
 				// event channel in the future.
 				timerchannel.single_write(TimerEvent{
-					ty: TimerEventType::ScoreBoard,
+					ty: *SCORE_BOARD,
 					instant: thisframe.0,
 				});
 			} else {

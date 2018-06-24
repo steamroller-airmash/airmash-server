@@ -1,8 +1,9 @@
 use std::sync::mpsc::Sender;
 use std::time::Duration;
 
+use consts::timer::*;
 use timeloop::timeloop;
-use types::event::*;
+use component::event::TimerEvent;
 
 use tokio;
 
@@ -14,7 +15,7 @@ pub fn start_timer_events(channel: Sender<TimerEvent>) {
 			move |instant| {
 				channel
 					.send(TimerEvent {
-						ty: TimerEventType::ScoreBoard,
+						ty: *SCORE_BOARD,
 						instant: instant,
 					})
 					.unwrap();
@@ -30,7 +31,7 @@ pub fn start_timer_events(channel: Sender<TimerEvent>) {
 			move |instant| {
 				channel
 					.send(TimerEvent {
-						ty: TimerEventType::PingDispatch,
+						ty: *PING_DISPATCH,
 						instant: instant,
 					})
 					.unwrap();

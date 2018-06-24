@@ -5,13 +5,14 @@ use shrev::*;
 use std::any::Any;
 
 use types::*;
-use types::event::*;
 
 use systems;
+use consts::timer::SCORE_BOARD;
 use dispatch::SystemInfo;
 
 use component::channel::*;
 use component::time::ThisFrame;
+use component::event::TimerEvent;
 
 use websocket::OwnedMessage;
 use protocol::{to_bytes, ServerPacket};
@@ -63,7 +64,7 @@ impl<'a> System<'a> for PlayerKilledMessage {
 			));
 
 			data.timerevent.single_write(TimerEvent {
-				ty: TimerEventType::ScoreBoard,
+				ty: *SCORE_BOARD,
 				instant: data.thisframe.0
 			});
 		}

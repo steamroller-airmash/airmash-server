@@ -4,7 +4,6 @@ mod flags;
 mod keystate;
 mod pingdata;
 mod powerups;
-mod timer_event;
 mod units;
 mod upgrades;
 mod vector2;
@@ -27,5 +26,4 @@ pub use self::vector2::*;
 
 pub mod event {
 	pub use types::connection_events::*;
-	pub use types::timer_event::*;
 }

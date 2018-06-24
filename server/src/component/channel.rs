@@ -1,12 +1,16 @@
-use component::event::*;
-use protocol::client::*;
 use shrev::*;
-use types::event::*;
+
+use protocol::client::*;
 use types::ConnectionId;
+use component::event::*;
+use types::event::{ConnectionOpen, ConnectionClose, Message};
 
 // Connection Events
 pub type OnOpen = EventChannel<ConnectionOpen>;
 pub type OnClose = EventChannel<ConnectionClose>;
+
+// Timer Event
+pub type OnTimerEvent = EventChannel<TimerEvent>;
 
 // Packet Received Events
 pub type OnBinary = EventChannel<Message>;
@@ -39,6 +43,8 @@ pub type OnMissileTerrainCollision = EventChannel<MissileTerrainCollision>;
 // Readers
 pub type OnOpenReader = ReaderId<ConnectionOpen>;
 pub type OnCloseReader = ReaderId<ConnectionClose>;
+
+pub type OnTimerEventReader = ReaderId<TimerEvent>;
 
 pub type OnBinaryReader = ReaderId<Message>;
 pub type OnLoginReader = ReaderId<(ConnectionId, Login)>;

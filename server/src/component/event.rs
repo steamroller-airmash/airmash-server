@@ -1,6 +1,8 @@
 use specs::*;
 use std::time::Instant;
+
 use types::collision::Collision;
+use utils::timer::TimerEventType;
 use types::{ConnectionId, Position};
 
 #[derive(Copy, Clone, Debug, Default, Component)]
@@ -37,3 +39,9 @@ pub struct PlayerMissileCollision(pub Collision);
 pub struct MissileTerrainCollision(pub Collision);
 #[derive(Copy, Clone, Debug, Hash, PartialEq, Eq)]
 pub struct PlayerPowerupCollision(pub Collision);
+
+#[derive(Copy, Clone, Debug, Hash, PartialEq, Eq)]
+pub struct TimerEvent {
+	pub ty: TimerEventType,
+	pub instant: Instant
+}

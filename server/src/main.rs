@@ -62,11 +62,12 @@ use std::time::{Duration, Instant};
 use specs::{Dispatcher, World};
 use tokio::runtime::current_thread::Runtime;
 
+use component::event::TimerEvent;
 use component::time::{LastFrame, StartTime, ThisFrame};
 use dispatch::Builder;
 use timeloop::timeloop;
 
-use types::event::{ConnectionEvent, TimerEvent};
+use types::event::ConnectionEvent;
 
 fn build_dispatcher<'a, 'b>(
 	world: &mut World,
