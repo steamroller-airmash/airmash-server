@@ -10,6 +10,7 @@ pub mod collision;
 pub mod ctf;
 pub mod missile;
 pub mod spectate;
+pub mod handlers;
 
 pub use self::energy_regen::EnergyRegenSystem;
 pub use self::packet_handler::PacketHandler;

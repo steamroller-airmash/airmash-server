@@ -1,7 +1,7 @@
 use specs::*;
 use std::time::Instant;
 use types::collision::Collision;
-use types::ConnectionId;
+use types::{ConnectionId, Position};
 
 #[derive(Copy, Clone, Debug, Default, Component)]
 pub struct ScoreDetailedEvent(pub ConnectionId);
@@ -21,8 +21,10 @@ pub struct PlayerJoin(pub Entity);
 pub struct PlayerLeave(pub Entity);
 #[derive(Copy, Clone, Debug)]
 pub struct PlayerKilled {
+	pub missile: Entity,
 	pub player: Entity,
 	pub killer: Entity,
+	pub pos: Position
 }
 #[derive(Copy, Clone, Debug)]
 pub struct PlayerRespawn(pub Entity);

@@ -1,6 +1,7 @@
 use handlers;
 use systems::missile;
 use systems::*;
+use systems::handlers as newhandlers;
 
 use dispatch::Builder;
 
@@ -26,8 +27,11 @@ pub fn register<'a, 'b>(disp: Builder<'a, 'b>) -> Builder<'a, 'b> {
 		// EnergyRegen depends on MissileHit
 		.with::<EnergyRegenSystem>()
 		.with::<HealthRegenSystem>();
-		// Spectate handling
+	// Spectate handling
 	let disp = spectate::register(disp);
+
+	// Other handlers
+	let disp = newhandlers::register(disp);
 
 	// Collision handling
 	collision::register(disp)

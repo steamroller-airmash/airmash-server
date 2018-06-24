@@ -3,6 +3,7 @@ use types::collision::*;
 use types::*;
 
 use component::channel::*;
+use component::event::PlayerKilled;
 use component::reference::PlayerRef;
 
 use protocol::server::{PlayerHit, PlayerHitPlayer};
@@ -82,27 +83,36 @@ impl<'a> System<'a> for MissileHitSystem {
 			let ref mobconf = data.config.mobs[*mob].missile.unwrap();
 			let ref upgconf = data.config.upgrades;
 
-			// TODO: Take into account different healths for planes
 			*health -= mobconf.damage * planeconf.damage_factor 
 				/ upgconf.defense.factor[upgrades.defense as usize];
 
-			let packet = PlayerHit {
-				id: missile.ent,
-				owner: owner.0,
-				pos: *pos,
-				ty: *mob,
-				players: vec![PlayerHitPlayer {
-					id: player.ent,
-					health: *health,
-					health_regen: planeconf.health_regen,
-				}],
-			};
-
 			data.entities.delete(missile.ent).unwrap();
 
-			data.conns.send_to_all(OwnedMessage::Binary(
-				to_bytes(&ServerPacket::PlayerHit(packet)).unwrap(),
-			));
+			if health.inner() <= 0.0 {
+				data.kill_channel.single_write(PlayerKilled {
+					missile: missile.ent,
+					player: player.ent,
+					killer: owner.0,
+					pos: *pos
+				});
+			}
+			else {
+				let packet = PlayerHit {
+					id: missile.ent,
+					owner: owner.0,
+					pos: *pos,
+					ty: *mob,
+					players: vec![PlayerHitPlayer {
+						id: player.ent,
+						health: *health,
+						health_regen: planeconf.health_regen,
+					}],
+				};
+
+				data.conns.send_to_all(OwnedMessage::Binary(
+					to_bytes(&ServerPacket::PlayerHit(packet)).unwrap(),
+				));
+			}
 		}
 	}
 }
