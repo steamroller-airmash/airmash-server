@@ -79,7 +79,8 @@ pub use types::{
 	KeyState,
 	
 	GameMode,	
+	GameModeWriter,
 	FutureDispatcher,
 	Connections,
-	Config
+	Config,
 };
