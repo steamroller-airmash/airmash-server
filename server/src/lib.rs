@@ -75,7 +75,11 @@ pub use types::{
 	Mob,
 	Team,
 	Level,
+	Name,
+	KeyState,
 	
 	GameMode,	
-	FutureDispatcher
+	FutureDispatcher,
+	Connections,
+	Config
 };

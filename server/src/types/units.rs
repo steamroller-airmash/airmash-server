@@ -5,6 +5,8 @@ use specs::DenseVecStorage;
 
 use types::Vector2;
 
+pub use dimensioned::{Sqrt, Cbrt, Recip, Root};
+
 pub type BaseType = f32;
 
 pub mod detail {

@@ -1,7 +1,8 @@
 
 use std::thread;
+use std::fmt::Debug;
 use std::time::{Instant, Duration};
-use std::net::SocketAddr;
+use std::net::ToSocketAddrs;
 use std::sync::mpsc::{Sender, Receiver, channel};
 
 use specs::World;
@@ -41,25 +42,27 @@ impl<T> Channel<T> {
 	}
 }
 
-pub struct AirmashServer<'a, 'b> {
+pub struct AirmashServer<'a, 'b, T>
+	where T: ToSocketAddrs + Debug + Send + 'static
+{
 	pub builder: Builder<'a, 'b>,
-	addr: SocketAddr,
+	addr: T,
 
 	event: Channel<ConnectionEvent>,
 	timer: Channel<TimerEvent>,
 	msg: Channel<(ConnectionId, OwnedMessage)>,
 
-	world: World,
+	pub world: World,
 }
 
-impl AirmashServer<'static, 'static> {
-	pub fn new<I>(addr: I) -> Self 
-	where 
-		I: Into<SocketAddr>
-	{
+impl<T> AirmashServer<'static, 'static, T>
+where
+	T: ToSocketAddrs + Debug + Send + 'static
+{
+	pub fn new(addr: T) -> Self {
 		Self {
 			builder: Builder::new(),
-			addr: addr.into(),
+			addr: addr,
 			
 			event: Channel::new(),
 			timer: Channel::new(),
@@ -125,16 +128,6 @@ impl AirmashServer<'static, 'static> {
 			timer,
 			msg,
 			world,
-		}
-	}
-
-	pub fn addr<I>(self, addr: I) -> Self 
-	where 
-		I: Into<SocketAddr>
-	{
-		Self {
-			addr: addr.into(),
-			..self
 		}
 	}
 
