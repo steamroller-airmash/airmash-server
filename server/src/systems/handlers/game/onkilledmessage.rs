@@ -65,7 +65,8 @@ impl<'a> System<'a> for PlayerKilledMessage {
 
 			data.timerevent.single_write(TimerEvent {
 				ty: *SCORE_BOARD,
-				instant: data.thisframe.0
+				instant: data.thisframe.0,
+				..Default::default()
 			});
 		}
 	}

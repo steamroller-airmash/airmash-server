@@ -147,6 +147,7 @@ impl<'a> System<'a> for CommandHandler {
 				timerchannel.single_write(TimerEvent{
 					ty: *SCORE_BOARD,
 					instant: thisframe.0,
+					..Default::default()
 				});
 			} else {
 				match arg {

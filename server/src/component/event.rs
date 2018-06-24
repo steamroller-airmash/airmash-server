@@ -1,4 +1,6 @@
 use specs::*;
+
+use std::any::Any;
 use std::time::Instant;
 
 use types::collision::Collision;
@@ -40,8 +42,20 @@ pub struct MissileTerrainCollision(pub Collision);
 #[derive(Copy, Clone, Debug, Hash, PartialEq, Eq)]
 pub struct PlayerPowerupCollision(pub Collision);
 
-#[derive(Copy, Clone, Debug, Hash, PartialEq, Eq)]
 pub struct TimerEvent {
 	pub ty: TimerEventType,
-	pub instant: Instant
+	pub instant: Instant,
+	pub data: Option<Box<Any + Send + Sync>>
+}
+
+impl Default for TimerEvent {
+	fn default() -> Self {
+		use consts::timer::INVALID;
+
+		Self {
+			ty: *INVALID,
+			instant: Instant::now(),
+			data: None
+		}
+	}
 }

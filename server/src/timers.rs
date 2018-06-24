@@ -17,6 +17,7 @@ pub fn start_timer_events(channel: Sender<TimerEvent>) {
 					.send(TimerEvent {
 						ty: *SCORE_BOARD,
 						instant: instant,
+						..Default::default()
 					})
 					.unwrap();
 			},
@@ -33,6 +34,7 @@ pub fn start_timer_events(channel: Sender<TimerEvent>) {
 					.send(TimerEvent {
 						ty: *PING_DISPATCH,
 						instant: instant,
+						..Default::default()
 					})
 					.unwrap();
 			},

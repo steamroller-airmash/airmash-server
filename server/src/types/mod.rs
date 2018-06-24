@@ -7,6 +7,7 @@ mod powerups;
 mod units;
 mod upgrades;
 mod vector2;
+mod future;
 
 mod connection_events;
 
@@ -23,6 +24,7 @@ pub use self::powerups::*;
 pub use self::units::*;
 pub use self::upgrades::*;
 pub use self::vector2::*;
+pub use self::future::FutureDispatcher;
 
 pub mod event {
 	pub use types::connection_events::*;

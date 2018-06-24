@@ -67,6 +67,7 @@ use component::time::{LastFrame, StartTime, ThisFrame};
 use dispatch::Builder;
 use timeloop::timeloop;
 
+
 use types::event::ConnectionEvent;
 
 fn build_dispatcher<'a, 'b>(
@@ -140,6 +141,7 @@ fn main() {
 
 	world.add_resource(metric_handler.clone());
 	world.add_resource(types::Connections::new(msg_send));
+	world.add_resource(types::FutureDispatcher::new(timer_send.clone()));
 
 	// Add systems
 	info!("Setting up systems");
