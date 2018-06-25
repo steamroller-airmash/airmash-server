@@ -14,8 +14,6 @@ pub struct AckEvent(pub ConnectionId);
 
 #[derive(Copy, Clone, Debug, Component)]
 pub struct AFKTimerEvent(pub Instant);
-#[derive(Copy, Clone, Debug, Component)]
-pub struct PingTimerEvent(pub Instant);
 
 #[derive(Copy, Clone, Debug)]
 pub struct PlayerJoin(pub Entity);

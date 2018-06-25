@@ -1,25 +1,26 @@
-use shrev::*;
 use specs::*;
 use types::*;
 
 use std::time::Instant;
 
-use airmash_protocol::server::Ping as ServerPing;
-use airmash_protocol::{to_bytes, ServerPacket};
-use websocket::OwnedMessage;
+use consts::timer::PING_DISPATCH;
 
-use component::event::PingTimerEvent;
+use protocol::server::Ping as ServerPing;
+use protocol::{to_bytes, ServerPacket};
+use OwnedMessage;
+
 use component::time::*;
+use component::channel::{OnTimerEvent, OnTimerEventReader};
 
 pub struct PingTimerHandler {
-	reader: Option<ReaderId<PingTimerEvent>>,
+	reader: Option<OnTimerEventReader>,
 }
 
 #[derive(SystemData)]
 pub struct PingTimerHandlerData<'a> {
 	pub entities: Entities<'a>,
 	pub conns: Read<'a, Connections>,
-	pub channel: Read<'a, EventChannel<PingTimerEvent>>,
+	pub channel: Read<'a, OnTimerEvent>,
 	pub thisframe: Read<'a, ThisFrame>,
 	pub starttime: Read<'a, StartTime>,
 }
@@ -35,7 +36,7 @@ impl<'a> System<'a> for PingTimerHandler {
 
 	fn setup(&mut self, res: &mut Resources) {
 		self.reader = Some(
-			res.fetch_mut::<EventChannel<PingTimerEvent>>()
+			res.fetch_mut::<OnTimerEvent>()
 				.register_reader(),
 		);
 
@@ -45,7 +46,9 @@ impl<'a> System<'a> for PingTimerHandler {
 	fn run(&mut self, (data, mut pingdata): Self::SystemData) {
 		let clock = (Instant::now() - data.starttime.0).to_clock();
 
-		for _ in data.channel.read(self.reader.as_mut().unwrap()) {
+		for evt in data.channel.read(self.reader.as_mut().unwrap()) {
+			if evt.ty == *PING_DISPATCH { continue; }
+
 			(&*data.entities, &mut pingdata)
 				.join()
 				.for_each(|(ent, pingdata)| {
