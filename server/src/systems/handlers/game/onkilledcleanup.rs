@@ -1,26 +1,25 @@
-
 use specs::*;
 
 use std::any::Any;
 use std::time::Duration;
 
-use types::*;
 use consts::timer::RESPAWN_TIME;
+use types::*;
 
-use systems;
 use dispatch::SystemInfo;
+use systems;
 
 use component::channel::*;
-use component::time::ThisFrame;
-use component::flag::IsDead;
 use component::event::TimerEvent;
+use component::flag::IsDead;
+use component::time::ThisFrame;
 
-use websocket::OwnedMessage;
-use protocol::{to_bytes, ServerPacket};
 use protocol::server::MobDespawnCoords;
+use protocol::{to_bytes, ServerPacket};
+use websocket::OwnedMessage;
 
 pub struct PlayerKilledCleanup {
-	reader: Option<OnPlayerKilledReader>
+	reader: Option<OnPlayerKilledReader>,
 }
 
 #[derive(SystemData)]
@@ -51,9 +50,7 @@ impl<'a> System<'a> for PlayerKilledCleanup {
 	fn setup(&mut self, res: &mut Resources) {
 		Self::SystemData::setup(res);
 
-		self.reader = Some(
-			res.fetch_mut::<OnPlayerKilled>().register_reader()
-		);
+		self.reader = Some(res.fetch_mut::<OnPlayerKilled>().register_reader());
 	}
 
 	fn run(&mut self, mut data: Self::SystemData) {
@@ -63,34 +60,30 @@ impl<'a> System<'a> for PlayerKilledCleanup {
 			let despawn_packet = MobDespawnCoords {
 				id: evt.missile,
 				ty: *data.mob.get(evt.missile).unwrap(),
-				pos: evt.pos
+				pos: evt.pos,
 			};
 
 			data.conns.send_to_all(OwnedMessage::Binary(
-				to_bytes(&ServerPacket::MobDespawnCoords(despawn_packet)).unwrap()
+				to_bytes(&ServerPacket::MobDespawnCoords(despawn_packet)).unwrap(),
 			));
 
 			let player = evt.player;
 
 			// Set a timer event to make the player respawn
-			data.futdispatch.run_delayed(
-				Duration::from_secs(2),
-				move |instant| {
+			data.futdispatch
+				.run_delayed(Duration::from_secs(2), move |instant| {
 					Some(TimerEvent {
 						ty: *RESPAWN_TIME,
 						instant,
-						data: Some(Box::new(player))
+						data: Some(Box::new(player)),
 					})
-				}
-			);
+				});
 		}
 	}
 }
 
 impl SystemInfo for PlayerKilledCleanup {
-	type Dependencies = (
-		systems::missile::MissileHit
-	);
+	type Dependencies = (systems::missile::MissileHit);
 
 	fn name() -> &'static str {
 		concat!(module_path!(), "::", line!())
@@ -100,4 +93,3 @@ impl SystemInfo for PlayerKilledCleanup {
 		Self::new()
 	}
 }
-

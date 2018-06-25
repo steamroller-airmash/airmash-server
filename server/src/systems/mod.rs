@@ -8,15 +8,15 @@ mod timer_handler;
 
 pub mod collision;
 pub mod ctf;
+pub mod handlers;
 pub mod missile;
 pub mod spectate;
-pub mod handlers;
 
 pub use self::energy_regen::EnergyRegenSystem;
+pub use self::health_regen::HealthRegenSystem;
 pub use self::packet_handler::PacketHandler;
 pub use self::poll_complete::PollComplete;
 pub use self::position_update::PositionUpdate;
 pub use self::timer_handler::TimerHandler;
-pub use self::health_regen::HealthRegenSystem;
 
 pub use self::register::register;

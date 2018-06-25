@@ -25,7 +25,7 @@ pub struct DropSystemData<'a> {
 	pub is_flag: ReadStorage<'a, IsFlag>,
 	pub carrier: WriteStorage<'a, FlagCarrier>,
 	pub lastdrop: WriteStorage<'a, LastDrop>,
-	pub flagchannel: Write<'a, OnFlag>
+	pub flagchannel: Write<'a, OnFlag>,
 }
 
 impl DropSystem {
@@ -72,9 +72,17 @@ impl<'a> System<'a> for DropSystem {
 
 			let p_pos = *pos.get(player).unwrap();
 
-			(&mut pos, &team, &is_flag, &mut carrier, &mut lastdrop, &*entities)
-				.join()
-				.filter(|(_, _, _, carrier, _, _)| carrier.0.is_some() && carrier.0.unwrap() == player)
+			(
+				&mut pos,
+				&team,
+				&is_flag,
+				&mut carrier,
+				&mut lastdrop,
+				&*entities,
+			).join()
+				.filter(|(_, _, _, carrier, _, _)| {
+					carrier.0.is_some() && carrier.0.unwrap() == player
+				})
 				.for_each(|(fpos, team, _, carrier, lastdrop, ent)| {
 					let packet = GameFlag {
 						ty: FlagUpdateType::Position,

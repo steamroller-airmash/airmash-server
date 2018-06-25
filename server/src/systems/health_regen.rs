@@ -1,12 +1,11 @@
-
 use specs::*;
 use types::*;
 
-use component::time::{LastFrame, ThisFrame};
 use component::flag::IsPlayer;
+use component::time::{LastFrame, ThisFrame};
 
-use std::any::Any;
 use dispatch::SystemInfo;
+use std::any::Any;
 use systems::missile::MissileHit;
 
 pub struct HealthRegenSystem;
@@ -32,16 +31,13 @@ impl<'a> System<'a> for HealthRegenSystem {
 			plane,
 			config,
 			thisframe,
-			lastframe
+			lastframe,
 		} = data;
 
 		let dt = Time::new((thisframe.0 - lastframe.0).subsec_nanos() as f32 * (60.0 / 1.0e9));
 
-		(
-			&flag,
-			&mut health,
-			&plane
-		).join()
+		(&flag, &mut health, &plane)
+			.join()
 			.for_each(|(_, health, plane)| {
 				let ref info = config.planes[*plane];
 
@@ -58,11 +54,10 @@ impl SystemInfo for HealthRegenSystem {
 	type Dependencies = MissileHit;
 
 	fn new(_: Box<Any>) -> Self {
-		Self{}
+		Self {}
 	}
 
 	fn name() -> &'static str {
 		concat!(module_path!(), "::", line!())
 	}
 }
-

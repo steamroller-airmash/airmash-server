@@ -1,17 +1,11 @@
-
 extern crate cadence;
 
+use std::error::Error;
 use std::net::UdpSocket;
 use std::time::Duration;
-use std::error::Error;
 
 pub use self::cadence::prelude::*;
-use self::cadence::{
-	StatsdClient, 
-	QueuingMetricSink,
-	BufferedUdpMetricSink,
-	DEFAULT_PORT
-};
+use self::cadence::{BufferedUdpMetricSink, QueuingMetricSink, StatsdClient, DEFAULT_PORT};
 
 #[derive(Clone)]
 pub struct MetricsHandler(StatsdClient);
@@ -27,7 +21,7 @@ pub fn handler() -> MetricsHandler {
 }
 
 impl MetricsHandler {
-	pub fn time_duration(&self, _name: &str, _time: Duration) -> Result<(), Box<Error>>{
+	pub fn time_duration(&self, _name: &str, _time: Duration) -> Result<(), Box<Error>> {
 		//self.0.time_duration(&name.replace("::", "."), time)?;
 		Ok(())
 	}

@@ -1,6 +1,5 @@
-
-use specs::*;
 use shrev::*;
+use specs::*;
 
 use types::*;
 
@@ -10,19 +9,19 @@ use consts::timer::SCORE_BOARD;
 use dispatch::SystemInfo;
 
 use component::channel::*;
-use component::time::ThisFrame;
-use component::flag::{IsSpectating, IsPlayer};
-use component::reference::PlayerRef;
 use component::event::TimerEvent;
+use component::flag::{IsPlayer, IsSpectating};
+use component::reference::PlayerRef;
+use component::time::ThisFrame;
 
-use websocket::OwnedMessage;
-use protocol::{to_bytes, ServerPacket};
 use protocol::server::{GameSpectate, PlayerKill};
+use protocol::{to_bytes, ServerPacket};
+use websocket::OwnedMessage;
 
 use systems::PacketHandler;
 
 pub struct CommandHandler {
-	reader: Option<OnCommandReader>
+	reader: Option<OnCommandReader>,
 }
 
 #[derive(SystemData)]
@@ -32,7 +31,7 @@ pub struct CommandHandlerData<'a> {
 	pub timerchannel: Write<'a, EventChannel<TimerEvent>>,
 	pub thisframe: Read<'a, ThisFrame>,
 
-	pub isspec: WriteStorage<'a,IsSpectating>,
+	pub isspec: WriteStorage<'a, IsSpectating>,
 	pub spectarget: WriteStorage<'a, PlayerRef>,
 	pub isplayer: ReadStorage<'a, IsPlayer>,
 	pub entities: Entities<'a>,
@@ -40,7 +39,7 @@ pub struct CommandHandlerData<'a> {
 
 impl CommandHandler {
 	pub fn new() -> Self {
-		Self{ reader: None }
+		Self { reader: None }
 	}
 }
 
@@ -50,10 +49,7 @@ impl<'a> System<'a> for CommandHandler {
 	fn setup(&mut self, res: &mut Resources) {
 		Self::SystemData::setup(res);
 
-		self.reader = Some(
-			res.fetch_mut::<OnCommand>()
-				.register_reader()
-		);
+		self.reader = Some(res.fetch_mut::<OnCommand>().register_reader());
 	}
 
 	fn run(&mut self, data: Self::SystemData) {
@@ -66,11 +62,13 @@ impl<'a> System<'a> for CommandHandler {
 			mut isspec,
 			mut spectarget,
 			isplayer,
-			entities
+			entities,
 		} = data;
 
 		for (id, packet) in channel.read(self.reader.as_mut().unwrap()) {
-			if packet.com != "spectate" { continue; }
+			if packet.com != "spectate" {
+				continue;
+			}
 
 			let arg: i32 = match packet.data.parse() {
 				Ok(v) => v,
@@ -86,41 +84,45 @@ impl<'a> System<'a> for CommandHandler {
 			};
 
 			// No valid values below -3, invalid command, ignore
-			if arg < -3 { continue; }
-			
+			if arg < -3 {
+				continue;
+			}
+
 			if isspec.get(player).is_none() {
 				match arg {
 					-3...-1 => {
 						isspec.insert(player, IsSpectating).unwrap();
 
-						let mut it = (&isplayer, &*entities)
-							.join()
-							.filter_map(|(_, ent)| {
-								if isspec.get(ent).is_none() {
-									Some(ent)
-								} else {
-									None
-								}
-							});
+						let mut it = (&isplayer, &*entities).join().filter_map(|(_, ent)| {
+							if isspec.get(ent).is_none() {
+								Some(ent)
+							} else {
+								None
+							}
+						});
 
 						let killed = PlayerKill {
 							id: player,
 							killer: None,
-							pos: Position::default()
+							pos: Position::default(),
 						};
 
-						conns.send_to_player(player, OwnedMessage::Binary(
-							to_bytes(&ServerPacket::PlayerKill(killed)).unwrap()
-						));
+						conns.send_to_player(
+							player,
+							OwnedMessage::Binary(
+								to_bytes(&ServerPacket::PlayerKill(killed)).unwrap(),
+							),
+						);
 
 						let ent = if let Some(ent) = it.next() {
-							let spectate = GameSpectate {
-								id: ent
-							};
+							let spectate = GameSpectate { id: ent };
 
-							conns.send_to_player(player, OwnedMessage::Binary(
-								to_bytes(&ServerPacket::GameSpectate(spectate)).unwrap()
-							));
+							conns.send_to_player(
+								player,
+								OwnedMessage::Binary(
+									to_bytes(&ServerPacket::GameSpectate(spectate)).unwrap(),
+								),
+							);
 
 							ent
 						} else {
@@ -130,8 +132,8 @@ impl<'a> System<'a> for CommandHandler {
 						};
 
 						spectarget.insert(player, PlayerRef(ent)).unwrap();
-					},
-					// Do nothing if the player didn't pass 
+					}
+					// Do nothing if the player didn't pass
 					// a value between -1 and -3, other values
 					// only apply for players already in spec
 					_ => continue,
@@ -140,11 +142,11 @@ impl<'a> System<'a> for CommandHandler {
 				// The way that a plane disappearing
 				// appears to be communicated back to
 				// the client is by sending a scoreboard
-				// update, this triggers that by writing 
+				// update, this triggers that by writing
 				// a scoreboard timer event. Scoreboard
-				// should most likely get a dedicated 
+				// should most likely get a dedicated
 				// event channel in the future.
-				timerchannel.single_write(TimerEvent{
+				timerchannel.single_write(TimerEvent {
 					ty: *SCORE_BOARD,
 					instant: thisframe.0,
 					..Default::default()
@@ -152,7 +154,7 @@ impl<'a> System<'a> for CommandHandler {
 			} else {
 				match arg {
 					// Spectate next player
-					-1 =>  {
+					-1 => {
 						let current = spectarget.get(player).unwrap().0;
 
 						// This mess gets the next player
@@ -184,20 +186,21 @@ impl<'a> System<'a> for CommandHandler {
 									.unwrap_or(player)
 							});
 
-						let spectate = GameSpectate {
-							id: ent
-						};
+						let spectate = GameSpectate { id: ent };
 
-						conns.send_to_player(player, OwnedMessage::Binary(
-							to_bytes(&ServerPacket::GameSpectate(spectate)).unwrap()
-						));
+						conns.send_to_player(
+							player,
+							OwnedMessage::Binary(
+								to_bytes(&ServerPacket::GameSpectate(spectate)).unwrap(),
+							),
+						);
 
 						spectarget.insert(player, PlayerRef(ent)).unwrap();
-					},
+					}
 					// Spectate prev player
 					-2 => {
 						let current = spectarget.get(player).unwrap().0;
-						
+
 						let ent = (&isplayer, &*entities)
 							.join()
 							.take_while(|(_, ent)| *ent != current)
@@ -223,23 +226,24 @@ impl<'a> System<'a> for CommandHandler {
 									.unwrap_or(player)
 							});
 
-						let spectate = GameSpectate {
-							id: ent
-						};
+						let spectate = GameSpectate { id: ent };
 
-						conns.send_to_player(player, OwnedMessage::Binary(
-							to_bytes(&ServerPacket::GameSpectate(spectate)).unwrap()
-						));
+						conns.send_to_player(
+							player,
+							OwnedMessage::Binary(
+								to_bytes(&ServerPacket::GameSpectate(spectate)).unwrap(),
+							),
+						);
 
-						spectarget.insert(player, PlayerRef(ent)).unwrap();						
-					},
+						spectarget.insert(player, PlayerRef(ent)).unwrap();
+					}
 					// Force spectate (just pick a player)
 					-3 => {
-						// We are already spectating a player, so 
-						// we're good for now. This can be changed 
+						// We are already spectating a player, so
+						// we're good for now. This can be changed
 						// at a later time
 						continue;
-					},
+					}
 					// Spectate by specific player id
 					_ => {
 						let ent = entities.entity(arg as u32);
@@ -248,19 +252,20 @@ impl<'a> System<'a> for CommandHandler {
 						if !entities.is_alive(ent) {
 							continue;
 						}
-						
+
 						// The entity requested was not a player
 						if isplayer.get(ent).is_none() {
 							continue;
 						}
 
-						let spectate = GameSpectate {
-							id: ent
-						};
+						let spectate = GameSpectate { id: ent };
 
-						conns.send_to_player(player, OwnedMessage::Binary(
-							to_bytes(&ServerPacket::GameSpectate(spectate)).unwrap()
-						));
+						conns.send_to_player(
+							player,
+							OwnedMessage::Binary(
+								to_bytes(&ServerPacket::GameSpectate(spectate)).unwrap(),
+							),
+						);
 
 						spectarget.insert(player, PlayerRef(ent)).unwrap();
 					}

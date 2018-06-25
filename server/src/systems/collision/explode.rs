@@ -68,9 +68,9 @@ impl<'a> System<'a> for MissileExplodeSystem {
 	}
 }
 
+use super::MissileTerrainCollisionSystem;
 use dispatch::SystemInfo;
 use std::any::Any;
-use super::MissileTerrainCollisionSystem;
 
 impl SystemInfo for MissileExplodeSystem {
 	type Dependencies = MissileTerrainCollisionSystem;

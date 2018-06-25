@@ -1,4 +1,3 @@
-
 mod register;
 
 mod command;

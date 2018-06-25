@@ -1,23 +1,22 @@
-
 use specs::*;
 use types::*;
 
-use SystemInfo;
-use OwnedMessage;
 use consts::timer::RESPAWN_TIME;
+use OwnedMessage;
+use SystemInfo;
 
-use component::flag::{IsDead, IsSpectating};
 use component::channel::{OnTimerEvent, OnTimerEventReader};
+use component::flag::{IsDead, IsSpectating};
 
-use protocol::{to_bytes, ServerPacket, Upgrades as ProtoUpgrades};
 use protocol::server::PlayerRespawn;
+use protocol::{to_bytes, ServerPacket, Upgrades as ProtoUpgrades};
 
 use systems::TimerHandler;
 
 use std::any::Any;
 
 pub struct OnRespawnTimer {
-	reader: Option<OnTimerEventReader>
+	reader: Option<OnTimerEventReader>,
 }
 
 impl OnRespawnTimer {
@@ -50,28 +49,31 @@ impl<'a> System<'a> for OnRespawnTimer {
 	fn setup(&mut self, res: &mut Resources) {
 		Self::SystemData::setup(res);
 
-		self.reader = Some(
-			res.fetch_mut::<OnTimerEvent>()
-				.register_reader()
-		);
+		self.reader = Some(res.fetch_mut::<OnTimerEvent>().register_reader());
 	}
 
 	fn run(&mut self, mut data: Self::SystemData) {
 		for evt in data.channel.read(self.reader.as_mut().unwrap()) {
-			if evt.ty != *RESPAWN_TIME { continue; }
+			if evt.ty != *RESPAWN_TIME {
+				continue;
+			}
 
 			let player: Entity = *evt.data.as_ref().unwrap().downcast_ref().unwrap();
 
-			if !data.entities.is_alive(player) { continue; }
+			if !data.entities.is_alive(player) {
+				continue;
+			}
 
 			data.isdead.remove(player).unwrap();
-			
-			if data.isspec.get(player).is_some() { continue; }
 
-			let pos = data.gamemode.get_mut().respawn_pos(
-				player,
-				*data.team.get(player).unwrap()
-			);
+			if data.isspec.get(player).is_some() {
+				continue;
+			}
+
+			let pos = data
+				.gamemode
+				.get_mut()
+				.respawn_pos(player, *data.team.get(player).unwrap());
 
 			*data.pos.get_mut(player).unwrap() = pos;
 			*data.vel.get_mut(player).unwrap() = Velocity::default();
@@ -85,15 +87,15 @@ impl<'a> System<'a> for OnRespawnTimer {
 				id: player,
 				pos: pos,
 				rot: Rotation::default(),
-				upgrades: ProtoUpgrades{
+				upgrades: ProtoUpgrades {
 					speed: upgrades.speed,
 					shield: powerups.shield,
-					inferno: powerups.inferno
-				}
+					inferno: powerups.inferno,
+				},
 			};
 
 			data.conns.send_to_all(OwnedMessage::Binary(
-				to_bytes(&ServerPacket::PlayerRespawn(packet)).unwrap()
+				to_bytes(&ServerPacket::PlayerRespawn(packet)).unwrap(),
 			));
 		}
 	}

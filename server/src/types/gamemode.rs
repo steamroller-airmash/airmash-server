@@ -1,16 +1,16 @@
 //! Note: This entire module is an exercise
-//! in bashing the trait system over the 
+//! in bashing the trait system over the
 //! head until it lets us do what we want
 //! safely.
 
+use shred::{ResourceId, SystemData};
 use specs::*;
-use shred::{SystemData, ResourceId};
 
 use types::*;
 
 use std::any::Any;
-use std::ops::{Deref, DerefMut};
 use std::marker::PhantomData;
+use std::ops::{Deref, DerefMut};
 
 pub trait GameMode: Any + Sync + Send {
 	fn assign_team(&mut self, player: Entity) -> Team;
@@ -25,12 +25,12 @@ pub trait GameModeWrapper: Send + Sync {
 }
 
 pub struct GameModeWrapperImpl<T: GameMode + Sync + Send + 'static> {
-	pub val: T
+	pub val: T,
 }
 
 impl<T> GameModeWrapper for GameModeWrapperImpl<T>
 where
-	T: GameMode + Sync + Send + 'static
+	T: GameMode + Sync + Send + 'static,
 {
 	fn as_gamemode_ref<'a>(&'a self) -> &'a GameMode {
 		&self.val
@@ -51,7 +51,7 @@ pub struct GameModeInternal(pub Box<GameModeWrapper>);
 
 pub struct GameModeWriter<'a, T: ?Sized> {
 	inner: WriteExpect<'a, GameModeInternal>,
-	marker: PhantomData<T>
+	marker: PhantomData<T>,
 }
 
 impl<'a> GameModeWriter<'a, GameMode> {
@@ -63,7 +63,7 @@ impl<'a> GameModeWriter<'a, GameMode> {
 	}
 }
 
-impl<'a, T> SystemData<'a> for GameModeWriter<'a, T> 
+impl<'a, T> SystemData<'a> for GameModeWriter<'a, T>
 where
 	T: GameMode + Sync + Send + ?Sized,
 {
@@ -74,7 +74,7 @@ where
 	fn fetch(res: &'a Resources) -> Self {
 		Self {
 			inner: WriteExpect::<'a, GameModeInternal>::fetch(res),
-			marker: PhantomData
+			marker: PhantomData,
 		}
 	}
 
@@ -88,7 +88,8 @@ where
 }
 
 impl<'a, T> Deref for GameModeWriter<'a, T>
-where T: GameMode
+where
+	T: GameMode,
 {
 	type Target = T;
 
@@ -103,7 +104,8 @@ where T: GameMode
 }
 
 impl<'a, T> DerefMut for GameModeWriter<'a, T>
-where T: GameMode
+where
+	T: GameMode,
 {
 	fn deref_mut(&mut self) -> &mut Self::Target {
 		match self.inner.0.as_any_mut().downcast_mut() {

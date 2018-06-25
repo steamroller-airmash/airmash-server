@@ -178,9 +178,7 @@ impl Connections {
 				}
 				None
 			})
-			.for_each(|id| {
-				self.1.lock().unwrap().send((*id, msg.clone())).unwrap()
-			});
+			.for_each(|id| self.1.lock().unwrap().send((*id, msg.clone())).unwrap());
 	}
 
 	pub fn iter<'a>(&'a self) -> impl Iterator<Item = &'a ConnectionData> {
@@ -194,7 +192,7 @@ impl Connections {
 	pub fn associated_player(&self, connid: ConnectionId) -> Option<Entity> {
 		match self.0.get(&connid) {
 			Some(ref v) => v.player,
-			None => None
+			None => None,
 		}
 	}
 }

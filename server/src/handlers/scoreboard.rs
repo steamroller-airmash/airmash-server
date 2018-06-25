@@ -11,10 +11,8 @@ use protocol::{to_bytes, ServerPacket};
 use OwnedMessage;
 
 lazy_static! {
-	static ref SPEC_POSITION: Position = Position::new(
-		Distance::new(-16384.0),
-		Distance::new(-8192.0)
-	);
+	static ref SPEC_POSITION: Position =
+		Position::new(Distance::new(-16384.0), Distance::new(-8192.0));
 }
 
 pub struct ScoreBoardTimerHandler {
@@ -44,17 +42,16 @@ impl<'a> System<'a> for ScoreBoardTimerHandler {
 	type SystemData = ScoreBoardSystemData<'a>;
 
 	fn setup(&mut self, res: &mut Resources) {
-		self.reader = Some(
-			res.fetch_mut::<OnTimerEvent>()
-				.register_reader(),
-		);
+		self.reader = Some(res.fetch_mut::<OnTimerEvent>().register_reader());
 
 		Self::SystemData::setup(res);
 	}
 
 	fn run(&mut self, data: Self::SystemData) {
 		for evt in data.channel.read(self.reader.as_mut().unwrap()) {
-			if evt.ty != *SCORE_BOARD { continue; }
+			if evt.ty != *SCORE_BOARD {
+				continue;
+			}
 
 			let mut packet_data = (&*data.entities, &data.scores, &data.levels, &data.flag)
 				.join()

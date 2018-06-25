@@ -9,8 +9,8 @@ use protocol::server::Ping as ServerPing;
 use protocol::{to_bytes, ServerPacket};
 use OwnedMessage;
 
-use component::time::*;
 use component::channel::{OnTimerEvent, OnTimerEventReader};
+use component::time::*;
 
 pub struct PingTimerHandler {
 	reader: Option<OnTimerEventReader>,
@@ -35,10 +35,7 @@ impl<'a> System<'a> for PingTimerHandler {
 	type SystemData = (PingTimerHandlerData<'a>, WriteStorage<'a, PingData>);
 
 	fn setup(&mut self, res: &mut Resources) {
-		self.reader = Some(
-			res.fetch_mut::<OnTimerEvent>()
-				.register_reader(),
-		);
+		self.reader = Some(res.fetch_mut::<OnTimerEvent>().register_reader());
 
 		Self::SystemData::setup(res);
 	}
@@ -47,7 +44,9 @@ impl<'a> System<'a> for PingTimerHandler {
 		let clock = (Instant::now() - data.starttime.0).to_clock();
 
 		for evt in data.channel.read(self.reader.as_mut().unwrap()) {
-			if evt.ty == *PING_DISPATCH { continue; }
+			if evt.ty == *PING_DISPATCH {
+				continue;
+			}
 
 			(&*data.entities, &mut pingdata)
 				.join()

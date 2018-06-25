@@ -38,6 +38,7 @@ extern crate websocket;
 use websocket::futures;
 
 // Modules
+mod builder;
 mod dispatch;
 mod handlers;
 mod metrics;
@@ -45,12 +46,11 @@ mod server;
 mod timeloop;
 mod timers;
 mod utils;
-mod builder;
 
+pub mod component;
+pub mod consts;
 pub mod protocol;
 pub mod systems;
-pub mod consts;
-pub mod component;
 pub mod types;
 
 use protocol as airmash_protocol;
@@ -60,27 +60,9 @@ pub use websocket::OwnedMessage;
 pub use builder::AirmashServer;
 pub use metrics::MetricsHandler;
 
-pub use dispatch::{Builder, SystemInfo, SystemDeps};
+pub use dispatch::{Builder, SystemDeps, SystemInfo};
 
 pub use types::{
-	Position,
-	Velocity,
-	Distance,
-	Speed,
-	Accel,
-	AccelScalar,
-	Time,
-
-	Plane,
-	Mob,
-	Team,
-	Level,
-	Name,
-	KeyState,
-	
-	GameMode,	
-	GameModeWriter,
-	FutureDispatcher,
-	Connections,
-	Config,
+	Accel, AccelScalar, Config, Connections, Distance, FutureDispatcher, GameMode, GameModeWriter,
+	KeyState, Level, Mob, Name, Plane, Position, Speed, Team, Time, Velocity,
 };

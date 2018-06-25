@@ -1,8 +1,8 @@
 use specs::*;
 use types::*;
 
-use component::time::*;
 use component::flag::IsSpectating;
+use component::time::*;
 
 use std::f32::consts;
 use std::marker::PhantomData;
@@ -60,7 +60,6 @@ impl PositionUpdate {
 				isspec.get(*ent).is_none() || isdead.get(*ent).is_none()
 			})
 			.for_each(|(pos, rot, vel, keystate, upgrades, powerups, plane, _)| {
-
 				let mut movement_angle = None;
 				let info = &config.planes[*plane];
 				let boost_factor = if keystate.boost(&plane) {
@@ -176,8 +175,7 @@ impl PositionUpdate {
 			lastupdate,
 		).join()
 			.filter(|(_, _, _, _, _, _, _, ent, _, _)| {
-				data.isspec.get(*ent).is_none()
-				|| data.isdead.get(*ent).is_none()
+				data.isspec.get(*ent).is_none() || data.isdead.get(*ent).is_none()
 			})
 			.for_each(
 				|(pos, rot, vel, plane, keystate, upgrades, powerups, ent, _, lastupdate)| {
@@ -230,8 +228,7 @@ impl PositionUpdate {
 				lastupdate.0.elapsed() > Duration::from_secs(1)
 			})
 			.filter(|(_, _, _, _, _, _, _, ent, _)| {
-				data.isspec.get(*ent).is_none()
-				|| data.isdead.get(*ent).is_none()
+				data.isspec.get(*ent).is_none() || data.isdead.get(*ent).is_none()
 			})
 			.for_each(
 				|(pos, rot, vel, plane, keystate, upgrades, powerups, ent, lastupdate)| {

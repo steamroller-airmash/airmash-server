@@ -16,17 +16,13 @@ pub struct Collision(pub HitCircle, pub HitCircle);
 
 // If hitcircles have a NaN in them we're already done for
 // this lets us use itertools unique() method
-impl Eq for Collision{}
+impl Eq for Collision {}
 
 impl Hash for Collision {
 	fn hash<H: Hasher>(&self, h: &mut H) {
 		h.write_u16(self.0.layer ^ self.1.layer);
-		h.write_u32(
-			self.0.ent.id() ^ self.1.ent.id()
-		);
-		h.write_i32(
-			self.0.ent.gen().id() ^ self.1.ent.gen().id()
-		);
+		h.write_u32(self.0.ent.id() ^ self.1.ent.id());
+		h.write_i32(self.0.ent.gen().id() ^ self.1.ent.gen().id());
 	}
 }
 

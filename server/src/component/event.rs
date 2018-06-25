@@ -4,8 +4,8 @@ use std::any::Any;
 use std::time::Instant;
 
 use types::collision::Collision;
-use utils::timer::TimerEventType;
 use types::{ConnectionId, Position};
+use utils::timer::TimerEventType;
 
 #[derive(Copy, Clone, Debug, Default, Component)]
 pub struct ScoreDetailedEvent(pub ConnectionId);
@@ -24,7 +24,7 @@ pub struct PlayerKilled {
 	pub missile: Entity,
 	pub player: Entity,
 	pub killer: Entity,
-	pub pos: Position
+	pub pos: Position,
 }
 #[derive(Copy, Clone, Debug)]
 pub struct PlayerRespawn(pub Entity);
@@ -41,7 +41,7 @@ pub struct PlayerPowerupCollision(pub Collision);
 pub struct TimerEvent {
 	pub ty: TimerEventType,
 	pub instant: Instant,
-	pub data: Option<Box<Any + Send + Sync>>
+	pub data: Option<Box<Any + Send + Sync>>,
 }
 
 impl Default for TimerEvent {
@@ -51,7 +51,7 @@ impl Default for TimerEvent {
 		Self {
 			ty: *INVALID,
 			instant: Instant::now(),
-			data: None
+			data: None,
 		}
 	}
 }

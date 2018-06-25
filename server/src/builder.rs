@@ -1,27 +1,26 @@
-
-use std::thread;
 use std::fmt::Debug;
-use std::time::{Instant, Duration};
 use std::net::ToSocketAddrs;
-use std::sync::mpsc::{Sender, Receiver, channel};
+use std::sync::mpsc::{channel, Receiver, Sender};
+use std::thread;
+use std::time::{Duration, Instant};
 
 use specs::World;
 
 use futures;
 use websocket::OwnedMessage;
 
+use dispatch::Builder;
 use metrics;
-use timers;
 use server;
 use systems;
-use dispatch::Builder;
 use timeloop::timeloop;
+use timers;
 
-use types::{ConnectionId, Connections, FutureDispatcher, GameMode};
 use types::event::ConnectionEvent;
+use types::{ConnectionId, Connections, FutureDispatcher, GameMode};
 
 use component::event::TimerEvent;
-use component::time::{StartTime, ThisFrame, LastFrame};
+use component::time::{LastFrame, StartTime, ThisFrame};
 
 use tokio::executor::thread_pool::*;
 use tokio::runtime::current_thread::Runtime;
@@ -37,13 +36,14 @@ impl<T> Channel<T> {
 
 		Self {
 			send: Some(send),
-			recv: Some(recv)
+			recv: Some(recv),
 		}
 	}
 }
 
 pub struct AirmashServer<'a, 'b, T>
-	where T: ToSocketAddrs + Debug + Send + 'static
+where
+	T: ToSocketAddrs + Debug + Send + 'static,
 {
 	pub builder: Builder<'a, 'b>,
 	addr: T,
@@ -57,13 +57,13 @@ pub struct AirmashServer<'a, 'b, T>
 
 impl<T> AirmashServer<'static, 'static, T>
 where
-	T: ToSocketAddrs + Debug + Send + 'static
+	T: ToSocketAddrs + Debug + Send + 'static,
 {
 	pub fn new(addr: T) -> Self {
 		Self {
 			builder: Builder::new(),
 			addr: addr,
-			
+
 			event: Channel::new(),
 			timer: Channel::new(),
 			msg: Channel::new(),
@@ -82,7 +82,7 @@ where
 			world,
 		} = self;
 
-		// Register 
+		// Register
 		let builder = builder
 			.with_args::<systems::PacketHandler, _>(event.recv.unwrap())
 			.with_args::<systems::TimerHandler, _>(timer.recv.unwrap())
@@ -95,18 +95,17 @@ where
 
 			event: Channel {
 				send: event.send,
-				recv: None
+				recv: None,
 			},
 			timer: Channel {
 				send: timer.send,
-				recv: None
+				recv: None,
 			},
 			msg: Channel {
 				send: msg.send,
-				recv: None
-			}
+				recv: None,
+			},
 		}
-
 	}
 
 	pub fn with_engine_systems(self) -> Self {
@@ -158,7 +157,7 @@ where
 			msg: Channel {
 				send: None,
 				recv: msg.recv,
-			}
+			},
 		}
 	}
 
@@ -172,21 +171,18 @@ where
 	}
 
 	pub fn with_engine(self) -> Self {
-		self
-			.with_engine_systems()
+		self.with_engine_systems()
 			.with_engine_resources()
 			.with_filler_entities()
 	}
 
-	pub fn with_gamemode<G>(mut self, mode: G) -> Self 
+	pub fn with_gamemode<G>(mut self, mode: G) -> Self
 	where
-		G: GameMode + 'static
+		G: GameMode + 'static,
 	{
 		use types::gamemode::*;
 
-		let val = GameModeInternal(
-			Box::new(GameModeWrapperImpl{ val: mode })
-		);
+		let val = GameModeInternal(Box::new(GameModeWrapperImpl { val: mode }));
 
 		self.world.add_resource(val);
 		self
@@ -225,7 +221,8 @@ where
 			Ok(())
 		}));
 
-		runtime.spawn(timeloop(move |now| {
+		runtime.spawn(timeloop(
+			move |now| {
 				if Instant::now() - now > Duration::from_millis(30) {
 					warn!("Time has drifted more than 30 ms, skipping frame!");
 					return;
@@ -248,7 +245,9 @@ where
 				}
 
 				// Don't crash server if metric recording fails
-				world.res.fetch::<metrics::MetricsHandler>()
+				world
+					.res
+					.fetch::<metrics::MetricsHandler>()
 					.time_duration("frame-time", duration)
 					.unwrap();
 			},
@@ -262,5 +261,3 @@ where
 		server_thread.join().unwrap();
 	}
 }
-
-

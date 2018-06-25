@@ -1,25 +1,24 @@
-
-use specs::*;
 use shrev::*;
+use specs::*;
 
 use std::any::Any;
 
 use types::*;
 
-use systems;
 use consts::timer::SCORE_BOARD;
 use dispatch::SystemInfo;
+use systems;
 
 use component::channel::*;
-use component::time::ThisFrame;
 use component::event::TimerEvent;
+use component::time::ThisFrame;
 
-use websocket::OwnedMessage;
-use protocol::{to_bytes, ServerPacket};
 use protocol::server::PlayerKill;
+use protocol::{to_bytes, ServerPacket};
+use websocket::OwnedMessage;
 
 pub struct PlayerKilledMessage {
-	reader: Option<OnPlayerKilledReader>
+	reader: Option<OnPlayerKilledReader>,
 }
 
 #[derive(SystemData)]
@@ -46,9 +45,7 @@ impl<'a> System<'a> for PlayerKilledMessage {
 	fn setup(&mut self, res: &mut Resources) {
 		Self::SystemData::setup(res);
 
-		self.reader = Some(
-			res.fetch_mut::<OnPlayerKilled>().register_reader()
-		);
+		self.reader = Some(res.fetch_mut::<OnPlayerKilled>().register_reader());
 	}
 
 	fn run(&mut self, mut data: Self::SystemData) {
@@ -56,11 +53,11 @@ impl<'a> System<'a> for PlayerKilledMessage {
 			let packet = PlayerKill {
 				id: evt.player,
 				killer: Some(evt.killer),
-				pos: evt.pos
+				pos: evt.pos,
 			};
 
 			data.conns.send_to_all(OwnedMessage::Binary(
-				to_bytes(&ServerPacket::PlayerKill(packet)).unwrap()
+				to_bytes(&ServerPacket::PlayerKill(packet)).unwrap(),
 			));
 
 			data.timerevent.single_write(TimerEvent {
@@ -73,9 +70,7 @@ impl<'a> System<'a> for PlayerKilledMessage {
 }
 
 impl SystemInfo for PlayerKilledMessage {
-	type Dependencies = (
-		systems::missile::MissileHit
-	);
+	type Dependencies = (systems::missile::MissileHit);
 
 	fn name() -> &'static str {
 		concat!(module_path!(), "::", line!())
@@ -85,4 +80,3 @@ impl SystemInfo for PlayerKilledMessage {
 		Self::new()
 	}
 }
-

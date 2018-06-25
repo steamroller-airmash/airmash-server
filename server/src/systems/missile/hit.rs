@@ -87,24 +87,27 @@ impl<'a> System<'a> for MissileHitSystem {
 			let ref mobconf = data.config.mobs[*mob].missile.unwrap();
 			let ref upgconf = data.config.upgrades;
 
-			*health -= mobconf.damage * planeconf.damage_factor 
+			*health -= mobconf.damage * planeconf.damage_factor
 				/ upgconf.defense.factor[upgrades.defense as usize];
 
-			data.hitmarker.insert(missile.ent, HitMarker{}).unwrap();
+			data.hitmarker.insert(missile.ent, HitMarker {}).unwrap();
 			data.entities.delete(missile.ent).unwrap();
 
-			info!("{} {}", *health, mobconf.damage * planeconf.damage_factor 
-				/ upgconf.defense.factor[upgrades.defense as usize]);
+			info!(
+				"{} {}",
+				*health,
+				mobconf.damage * planeconf.damage_factor
+					/ upgconf.defense.factor[upgrades.defense as usize]
+			);
 
 			if health.inner() <= 0.0 {
 				data.kill_channel.single_write(PlayerKilled {
 					missile: missile.ent,
 					player: player.ent,
 					killer: owner.0,
-					pos: *pos
+					pos: *pos,
 				});
-			}
-			else {
+			} else {
 				let packet = PlayerHit {
 					id: missile.ent,
 					owner: owner.0,

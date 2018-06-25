@@ -1,12 +1,12 @@
-use specs::prelude::*;
 use fnv::FnvHashSet;
+use specs::prelude::*;
 
 use types::collision::*;
 use types::*;
 
 use component::channel::*;
-use component::flag::IsSpectating;
 use component::event::PlayerMissileCollision;
+use component::flag::IsSpectating;
 
 pub struct PlayerMissileCollisionSystem;
 
@@ -57,9 +57,7 @@ impl<'a> System<'a> for PlayerMissileCollisionSystem {
 
 		(&*ent, &pos, &rot, &team, &plane, &player_flag)
 			.join()
-			.filter(|(ent, _, _, _, _, _)| {
-				isspec.get(*ent).is_none()
-			})
+			.filter(|(ent, _, _, _, _, _)| isspec.get(*ent).is_none())
 			.for_each(|(ent, pos, rot, team, plane, _)| {
 				let ref cfg = config.planes[*plane];
 

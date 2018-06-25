@@ -4,9 +4,9 @@ use std::sync::mpsc::{channel, Receiver};
 
 use specs::*;
 
-use dispatch::SystemInfo;
-use component::event::*;
 use component::channel::OnTimerEvent;
+use component::event::*;
+use dispatch::SystemInfo;
 
 /// Forwards out-of-band timer events
 /// into an EventChannel that can be
