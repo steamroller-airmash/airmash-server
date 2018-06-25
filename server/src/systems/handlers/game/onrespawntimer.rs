@@ -2,6 +2,7 @@
 use specs::*;
 use types::*;
 
+use SystemInfo;
 use OwnedMessage;
 use consts::timer::RESPAWN_TIME;
 
@@ -10,6 +11,10 @@ use component::channel::{OnTimerEvent, OnTimerEventReader};
 
 use protocol::{to_bytes, ServerPacket, Upgrades as ProtoUpgrades};
 use protocol::server::PlayerRespawn;
+
+use systems::TimerHandler;
+
+use std::any::Any;
 
 pub struct OnRespawnTimer {
 	reader: Option<OnTimerEventReader>
@@ -91,5 +96,17 @@ impl<'a> System<'a> for OnRespawnTimer {
 				to_bytes(&ServerPacket::PlayerRespawn(packet)).unwrap()
 			));
 		}
+	}
+}
+
+impl SystemInfo for OnRespawnTimer {
+	type Dependencies = TimerHandler;
+
+	fn name() -> &'static str {
+		concat!(module_path!(), "::", line!())
+	}
+
+	fn new(_: Box<Any>) -> Self {
+		Self::new()
 	}
 }

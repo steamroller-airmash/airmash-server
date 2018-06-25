@@ -10,3 +10,4 @@ pub use self::register::register;
 
 pub use self::onkilledmessage::PlayerKilledMessage;
 pub use self::onkilledcleanup::PlayerKilledCleanup;
+pub use self::onrespawntimer::OnRespawnTimer;
