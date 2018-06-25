@@ -2,8 +2,10 @@
 use specs::*;
 
 use std::any::Any;
+use std::time::Duration;
 
 use types::*;
+use consts::timer::RESPAWN_TIME;
 
 use systems;
 use dispatch::SystemInfo;
@@ -11,6 +13,7 @@ use dispatch::SystemInfo;
 use component::channel::*;
 use component::time::ThisFrame;
 use component::flag::IsDead;
+use component::event::TimerEvent;
 
 use websocket::OwnedMessage;
 use protocol::{to_bytes, ServerPacket};
@@ -26,6 +29,7 @@ pub struct PlayerKilledCleanupData<'a> {
 	pub channel: Read<'a, OnPlayerKilled>,
 	pub conns: Read<'a, Connections>,
 	pub thisframe: Read<'a, ThisFrame>,
+	pub timerchannel: Write<'a, OnTimerEvent>,
 
 	pub name: ReadStorage<'a, Name>,
 	pub level: ReadStorage<'a, Level>,
@@ -66,7 +70,19 @@ impl<'a> System<'a> for PlayerKilledCleanup {
 				to_bytes(&ServerPacket::MobDespawnCoords(despawn_packet)).unwrap()
 			));
 
-			// TODO: Set a timer event to make the player respawn
+			let player = evt.player;
+
+			// Set a timer event to make the player respawn
+			data.futdispatch.run_delayed(
+				Duration::from_secs(2),
+				move |instant| {
+					Some(TimerEvent {
+						ty: *RESPAWN_TIME,
+						instant,
+						data: Some(Box::new(player))
+					})
+				}
+			);
 		}
 	}
 }

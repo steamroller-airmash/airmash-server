@@ -2,6 +2,7 @@
 
 mod onkilledmessage;
 mod onkilledcleanup;
+mod onrespawntimer;
 
 mod register;
 

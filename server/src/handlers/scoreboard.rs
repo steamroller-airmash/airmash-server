@@ -1,14 +1,14 @@
-use shrev::*;
 use specs::*;
 use types::*;
 
-use component::event::ScoreBoardTimerEvent;
+use consts::timer::SCORE_BOARD;
+
+use component::channel::{OnTimerEvent, OnTimerEventReader};
 use component::flag::{IsPlayer, IsSpectating};
 
-use airmash_protocol::server::{ScoreBoard, ScoreBoardData, ScoreBoardRanking};
-use airmash_protocol::{to_bytes, ServerPacket};
-use std::vec::Vec;
-use websocket::OwnedMessage;
+use protocol::server::{ScoreBoard, ScoreBoardData, ScoreBoardRanking};
+use protocol::{to_bytes, ServerPacket};
+use OwnedMessage;
 
 lazy_static! {
 	static ref SPEC_POSITION: Position = Position::new(
@@ -18,7 +18,7 @@ lazy_static! {
 }
 
 pub struct ScoreBoardTimerHandler {
-	reader: Option<ReaderId<ScoreBoardTimerEvent>>,
+	reader: Option<OnTimerEventReader>,
 }
 
 impl ScoreBoardTimerHandler {
@@ -29,7 +29,7 @@ impl ScoreBoardTimerHandler {
 
 #[derive(SystemData)]
 pub struct ScoreBoardSystemData<'a> {
-	channel: Read<'a, EventChannel<ScoreBoardTimerEvent>>,
+	channel: Read<'a, OnTimerEvent>,
 	conns: Read<'a, Connections>,
 
 	entities: Entities<'a>,
@@ -45,7 +45,7 @@ impl<'a> System<'a> for ScoreBoardTimerHandler {
 
 	fn setup(&mut self, res: &mut Resources) {
 		self.reader = Some(
-			res.fetch_mut::<EventChannel<ScoreBoardTimerEvent>>()
+			res.fetch_mut::<OnTimerEvent>()
 				.register_reader(),
 		);
 
@@ -53,45 +53,45 @@ impl<'a> System<'a> for ScoreBoardTimerHandler {
 	}
 
 	fn run(&mut self, data: Self::SystemData) {
-		if let Some(ref mut reader) = self.reader {
-			for _ in data.channel.read(reader) {
-				let mut packet_data = (&*data.entities, &data.scores, &data.levels, &data.flag)
-					.join()
-					.map(|(ent, score, level, _)| ScoreBoardData {
-						id: ent,
-						score: *score,
-						level: *level,
-					})
-					.collect::<Vec<ScoreBoardData>>();
+		for evt in data.channel.read(self.reader.as_mut().unwrap()) {
+			if evt.ty != *SCORE_BOARD { continue; }
 
-				packet_data.sort_by(|a, b| a.score.cmp(&b.score));
+			let mut packet_data = (&*data.entities, &data.scores, &data.levels, &data.flag)
+				.join()
+				.map(|(ent, score, level, _)| ScoreBoardData {
+					id: ent,
+					score: *score,
+					level: *level,
+				})
+				.collect::<Vec<ScoreBoardData>>();
 
-				let packet_data = packet_data
-					.into_iter()
-					.take(10)
-					.collect::<Vec<ScoreBoardData>>();
+			packet_data.sort_by(|a, b| a.score.cmp(&b.score));
 
-				let rankings = (&*data.entities, &data.pos, &data.flag)
-					.join()
-					.map(|(ent, pos, _)| {
-						if data.isspec.get(ent).is_some() {
-							(ent, *SPEC_POSITION)
-						} else {
-							(ent, *pos)
-						}
-					})
-					.map(|(ent, pos)| ScoreBoardRanking { id: ent, pos: pos })
-					.collect::<Vec<ScoreBoardRanking>>();
+			let packet_data = packet_data
+				.into_iter()
+				.take(10)
+				.collect::<Vec<ScoreBoardData>>();
 
-				let score_board = ScoreBoard {
-					data: packet_data,
-					rankings: rankings,
-				};
+			let rankings = (&*data.entities, &data.pos, &data.flag)
+				.join()
+				.map(|(ent, pos, _)| {
+					if data.isspec.get(ent).is_some() {
+						(ent, *SPEC_POSITION)
+					} else {
+						(ent, *pos)
+					}
+				})
+				.map(|(ent, pos)| ScoreBoardRanking { id: ent, pos: pos })
+				.collect::<Vec<ScoreBoardRanking>>();
 
-				data.conns.send_to_all(OwnedMessage::Binary(
-					to_bytes(&ServerPacket::ScoreBoard(score_board)).unwrap(),
-				));
-			}
+			let score_board = ScoreBoard {
+				data: packet_data,
+				rankings: rankings,
+			};
+
+			data.conns.send_to_all(OwnedMessage::Binary(
+				to_bytes(&ServerPacket::ScoreBoard(score_board)).unwrap(),
+			));
 		}
 	}
 }

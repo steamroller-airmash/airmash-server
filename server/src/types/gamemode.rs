@@ -65,7 +65,7 @@ impl<'a> GameModeWriter<'a, GameMode> {
 
 impl<'a, T> SystemData<'a> for GameModeWriter<'a, T> 
 where
-	T: GameModeWrapper + Sync + Send + ?Sized,
+	T: GameMode + Sync + Send + ?Sized,
 {
 	fn setup(res: &mut Resources) {
 		WriteExpect::<'a, GameModeInternal>::setup(res);
