@@ -1,6 +1,5 @@
 use dispatch::sysinfo::*;
 use shred::*;
-use specs::*;
 
 use metrics::MetricsHandler;
 use std::time::Instant;

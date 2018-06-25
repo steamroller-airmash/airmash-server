@@ -197,6 +197,8 @@ where
 			mut world,
 			..
 		} = self;
+		
+		info!("Starting server runtime!");
 
 		// The acceptor needs to run on its own thread
 		// to avoid delaying packets
@@ -211,7 +213,6 @@ where
 
 		world.add_resource(LastFrame(Instant::now()));
 
-		info!("Starting server runtime!");
 
 		let mut runtime = Runtime::new().unwrap();
 
