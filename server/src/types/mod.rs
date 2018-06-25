@@ -8,10 +8,10 @@ mod units;
 mod upgrades;
 mod vector2;
 mod future;
-mod gamemode;
 
 mod connection_events;
 
+pub(crate) mod gamemode;
 pub mod collision;
 pub mod config;
 
@@ -31,4 +31,4 @@ pub mod event {
 	pub use types::connection_events::*;
 }
 
-pub use self::gamemode::*;
+pub use self::gamemode::{GameMode, GameModeWriter};

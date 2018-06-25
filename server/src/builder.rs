@@ -182,7 +182,13 @@ where
 	where
 		G: GameMode + 'static
 	{
-		self.world.add_resource::<Box<GameMode>>(Box::new(mode));
+		use types::gamemode::*;
+
+		let val = GameModeInternal(
+			Box::new(GameModeWrapperImpl{ val: mode })
+		);
+
+		self.world.add_resource(val);
 		self
 	}
 

@@ -1,3 +1,7 @@
+//! Note: This entire module is an exercise
+//! in bashing the trait system over the 
+//! head until it lets us do what we want
+//! safely.
 
 use specs::*;
 use shred::{SystemData, ResourceId};
@@ -8,25 +12,60 @@ use std::any::Any;
 use std::ops::{Deref, DerefMut};
 use std::marker::PhantomData;
 
-pub trait GameMode: Sync + Send + Any {
+pub trait GameMode: Any + Sync + Send {
 	fn assign_team(&mut self, player: Entity) -> Team;
 	fn respawn_pos(&mut self, player: Entity, team: Team) -> Position;
 }
 
-pub struct GameModeInternal(Box<Any + Send + Sync>);
+pub trait GameModeWrapper: Send + Sync {
+	fn as_gamemode_ref<'a>(&'a self) -> &'a GameMode;
+	fn as_gamemode_mut<'a>(&'a mut self) -> &'a mut GameMode;
+	fn as_any_ref<'a>(&'a self) -> &'a Any;
+	fn as_any_mut<'a>(&'a mut self) -> &'a mut Any;
+}
 
-pub struct GameModeWriter<'a, T>
-where T: GameMode
+pub struct GameModeWrapperImpl<T: GameMode + Sync + Send + 'static> {
+	pub val: T
+}
+
+impl<T> GameModeWrapper for GameModeWrapperImpl<T>
+where
+	T: GameMode + Sync + Send + 'static
 {
+	fn as_gamemode_ref<'a>(&'a self) -> &'a GameMode {
+		&self.val
+	}
+	fn as_gamemode_mut<'a>(&'a mut self) -> &'a mut GameMode {
+		&mut self.val
+	}
+
+	fn as_any_ref<'a>(&'a self) -> &'a Any {
+		&self.val
+	}
+	fn as_any_mut<'a>(&'a mut self) -> &'a mut Any {
+		&mut self.val
+	}
+}
+
+pub struct GameModeInternal(pub Box<GameModeWrapper>);
+
+pub struct GameModeWriter<'a, T: ?Sized> {
 	inner: WriteExpect<'a, GameModeInternal>,
 	marker: PhantomData<T>
 }
 
+impl<'a> GameModeWriter<'a, GameMode> {
+	pub fn get(&self) -> &GameMode {
+		self.inner.0.as_gamemode_ref()
+	}
+	pub fn get_mut(&mut self) -> &mut GameMode {
+		self.inner.0.as_gamemode_mut()
+	}
+}
+
 impl<'a, T> SystemData<'a> for GameModeWriter<'a, T> 
 where
-	T: GameMode,
-	WriteExpect<'a, GameModeInternal>: SystemData<'a>,
-	GameModeInternal: Any + Send + Sync
+	T: GameModeWrapper + Sync + Send + ?Sized,
 {
 	fn setup(res: &mut Resources) {
 		WriteExpect::<'a, GameModeInternal>::setup(res);
@@ -54,7 +93,7 @@ where T: GameMode
 	type Target = T;
 
 	fn deref(&self) -> &Self::Target {
-		match self.inner.0.downcast_ref() {
+		match self.inner.0.as_any_ref().downcast_ref() {
 			Some(x) => x,
 			None => {
 				panic!("Game mode was not expected type when using GameModeWriter");
@@ -67,7 +106,7 @@ impl<'a, T> DerefMut for GameModeWriter<'a, T>
 where T: GameMode
 {
 	fn deref_mut(&mut self) -> &mut Self::Target {
-		match self.inner.0.downcast_mut() {
+		match self.inner.0.as_any_mut().downcast_mut() {
 			Some(x) => x,
 			None => {
 				panic!("Game mode was not expected type when using GameModeWriter");
