@@ -7,27 +7,34 @@ extern crate lazy_static;
 #[macro_use]
 extern crate log;
 
+extern crate airmash_server;
 extern crate fnv;
+extern crate htmlescape;
 extern crate rand;
 extern crate shred;
 extern crate shrev;
+extern crate simple_logger;
 extern crate specs;
-extern crate htmlescape;
-extern crate airmash_server;
 
 use airmash_server as server;
 
 mod component;
-mod systems;
 mod gamemode;
+mod systems;
 
-use server::AirmashServer;
+use std::env;
+
 use gamemode::CTFGameMode;
+use server::AirmashServer;
 
 fn main() {
+    env::set_var("RUST_BACKTRACE", "1");
+
+    simple_logger::init_with_level(log::Level::Info).unwrap();
+
     let mut server = AirmashServer::new("0.0.0.0:3501")
-			.with_engine()
-			.with_gamemode(CTFGameMode::new());
+        .with_engine()
+        .with_gamemode(CTFGameMode::new());
 
     server.builder = systems::register(&mut server.world, server.builder);
 
