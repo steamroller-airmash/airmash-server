@@ -5,8 +5,8 @@ use specs::Entity;
 
 use std::cmp::Ordering;
 
-const RED_TEAM: Team = Team(2);
-const BLUE_TEAM: Team = Team(1);
+pub const RED_TEAM: Team = Team(2);
+pub const BLUE_TEAM: Team = Team(1);
 
 lazy_static! {
     static ref RED_TEAM_RESPAWN: Position = Position::default();
@@ -15,8 +15,8 @@ lazy_static! {
 
 #[derive(Default, Debug)]
 pub struct CTFGameMode {
-    redteam: u16,
-    blueteam: u16,
+    pub redteam: u16,
+    pub blueteam: u16,
 }
 
 impl CTFGameMode {
@@ -27,23 +27,29 @@ impl CTFGameMode {
 
 impl GameMode for CTFGameMode {
     fn assign_team(&mut self, _: Entity) -> Team {
+        info!("Teams: {} blue, {} red", self.blueteam, self.redteam);
         match self.redteam.cmp(&self.blueteam) {
             Ordering::Less => {
+                info!("Added to red team");
                 self.redteam += 1;
                 RED_TEAM
             }
             Ordering::Greater => {
                 self.blueteam += 1;
+                info!("Added to blue team");
                 BLUE_TEAM
+
             }
             Ordering::Equal => {
                 let team: bool = rand::random();
 
                 if team {
                     self.redteam += 1;
+                    info!("Added to red team");
                     RED_TEAM
                 } else {
                     self.blueteam += 1;
+                    info!("Added to blue team");
                     BLUE_TEAM
                 }
             }

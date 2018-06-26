@@ -45,4 +45,5 @@ pub fn register<'a, 'b>(world: &mut World, disp: Builder<'a, 'b>) -> Builder<'a,
         .with::<PosUpdateSystem>()
         .with::<PickupMessageSystem>()
         .with::<FlagSpeedSystem>()
+        .with::<UpdateGameModeOnPlayerLeave>()
 }

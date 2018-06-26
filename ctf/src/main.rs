@@ -24,7 +24,7 @@ mod systems;
 
 use std::env;
 
-use gamemode::CTFGameMode;
+use gamemode::{CTFGameMode, RED_TEAM, BLUE_TEAM};
 use server::AirmashServer;
 
 fn main() {
