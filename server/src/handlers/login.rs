@@ -19,6 +19,8 @@ use component::time::*;
 use types::*;
 use utils::geoip;
 
+use GameMode;
+
 // Login needs write access to just
 // about everything
 #[derive(SystemData)]
@@ -52,6 +54,16 @@ pub struct LoginSystemData<'a> {
 	pub startime: Read<'a, StartTime>,
 	pub player_join: Write<'a, OnPlayerJoin>,
 	pub config: Read<'a, Config>,
+	pub gamemode: GameModeWriter<'a, GameMode>,
+}
+
+struct LoginInfo<'a> {
+	pub id: Entity,
+	pub login: &'a Login,
+	pub flag: FlagCode,
+	pub team: Team,
+	pub plane: Plane,
+	pub pos: Position,
 }
 
 pub struct LoginHandler {
@@ -63,16 +75,16 @@ impl LoginHandler {
 		Self { reader: None }
 	}
 
-	fn send_new<'a>(data: &LoginSystemData<'a>, entity: Entity, login: &Login, flag: FlagCode) {
+	fn send_new<'a, 'b>(data: &LoginSystemData<'a>, info: &LoginInfo<'a>) {
 		let player_new = PlayerNew {
-			id: entity,
+			id: info.id,
 			status: PlayerStatus::Alive,
-			name: login.name.clone(),
-			ty: PlaneType::Predator,
-			team: Team(0),
-			pos: Position::new(Distance::new(0.0), Distance::new(200.0)),
+			name: info.login.name.clone(),
+			ty: info.plane,
+			team: info.team,
+			pos: info.pos,
 			rot: Rotation::new(0.0),
-			flag: flag,
+			flag: info.flag,
 			upgrades: ProtocolUpgrades::default(),
 		};
 
@@ -81,9 +93,9 @@ impl LoginHandler {
 		));
 	}
 
-	fn send_level<'a>(data: &LoginSystemData<'a>, entity: Entity, _login: &Login) {
+	fn send_level<'a, 'b>(data: &LoginSystemData<'a>, info: &LoginInfo<'b>) {
 		let player_level = PlayerLevel {
-			id: entity,
+			id: info.id,
 			ty: PlayerLevelType::Login,
 			level: Level(0),
 		};
@@ -157,20 +169,39 @@ impl LoginHandler {
 			None => geoip::locate(&data.conns.0[&conn].addr).unwrap_or(FlagCode::UnitedNations),
 		};
 
-		Self::send_new(data, entity, &login, flag);
-		Self::send_level(data, entity, &login);
+		// Scope for lifetime management
+		let (pos, team) = {
+			let gamemode = data.gamemode.get_mut();
+
+			let team = gamemode.assign_team(entity);
+			let pos = gamemode.respawn_pos(entity, team);
+
+			(pos, team)
+		};
+
+		{ // Scope to contain lifetime of &login
+			let info = LoginInfo {
+				id: entity,
+				plane: PlaneType::Predator,
+				login: &login,
+				flag,
+				pos,
+				team
+			};
+
+			Self::send_new(data, &info);
+			Self::send_level(data, &info);
+		}
 
 		let session = match Uuid::from_str(&login.session) {
 			Ok(s) => Some(s),
 			Err(_) => None,
 		};
 
-		let team = Team(entity.id() as u16);
-
 		data.conns.associate(conn, entity, ConnectionType::Primary);
 
 		// Set all possible pieces of state for a plane
-		data.position.insert(entity, Position::default()).unwrap();
+		data.position.insert(entity, pos).unwrap();
 		data.speed.insert(entity, Velocity::default()).unwrap();
 		data.energy.insert(entity, Energy::new(1.0)).unwrap();
 		data.health.insert(entity, Health::new(1.0)).unwrap();

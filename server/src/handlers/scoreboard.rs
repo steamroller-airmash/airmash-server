@@ -4,7 +4,7 @@ use types::*;
 use consts::timer::SCORE_BOARD;
 
 use component::channel::{OnTimerEvent, OnTimerEventReader};
-use component::flag::{IsPlayer, IsSpectating};
+use component::flag::{IsPlayer, IsSpectating, IsDead};
 
 use protocol::server::{ScoreBoard, ScoreBoardData, ScoreBoardRanking};
 use protocol::{to_bytes, ServerPacket};
@@ -36,6 +36,7 @@ pub struct ScoreBoardSystemData<'a> {
 	pos: ReadStorage<'a, Position>,
 	flag: ReadStorage<'a, IsPlayer>,
 	isspec: ReadStorage<'a, IsSpectating>,
+	isdead: ReadStorage<'a, IsDead>,
 }
 
 impl<'a> System<'a> for ScoreBoardTimerHandler {
@@ -72,7 +73,7 @@ impl<'a> System<'a> for ScoreBoardTimerHandler {
 			let rankings = (&*data.entities, &data.pos, &data.flag)
 				.join()
 				.map(|(ent, pos, _)| {
-					if data.isspec.get(ent).is_some() {
+					if data.isspec.get(ent).is_some() || data.isdead.get(ent).is_some() {
 						(ent, *SPEC_POSITION)
 					} else {
 						(ent, *pos)

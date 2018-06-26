@@ -22,6 +22,7 @@ pub struct PlayerMissileCollisionSystemData<'a> {
 	pub plane: ReadStorage<'a, Plane>,
 	pub player_flag: ReadStorage<'a, IsPlayer>,
 	pub isspec: ReadStorage<'a, IsSpectating>,
+	pub isdead: ReadStorage<'a, IsDead>,
 
 	pub mob: ReadStorage<'a, Mob>,
 	pub missile_flag: ReadStorage<'a, IsMissile>,
@@ -48,6 +49,7 @@ impl<'a> System<'a> for PlayerMissileCollisionSystem {
 			plane,
 			player_flag,
 			isspec,
+			isdead,
 
 			mob,
 			missile_flag,
@@ -57,7 +59,9 @@ impl<'a> System<'a> for PlayerMissileCollisionSystem {
 
 		(&*ent, &pos, &rot, &team, &plane, &player_flag)
 			.join()
-			.filter(|(ent, _, _, _, _, _)| isspec.get(*ent).is_none())
+			.filter(|(ent, _, _, _, _, _)| {
+				isspec.get(*ent).is_none() && isdead.get(*ent).is_none()
+			})
 			.for_each(|(ent, pos, rot, team, plane, _)| {
 				let ref cfg = config.planes[*plane];
 

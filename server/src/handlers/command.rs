@@ -2,9 +2,9 @@ use shrev::*;
 use specs::*;
 use types::*;
 
-use airmash_protocol::client::Command;
-use airmash_protocol::server::{PlayerFlag, PlayerRespawn, PlayerType};
-use airmash_protocol::{to_bytes, FlagCode, ServerPacket, Upgrades as ProtocolUpgrades};
+use protocol::client::Command;
+use protocol::server::{PlayerFlag, PlayerRespawn, PlayerType};
+use protocol::{to_bytes, FlagCode, ServerPacket, Upgrades as ProtocolUpgrades};
 use websocket::OwnedMessage;
 
 pub struct CommandHandler {
@@ -18,6 +18,7 @@ pub struct CommandHandlerData<'a> {
 	planes: WriteStorage<'a, Plane>,
 	flags: WriteStorage<'a, Flag>,
 	isspec: WriteStorage<'a, IsSpectating>,
+	isdead: WriteStorage<'a, IsDead>,
 
 	pos: WriteStorage<'a, Position>,
 	rot: WriteStorage<'a, Rotation>,
@@ -79,6 +80,7 @@ impl<'a> System<'a> for CommandHandler {
 				*data.energy.get_mut(player).unwrap() = Energy::new(1.0);
 				*data.planes.get_mut(player).unwrap() = ty;
 				data.isspec.remove(player);
+				data.isdead.remove(player);
 
 				data.conns.send_to_all(OwnedMessage::Binary(
 					to_bytes(&ServerPacket::PlayerRespawn(PlayerRespawn {

@@ -57,7 +57,10 @@ impl PositionUpdate {
 			&*data.entities,
 		).join()
 			.filter(|(_, _, _, _, _, _, _, ent)| {
-				isspec.get(*ent).is_none() || isdead.get(*ent).is_none()
+				isspec.get(*ent).is_none()
+			})
+			.filter(|(_, _, _, _, _, _, _, ent)| {
+				isdead.get(*ent).is_none()
 			})
 			.for_each(|(pos, rot, vel, keystate, upgrades, powerups, plane, _)| {
 				let mut movement_angle = None;
@@ -175,7 +178,7 @@ impl PositionUpdate {
 			lastupdate,
 		).join()
 			.filter(|(_, _, _, _, _, _, _, ent, _, _)| {
-				data.isspec.get(*ent).is_none() || data.isdead.get(*ent).is_none()
+				data.isspec.get(*ent).is_none() && data.isdead.get(*ent).is_none()
 			})
 			.for_each(
 				|(pos, rot, vel, plane, keystate, upgrades, powerups, ent, _, lastupdate)| {
@@ -228,7 +231,7 @@ impl PositionUpdate {
 				lastupdate.0.elapsed() > Duration::from_secs(1)
 			})
 			.filter(|(_, _, _, _, _, _, _, ent, _)| {
-				data.isspec.get(*ent).is_none() || data.isdead.get(*ent).is_none()
+				data.isspec.get(*ent).is_none() && data.isdead.get(*ent).is_none()
 			})
 			.for_each(
 				|(pos, rot, vel, plane, keystate, upgrades, powerups, ent, lastupdate)| {
