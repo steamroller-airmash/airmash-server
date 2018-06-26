@@ -19,12 +19,13 @@ RUN cargo fetch
 RUN rm -rf src
 
 ADD server /build/server
+ADD ctf /build/ctf
 
-# Enable GeoIP based default flags
-# Enable looking for X-Forwarded-For within the request
-RUN cargo build --release --features "geoip proxied"
+WORKDIR /build/ctf
+
+RUN cargo build --release
 RUN mkdir /artifacts
-RUN mv target/x86_64-unknown-linux-musl/release/airmash-server /artifacts/airmash-server
+RUN mv target/x86_64-unknown-linux-musl/release/ctf /artifacts/airmash-server
 
 FROM alpine:latest
 
