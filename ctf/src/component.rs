@@ -14,7 +14,7 @@ pub struct FlagCarrier(pub Option<Entity>);
 #[derive(Copy, Clone, Debug, Default, Component)]
 pub struct FlagPosition(pub Position);
 
-#[derive(Copy, Clone, Debug)]
+#[derive(Copy, Clone, Debug, PartialEq, Eq)]
 pub enum FlagEventType {
 	PickUp,
 	Return,
