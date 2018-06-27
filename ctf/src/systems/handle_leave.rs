@@ -1,14 +1,13 @@
-
 use specs::*;
 
-use server::*;
 use server::component::channel::*;
 use server::component::event::PlayerLeave;
 use server::systems::handlers::packet::OnCloseHandler;
+use server::*;
 
-use RED_TEAM;
-use BLUE_TEAM;
 use CTFGameMode;
+use BLUE_TEAM;
+use RED_TEAM;
 
 use std::any::Any;
 
@@ -20,8 +19,8 @@ pub struct UpdateGameModeOnPlayerLeave {
 pub struct UpdateGameModeOnPlayerLeaveData<'a> {
 	pub gamemode: GameModeWriter<'a, CTFGameMode>,
 	pub channel: Read<'a, OnPlayerLeave>,
-	
-	pub teams: ReadStorage<'a, Team>
+
+	pub teams: ReadStorage<'a, Team>,
 }
 
 impl<'a> System<'a> for UpdateGameModeOnPlayerLeave {
@@ -30,9 +29,7 @@ impl<'a> System<'a> for UpdateGameModeOnPlayerLeave {
 	fn setup(&mut self, res: &mut Resources) {
 		Self::SystemData::setup(res);
 
-		self.reader = Some(
-			res.fetch_mut::<OnPlayerLeave>().register_reader()
-		);
+		self.reader = Some(res.fetch_mut::<OnPlayerLeave>().register_reader());
 	}
 
 	fn run(&mut self, mut data: Self::SystemData) {
@@ -41,11 +38,9 @@ impl<'a> System<'a> for UpdateGameModeOnPlayerLeave {
 
 			if *team == RED_TEAM {
 				data.gamemode.redteam -= 1;
-			}
-			else if *team == BLUE_TEAM {
+			} else if *team == BLUE_TEAM {
 				data.gamemode.blueteam -= 1;
-			}
-			else {
+			} else {
 				unimplemented!();
 			}
 		}
@@ -60,6 +55,6 @@ impl SystemInfo for UpdateGameModeOnPlayerLeave {
 	}
 
 	fn new(_: Box<Any>) -> Self {
-		Self{ reader: None }
+		Self { reader: None }
 	}
 }

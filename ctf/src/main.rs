@@ -19,25 +19,25 @@ extern crate specs;
 use airmash_server as server;
 
 mod component;
+mod config;
 mod gamemode;
 mod systems;
-mod config;
 
 use std::env;
 
-use gamemode::{CTFGameMode, RED_TEAM, BLUE_TEAM};
+use gamemode::{CTFGameMode, BLUE_TEAM, RED_TEAM};
 use server::AirmashServer;
 
 fn main() {
-    env::set_var("RUST_BACKTRACE", "1");
+	env::set_var("RUST_BACKTRACE", "1");
 
-    simple_logger::init_with_level(log::Level::Info).unwrap();
+	simple_logger::init_with_level(log::Level::Info).unwrap();
 
-    let mut server = AirmashServer::new("0.0.0.0:3501")
-        .with_engine()
-        .with_gamemode(CTFGameMode::new());
+	let mut server = AirmashServer::new("0.0.0.0:3501")
+		.with_engine()
+		.with_gamemode(CTFGameMode::new());
 
-    server.builder = systems::register(&mut server.world, server.builder);
+	server.builder = systems::register(&mut server.world, server.builder);
 
-    server.run();
+	server.run();
 }
