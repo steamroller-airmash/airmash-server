@@ -2,6 +2,7 @@ use component::ctf::{FlagCarrier, IsFlag, LastDrop};
 
 use dispatch::Builder;
 use specs::*;
+use specs::Builder as SpecsBuilder;
 use types::{Position, Team};
 
 use std::time::Instant;

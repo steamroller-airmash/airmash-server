@@ -4,7 +4,8 @@ use std::sync::mpsc::{channel, Receiver, Sender};
 use std::thread;
 use std::time::{Duration, Instant};
 
-use specs::World;
+use specs::*;
+use specs::Builder as SpecsBuilder;
 
 use futures;
 use websocket::OwnedMessage;
@@ -197,7 +198,7 @@ where
 			mut world,
 			..
 		} = self;
-		
+
 		info!("Starting server runtime!");
 
 		// The acceptor needs to run on its own thread
