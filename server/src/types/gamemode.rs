@@ -12,9 +12,12 @@ use std::any::Any;
 use std::marker::PhantomData;
 use std::ops::{Deref, DerefMut};
 
+use protocol::GameType;
+
 pub trait GameMode: Any + Sync + Send {
 	fn assign_team(&mut self, player: Entity) -> Team;
 	fn respawn_pos(&mut self, player: Entity, team: Team) -> Position;
+	fn gametype(&self) -> GameType;
 }
 
 pub trait GameModeWrapper: Send + Sync {

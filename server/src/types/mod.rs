@@ -13,6 +13,8 @@ mod connection_events;
 
 pub mod collision;
 pub mod config;
+pub mod systemdata;
+
 pub(crate) mod gamemode;
 
 pub use self::components::*;

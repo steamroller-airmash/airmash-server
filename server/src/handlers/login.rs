@@ -1,7 +1,7 @@
 use airmash_protocol::client::Login;
 use airmash_protocol::server::{PlayerLevel, PlayerNew, ServerPacket};
 use airmash_protocol::{
-	server, to_bytes, FlagCode, GameType, PlaneType, PlayerLevelType, PlayerStatus,
+	server, to_bytes, FlagCode, PlaneType, PlayerLevelType, PlayerStatus,
 	Upgrades as ProtocolUpgrades,
 };
 use specs::*;
@@ -63,7 +63,7 @@ struct LoginInfo<'a> {
 	pub flag: FlagCode,
 	pub team: Team,
 	pub plane: Plane,
-	pub pos: Position,
+	pub pos: Position
 }
 
 pub struct LoginHandler {
@@ -243,7 +243,7 @@ impl LoginHandler {
 			success: true,
 			token: login.session,
 			team,
-			ty: GameType::CTF,
+			ty: data.gamemode.get().gametype(),
 			players: Self::get_player_data(data),
 		};
 

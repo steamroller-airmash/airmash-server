@@ -1,7 +1,7 @@
 use specs::*;
 use types::*;
+use types::systemdata::IsAlive;
 
-use component::flag::IsSpectating;
 use component::time::*;
 
 use std::f32::consts;
@@ -32,6 +32,23 @@ pub struct PositionUpdate {
 	modify_reader: Option<ReaderId<ModifiedFlag>>,
 }
 
+#[derive(SystemData)]
+pub struct PositionUpdateData<'a> {
+	pos: WriteStorage<'a, Position>,
+	rot: WriteStorage<'a, Rotation>,
+	vel: WriteStorage<'a, Velocity>,
+	keystate: ReadStorage<'a, KeyState>,
+	upgrades: ReadStorage<'a, Upgrades>,
+	powerups: ReadStorage<'a, Powerups>,
+	planes: ReadStorage<'a, Plane>,
+	lastframe: Read<'a, LastFrame>,
+	thisframe: Read<'a, ThisFrame>,
+	starttime: Read<'a, StartTime>,
+	entities: Entities<'a>,
+	conns: Read<'a, Connections>,
+	is_alive: IsAlive<'a>,
+}
+
 impl PositionUpdate {
 	pub fn new() -> Self {
 		Self {
@@ -43,8 +60,7 @@ impl PositionUpdate {
 	fn step_players<'a>(data: &mut PositionUpdateData<'a>, config: &Read<'a, Config>) {
 		let delta = Time::from(data.thisframe.0 - data.lastframe.0);
 
-		let isspec = &data.isspec;
-		let isdead = &data.isdead;
+		let is_alive = &data.is_alive;
 
 		(
 			&mut data.pos,
@@ -57,10 +73,7 @@ impl PositionUpdate {
 			&*data.entities,
 		).join()
 			.filter(|(_, _, _, _, _, _, _, ent)| {
-				isspec.get(*ent).is_none()
-			})
-			.filter(|(_, _, _, _, _, _, _, ent)| {
-				isdead.get(*ent).is_none()
+				is_alive.get(*ent)
 			})
 			.for_each(|(pos, rot, vel, keystate, upgrades, powerups, plane, _)| {
 				let mut movement_angle = None;
@@ -178,7 +191,7 @@ impl PositionUpdate {
 			lastupdate,
 		).join()
 			.filter(|(_, _, _, _, _, _, _, ent, _, _)| {
-				data.isspec.get(*ent).is_none() && data.isdead.get(*ent).is_none()
+				data.is_alive.get(*ent)
 			})
 			.for_each(
 				|(pos, rot, vel, plane, keystate, upgrades, powerups, ent, _, lastupdate)| {
@@ -231,7 +244,7 @@ impl PositionUpdate {
 				lastupdate.0.elapsed() > Duration::from_secs(1)
 			})
 			.filter(|(_, _, _, _, _, _, _, ent, _)| {
-				data.isspec.get(*ent).is_none() && data.isdead.get(*ent).is_none()
+				data.is_alive.get(*ent)
 			})
 			.for_each(
 				|(pos, rot, vel, plane, keystate, upgrades, powerups, ent, lastupdate)| {
@@ -265,24 +278,6 @@ impl PositionUpdate {
 				},
 			)
 	}
-}
-
-#[derive(SystemData)]
-pub struct PositionUpdateData<'a> {
-	pos: WriteStorage<'a, Position>,
-	rot: WriteStorage<'a, Rotation>,
-	vel: WriteStorage<'a, Velocity>,
-	keystate: ReadStorage<'a, KeyState>,
-	upgrades: ReadStorage<'a, Upgrades>,
-	powerups: ReadStorage<'a, Powerups>,
-	planes: ReadStorage<'a, Plane>,
-	lastframe: Read<'a, LastFrame>,
-	thisframe: Read<'a, ThisFrame>,
-	starttime: Read<'a, StartTime>,
-	entities: Entities<'a>,
-	conns: Read<'a, Connections>,
-	isspec: ReadStorage<'a, IsSpectating>,
-	isdead: ReadStorage<'a, IsDead>,
 }
 
 impl<'a> System<'a> for PositionUpdate {
