@@ -21,6 +21,7 @@ use airmash_server as server;
 mod component;
 mod gamemode;
 mod systems;
+mod config;
 
 use std::env;
 

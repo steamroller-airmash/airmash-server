@@ -1,7 +1,7 @@
 use server::*;
 use specs::*;
 
-use systems::config as ctfconfig;
+use config as ctfconfig;
 
 use component::*;
 

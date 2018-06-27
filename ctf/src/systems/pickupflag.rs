@@ -6,7 +6,7 @@ use server::component::flag::IsPlayer;
 use server::component::time::ThisFrame;
 
 use component::*;
-use systems::config as ctfconfig;
+use config as ctfconfig;
 
 use std::cmp::Ordering;
 

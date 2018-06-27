@@ -6,6 +6,7 @@ use specs::*;
 use std::time::Instant;
 
 use super::*;
+use config;
 
 pub fn register<'a, 'b>(world: &mut World, disp: Builder<'a, 'b>) -> Builder<'a, 'b> {
     world.register::<Team>();

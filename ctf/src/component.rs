@@ -36,5 +36,11 @@ pub struct LastDrop {
     pub time: Instant,
 }
 
+#[derive(Copy, Clone, Debug, Default)]
+pub struct GameScores {
+    pub redteam: u8,
+    pub blueteam: u8
+}
+
 pub type OnFlag = EventChannel<FlagEvent>;
 pub type OnFlagReader = ReaderId<FlagEvent>;

@@ -1,4 +1,3 @@
-mod config;
 mod drop;
 mod flag_message;
 mod flagspeed;

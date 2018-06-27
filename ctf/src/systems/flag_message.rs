@@ -2,7 +2,7 @@ use server::*;
 use specs::*;
 
 use component::*;
-use systems::config as ctfconfig;
+use config as ctfconfig;
 
 use htmlescape;
 
