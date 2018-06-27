@@ -7,7 +7,6 @@ mod register;
 mod timer_handler;
 
 pub mod collision;
-pub mod ctf;
 pub mod handlers;
 pub mod missile;
 pub mod spectate;

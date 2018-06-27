@@ -2,7 +2,6 @@
 
 pub mod channel;
 pub mod counter;
-pub mod ctf;
 pub mod event;
 pub mod flag;
 pub mod reference;
