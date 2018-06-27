@@ -1,7 +1,8 @@
-use component::{FlagCarrier, IsFlag, LastDrop};
+use component::{FlagCarrier, IsFlag, LastDrop, Flags};
 
 use server::{Builder, Position, Team};
 use specs::*;
+use specs::Builder as SpecsBuilder;
 
 use std::time::Instant;
 
@@ -20,7 +21,7 @@ pub fn register<'a, 'b>(world: &mut World, disp: Builder<'a, 'b>) -> Builder<'a,
 		time: Instant::now(),
 	};
 
-	world
+	let blue = world
 		.create_entity()
 		.with(Team(1))
 		.with(config::FLAG_POS[&Team(1)])
@@ -28,7 +29,7 @@ pub fn register<'a, 'b>(world: &mut World, disp: Builder<'a, 'b>) -> Builder<'a,
 		.with(FlagCarrier(None))
 		.with(lastdrop)
 		.build();
-	world
+	let red = world
 		.create_entity()
 		.with(Team(2))
 		.with(config::FLAG_POS[&Team(2)])
@@ -36,6 +37,8 @@ pub fn register<'a, 'b>(world: &mut World, disp: Builder<'a, 'b>) -> Builder<'a,
 		.with(FlagCarrier(None))
 		.with(lastdrop)
 		.build();
+
+    world.add_resource(Flags { red, blue });
 
 	disp.with::<LoginUpdateSystem>()
 		.with::<PickupFlagSystem>()
@@ -47,4 +50,5 @@ pub fn register<'a, 'b>(world: &mut World, disp: Builder<'a, 'b>) -> Builder<'a,
 		.with::<PickupMessageSystem>()
 		.with::<FlagSpeedSystem>()
 		.with::<UpdateGameModeOnPlayerLeave>()
+		.with::<DropOnSpec>()
 }

@@ -2,6 +2,7 @@ use server::*;
 use specs::*;
 
 use component::*;
+use server::component::flag::*;
 
 pub struct PosUpdateSystem;
 
@@ -11,6 +12,8 @@ pub struct PosUpdateSystemData<'a> {
 	pub pos: WriteStorage<'a, Position>,
 	pub flag: ReadStorage<'a, IsFlag>,
 	pub carrier: ReadStorage<'a, FlagCarrier>,
+	pub isdead: ReadStorage<'a, IsDead>,
+	pub isspec: ReadStorage<'a, IsSpectating>,
 }
 
 impl<'a> System<'a> for PosUpdateSystem {
@@ -20,10 +23,13 @@ impl<'a> System<'a> for PosUpdateSystem {
 		let carriers = (&data.carrier, &*data.ents, &data.flag)
 			.join()
 			.filter(|(c, _, _)| c.0.is_some())
-			.map(|(c, ent, _)| (c.0.unwrap(), ent))
-			.collect::<Vec<(Entity, Entity)>>();
+			.filter(|(_, ent, _)| {
+				data.isdead.get(*ent).is_none() && data.isspec.get(*ent).is_none()
+			})
+			.map(|(c, ent, _)| (ent, c.0.unwrap()))
+			.collect::<Vec<_>>();
 
-		for (carrier, flag) in carriers {
+		for (flag, carrier) in carriers {
 			// Update flag position to carrier position
 			*data.pos.get_mut(flag).unwrap() = *data.pos.get(carrier).unwrap();
 		}

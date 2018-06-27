@@ -1,4 +1,3 @@
-use server::Position;
 use shrev::*;
 use specs::*;
 
@@ -9,10 +8,8 @@ use std::time::Instant;
 pub struct IsFlag;
 
 #[derive(Copy, Clone, Debug, Default, Component)]
+#[storage(HashMapStorage)]
 pub struct FlagCarrier(pub Option<Entity>);
-
-#[derive(Copy, Clone, Debug, Default, Component)]
-pub struct FlagPosition(pub Position);
 
 #[derive(Copy, Clone, Debug, PartialEq, Eq)]
 pub enum FlagEventType {
@@ -31,6 +28,7 @@ pub struct FlagEvent {
 }
 
 #[derive(Copy, Clone, Debug, Component)]
+#[storage(HashMapStorage)]
 pub struct LastDrop {
 	pub player: Option<Entity>,
 	pub time: Instant,
@@ -40,6 +38,12 @@ pub struct LastDrop {
 pub struct GameScores {
 	pub redteam: u8,
 	pub blueteam: u8,
+}
+
+#[derive(Copy, Clone)]
+pub struct Flags {
+	pub red: Entity,
+	pub blue: Entity,
 }
 
 pub type OnFlag = EventChannel<FlagEvent>;

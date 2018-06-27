@@ -2,7 +2,7 @@ use server::types::Sqrt;
 use server::*;
 use specs::*;
 
-use server::component::flag::IsPlayer;
+use server::component::flag::*;
 use server::component::time::ThisFrame;
 
 use component::*;
@@ -22,9 +22,11 @@ pub struct PickupFlagSystemData<'a> {
 	// Player data
 	pub plane: ReadStorage<'a, Plane>,
 	pub is_player: ReadStorage<'a, IsPlayer>,
+	pub is_spec: ReadStorage<'a, IsSpectating>,
+	pub is_dead: ReadStorage<'a, IsDead>,
 
 	// These ones are for both
-	pub pos: ReadStorage<'a, Position>,
+	pub pos: WriteStorage<'a, Position>,
 	pub team: ReadStorage<'a, Team>,
 
 	// Flag Data
@@ -45,6 +47,9 @@ impl<'a> System<'a> for PickupFlagSystem {
 			&data.is_flag,
 			&data.lastdrop,
 		).join()
+			.filter(|(ent, _, _, _, _, _)| {
+				data.is_dead.get(*ent).is_none() && data.is_spec.get(*ent).is_none()
+			})
 			.map(|(ent, pos, team, carrier, _, lastdrop)| (ent, *pos, *team, *carrier, *lastdrop))
 			.collect::<Vec<(Entity, Position, Team, FlagCarrier, LastDrop)>>();
 
