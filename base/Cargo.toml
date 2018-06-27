@@ -1,0 +1,10 @@
+[package]
+name = "base"
+version = "0.0.1"
+authors = ["STEAMROLLER"]
+license = "Apache-2.0"
+description = "Minimal airmash server game mode"
+
+[dependencies]
+specs = "*"
+airmash-server = { path='../server' }
