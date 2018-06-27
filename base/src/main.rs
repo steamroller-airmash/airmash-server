@@ -1,9 +1,12 @@
 
+extern crate log;
 extern crate specs;
+extern crate simple_logger;
 extern crate airmash_server;
 
 use specs::Entity;
 use airmash_server::*;
+use airmash_server::protocol::GameType;
 
 struct EmptyGameMode;
 
@@ -13,6 +16,9 @@ impl GameMode for EmptyGameMode {
     }
     fn respawn_pos(&mut self, _: Entity, _: Team) -> Position {
         Position::default()
+    }
+    fn gametype(&self) -> GameType {
+        GameType::FFA
     }
 }
 

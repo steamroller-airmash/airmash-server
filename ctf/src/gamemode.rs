@@ -1,4 +1,5 @@
 use server::*;
+use server::protocol::GameType;
 
 use rand;
 use specs::Entity;
@@ -64,5 +65,9 @@ impl GameMode for CTFGameMode {
 			// No need for this yet
 			unimplemented!();
 		}
+	}
+
+	fn gametype(&self) -> GameType {
+		GameType::CTF
 	}
 }

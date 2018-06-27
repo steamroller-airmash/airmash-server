@@ -8,3 +8,5 @@ description = "Minimal airmash server game mode"
 [dependencies]
 specs = "*"
 airmash-server = { path='../server' }
+log = "0.4"
+simple_logger = "*"
