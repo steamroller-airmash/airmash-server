@@ -6,6 +6,8 @@ mod onrespawntimer;
 
 mod register;
 
+pub mod on_spectate_event;
+
 pub use self::register::register;
 
 pub use self::onkilledcleanup::PlayerKilledCleanup;

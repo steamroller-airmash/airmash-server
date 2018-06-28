@@ -6,4 +6,9 @@ pub fn register<'a, 'b>(builder: Builder<'a, 'b>) -> Builder<'a, 'b> {
 		.with::<PlayerKilledMessage>()
 		.with::<PlayerKilledCleanup>()
 		.with::<OnRespawnTimer>()
+		.with::<on_spectate_event::SetSpectateFlag>()
+		.with::<on_spectate_event::SendKillPacket>()
+		.with::<on_spectate_event::SendSpectatePacket>()
+		.with::<on_spectate_event::SendTimerEvent>()
+		.with::<on_spectate_event::SetSpectateTarget>()
 }

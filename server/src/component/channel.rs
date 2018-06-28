@@ -33,6 +33,7 @@ pub type OnAck = EventChannel<AckEvent>;
 pub type OnPlayerJoin = EventChannel<PlayerJoin>;
 pub type OnPlayerLeave = EventChannel<PlayerLeave>;
 pub type OnPlayerKilled = EventChannel<PlayerKilled>;
+pub type OnPlayerSpectate = EventChannel<PlayerSpectate>;
 
 // Collision events
 pub type OnPlayerTerrainCollision = EventChannel<PlayerTerrainCollision>;
@@ -66,6 +67,7 @@ pub type OnAckReader = ReaderId<AckEvent>;
 pub type OnPlayerJoinReader = ReaderId<PlayerJoin>;
 pub type OnPlayerLeaveReader = ReaderId<PlayerLeave>;
 pub type OnPlayerKilledReader = ReaderId<PlayerKilled>;
+pub type OnPlayerSpectateReader = ReaderId<PlayerSpectate>;
 
 // Collision events
 pub type OnPlayerMissileCollisionReader = ReaderId<PlayerMissileCollision>;

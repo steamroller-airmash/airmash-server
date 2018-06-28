@@ -1,22 +1,15 @@
-use shrev::*;
 use specs::*;
 
 use types::*;
 
 use std::any::Any;
 
-use consts::timer::SCORE_BOARD;
 use dispatch::SystemInfo;
 
 use component::channel::*;
-use component::event::TimerEvent;
-use component::flag::{IsPlayer, IsSpectating};
 use component::reference::PlayerRef;
-use component::time::ThisFrame;
-
-use protocol::server::{GameSpectate, PlayerKill};
-use protocol::{to_bytes, ServerPacket};
-use websocket::OwnedMessage;
+use component::event::PlayerSpectate;
+use component::flag::{IsPlayer, IsSpectating};
 
 use systems::PacketHandler;
 
@@ -28,12 +21,12 @@ pub struct CommandHandler {
 pub struct CommandHandlerData<'a> {
 	pub channel: Read<'a, OnCommand>,
 	pub conns: Read<'a, Connections>,
-	pub timerchannel: Write<'a, EventChannel<TimerEvent>>,
-	pub thisframe: Read<'a, ThisFrame>,
+	pub specchannel: Write<'a, OnPlayerSpectate>,
 
-	pub isspec: WriteStorage<'a, IsSpectating>,
-	pub spectarget: WriteStorage<'a, PlayerRef>,
+	pub is_spec: WriteStorage<'a, IsSpectating>,
+	pub is_dead: WriteStorage<'a, IsDead>,
 	pub isplayer: ReadStorage<'a, IsPlayer>,
+	pub spectarget: ReadStorage<'a, PlayerRef>,
 	pub entities: Entities<'a>,
 }
 
@@ -56,13 +49,13 @@ impl<'a> System<'a> for CommandHandler {
 		let Self::SystemData {
 			channel,
 			conns,
-			mut timerchannel,
-			thisframe,
+			mut specchannel,
 
-			mut isspec,
-			mut spectarget,
+			is_spec,
+			is_dead,
 			isplayer,
 			entities,
+			spectarget,
 		} = data;
 
 		for (id, packet) in channel.read(self.reader.as_mut().unwrap()) {
@@ -88,69 +81,27 @@ impl<'a> System<'a> for CommandHandler {
 				continue;
 			}
 
-			if isspec.get(player).is_none() {
+			let mut spec_event = PlayerSpectate {
+				player: player,
+				target: None,
+				is_dead: is_dead.get(player).is_some(),
+				is_spec: is_spec.get(player).is_some()
+			};
+
+			if is_spec.get(player).is_none() {
 				match arg {
 					-3...-1 => {
-						isspec.insert(player, IsSpectating).unwrap();
-
-						let mut it = (&isplayer, &*entities).join().filter_map(|(_, ent)| {
-							if isspec.get(ent).is_none() {
-								Some(ent)
-							} else {
-								None
-							}
-						});
-
-						let killed = PlayerKill {
-							id: player,
-							killer: None,
-							pos: Position::default(),
-						};
-
-						conns.send_to_player(
-							player,
-							OwnedMessage::Binary(
-								to_bytes(&ServerPacket::PlayerKill(killed)).unwrap(),
-							),
-						);
-
-						let ent = if let Some(ent) = it.next() {
-							let spectate = GameSpectate { id: ent };
-
-							conns.send_to_player(
-								player,
-								OwnedMessage::Binary(
-									to_bytes(&ServerPacket::GameSpectate(spectate)).unwrap(),
-								),
-							);
-
-							ent
-						} else {
-							// If there is nobody else to spectate,
-							// we don't tell the player who to spectate
-							player
-						};
-
-						spectarget.insert(player, PlayerRef(ent)).unwrap();
+						spec_event.target = (&isplayer, &*entities)
+							.join()
+							.filter(|(_, ent)| is_spec.get(*ent).is_none())
+							.map(|(_, ent)| ent)
+							.next();
 					}
 					// Do nothing if the player didn't pass
 					// a value between -1 and -3, other values
 					// only apply for players already in spec
 					_ => continue,
 				}
-
-				// The way that a plane disappearing
-				// appears to be communicated back to
-				// the client is by sending a scoreboard
-				// update, this triggers that by writing
-				// a scoreboard timer event. Scoreboard
-				// should most likely get a dedicated
-				// event channel in the future.
-				timerchannel.single_write(TimerEvent {
-					ty: *SCORE_BOARD,
-					instant: thisframe.0,
-					..Default::default()
-				});
 			} else {
 				match arg {
 					// Spectate next player
@@ -161,81 +112,45 @@ impl<'a> System<'a> for CommandHandler {
 						// including wrapping around and defaulting
 						// to the current player if there is no other
 						// player
-						let ent = (&isplayer, &*entities)
+						let forward = (&isplayer, &*entities)
 							.join()
 							.skip_while(|(_, ent)| *ent != current)
-							.filter(|(_, ent)| *ent != player)
-							.filter_map(|(_, ent)| {
-								if isspec.get(ent).is_none() {
-									return Some(ent);
-								}
-								None
-							})
-							.next()
-							.unwrap_or_else(|| {
-								(&isplayer, &*entities)
-									.join()
-									.filter(|(_, ent)| *ent != player)
-									.filter_map(|(_, ent)| {
-										if isspec.get(ent).is_none() {
-											return Some(ent);
-										}
-										None
-									})
-									.next()
-									.unwrap_or(player)
-							});
+							.filter(|(_, ent)| *ent != player && is_spec.get(*ent).is_none())
+							.map(|(_, ent)| ent)
+							.next();
 
-						let spectate = GameSpectate { id: ent };
-
-						conns.send_to_player(
-							player,
-							OwnedMessage::Binary(
-								to_bytes(&ServerPacket::GameSpectate(spectate)).unwrap(),
-							),
-						);
-
-						spectarget.insert(player, PlayerRef(ent)).unwrap();
+						let forward = match forward {
+							Some(x) => Some(x),
+							None => (&isplayer, &*entities)
+								.join()
+								.filter(|(_, ent)| *ent != player && is_spec.get(*ent).is_none())
+								.map(|(_, ent)| ent)
+								.next()
+						};
+						
+						spec_event.target = forward;
 					}
 					// Spectate prev player
 					-2 => {
 						let current = spectarget.get(player).unwrap().0;
 
-						let ent = (&isplayer, &*entities)
+						let back = (&isplayer, &*entities)
 							.join()
 							.take_while(|(_, ent)| *ent != current)
-							.filter(|(_, ent)| *ent != player)
-							.filter_map(|(_, ent)| {
-								if isspec.get(ent).is_none() {
-									return Some(ent);
-								}
-								None
-							})
-							.last()
-							.unwrap_or_else(|| {
-								(&isplayer, &*entities)
-									.join()
-									.filter(|(_, ent)| *ent != player)
-									.filter_map(|(_, ent)| {
-										if isspec.get(ent).is_none() {
-											return Some(ent);
-										}
-										None
-									})
-									.last()
-									.unwrap_or(player)
-							});
+							.filter(|(_, ent)| *ent != player && is_spec.get(*ent).is_none())
+							.map(|(_, ent)| ent)
+							.last();
 
-						let spectate = GameSpectate { id: ent };
+						let back = match back {
+							Some(x) => Some(x),
+							None => (&isplayer, &*entities)
+								.join()
+								.filter(|(_, ent)| *ent != player && is_spec.get(*ent).is_none())
+								.map(|(_, ent)| ent)
+								.last()
+						};
 
-						conns.send_to_player(
-							player,
-							OwnedMessage::Binary(
-								to_bytes(&ServerPacket::GameSpectate(spectate)).unwrap(),
-							),
-						);
-
-						spectarget.insert(player, PlayerRef(ent)).unwrap();
+						spec_event.target = back;
 					}
 					// Force spectate (just pick a player)
 					-3 => {
@@ -258,19 +173,12 @@ impl<'a> System<'a> for CommandHandler {
 							continue;
 						}
 
-						let spectate = GameSpectate { id: ent };
-
-						conns.send_to_player(
-							player,
-							OwnedMessage::Binary(
-								to_bytes(&ServerPacket::GameSpectate(spectate)).unwrap(),
-							),
-						);
-
-						spectarget.insert(player, PlayerRef(ent)).unwrap();
+						spec_event.target = Some(ent);
 					}
 				}
 			}
+
+			specchannel.single_write(spec_event);
 		}
 	}
 }

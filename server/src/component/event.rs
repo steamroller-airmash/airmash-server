@@ -29,6 +29,14 @@ pub struct PlayerKilled {
 #[derive(Copy, Clone, Debug)]
 pub struct PlayerRespawn(pub Entity);
 
+#[derive(Copy, Clone, Debug)]
+pub struct PlayerSpectate {
+	pub player: Entity,
+	pub target: Option<Entity>,
+	pub is_dead: bool,
+	pub is_spec: bool
+}
+
 #[derive(Copy, Clone, Debug, Hash, PartialEq, Eq)]
 pub struct PlayerTerrainCollision(pub Collision);
 #[derive(Copy, Clone, Debug, Hash, PartialEq, Eq)]
