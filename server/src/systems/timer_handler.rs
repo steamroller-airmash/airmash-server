@@ -31,6 +31,7 @@ impl<'a> System<'a> for TimerHandler {
 
 	fn run(&mut self, mut data: Self::SystemData) {
 		while let Ok(evt) = self.channel.try_recv() {
+			info!("{:?}", evt.ty);
 			data.channel.single_write(evt);
 		}
 	}

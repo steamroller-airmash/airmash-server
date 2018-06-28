@@ -1,58 +1,73 @@
 use std::sync::mpsc::Sender;
 use std::sync::Mutex;
 use std::time::{Duration, Instant};
+use std::cmp::{Reverse, Ordering};
+use std::collections::BinaryHeap;
 
 use component::event::TimerEvent;
 
-use tokio::executor::thread_pool::ThreadPool;
-use tokio::timer::Delay;
+struct Task {
+	pub time: Instant,
+	pub func: Box<Fn(Instant) -> Option<TimerEvent> + Send>,
+}
 
-use futures::Future;
+impl PartialEq for Task {
+	fn eq(&self, o: &Self) -> bool {
+		self.time.eq(&o.time)
+	}
+}
+
+impl Eq for Task {}
+
+impl PartialOrd for Task {
+	fn partial_cmp(&self, o: &Self) -> Option<Ordering> {
+		Reverse(self.time).partial_cmp(&Reverse(o.time))
+	}
+}
+
+impl Ord for Task {
+	fn cmp(&self, o: &Self) -> Ordering {
+		Reverse(self.time).cmp(&Reverse(o.time))		
+	}
+
+}
 
 pub struct FutureDispatcher {
 	channel: Mutex<Sender<TimerEvent>>,
-	threadpool: ThreadPool,
+	tasks: Mutex<BinaryHeap<Task>>
 }
 
-/// Allow spawning of futures on the tokio event
-/// loop, these futures can communicate back with
-/// the main game loop via [`TimerEvent`]s
+/// Allow running delayed tasks
 impl FutureDispatcher {
-	pub fn new(channel: Sender<TimerEvent>, threadpool: ThreadPool) -> Self {
+	pub fn new(channel: Sender<TimerEvent>) -> Self {
 		Self {
 			channel: Mutex::new(channel),
-			threadpool,
+			tasks: Default::default(),
 		}
 	}
 
 	/// Runs the function after the
 	pub fn run_delayed<F: 'static>(&self, dur: Duration, fun: F)
 	where
-		F: Send + FnOnce(Instant) -> Option<TimerEvent>,
+		F: Send + Fn(Instant) -> Option<TimerEvent>,
 	{
-		let channel = self.channel.lock().unwrap().clone();
 		let instant = Instant::now() + dur;
 
-		self.threadpool
-			.spawn(
-				Delay::new(instant)
-					.map_err(|_| {})
-					.and_then(move |_| -> Result<(), ()> {
-						let retval = fun(instant);
+		self.tasks.lock().unwrap().push(Task {
+			time: instant,
+			func: Box::new(fun)
+		});
+	}
 
-						if retval.is_some() {
-							channel
-								.send(retval.unwrap())
-								.map_err(|e| {
-									error!("Channel send error: {:?}", e);
+	pub fn exec_tasks(&mut self, now: Instant) {
+		let tasks = self.tasks.get_mut().unwrap();
 
-									e
-								})
-								.err();
-						}
+		while !tasks.is_empty() && tasks.peek().unwrap().time < now {
+			let task = tasks.pop().unwrap();
 
-						Ok(())
-					}),
-			);
+			if let Some(evt) = (task.func)(now) {
+				self.channel.get_mut().unwrap().send(evt).unwrap();
+			}
+		}
 	}
 }

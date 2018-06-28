@@ -5,6 +5,7 @@ mod poll_complete;
 mod position_update;
 mod register;
 mod timer_handler;
+mod run_futures;
 
 pub mod collision;
 pub mod handlers;

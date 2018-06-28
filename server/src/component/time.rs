@@ -22,6 +22,9 @@ pub struct MobSpawnTime(pub Instant);
 #[derive(Clone, Debug, Copy, Component)]
 pub struct SpectateStartTime(pub Instant);
 
+#[derive(Clone, Debug, Copy, Component)]
+pub struct LastKeyTime(pub Instant);
+
 impl Default for LastFrame {
 	fn default() -> Self {
 		LastFrame(Instant::now())

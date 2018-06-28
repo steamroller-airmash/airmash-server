@@ -7,6 +7,8 @@ use dispatch::Builder;
 
 pub fn register<'a, 'b>(disp: Builder<'a, 'b>) -> Builder<'a, 'b> {
 	let disp = disp
+		.with::<run_futures::RunTimedFutures>()
+
 		// Add handlers here
 		.with::<handlers::OnOpenHandler>()
 		.with::<handlers::OnCloseHandler>()

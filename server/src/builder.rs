@@ -23,7 +23,6 @@ use types::{ConnectionId, Connections, FutureDispatcher, GameMode};
 use component::event::TimerEvent;
 use component::time::{LastFrame, StartTime, ThisFrame};
 
-use tokio::executor::thread_pool::*;
 use tokio::runtime::current_thread::Runtime;
 
 struct Channel<T> {
@@ -139,13 +138,14 @@ where
 			timer,
 			msg,
 			mut world,
+			..
 		} = self;
+
 
 		world.add_resource(metrics::handler());
 		world.add_resource(Connections::new(msg.send.unwrap()));
 		world.add_resource(FutureDispatcher::new(
 			timer.send.as_ref().unwrap().clone(),
-			ThreadPool::new(),
 		));
 
 		Self {
