@@ -35,15 +35,11 @@ impl<'a> System<'a> for SetRespawnTimer {
 
 	fn run(&mut self, data: Self::SystemData) {
 		for evt in data.channel.read(self.reader.as_mut().unwrap()) {
-			info!("{:?}", evt);
-
 			let player = evt.player;
 
 			data.future.run_delayed(
 				Duration::from_secs(2),
 				move |instant| {
-					info!("Timer Complete");
-
 					Some(TimerEvent {
 						ty: *RESPAWN_TIME,
 						instant,
