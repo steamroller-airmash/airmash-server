@@ -4,6 +4,8 @@ extern crate specs;
 extern crate simple_logger;
 extern crate airmash_server;
 
+use std::env;
+
 use specs::Entity;
 use airmash_server::*;
 use airmash_server::protocol::GameType;
@@ -23,6 +25,10 @@ impl GameMode for EmptyGameMode {
 }
 
 fn main() {
+    simple_logger::init_with_level(log::Level::Info).unwrap();
+
+    env::set_var("RUST_BACKTRACE", "1");
+
     AirmashServer::new("0.0.0.0:3501")
         .with_engine()
         .with_gamemode(EmptyGameMode)

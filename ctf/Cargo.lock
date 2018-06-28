@@ -1,6 +1,6 @@
 [[package]]
 name = "airmash-server"
-version = "0.1.0"
+version = "0.0.1"
 dependencies = [
  "bit_field 0.9.0 (registry+https://github.com/rust-lang/crates.io-index)",
  "cadence 0.14.0 (registry+https://github.com/rust-lang/crates.io-index)",
@@ -228,7 +228,7 @@ dependencies = [
 name = "ctf"
 version = "0.1.0"
 dependencies = [
- "airmash-server 0.1.0",
+ "airmash-server 0.0.1",
  "fnv 1.0.6 (registry+https://github.com/rust-lang/crates.io-index)",
  "htmlescape 0.3.1 (registry+https://github.com/rust-lang/crates.io-index)",
  "lazy_static 1.0.1 (registry+https://github.com/rust-lang/crates.io-index)",
