@@ -16,6 +16,7 @@ pub fn register<'a, 'b>(builder: Builder<'a, 'b>) -> Builder<'a, 'b> {
 		.with::<on_player_killed::UpdateScore>()
 
 		.with::<on_join::InitKillCounters>()
+		.with::<on_join::InitEarnings>()
 		;
 
 	timer::register(builder)
