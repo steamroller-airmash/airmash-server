@@ -3,7 +3,6 @@ use dispatch::Builder;
 
 pub fn register<'a, 'b>(builder: Builder<'a, 'b>) -> Builder<'a, 'b> {
 	let builder = builder
-		.with::<PlayerKilledMessage>()
 		.with::<PlayerKilledCleanup>()
 
 		.with::<on_spectate_event::SetSpectateFlag>()
@@ -12,7 +11,12 @@ pub fn register<'a, 'b>(builder: Builder<'a, 'b>) -> Builder<'a, 'b> {
 		.with::<on_spectate_event::SendTimerEvent>()
 		.with::<on_spectate_event::SetSpectateTarget>()
 
-		.with::<on_player_killed::SetRespawnTimer>();
+		.with::<on_player_killed::SetRespawnTimer>()
+		.with::<on_player_killed::DisplayMessage>()
+		.with::<on_player_killed::UpdateScore>()
+
+		.with::<on_join::InitKillCounters>()
+		;
 
 	timer::register(builder)
 }

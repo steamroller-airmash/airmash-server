@@ -17,30 +17,27 @@ use protocol::server::PlayerKill;
 use protocol::{to_bytes, ServerPacket};
 use websocket::OwnedMessage;
 
-pub struct PlayerKilledMessage {
+pub struct DisplayMessage {
 	reader: Option<OnPlayerKilledReader>,
 }
 
 #[derive(SystemData)]
-pub struct PlayerKilledMessageData<'a> {
+pub struct DisplayMessageData<'a> {
 	pub entities: Entities<'a>,
 	pub channel: Read<'a, OnPlayerKilled>,
 	pub conns: Read<'a, Connections>,
 	pub timerevent: Write<'a, EventChannel<TimerEvent>>,
 	pub thisframe: Read<'a, ThisFrame>,
-
-	pub name: ReadStorage<'a, Name>,
-	pub level: ReadStorage<'a, Level>,
 }
 
-impl PlayerKilledMessage {
+impl DisplayMessage {
 	pub fn new() -> Self {
 		Self { reader: None }
 	}
 }
 
-impl<'a> System<'a> for PlayerKilledMessage {
-	type SystemData = PlayerKilledMessageData<'a>;
+impl<'a> System<'a> for DisplayMessage {
+	type SystemData = DisplayMessageData<'a>;
 
 	fn setup(&mut self, res: &mut Resources) {
 		Self::SystemData::setup(res);
@@ -69,7 +66,7 @@ impl<'a> System<'a> for PlayerKilledMessage {
 	}
 }
 
-impl SystemInfo for PlayerKilledMessage {
+impl SystemInfo for DisplayMessage {
 	type Dependencies = (systems::missile::MissileHit);
 
 	fn name() -> &'static str {

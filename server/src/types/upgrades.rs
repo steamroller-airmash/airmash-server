@@ -6,4 +6,5 @@ pub struct Upgrades {
 	pub defense: u8,
 	pub energy: u8,
 	pub missile: u8,
+	pub unused: u16,
 }
