@@ -77,7 +77,7 @@ impl<'a> System<'a> for UpdateScore {
 			if !data.entities.is_alive(evt.player) { continue; }
 			if !data.entities.is_alive(evt.killer) { continue; }
 
-			let transfer = data.score.get(evt.player).unwrap().0 / 4;
+			let transfer = (data.score.get(evt.player).unwrap().0 + 3) / 4;
 
 			data.score.get_mut(evt.player).unwrap().0 -= transfer;
 			data.score.get_mut(evt.killer).unwrap().0 += transfer + 25;

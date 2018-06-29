@@ -1,4 +1,4 @@
-extern crate cadence;
+/*extern crate cadence;
 
 use std::error::Error;
 use std::net::UdpSocket;
@@ -30,41 +30,70 @@ impl MetricsHandler {
 		//self.0.count(&name.replace("::", "."), count)?;
 		Ok(())
 	}
-}
+}*/
 
-/*
+
 use std::fs::File;
 use std::io::{Error, Write};
 use std::sync::{Arc, Mutex};
+use std::sync::mpsc::*;
+use std::thread;
 
 use std::time::Duration;
 
+enum Message {
+	Msg(String),
+	End
+}
+
 #[derive(Clone)]
 pub struct MetricsHandler {
-	file: Arc<Mutex<File>>,
+	send: Arc<Mutex<Sender<Message>>>,
+	thread: Arc<thread::JoinHandle<()>>
 }
 
 impl MetricsHandler {
 	pub fn time_duration(&self, tag: &str, d: Duration) -> Result<(), Error> {
-		writeln!(
-			&mut *self.file.lock().unwrap(),
-			"{}: {}.{}",
-			tag,
-			d.as_secs() * 1000 + (d.subsec_millis() as u64),
-			d.subsec_micros()
-		)
+		let send = self.send.lock().unwrap().clone();
+		send.send(
+			Message::Msg(format!(
+				"{}: {}.{}",
+				tag,
+				d.as_secs() * 1000 + (d.subsec_millis() as u64),
+				d.subsec_micros()
+			)
+		)).err();
+		Ok(())
 	}
 
 	pub fn count(&self, tag: &str, d: i64) -> Result<(), Error> {
-		writeln!(&mut *self.file.lock().unwrap(), "{}: {}", tag, d)
+		let send = self.send.lock().unwrap().clone();
+		send.send(Message::Msg(format!("{}: {}", tag, d))).err();
+		Ok(())
+	}
+}
+
+impl Drop for MetricsHandler {
+	fn drop(&mut self) {
+		let send = self.send.lock().unwrap().clone();
+		send.send(Message::End).err();
 	}
 }
 
 pub fn handler() -> MetricsHandler {
-	let file = File::create("logs.txt").unwrap();
+
+	let (send, recv) = channel();
+
+	let handle = thread::spawn(move || {
+		let mut file = File::create("logs.txt").unwrap();
+		while let Ok(Message::Msg(s)) = recv.recv_timeout(Duration::from_secs(3600)) {
+			writeln!(&mut file, "{}", s).err();
+		}
+	});
 
 	MetricsHandler {
-		file: Arc::new(Mutex::new(file)),
+		send: Arc::new(Mutex::new(send)),
+		thread: Arc::new(handle)
 	}
 }
-*/
+
