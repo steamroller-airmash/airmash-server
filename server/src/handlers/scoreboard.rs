@@ -5,10 +5,13 @@ use consts::timer::SCORE_BOARD;
 
 use component::channel::{OnTimerEvent, OnTimerEventReader};
 use component::flag::{IsPlayer, IsSpectating, IsDead};
+use component::time::JoinTime;
 
 use protocol::server::{ScoreBoard, ScoreBoardData, ScoreBoardRanking};
 use protocol::{to_bytes, ServerPacket};
 use OwnedMessage;
+
+use std::cmp::{Reverse, Ordering};
 
 lazy_static! {
 	static ref SPEC_POSITION: Position =
@@ -37,6 +40,7 @@ pub struct ScoreBoardSystemData<'a> {
 	flag: ReadStorage<'a, IsPlayer>,
 	isspec: ReadStorage<'a, IsSpectating>,
 	isdead: ReadStorage<'a, IsDead>,
+	join_time: ReadStorage<'a, JoinTime>,
 }
 
 impl<'a> System<'a> for ScoreBoardTimerHandler {
@@ -54,21 +58,34 @@ impl<'a> System<'a> for ScoreBoardTimerHandler {
 				continue;
 			}
 
-			let mut packet_data = (&*data.entities, &data.scores, &data.levels, &data.flag)
+			let mut packet_data = (&*data.entities, &data.scores, &data.levels, &data.flag, &data.join_time)
 				.join()
-				.map(|(ent, score, level, _)| ScoreBoardData {
-					id: ent,
-					score: *score,
-					level: *level,
+				.map(|(ent, score, level, _, join_time)| {
+					(
+						ScoreBoardData {
+							id: ent,
+							score: *score,
+							level: *level,
+						},
+						join_time.0
+					)
 				})
-				.collect::<Vec<ScoreBoardData>>();
+				.collect::<Vec<_>>();
 
-			packet_data.sort_by(|a, b| a.score.cmp(&b.score));
+			packet_data.sort_by(|a, b| {
+				let ord = Reverse(a.0.score).cmp(&Reverse(b.0.score));
+
+				match ord {
+					Ordering::Equal => a.1.cmp(&b.1),
+					_ => ord
+				}
+			});
 
 			let packet_data = packet_data
 				.into_iter()
 				.take(10)
-				.collect::<Vec<ScoreBoardData>>();
+				.map(|(s, _)| s)
+				.collect::<Vec<_>>();
 
 			let rankings = (&*data.entities, &data.pos, &data.flag)
 				.join()
