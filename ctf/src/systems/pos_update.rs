@@ -37,7 +37,6 @@ impl<'a> System<'a> for PosUpdateSystem {
 }
 
 use super::PickupFlagSystem;
-use std::any::Any;
 
 impl SystemInfo for PosUpdateSystem {
 	type Dependencies = PickupFlagSystem;
@@ -46,7 +45,7 @@ impl SystemInfo for PosUpdateSystem {
 		concat!(module_path!(), "::", line!())
 	}
 
-	fn new(_: Box<Any>) -> Self {
+	fn new() -> Self {
 		Self {}
 	}
 }

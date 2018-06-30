@@ -92,7 +92,6 @@ impl<'a> System<'a> for LeaveUpdateSystem {
 }
 
 use server::systems::PositionUpdate;
-use std::any::Any;
 
 impl SystemInfo for LeaveUpdateSystem {
 	type Dependencies = PositionUpdate;
@@ -101,7 +100,7 @@ impl SystemInfo for LeaveUpdateSystem {
 		concat!(module_path!(), "::", line!())
 	}
 
-	fn new(_: Box<Any>) -> Self {
+	fn new() -> Self {
 		Self::new()
 	}
 }

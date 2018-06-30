@@ -9,8 +9,6 @@ use CTFGameMode;
 use BLUE_TEAM;
 use RED_TEAM;
 
-use std::any::Any;
-
 pub struct UpdateGameModeOnPlayerLeave {
 	reader: Option<OnPlayerLeaveReader>,
 }
@@ -54,7 +52,7 @@ impl SystemInfo for UpdateGameModeOnPlayerLeave {
 		concat!(module_path!(), "::", line!())
 	}
 
-	fn new(_: Box<Any>) -> Self {
+	fn new() -> Self {
 		Self { reader: None }
 	}
 }

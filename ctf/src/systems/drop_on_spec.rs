@@ -1,6 +1,5 @@
 
 use specs::*;
-use std::any::Any;
 
 use component::*;
 
@@ -91,7 +90,7 @@ impl SystemInfo for DropOnSpec {
 		concat!(module_path!(), "::", line!())
 	}
 
-	fn new(_: Box<Any>) -> Self {
+	fn new() -> Self {
 		Self { reader: None }
 	}
 }

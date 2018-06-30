@@ -119,7 +119,6 @@ impl<'a> System<'a> for PickupFlagSystem {
 
 use super::LoginUpdateSystem;
 use server::systems::PositionUpdate;
-use std::any::Any;
 
 impl SystemInfo for PickupFlagSystem {
 	type Dependencies = (PositionUpdate, LoginUpdateSystem);
@@ -128,7 +127,7 @@ impl SystemInfo for PickupFlagSystem {
 		concat!(module_path!(), "::", line!())
 	}
 
-	fn new(_: Box<Any>) -> Self {
+	fn new() -> Self {
 		Self {}
 	}
 }

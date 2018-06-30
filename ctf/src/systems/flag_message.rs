@@ -70,7 +70,6 @@ impl<'a> System<'a> for PickupMessageSystem {
 }
 
 use super::{PickupFlagSystem, ReturnFlagSystem};
-use std::any::Any;
 
 impl SystemInfo for PickupMessageSystem {
 	type Dependencies = (ReturnFlagSystem, PickupFlagSystem);
@@ -79,7 +78,7 @@ impl SystemInfo for PickupMessageSystem {
 		concat!(module_path!(), "::", line!())
 	}
 
-	fn new(_: Box<Any>) -> Self {
+	fn new() -> Self {
 		Self::new()
 	}
 }

@@ -102,7 +102,6 @@ impl<'a> System<'a> for SendFlagMessageSystem {
 }
 
 use super::PickupFlagSystem;
-use std::any::Any;
 
 impl SystemInfo for SendFlagMessageSystem {
 	type Dependencies = PickupFlagSystem;
@@ -111,7 +110,7 @@ impl SystemInfo for SendFlagMessageSystem {
 		concat!(module_path!(), "::", line!())
 	}
 
-	fn new(_: Box<Any>) -> Self {
+	fn new() -> Self {
 		Self::new()
 	}
 }

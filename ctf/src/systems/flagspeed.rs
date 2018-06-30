@@ -4,7 +4,6 @@ use specs::*;
 use component::*;
 
 use super::*;
-use std::any::Any;
 
 pub struct FlagSpeedSystem {
 	reader: Option<OnFlagReader>,
@@ -67,7 +66,7 @@ impl SystemInfo for FlagSpeedSystem {
 		concat!(module_path!(), "::", line!())
 	}
 
-	fn new(_: Box<Any>) -> Self {
+	fn new() -> Self {
 		Self::new()
 	}
 }

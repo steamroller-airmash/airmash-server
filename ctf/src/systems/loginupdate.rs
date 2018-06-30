@@ -1,7 +1,5 @@
 use specs::*;
 
-use std::any::Any;
-
 use server::component::channel::*;
 use server::protocol::server::{GameFlag, ServerPacket};
 use server::protocol::{to_bytes, FlagUpdateType};
@@ -77,7 +75,7 @@ impl SystemInfo for LoginUpdateSystem {
 		concat!(module_path!(), "::", line!())
 	}
 
-	fn new(_: Box<Any>) -> Self {
+	fn new() -> Self {
 		Self::new()
 	}
 }
