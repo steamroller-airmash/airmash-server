@@ -1,5 +1,4 @@
-use handlers;
-use systems::handlers as newhandlers;
+use systems::handlers;
 use systems::missile;
 use systems::*;
 
@@ -10,17 +9,18 @@ pub fn register<'a, 'b>(disp: Builder<'a, 'b>) -> Builder<'a, 'b> {
 		.with::<run_futures::RunTimedFutures>()
 
 		// Add handlers here
-		.with::<handlers::OnOpenHandler>()
-		.with::<handlers::OnCloseHandler>()
-		.with::<handlers::LoginHandler>()
-		.with::<handlers::KeyHandler>()
-		.with::<handlers::ChatHandler>()
-		.with::<handlers::SayHandler>()
-		.with::<handlers::PongHandler>()
-		.with::<handlers::ScoreBoardTimerHandler>()
-		.with::<handlers::PingTimerHandler>()
-		.with::<handlers::CommandHandler>()
-		.with::<handlers::SignalHandler>()
+		.with::<handlers::packet::OnOpenHandler>()
+		.with::<handlers::packet::OnCloseHandler>()
+		.with::<handlers::packet::LoginHandler>()
+		.with::<handlers::packet::KeyHandler>()
+		.with::<handlers::packet::ChatHandler>()
+		.with::<handlers::packet::SayHandler>()
+		.with::<handlers::packet::PongHandler>()
+		.with::<handlers::packet::ScoreBoardTimerHandler>()
+		.with::<handlers::packet::PingTimerHandler>()
+		.with::<handlers::packet::CommandHandler>()
+		.with::<handlers::packet::SignalHandler>()
+		.with::<handlers::packet::WhisperHandler>()
 
 		// Systems with dependencies on handlers
 		.with::<PositionUpdate>();
@@ -33,7 +33,7 @@ pub fn register<'a, 'b>(disp: Builder<'a, 'b>) -> Builder<'a, 'b> {
 	let disp = spectate::register(disp);
 
 	// Other handlers
-	let disp = newhandlers::register(disp);
+	let disp = handlers::register(disp);
 
 	// Collision handling
 	collision::register(disp)

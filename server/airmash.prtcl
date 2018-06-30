@@ -918,7 +918,7 @@ spec client {
 
 	# Send a whisper to a player
 	Whisper {
-		id:   Entity,
+		id:   u16,
 		text: Text
 	}
 

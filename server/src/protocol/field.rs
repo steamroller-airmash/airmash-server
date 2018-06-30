@@ -267,7 +267,7 @@ pub mod entity {
 		ser.serialize_u16(val.id() as u16)
 	}
 	pub fn deserialize<'de>(_: &mut Deserializer<'de>) -> Result<Entity, DeError> {
-		Err(DeError::EntityMayNotBeDeserialized)
+		unimplemented!();
 	}
 }
 
