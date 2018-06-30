@@ -4,7 +4,6 @@ use specs::*;
 use types::*;
 use SystemInfo;
 
-use std::any::Any;
 use std::time::Duration;
 
 use systems::missile::MissileHit;
@@ -58,7 +57,7 @@ impl SystemInfo for SetRespawnTimer {
 		concat!(module_path!(), "::", line!())
 	}
 
-	fn new(_: Box<Any>) -> Self {
+	fn new() -> Self {
 		Self { reader: None }
 	}
 }

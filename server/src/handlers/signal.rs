@@ -55,11 +55,11 @@ impl<'a> System<'a> for SignalHandler {
 }
 
 use dispatch::SystemInfo;
-use std::any::Any;
+
 impl SystemInfo for SignalHandler {
 	type Dependencies = ();
 
-	fn new(_: Box<Any>) -> Self {
+	fn new() -> Self {
 		Self::default()
 	}
 

@@ -69,7 +69,11 @@ impl SystemInfo for PollComplete {
 		concat!(module_path!(), "::", line!())
 	}
 
-	fn new(mut a: Box<Any>) -> Self {
+	fn new() -> Self {
+		unimplemented!();
+	}
+
+	fn new_args(mut a: Box<Any>) -> Self {
 		let r = a
 			.downcast_mut::<Receiver<(ConnectionId, OwnedMessage)>>()
 			.unwrap();

@@ -2,8 +2,6 @@ use specs::*;
 
 use types::*;
 
-use std::any::Any;
-
 use dispatch::SystemInfo;
 
 use component::channel::*;
@@ -190,7 +188,7 @@ impl SystemInfo for CommandHandler {
 		concat!(module_path!(), "::", line!())
 	}
 
-	fn new(_: Box<Any>) -> Self {
+	fn new() -> Self {
 		Self::new()
 	}
 }

@@ -2,7 +2,6 @@
 use specs::*;
 
 use SystemInfo;
-use std::any::Any;
 
 use systems::handlers::packet::LoginHandler;
 
@@ -47,7 +46,7 @@ impl SystemInfo for InitKillCounters {
 		concat!(module_path!(), "::", line!())
 	}
 
-	fn new(_: Box<Any>) -> Self {
+	fn new() -> Self {
 		Self{ reader: None }
 	}
 }

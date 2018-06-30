@@ -5,7 +5,6 @@ use component::flag::IsPlayer;
 use component::time::{LastFrame, ThisFrame};
 
 use dispatch::SystemInfo;
-use std::any::Any;
 use systems::missile::MissileHit;
 
 pub struct HealthRegenSystem;
@@ -53,7 +52,7 @@ impl<'a> System<'a> for HealthRegenSystem {
 impl SystemInfo for HealthRegenSystem {
 	type Dependencies = MissileHit;
 
-	fn new(_: Box<Any>) -> Self {
+	fn new() -> Self {
 		Self {}
 	}
 

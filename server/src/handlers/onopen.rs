@@ -2,7 +2,6 @@ use shrev::*;
 use specs::*;
 use types::*;
 
-use std::any::Any;
 use std::mem;
 
 use dispatch::SystemInfo;
@@ -49,7 +48,7 @@ impl<'a> System<'a> for OnOpenHandler {
 impl SystemInfo for OnOpenHandler {
 	type Dependencies = PacketHandler;
 
-	fn new(_: Box<Any>) -> Self {
+	fn new() -> Self {
 		Self::new()
 	}
 

@@ -1,8 +1,6 @@
 
 use specs::*;
 
-use std::any::Any;
-
 use types::*;
 
 use component::channel::*;
@@ -63,7 +61,7 @@ impl SystemInfo for SendSpectatePacket {
 		concat!(module_path!(), "::", line!())
 	}
 
-	fn new(_: Box<Any>) -> Self {
+	fn new() -> Self {
 		Self{ reader: None }
 	}
 }

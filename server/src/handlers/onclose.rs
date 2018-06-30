@@ -12,8 +12,6 @@ use dispatch::SystemInfo;
 use handlers::OnOpenHandler;
 use types::event::ConnectionClose;
 
-use std::any::Any;
-
 pub struct OnCloseHandler {
 	reader: Option<ReaderId<ConnectionClose>>,
 }
@@ -91,7 +89,7 @@ impl<'a> System<'a> for OnCloseHandler {
 impl SystemInfo for OnCloseHandler {
 	type Dependencies = OnOpenHandler;
 
-	fn new(_: Box<Any>) -> Self {
+	fn new() -> Self {
 		Self::new()
 	}
 

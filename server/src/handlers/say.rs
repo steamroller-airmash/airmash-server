@@ -59,11 +59,11 @@ impl<'a> System<'a> for SayHandler {
 
 use dispatch::SystemInfo;
 use handlers::OnCloseHandler;
-use std::any::Any;
+
 impl SystemInfo for SayHandler {
 	type Dependencies = OnCloseHandler;
 
-	fn new(_: Box<Any>) -> Self {
+	fn new() -> Self {
 		Self::new()
 	}
 

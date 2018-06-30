@@ -4,7 +4,6 @@ use specs::*;
 use types::*;
 
 use SystemInfo;
-use std::any::Any;
 
 use systems::handlers::packet::LoginHandler;
 
@@ -47,7 +46,7 @@ impl SystemInfo for InitEarnings {
 		concat!(module_path!(), "::", line!())
 	}
 
-	fn new(_: Box<Any>) -> Self {
+	fn new() -> Self {
 		Self{ reader: None }
 	}
 }

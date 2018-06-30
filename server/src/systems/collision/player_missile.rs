@@ -113,7 +113,6 @@ impl<'a> System<'a> for PlayerMissileCollisionSystem {
 }
 
 use dispatch::SystemInfo;
-use std::any::Any;
 use systems::PositionUpdate;
 
 impl SystemInfo for PlayerMissileCollisionSystem {
@@ -123,7 +122,7 @@ impl SystemInfo for PlayerMissileCollisionSystem {
 		concat!(module_path!(), "::", line!())
 	}
 
-	fn new(_: Box<Any>) -> Self {
+	fn new() -> Self {
 		Self::new()
 	}
 }

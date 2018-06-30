@@ -307,7 +307,6 @@ impl<'a> System<'a> for PositionUpdate {
 
 use dispatch::SystemInfo;
 use handlers::KeyHandler;
-use std::any::Any;
 
 impl SystemInfo for PositionUpdate {
 	type Dependencies = KeyHandler;
@@ -316,7 +315,7 @@ impl SystemInfo for PositionUpdate {
 		concat!(module_path!(), "::", line!())
 	}
 
-	fn new(_: Box<Any>) -> Self {
+	fn new() -> Self {
 		Self::new()
 	}
 }

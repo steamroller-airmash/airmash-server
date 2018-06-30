@@ -9,7 +9,12 @@ pub trait SystemInfo {
 	type Dependencies: SystemDeps;
 
 	fn name() -> &'static str;
-	fn new(args: Box<Any>) -> Self;
+	fn new() -> Self;
+	fn new_args(_args: Box<Any>) -> Self
+		where Self: Sized
+	{
+		Self::new()
+	}
 
 	fn static_setup(_: &mut World) {}
 }
@@ -23,17 +28,20 @@ macro_rules! decl_tuple {
 		)*
 	} => {
 		$(
-		impl<$($param,)*> SystemDeps for ($($param,)*)
-		where $($param: SystemInfo,)*
-		{
-			fn dependencies() -> Vec<&'static str> {
-				vec![
+			impl<$($param,)*> SystemDeps for ($($param,)*)
+			where $($param: SystemDeps,)*
+			{
+				fn dependencies() -> Vec<&'static str> {
+					#[allow(unused_mut)]
+					let mut deps = vec![];
+
 					$(
-						$param::name(),
+						deps.append(&mut $param::dependencies());
 					)*
-				]
+
+					deps
+				}
 			}
-		}
 		)*
 	}
 }

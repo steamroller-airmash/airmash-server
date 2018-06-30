@@ -104,11 +104,11 @@ impl<'a> System<'a> for CommandHandler {
 
 use dispatch::SystemInfo;
 use handlers::OnCloseHandler;
-use std::any::Any;
+
 impl SystemInfo for CommandHandler {
 	type Dependencies = OnCloseHandler;
 
-	fn new(_: Box<Any>) -> Self {
+	fn new() -> Self {
 		Self::new()
 	}
 

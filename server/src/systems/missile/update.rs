@@ -66,7 +66,6 @@ impl<'a> System<'a> for MissileUpdate {
 
 use super::MissileFireHandler;
 use dispatch::SystemInfo;
-use std::any::Any;
 
 impl SystemInfo for MissileUpdate {
 	type Dependencies = MissileFireHandler;
@@ -75,7 +74,7 @@ impl SystemInfo for MissileUpdate {
 		concat!(module_path!(), "::", line!())
 	}
 
-	fn new(_: Box<Any>) -> Self {
+	fn new() -> Self {
 		Self {}
 	}
 }

@@ -8,8 +8,6 @@ use airmash_protocol::server::MobDespawn;
 use airmash_protocol::{to_bytes, ServerPacket};
 use websocket::OwnedMessage;
 
-use std::any::Any;
-
 pub struct MissileCull;
 
 #[derive(SystemData)]
@@ -58,7 +56,7 @@ impl SystemInfo for MissileCull {
 		concat!(module_path!(), "::", line!())
 	}
 
-	fn new(_: Box<Any>) -> Self {
+	fn new() -> Self {
 		Self {}
 	}
 }

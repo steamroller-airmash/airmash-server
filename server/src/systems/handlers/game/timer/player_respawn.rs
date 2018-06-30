@@ -1,8 +1,6 @@
 
 use specs::*;
 
-use std::any::Any;
-
 use types::*;
 
 use consts::timer::*;
@@ -91,7 +89,7 @@ impl SystemInfo for PlayerRespawnSystem {
 		concat!(module_path!(), "::", line!())
 	}
 
-	fn new(_: Box<Any>) -> Self {
+	fn new() -> Self {
 		Self { reader: None }
 	}
 }

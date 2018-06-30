@@ -1,7 +1,6 @@
 
 use specs::*;
 
-use std::any::Any;
 use SystemInfo;
 
 use component::time::ThisFrame;
@@ -27,7 +26,7 @@ impl SystemInfo for RunTimedFutures {
 		concat!(module_path!(), "::", line!())
 	}
 
-	fn new(_: Box<Any>) -> Self {
+	fn new() -> Self {
 		Self{}
 	}
 }

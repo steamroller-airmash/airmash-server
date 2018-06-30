@@ -1,6 +1,5 @@
 use specs::*;
 
-use std::any::Any;
 use std::time::Duration;
 
 use consts::timer::RESPAWN_TIME;
@@ -89,7 +88,7 @@ impl SystemInfo for PlayerKilledCleanup {
 		concat!(module_path!(), "::", line!())
 	}
 
-	fn new(_: Box<Any>) -> Self {
+	fn new() -> Self {
 		Self::new()
 	}
 }

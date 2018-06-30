@@ -69,12 +69,12 @@ impl<'a> System<'a> for PingTimerHandler {
 
 use dispatch::SystemInfo;
 use handlers::OnCloseHandler;
-use std::any::Any;
 use systems::TimerHandler;
+
 impl SystemInfo for PingTimerHandler {
 	type Dependencies = (OnCloseHandler, TimerHandler);
 
-	fn new(_: Box<Any>) -> Self {
+	fn new() -> Self {
 		Self::new()
 	}
 

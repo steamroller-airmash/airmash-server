@@ -36,7 +36,7 @@ where
 {
 	fn build<'b>(self, disp: DispatcherBuilder<'a, 'b>) -> DispatcherBuilder<'a, 'b> {
 		disp.with(
-			SystemWrapper(T::new(self.args)),
+			SystemWrapper(T::new_args(self.args)),
 			T::name(),
 			&T::Dependencies::dependencies(),
 		)
@@ -49,6 +49,6 @@ where
 	T: SystemInfo,
 {
 	fn build_thread_local<'a>(self, disp: DispatcherBuilder<'a, 'b>) -> DispatcherBuilder<'a, 'b> {
-		disp.with_thread_local(T::new(self.args))
+		disp.with_thread_local(T::new_args(self.args))
 	}
 }

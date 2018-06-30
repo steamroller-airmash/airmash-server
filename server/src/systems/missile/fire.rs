@@ -140,7 +140,6 @@ impl<'a> System<'a> for MissileFireHandler {
 }
 
 use dispatch::SystemInfo;
-use std::any::Any;
 use systems::PositionUpdate;
 
 impl SystemInfo for MissileFireHandler {
@@ -150,7 +149,7 @@ impl SystemInfo for MissileFireHandler {
 		concat!(module_path!(), "::", line!())
 	}
 
-	fn new(_: Box<Any>) -> Self {
+	fn new() -> Self {
 		Self {}
 	}
 }

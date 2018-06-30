@@ -30,15 +30,14 @@ impl<'a, 'b> Builder<'a, 'b> {
 		T: for<'c> System<'c> + Send + SystemInfo + 'a,
 		T::Dependencies: SystemDeps,
 	{
+		debug!("{} {:?}", T::name(), T::Dependencies::dependencies());
 		Self {
 			builder: self.builder
 				.with(
-					SystemWrapper(T::new(Box::new(args))),
+					SystemWrapper(T::new_args(Box::new(args))),
 					T::name(),
 					&T::Dependencies::dependencies()
 				)
-				//	SystemBuilder::<SystemWrapper<T>>::new(args)
-				//.build(self.builder),
 		}
 	}
 

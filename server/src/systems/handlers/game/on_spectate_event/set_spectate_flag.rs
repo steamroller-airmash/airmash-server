@@ -1,8 +1,6 @@
 
 use specs::*;
 
-use std::any::Any;
-
 use dispatch::SystemInfo;
 
 use systems::spectate::CommandHandler;
@@ -46,7 +44,7 @@ impl SystemInfo for SetSpectateFlag {
 		concat!(module_path!(), "::", line!())
 	}
 
-	fn new(_: Box<Any>) -> Self {
+	fn new() -> Self {
 		Self{ reader: None }
 	}
 }

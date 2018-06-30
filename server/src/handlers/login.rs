@@ -8,7 +8,6 @@ use specs::*;
 use uuid::Uuid;
 use websocket::OwnedMessage;
 
-use std::any::Any;
 use std::str::FromStr;
 use std::time::Instant;
 
@@ -274,10 +273,11 @@ impl<'a> System<'a> for LoginHandler {
 
 use dispatch::SystemInfo;
 use handlers::OnCloseHandler;
+
 impl SystemInfo for LoginHandler {
 	type Dependencies = OnCloseHandler;
 
-	fn new(_: Box<Any>) -> Self {
+	fn new() -> Self {
 		Self::new()
 	}
 
