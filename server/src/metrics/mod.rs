@@ -57,7 +57,7 @@ impl MetricsHandler {
 		let send = self.send.lock().unwrap().clone();
 		send.send(
 			Message::Msg(format!(
-				"{}: {}.{}",
+				"{}: {}.{:03}",
 				tag,
 				d.as_secs() * 1000 + (d.subsec_millis() as u64),
 				d.subsec_micros()
@@ -85,9 +85,9 @@ pub fn handler() -> MetricsHandler {
 	let (send, recv) = channel();
 
 	let handle = thread::spawn(move || {
-		let mut file = File::create("logs.txt").unwrap();
-		while let Ok(Message::Msg(s)) = recv.recv_timeout(Duration::from_secs(3600)) {
-			writeln!(&mut file, "{}", s).err();
+		let mut _file = File::create("logs.txt").unwrap();
+		while let Ok(Message::Msg(_s)) = recv.recv_timeout(Duration::from_secs(3600)) {
+			//writeln!(&mut file, "{}", s).err();
 		}
 	});
 
