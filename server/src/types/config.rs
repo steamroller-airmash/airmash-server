@@ -133,7 +133,7 @@ impl Default for PlaneInfos {
 
 				health_regen: HealthRegen::new(0.001),
 				energy_regen: EnergyRegen::new(0.01),
-				fire_delay: Duration::from_millis(300),
+				fire_delay: Duration::from_millis(500),
 
 				damage_factor: 2.0,
 
@@ -245,7 +245,7 @@ impl Default for PlaneInfos {
 
 				health_regen: HealthRegen::new(0.001),
 				energy_regen: EnergyRegen::new(0.006),
-				fire_delay: Duration::from_millis(300),
+				fire_delay: Duration::from_millis(500),
 
 				damage_factor: 5.0 / 3.0,
 
