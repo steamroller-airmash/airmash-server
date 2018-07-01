@@ -34,6 +34,7 @@ impl MetricsHandler {
 
 
 use std::fs::File;
+#[allow(unused)]
 use std::io::{Error, Write};
 use std::sync::{Arc, Mutex};
 use std::sync::mpsc::*;

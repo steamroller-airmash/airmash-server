@@ -16,11 +16,14 @@ impl GameMode for EmptyGameMode {
     fn assign_team(&mut self, player: Entity) -> Team {
         Team(player.id() as u16)
     }
-    fn respawn_pos(&mut self, _: Entity, _: Team) -> Position {
+    fn spawn_pos(&mut self, _: Entity, _: Team) -> Position {
         Position::default()
     }
     fn gametype(&self) -> GameType {
         GameType::FFA
+    }
+    fn room(&self) -> String {
+        "matrix".to_owned()
     }
 }
 

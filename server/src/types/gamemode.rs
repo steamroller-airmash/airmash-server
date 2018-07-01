@@ -16,8 +16,10 @@ use protocol::GameType;
 
 pub trait GameMode: Any + Sync + Send {
 	fn assign_team(&mut self, player: Entity) -> Team;
-	fn respawn_pos(&mut self, player: Entity, team: Team) -> Position;
+	fn spawn_pos(&mut self, player: Entity, team: Team) -> Position;
+	
 	fn gametype(&self) -> GameType;
+	fn room(&self) -> String;
 }
 
 pub trait GameModeWrapper: Send + Sync {
