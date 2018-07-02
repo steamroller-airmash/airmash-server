@@ -107,23 +107,23 @@ impl<'a> System<'a> for MissileHitSystem {
 					killer: owner.0,
 					pos: *pos,
 				});
-			} else {
-				let packet = PlayerHit {
-					id: missile.ent,
-					owner: owner.0,
-					pos: *pos,
-					ty: *mob,
-					players: vec![PlayerHitPlayer {
-						id: player.ent,
-						health: *health,
-						health_regen: planeconf.health_regen,
-					}],
-				};
+			} 
 
-				data.conns.send_to_all(OwnedMessage::Binary(
-					to_bytes(&ServerPacket::PlayerHit(packet)).unwrap(),
-				));
-			}
+			let packet = PlayerHit {
+				id: missile.ent,
+				owner: owner.0,
+				pos: *pos,
+				ty: *mob,
+				players: vec![PlayerHitPlayer {
+					id: player.ent,
+					health: *health,
+					health_regen: planeconf.health_regen,
+				}],
+			};
+
+			data.conns.send_to_all(OwnedMessage::Binary(
+				to_bytes(&ServerPacket::PlayerHit(packet)).unwrap(),
+			));
 		}
 	}
 }
