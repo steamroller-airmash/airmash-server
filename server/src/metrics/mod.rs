@@ -32,9 +32,9 @@ impl MetricsHandler {
 	}
 }*/
 
+#![allow(unused)]
 
 use std::fs::File;
-#[allow(unused)]
 use std::io::{Error, Write};
 use std::sync::{Arc, Mutex};
 use std::sync::mpsc::*;
@@ -86,7 +86,7 @@ pub fn handler() -> MetricsHandler {
 	let (send, recv) = channel();
 
 	let handle = thread::spawn(move || {
-		let mut _file = File::create("logs.txt").unwrap();
+		//let mut file = File::create("logs.txt").unwrap();
 		while let Ok(Message::Msg(_s)) = recv.recv_timeout(Duration::from_secs(3600)) {
 			//writeln!(&mut file, "{}", s).err();
 		}
