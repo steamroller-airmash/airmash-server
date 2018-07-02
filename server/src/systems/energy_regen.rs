@@ -45,7 +45,7 @@ impl<'a> System<'a> for EnergyRegenSystem {
 			.for_each(|(energy, regen)| {
 				let val: Energy = *energy + regen * dt;
 
-				*energy = Energy::new(val.inner().min(1.0));
+				*energy = Energy::new(val.inner().min(1.0).max(0.0));
 			});
 	}
 }

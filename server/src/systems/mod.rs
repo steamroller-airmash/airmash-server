@@ -11,6 +11,7 @@ pub mod collision;
 pub mod handlers;
 pub mod missile;
 pub mod spectate;
+pub mod specials;
 
 pub use self::energy_regen::EnergyRegenSystem;
 pub use self::health_regen::HealthRegenSystem;
