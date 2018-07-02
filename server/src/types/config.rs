@@ -132,7 +132,7 @@ impl Default for PlaneInfos {
 				inferno_factor: 0.75,
 
 				health_regen: HealthRegen::new(0.001),
-				energy_regen: EnergyRegen::new(0.01),
+				energy_regen: EnergyRegen::new(0.008),
 				fire_delay: Duration::from_millis(500),
 
 				damage_factor: 2.0,
