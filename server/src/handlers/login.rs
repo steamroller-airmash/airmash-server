@@ -50,7 +50,7 @@ struct LoginInfo<'a> {
 	pub flag: FlagCode,
 	pub team: Team,
 	pub plane: Plane,
-	pub pos: Position
+	pub pos: Position,
 }
 
 pub struct LoginHandler {

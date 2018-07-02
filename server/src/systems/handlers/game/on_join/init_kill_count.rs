@@ -1,4 +1,3 @@
-
 use specs::*;
 
 use SystemInfo;
@@ -9,7 +8,7 @@ use component::channel::*;
 use component::counter::*;
 
 pub struct InitKillCounters {
-	reader: Option<OnPlayerJoinReader>
+	reader: Option<OnPlayerJoinReader>,
 }
 
 #[derive(SystemData)]
@@ -26,9 +25,7 @@ impl<'a> System<'a> for InitKillCounters {
 	fn setup(&mut self, res: &mut Resources) {
 		Self::SystemData::setup(res);
 
-		self.reader = Some(
-			res.fetch_mut::<OnPlayerJoin>().register_reader()
-		);
+		self.reader = Some(res.fetch_mut::<OnPlayerJoin>().register_reader());
 	}
 
 	fn run(&mut self, mut data: Self::SystemData) {
@@ -47,7 +44,6 @@ impl SystemInfo for InitKillCounters {
 	}
 
 	fn new() -> Self {
-		Self{ reader: None }
+		Self { reader: None }
 	}
 }
-

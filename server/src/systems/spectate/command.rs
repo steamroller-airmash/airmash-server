@@ -5,9 +5,9 @@ use types::*;
 use dispatch::SystemInfo;
 
 use component::channel::*;
-use component::reference::PlayerRef;
 use component::event::PlayerSpectate;
 use component::flag::{IsPlayer, IsSpectating};
+use component::reference::PlayerRef;
 
 use systems::PacketHandler;
 
@@ -83,7 +83,7 @@ impl<'a> System<'a> for CommandHandler {
 				player: player,
 				target: None,
 				is_dead: is_dead.get(player).is_some(),
-				is_spec: is_spec.get(player).is_some()
+				is_spec: is_spec.get(player).is_some(),
 			};
 
 			if is_spec.get(player).is_none() {
@@ -123,9 +123,9 @@ impl<'a> System<'a> for CommandHandler {
 								.join()
 								.filter(|(_, ent)| *ent != player && is_spec.get(*ent).is_none())
 								.map(|(_, ent)| ent)
-								.next()
+								.next(),
 						};
-						
+
 						spec_event.target = forward;
 					}
 					// Spectate prev player
@@ -145,7 +145,7 @@ impl<'a> System<'a> for CommandHandler {
 								.join()
 								.filter(|(_, ent)| *ent != player && is_spec.get(*ent).is_none())
 								.map(|(_, ent)| ent)
-								.last()
+								.last(),
 						};
 
 						spec_event.target = back;

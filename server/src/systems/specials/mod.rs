@@ -1,6 +1,5 @@
-
-mod register;
 mod config;
+mod register;
 
 mod predator;
 

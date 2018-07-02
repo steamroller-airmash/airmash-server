@@ -1,22 +1,21 @@
-
 use specs::*;
 
 use types::*;
 
-use consts::timer::SCORE_BOARD;
-use component::time::*;
 use component::channel::*;
 use component::event::TimerEvent;
+use component::time::*;
+use consts::timer::SCORE_BOARD;
 
 use systems::spectate::CommandHandler;
 
 use SystemInfo;
 
 pub struct SendTimerEvent {
-	reader: Option<OnPlayerSpectateReader>
+	reader: Option<OnPlayerSpectateReader>,
 }
 
-#[derive(SystemData)] 
+#[derive(SystemData)]
 pub struct SendTimerEventData<'a> {
 	pub channel: Read<'a, OnPlayerSpectate>,
 	pub conns: Read<'a, Connections>,
@@ -31,16 +30,16 @@ impl<'a> System<'a> for SendTimerEvent {
 	fn setup(&mut self, res: &mut Resources) {
 		Self::SystemData::setup(res);
 
-		self.reader = Some(
-			res.fetch_mut::<OnPlayerSpectate>().register_reader()
-		);
+		self.reader = Some(res.fetch_mut::<OnPlayerSpectate>().register_reader());
 	}
 
 	fn run(&mut self, mut data: Self::SystemData) {
 		for evt in data.channel.read(self.reader.as_mut().unwrap()) {
 			// No need to inform clients that they are in
 			// spec if they are already in spec
-			if evt.is_dead || evt.is_spec { continue; }
+			if evt.is_dead || evt.is_spec {
+				continue;
+			}
 
 			// The way that a plane disappearing
 			// appears to be communicated back to
@@ -52,7 +51,7 @@ impl<'a> System<'a> for SendTimerEvent {
 			let timer_evt = TimerEvent {
 				ty: *SCORE_BOARD,
 				instant: data.thisframe.0,
-				data: None
+				data: None,
 			};
 
 			data.timerchannel.single_write(timer_evt);
@@ -68,7 +67,6 @@ impl SystemInfo for SendTimerEvent {
 	}
 
 	fn new() -> Self {
-		Self{ reader: None }
+		Self { reader: None }
 	}
 }
-

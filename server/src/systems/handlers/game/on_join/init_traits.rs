@@ -1,19 +1,18 @@
-
 use specs::*;
 
-use SystemInfo;
 use GameMode;
 use GameModeWriter;
+use SystemInfo;
 
 use types::*;
 
 use systems::handlers::packet::LoginHandler;
 
-use protocol::{PlaneType, PlayerStatus};
 use component::channel::*;
+use protocol::{PlaneType, PlayerStatus};
 
 pub struct InitTraits {
-	reader: Option<OnPlayerJoinReader>
+	reader: Option<OnPlayerJoinReader>,
 }
 
 #[derive(SystemData)]
@@ -36,12 +35,10 @@ impl<'a> System<'a> for InitTraits {
 	fn setup(&mut self, res: &mut Resources) {
 		Self::SystemData::setup(res);
 
-		self.reader = Some(
-			res.fetch_mut::<OnPlayerJoin>().register_reader()
-		);
+		self.reader = Some(res.fetch_mut::<OnPlayerJoin>().register_reader());
 	}
 
-	fn run(&mut self,	data: Self::SystemData) {
+	fn run(&mut self, data: Self::SystemData) {
 		let Self::SystemData {
 			channel,
 			mut gamemode,
@@ -77,7 +74,6 @@ impl SystemInfo for InitTraits {
 	}
 
 	fn new() -> Self {
-		Self{ reader: None }
+		Self { reader: None }
 	}
 }
-

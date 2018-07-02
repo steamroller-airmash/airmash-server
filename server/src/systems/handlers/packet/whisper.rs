@@ -1,4 +1,3 @@
-
 use shrev::*;
 use specs::*;
 use types::*;
@@ -71,13 +70,11 @@ impl<'a> System<'a> for WhisperHandler {
 
 			let packet = ServerPacket::ChatWhisper(chat);
 
-			data.conns.send_to(evt.0, OwnedMessage::Binary(
-				to_bytes(&packet).unwrap(),
-			));
+			data.conns
+				.send_to(evt.0, OwnedMessage::Binary(to_bytes(&packet).unwrap()));
 
-			data.conns.send_to_player(to, OwnedMessage::Binary(
-				to_bytes(&packet).unwrap(),
-			));
+			data.conns
+				.send_to_player(to, OwnedMessage::Binary(to_bytes(&packet).unwrap()));
 		}
 	}
 }
@@ -96,4 +93,3 @@ impl SystemInfo for WhisperHandler {
 		concat!(module_path!(), "::", line!())
 	}
 }
-

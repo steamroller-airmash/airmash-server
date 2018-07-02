@@ -32,12 +32,11 @@ impl<'a, 'b> Builder<'a, 'b> {
 	{
 		debug!("{} {:?}", T::name(), T::Dependencies::dependencies());
 		Self {
-			builder: self.builder
-				.with(
-					SystemWrapper(T::new_args(Box::new(args))),
-					T::name(),
-					&T::Dependencies::dependencies()
-				)
+			builder: self.builder.with(
+				SystemWrapper(T::new_args(Box::new(args))),
+				T::name(),
+				&T::Dependencies::dependencies(),
+			),
 		}
 	}
 

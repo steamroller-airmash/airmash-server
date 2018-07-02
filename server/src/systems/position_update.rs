@@ -1,6 +1,6 @@
 use specs::*;
-use types::*;
 use types::systemdata::IsAlive;
+use types::*;
 
 use component::time::*;
 
@@ -72,9 +72,7 @@ impl PositionUpdate {
 			&data.planes,
 			&*data.entities,
 		).join()
-			.filter(|(_, _, _, _, _, _, _, ent)| {
-				is_alive.get(*ent)
-			})
+			.filter(|(_, _, _, _, _, _, _, ent)| is_alive.get(*ent))
 			.for_each(|(pos, rot, vel, keystate, upgrades, powerups, plane, _)| {
 				let mut movement_angle = None;
 				let info = &config.planes[*plane];
@@ -190,9 +188,7 @@ impl PositionUpdate {
 			&self.dirty,
 			lastupdate,
 		).join()
-			.filter(|(_, _, _, _, _, _, _, ent, _, _)| {
-				data.is_alive.get(*ent)
-			})
+			.filter(|(_, _, _, _, _, _, _, ent, _, _)| data.is_alive.get(*ent))
 			.for_each(
 				|(pos, rot, vel, plane, keystate, upgrades, powerups, ent, _, lastupdate)| {
 					*lastupdate = LastUpdate(thisframe);
@@ -243,9 +239,7 @@ impl PositionUpdate {
 			.filter(|(_, _, _, _, _, _, _, _, lastupdate)| {
 				lastupdate.0.elapsed() > Duration::from_secs(1)
 			})
-			.filter(|(_, _, _, _, _, _, _, ent, _)| {
-				data.is_alive.get(*ent)
-			})
+			.filter(|(_, _, _, _, _, _, _, ent, _)| data.is_alive.get(*ent))
 			.for_each(
 				|(pos, rot, vel, plane, keystate, upgrades, powerups, ent, lastupdate)| {
 					type Key = ServerKeyState;

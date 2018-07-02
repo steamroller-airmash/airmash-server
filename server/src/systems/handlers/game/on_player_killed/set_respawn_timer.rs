@@ -1,4 +1,3 @@
-
 use specs::*;
 
 use types::*;
@@ -6,13 +5,13 @@ use SystemInfo;
 
 use std::time::Duration;
 
-use systems::missile::MissileHit;
-use consts::timer::RESPAWN_TIME;
-use component::event::*;
 use component::channel::*;
+use component::event::*;
+use consts::timer::RESPAWN_TIME;
+use systems::missile::MissileHit;
 
 pub struct SetRespawnTimer {
-	reader: Option<OnPlayerKilledReader>
+	reader: Option<OnPlayerKilledReader>,
 }
 
 #[derive(SystemData)]
@@ -27,25 +26,21 @@ impl<'a> System<'a> for SetRespawnTimer {
 	fn setup(&mut self, res: &mut Resources) {
 		Self::SystemData::setup(res);
 
-		self.reader = Some(
-			res.fetch_mut::<OnPlayerKilled>().register_reader()
-		);
+		self.reader = Some(res.fetch_mut::<OnPlayerKilled>().register_reader());
 	}
 
 	fn run(&mut self, data: Self::SystemData) {
 		for evt in data.channel.read(self.reader.as_mut().unwrap()) {
 			let player = evt.player;
 
-			data.future.run_delayed(
-				Duration::from_secs(2),
-				move |instant| {
+			data.future
+				.run_delayed(Duration::from_secs(2), move |instant| {
 					Some(TimerEvent {
 						ty: *RESPAWN_TIME,
 						instant,
-						data: Some(Box::new(player))
+						data: Some(Box::new(player)),
 					})
-				}
-			);
+				});
 		}
 	}
 }

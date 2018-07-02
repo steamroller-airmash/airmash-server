@@ -1,4 +1,3 @@
-
 use specs::*;
 
 use SystemInfo;
@@ -9,7 +8,7 @@ use component::channel::*;
 use component::time::*;
 
 pub struct InitJoinTime {
-	reader: Option<OnPlayerJoinReader>
+	reader: Option<OnPlayerJoinReader>,
 }
 
 #[derive(SystemData)]
@@ -26,14 +25,14 @@ impl<'a> System<'a> for InitJoinTime {
 	fn setup(&mut self, res: &mut Resources) {
 		Self::SystemData::setup(res);
 
-		self.reader = Some(
-			res.fetch_mut::<OnPlayerJoin>().register_reader()
-		);
+		self.reader = Some(res.fetch_mut::<OnPlayerJoin>().register_reader());
 	}
 
 	fn run(&mut self, mut data: Self::SystemData) {
 		for evt in data.channel.read(self.reader.as_mut().unwrap()) {
-			data.join_time.insert(evt.0, JoinTime(data.this_frame.0)).unwrap();
+			data.join_time
+				.insert(evt.0, JoinTime(data.this_frame.0))
+				.unwrap();
 		}
 	}
 }
@@ -46,7 +45,6 @@ impl SystemInfo for InitJoinTime {
 	}
 
 	fn new() -> Self {
-		Self{ reader: None }
+		Self { reader: None }
 	}
 }
-

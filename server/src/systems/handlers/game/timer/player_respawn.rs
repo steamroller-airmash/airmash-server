@@ -1,22 +1,21 @@
-
 use specs::*;
 
 use types::*;
 
-use consts::timer::*;
-use component::flag::*;
 use component::channel::*;
+use component::flag::*;
+use consts::timer::*;
 
-use SystemInfo;
 use systems::TimerHandler;
+use SystemInfo;
 
-use OwnedMessage;
-use protocol::{to_bytes, ServerPacket};
-use protocol::Upgrades as ProtocolUpgrades;
 use protocol::server::PlayerRespawn;
+use protocol::Upgrades as ProtocolUpgrades;
+use protocol::{to_bytes, ServerPacket};
+use OwnedMessage;
 
 pub struct PlayerRespawnSystem {
-	reader: Option<OnTimerEventReader>
+	reader: Option<OnTimerEventReader>,
 }
 
 #[derive(SystemData)]
@@ -32,7 +31,6 @@ pub struct PlayerRespawnSystemData<'a> {
 
 	pub is_dead: WriteStorage<'a, IsDead>,
 	pub is_spec: ReadStorage<'a, IsSpectating>,
-
 }
 
 impl<'a> System<'a> for PlayerRespawnSystem {
@@ -41,25 +39,26 @@ impl<'a> System<'a> for PlayerRespawnSystem {
 	fn setup(&mut self, res: &mut Resources) {
 		Self::SystemData::setup(res);
 
-		self.reader = Some(
-			res.fetch_mut::<OnTimerEvent>().register_reader()
-		);
+		self.reader = Some(res.fetch_mut::<OnTimerEvent>().register_reader());
 	}
 
 	fn run(&mut self, mut data: Self::SystemData) {
 		for evt in data.channel.read(self.reader.as_mut().unwrap()) {
-			if evt.ty != *RESPAWN_TIME { continue; }
+			if evt.ty != *RESPAWN_TIME {
+				continue;
+			}
 
-			let player = match evt.data {
-				Some(ref dat) => match (*dat).downcast_ref::<Entity>() {
-					Some(val) => *val,
-					None => {
-						error!("Unable to downcast TimerEvent data to Entity! Event will be skipped.");
-						continue;
-					}	
-				},
-				None => continue,
-			};
+			let player =
+				match evt.data {
+					Some(ref dat) => match (*dat).downcast_ref::<Entity>() {
+						Some(val) => *val,
+						None => {
+							error!("Unable to downcast TimerEvent data to Entity! Event will be skipped.");
+							continue;
+						}
+					},
+					None => continue,
+				};
 
 			*data.pos.get_mut(player).unwrap() = Position::default();
 			*data.vel.get_mut(player).unwrap() = Velocity::default();

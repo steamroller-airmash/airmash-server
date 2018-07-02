@@ -4,14 +4,14 @@ mod packet_handler;
 mod poll_complete;
 mod position_update;
 mod register;
-mod timer_handler;
 mod run_futures;
+mod timer_handler;
 
 pub mod collision;
 pub mod handlers;
 pub mod missile;
-pub mod spectate;
 pub mod specials;
+pub mod spectate;
 
 pub use self::energy_regen::EnergyRegenSystem;
 pub use self::health_regen::HealthRegenSystem;

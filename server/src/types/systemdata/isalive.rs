@@ -1,4 +1,3 @@
-
 use specs::*;
 
 use component::flag::{IsDead, IsSpectating};
@@ -6,7 +5,7 @@ use component::flag::{IsDead, IsSpectating};
 #[derive(SystemData)]
 pub struct IsAlive<'a> {
 	pub is_spec: ReadStorage<'a, IsSpectating>,
-	pub is_dead: ReadStorage<'a, IsDead>
+	pub is_dead: ReadStorage<'a, IsDead>,
 }
 
 impl<'a> IsAlive<'a> {

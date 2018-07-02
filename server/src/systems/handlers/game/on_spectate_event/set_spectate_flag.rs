@@ -1,4 +1,3 @@
-
 use specs::*;
 
 use dispatch::SystemInfo;
@@ -9,7 +8,7 @@ use component::channel::*;
 use component::flag::IsSpectating;
 
 pub struct SetSpectateFlag {
-	reader: Option<OnPlayerSpectateReader>
+	reader: Option<OnPlayerSpectateReader>,
 }
 
 #[derive(SystemData)]
@@ -25,9 +24,7 @@ impl<'a> System<'a> for SetSpectateFlag {
 	fn setup(&mut self, res: &mut Resources) {
 		Self::SystemData::setup(res);
 
-		self.reader = Some(
-			res.fetch_mut::<OnPlayerSpectate>().register_reader()
-		)
+		self.reader = Some(res.fetch_mut::<OnPlayerSpectate>().register_reader())
 	}
 
 	fn run(&mut self, mut data: Self::SystemData) {
@@ -45,7 +42,6 @@ impl SystemInfo for SetSpectateFlag {
 	}
 
 	fn new() -> Self {
-		Self{ reader: None }
+		Self { reader: None }
 	}
 }
-

@@ -1,4 +1,4 @@
-//! Utility accessors for components 
+//! Utility accessors for components
 //! that are commonly used (read-only)
 //! together. Writes to these components
 //! must still be done individually

@@ -1,8 +1,8 @@
+use std::cmp::{Ordering, Reverse};
+use std::collections::BinaryHeap;
 use std::sync::mpsc::Sender;
 use std::sync::Mutex;
 use std::time::{Duration, Instant};
-use std::cmp::{Reverse, Ordering};
-use std::collections::BinaryHeap;
 
 use component::event::TimerEvent;
 
@@ -27,14 +27,13 @@ impl PartialOrd for Task {
 
 impl Ord for Task {
 	fn cmp(&self, o: &Self) -> Ordering {
-		Reverse(self.time).cmp(&Reverse(o.time))		
+		Reverse(self.time).cmp(&Reverse(o.time))
 	}
-
 }
 
 pub struct FutureDispatcher {
 	channel: Mutex<Sender<TimerEvent>>,
-	tasks: Mutex<BinaryHeap<Task>>
+	tasks: Mutex<BinaryHeap<Task>>,
 }
 
 /// Allow running delayed tasks
@@ -55,7 +54,7 @@ impl FutureDispatcher {
 
 		self.tasks.lock().unwrap().push(Task {
 			time: instant,
-			func: Box::new(fun)
+			func: Box::new(fun),
 		});
 	}
 

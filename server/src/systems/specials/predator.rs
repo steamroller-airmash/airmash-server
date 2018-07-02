@@ -1,12 +1,11 @@
-
 use specs::*;
 use types::*;
 
 use super::config::*;
 
-use SystemInfo;
 use protocol::PlaneType;
 use systems::handlers::packet::KeyHandler;
+use SystemInfo;
 
 pub struct PredatorSpecial;
 
@@ -31,15 +30,14 @@ impl<'a> System<'a> for PredatorSpecial {
 			&data.plane,
 			&data.energy,
 			&mut data.keystate,
-			&mut data.energy_regen
+			&mut data.energy_regen,
 		).join()
 			.filter(|(plane, _, _, _)| **plane == PlaneType::Predator)
 			.for_each(|(_, energy, keystate, energy_regen)| {
 				if *energy == Energy::new(0.0) {
 					keystate.special = false;
 					*energy_regen = info.energy_regen;
-				}
-				else if keystate.special {
+				} else if keystate.special {
 					*energy_regen = *PREDATOR_SPECIAL_REGEN;
 				}
 			});
@@ -47,15 +45,13 @@ impl<'a> System<'a> for PredatorSpecial {
 }
 
 impl SystemInfo for PredatorSpecial {
-	type Dependencies = (
-		KeyHandler
-	);
+	type Dependencies = (KeyHandler);
 
 	fn name() -> &'static str {
 		concat!(module_path!(), "::", line!())
 	}
 
 	fn new() -> Self {
-		Self{}
+		Self {}
 	}
 }

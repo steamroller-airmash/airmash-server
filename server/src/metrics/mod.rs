@@ -36,34 +36,32 @@ impl MetricsHandler {
 
 use std::fs::File;
 use std::io::{Error, Write};
-use std::sync::{Arc, Mutex};
 use std::sync::mpsc::*;
+use std::sync::{Arc, Mutex};
 use std::thread;
 
 use std::time::Duration;
 
 enum Message {
 	Msg(String),
-	End
+	End,
 }
 
 #[derive(Clone)]
 pub struct MetricsHandler {
 	send: Arc<Mutex<Sender<Message>>>,
-	thread: Arc<thread::JoinHandle<()>>
+	thread: Arc<thread::JoinHandle<()>>,
 }
 
 impl MetricsHandler {
 	pub fn time_duration(&self, tag: &str, d: Duration) -> Result<(), Error> {
 		let send = self.send.lock().unwrap().clone();
-		send.send(
-			Message::Msg(format!(
-				"{}: {}.{:03}",
-				tag,
-				d.as_secs() * 1000 + (d.subsec_millis() as u64),
-				d.subsec_micros()
-			)
-		)).err();
+		send.send(Message::Msg(format!(
+			"{}: {}.{:03}",
+			tag,
+			d.as_secs() * 1000 + (d.subsec_millis() as u64),
+			d.subsec_micros()
+		))).err();
 		Ok(())
 	}
 
@@ -82,7 +80,6 @@ impl Drop for MetricsHandler {
 }
 
 pub fn handler() -> MetricsHandler {
-
 	let (send, recv) = channel();
 
 	let handle = thread::spawn(move || {
@@ -94,7 +91,6 @@ pub fn handler() -> MetricsHandler {
 
 	MetricsHandler {
 		send: Arc::new(Mutex::new(send)),
-		thread: Arc::new(handle)
+		thread: Arc::new(handle),
 	}
 }
-

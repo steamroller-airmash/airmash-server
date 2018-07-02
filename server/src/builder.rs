@@ -4,8 +4,8 @@ use std::sync::mpsc::{channel, Receiver, Sender};
 use std::thread;
 use std::time::{Duration, Instant};
 
-use specs::*;
 use specs::Builder as SpecsBuilder;
+use specs::*;
 
 use futures;
 use websocket::OwnedMessage;
@@ -141,12 +141,9 @@ where
 			..
 		} = self;
 
-
 		world.add_resource(metrics::handler());
 		world.add_resource(Connections::new(msg.send.unwrap()));
-		world.add_resource(FutureDispatcher::new(
-			timer.send.as_ref().unwrap().clone(),
-		));
+		world.add_resource(FutureDispatcher::new(timer.send.as_ref().unwrap().clone()));
 
 		Self {
 			builder,
@@ -213,7 +210,6 @@ where
 		dispatcher.setup(&mut world.res);
 
 		world.add_resource(LastFrame(Instant::now()));
-
 
 		let mut runtime = Runtime::new().unwrap();
 

@@ -1,18 +1,17 @@
-
 use specs::*;
 use types::*;
 
-use SystemInfo;
-use OwnedMessage;
 use GameMode;
 use GameModeWriter;
+use OwnedMessage;
+use SystemInfo;
 
 use component::channel::*;
 use protocol::server::{Login, LoginPlayer};
-use protocol::{ServerPacket, to_bytes, Upgrades as ProtocolUpgrades};
+use protocol::{to_bytes, ServerPacket, Upgrades as ProtocolUpgrades};
 
 pub struct SendLogin {
-	reader: Option<OnPlayerJoinReader>
+	reader: Option<OnPlayerJoinReader>,
 }
 
 #[derive(SystemData)]
@@ -83,13 +82,10 @@ impl<'a> System<'a> for SendLogin {
 	fn setup(&mut self, res: &mut Resources) {
 		Self::SystemData::setup(res);
 
-		self.reader = Some(
-			res.fetch_mut::<OnPlayerJoin>().register_reader()
-		);
+		self.reader = Some(res.fetch_mut::<OnPlayerJoin>().register_reader());
 	}
 
 	fn run(&mut self, data: Self::SystemData) {
-
 		for evt in data.channel.read(self.reader.as_mut().unwrap()) {
 			let player_data = Self::get_player_data(&data);
 
@@ -102,27 +98,25 @@ impl<'a> System<'a> for SendLogin {
 				token: "none".to_owned(),
 				team: *data.team.get(evt.0).unwrap(),
 				ty: data.gamemode.get().gametype(),
-				players: player_data
+				players: player_data,
 			};
 
-			data.conns.send_to_player(evt.0, OwnedMessage::Binary(
-				to_bytes(&ServerPacket::Login(packet)).unwrap()
-			));
+			data.conns.send_to_player(
+				evt.0,
+				OwnedMessage::Binary(to_bytes(&ServerPacket::Login(packet)).unwrap()),
+			);
 		}
 	}
 }
 
 impl SystemInfo for SendLogin {
-	type Dependencies = (
-		super::InitTraits,
-	);
+	type Dependencies = (super::InitTraits,);
 
 	fn name() -> &'static str {
 		concat!(module_path!(), "::", line!())
 	}
 
 	fn new() -> Self {
-		Self{ reader: None }
+		Self { reader: None }
 	}
 }
-

@@ -1,15 +1,14 @@
-
 use specs::*;
 use types::*;
 
-use SystemInfo;
 use GameMode;
 use GameModeWriter;
+use SystemInfo;
 
 use component::channel::*;
 
 pub struct InitTransform {
-	reader: Option<OnPlayerJoinReader>
+	reader: Option<OnPlayerJoinReader>,
 }
 
 #[derive(SystemData)]
@@ -29,9 +28,7 @@ impl<'a> System<'a> for InitTransform {
 	fn setup(&mut self, res: &mut Resources) {
 		Self::SystemData::setup(res);
 
-		self.reader = Some(
-			res.fetch_mut::<OnPlayerJoin>().register_reader()
-		);
+		self.reader = Some(res.fetch_mut::<OnPlayerJoin>().register_reader());
 	}
 
 	fn run(&mut self, data: Self::SystemData) {
@@ -46,10 +43,9 @@ impl<'a> System<'a> for InitTransform {
 		} = data;
 
 		for evt in channel.read(self.reader.as_mut().unwrap()) {
-			let player_pos = gamemode.get_mut().spawn_pos(
-				evt.0,
-				*team.get(evt.0).unwrap()
-			);
+			let player_pos = gamemode
+				.get_mut()
+				.spawn_pos(evt.0, *team.get(evt.0).unwrap());
 
 			pos.insert(evt.0, player_pos).unwrap();
 			rot.insert(evt.0, Rotation::default()).unwrap();
@@ -66,7 +62,6 @@ impl SystemInfo for InitTransform {
 	}
 
 	fn new() -> Self {
-		Self{ reader: None }
+		Self { reader: None }
 	}
 }
-

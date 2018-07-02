@@ -1,16 +1,15 @@
-
 use specs::*;
 use types::*;
 
-use SystemInfo;
 use OwnedMessage;
+use SystemInfo;
 
 use component::channel::*;
 use protocol::server::PlayerNew;
-use protocol::{ServerPacket, to_bytes, Upgrades as ProtocolUpgrades};
+use protocol::{to_bytes, ServerPacket, Upgrades as ProtocolUpgrades};
 
 pub struct SendPlayerNew {
-	reader: Option<OnPlayerJoinReader>
+	reader: Option<OnPlayerJoinReader>,
 }
 
 #[derive(SystemData)]
@@ -35,9 +34,7 @@ impl<'a> System<'a> for SendPlayerNew {
 	fn setup(&mut self, res: &mut Resources) {
 		Self::SystemData::setup(res);
 
-		self.reader = Some(
-			res.fetch_mut::<OnPlayerJoin>().register_reader()
-		);
+		self.reader = Some(res.fetch_mut::<OnPlayerJoin>().register_reader());
 	}
 
 	fn run(&mut self, data: Self::SystemData) {
@@ -74,12 +71,13 @@ impl<'a> System<'a> for SendPlayerNew {
 				pos: *pos.get(evt.0).unwrap(),
 				rot: *rot.get(evt.0).unwrap(),
 				flag: *flag.get(evt.0).unwrap(),
-				upgrades
+				upgrades,
 			};
 
-			conns.send_to_others(evt.0, OwnedMessage::Binary(
-				to_bytes(&ServerPacket::PlayerNew(player_new)).unwrap()
-			));
+			conns.send_to_others(
+				evt.0,
+				OwnedMessage::Binary(to_bytes(&ServerPacket::PlayerNew(player_new)).unwrap()),
+			);
 		}
 	}
 }
@@ -92,7 +90,6 @@ impl SystemInfo for SendPlayerNew {
 	}
 
 	fn new() -> Self {
-		Self{ reader: None }
+		Self { reader: None }
 	}
 }
-

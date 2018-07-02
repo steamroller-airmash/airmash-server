@@ -1,4 +1,3 @@
-
 use specs::*;
 
 use SystemInfo;
@@ -9,10 +8,7 @@ use types::FutureDispatcher;
 pub struct RunTimedFutures;
 
 impl<'a> System<'a> for RunTimedFutures {
-	type SystemData = (
-		WriteExpect<'a, FutureDispatcher>,
-		Read<'a, ThisFrame>
-	);
+	type SystemData = (WriteExpect<'a, FutureDispatcher>, Read<'a, ThisFrame>);
 
 	fn run(&mut self, (mut data, now): Self::SystemData) {
 		data.exec_tasks(now.0);
@@ -27,8 +23,6 @@ impl SystemInfo for RunTimedFutures {
 	}
 
 	fn new() -> Self {
-		Self{}
+		Self {}
 	}
 }
-
-

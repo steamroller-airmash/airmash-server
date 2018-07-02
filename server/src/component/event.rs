@@ -34,7 +34,7 @@ pub struct PlayerSpectate {
 	pub player: Entity,
 	pub target: Option<Entity>,
 	pub is_dead: bool,
-	pub is_spec: bool
+	pub is_spec: bool,
 }
 
 #[derive(Copy, Clone, Debug, Hash, PartialEq, Eq)]

@@ -4,10 +4,10 @@ mod onkilledcleanup;
 
 mod register;
 
-pub mod on_spectate_event;
-pub mod on_player_killed;
-pub mod timer;
 pub mod on_join;
+pub mod on_player_killed;
+pub mod on_spectate_event;
+pub mod timer;
 
 pub use self::register::register;
 

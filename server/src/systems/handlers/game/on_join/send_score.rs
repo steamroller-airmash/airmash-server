@@ -1,20 +1,19 @@
-
 use specs::*;
 use types::*;
 
 use super::*;
 
-use SystemInfo;
 use OwnedMessage;
+use SystemInfo;
 
 use component::channel::*;
 use component::counter::*;
 
 use protocol::server::ScoreUpdate;
-use protocol::{ServerPacket, to_bytes};
+use protocol::{to_bytes, ServerPacket};
 
 pub struct SendScoreUpdate {
-	reader: Option<OnPlayerJoinReader>
+	reader: Option<OnPlayerJoinReader>,
 }
 
 #[derive(SystemData)]
@@ -35,9 +34,7 @@ impl<'a> System<'a> for SendScoreUpdate {
 	fn setup(&mut self, res: &mut Resources) {
 		Self::SystemData::setup(res);
 
-		self.reader = Some(
-			res.fetch_mut::<OnPlayerJoin>().register_reader()
-		);
+		self.reader = Some(res.fetch_mut::<OnPlayerJoin>().register_reader());
 	}
 
 	fn run(&mut self, data: Self::SystemData) {
@@ -69,26 +66,20 @@ impl<'a> System<'a> for SendScoreUpdate {
 			};
 
 			conns.send_to_all(OwnedMessage::Binary(
-				to_bytes(&ServerPacket::ScoreUpdate(packet)).unwrap()
+				to_bytes(&ServerPacket::ScoreUpdate(packet)).unwrap(),
 			));
 		}
 	}
 }
 
 impl SystemInfo for SendScoreUpdate {
-	type Dependencies = (
-		InitTraits,
-		InitEarnings,
-		InitKillCounters,
-		SendLogin,
-	);
+	type Dependencies = (InitTraits, InitEarnings, InitKillCounters, SendLogin);
 
 	fn name() -> &'static str {
 		concat!(module_path!(), "::", line!())
 	}
 
 	fn new() -> Self {
-		Self{ reader: None }
+		Self { reader: None }
 	}
 }
-

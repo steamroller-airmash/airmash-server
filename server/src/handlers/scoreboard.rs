@@ -4,14 +4,14 @@ use types::*;
 use consts::timer::SCORE_BOARD;
 
 use component::channel::{OnTimerEvent, OnTimerEventReader};
-use component::flag::{IsPlayer, IsSpectating, IsDead};
+use component::flag::{IsDead, IsPlayer, IsSpectating};
 use component::time::JoinTime;
 
 use protocol::server::{ScoreBoard, ScoreBoardData, ScoreBoardRanking};
 use protocol::{to_bytes, ServerPacket};
 use OwnedMessage;
 
-use std::cmp::{Reverse, Ordering};
+use std::cmp::{Ordering, Reverse};
 
 lazy_static! {
 	static ref SPEC_POSITION: Position =
@@ -58,8 +58,13 @@ impl<'a> System<'a> for ScoreBoardTimerHandler {
 				continue;
 			}
 
-			let mut packet_data = (&*data.entities, &data.scores, &data.levels, &data.flag, &data.join_time)
-				.join()
+			let mut packet_data = (
+				&*data.entities,
+				&data.scores,
+				&data.levels,
+				&data.flag,
+				&data.join_time,
+			).join()
 				.map(|(ent, score, level, _, join_time)| {
 					(
 						ScoreBoardData {
@@ -67,7 +72,7 @@ impl<'a> System<'a> for ScoreBoardTimerHandler {
 							score: *score,
 							level: *level,
 						},
-						join_time.0
+						join_time.0,
 					)
 				})
 				.collect::<Vec<_>>();
@@ -77,7 +82,7 @@ impl<'a> System<'a> for ScoreBoardTimerHandler {
 
 				match ord {
 					Ordering::Equal => a.1.cmp(&b.1),
-					_ => ord
+					_ => ord,
 				}
 			});
 

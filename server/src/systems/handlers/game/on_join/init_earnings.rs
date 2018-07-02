@@ -1,4 +1,3 @@
-
 use specs::*;
 
 use types::*;
@@ -11,7 +10,7 @@ use component::channel::*;
 use component::counter::*;
 
 pub struct InitEarnings {
-	reader: Option<OnPlayerJoinReader>
+	reader: Option<OnPlayerJoinReader>,
 }
 
 #[derive(SystemData)]
@@ -27,9 +26,7 @@ impl<'a> System<'a> for InitEarnings {
 	fn setup(&mut self, res: &mut Resources) {
 		Self::SystemData::setup(res);
 
-		self.reader = Some(
-			res.fetch_mut::<OnPlayerJoin>().register_reader()
-		);
+		self.reader = Some(res.fetch_mut::<OnPlayerJoin>().register_reader());
 	}
 
 	fn run(&mut self, mut data: Self::SystemData) {
@@ -47,7 +44,6 @@ impl SystemInfo for InitEarnings {
 	}
 
 	fn new() -> Self {
-		Self{ reader: None }
+		Self { reader: None }
 	}
 }
-

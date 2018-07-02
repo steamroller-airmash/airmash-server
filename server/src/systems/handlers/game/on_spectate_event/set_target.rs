@@ -8,7 +8,7 @@ use component::channel::*;
 use component::reference::PlayerRef;
 
 pub struct SetSpectateTarget {
-	reader: Option<OnPlayerSpectateReader>
+	reader: Option<OnPlayerSpectateReader>,
 }
 
 #[derive(SystemData)]
@@ -24,22 +24,17 @@ impl<'a> System<'a> for SetSpectateTarget {
 	fn setup(&mut self, res: &mut Resources) {
 		Self::SystemData::setup(res);
 
-		self.reader = Some(
-			res.fetch_mut::<OnPlayerSpectate>().register_reader()
-		)
+		self.reader = Some(res.fetch_mut::<OnPlayerSpectate>().register_reader())
 	}
 
 	fn run(&mut self, mut data: Self::SystemData) {
 		for evt in data.channel.read(self.reader.as_mut().unwrap()) {
 			let target = match evt.target {
 				Some(ent) => ent,
-				None => evt.player
+				None => evt.player,
 			};
 
-			data.spec_tgt.insert(
-				evt.player, 
-				PlayerRef(target)
-			).unwrap();
+			data.spec_tgt.insert(evt.player, PlayerRef(target)).unwrap();
 		}
 	}
 }
@@ -52,7 +47,6 @@ impl SystemInfo for SetSpectateTarget {
 	}
 
 	fn new() -> Self {
-		Self{ reader: None }
+		Self { reader: None }
 	}
 }
-

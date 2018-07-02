@@ -6,9 +6,9 @@ use types::*;
 use dispatch::SystemInfo;
 
 use component::channel::*;
+use component::counter::*;
 use component::event::TimerEvent;
 use component::time::ThisFrame;
-use component::counter::*;
 
 use protocol::server::ScoreUpdate;
 use protocol::{to_bytes, ServerPacket};
@@ -55,7 +55,7 @@ impl UpdateScore {
 				upgrades: upgrades.unused,
 				total_deaths,
 				total_kills,
-			})).unwrap()
+			})).unwrap(),
 		));
 	}
 }
@@ -72,8 +72,12 @@ impl<'a> System<'a> for UpdateScore {
 	fn run(&mut self, mut data: Self::SystemData) {
 		for evt in data.channel.read(self.reader.as_mut().unwrap()) {
 			// Don't do anything if either of the players have left
-			if !data.entities.is_alive(evt.player) { continue; }
-			if !data.entities.is_alive(evt.killer) { continue; }
+			if !data.entities.is_alive(evt.player) {
+				continue;
+			}
+			if !data.entities.is_alive(evt.killer) {
+				continue;
+			}
 
 			let transfer = (data.score.get(evt.player).unwrap().0 + 3) / 4;
 

@@ -1,16 +1,15 @@
-
 use specs::*;
 use types::*;
 
-use SystemInfo;
 use OwnedMessage;
+use SystemInfo;
 
 use component::channel::*;
 use protocol::server::PlayerLevel;
-use protocol::{ServerPacket, to_bytes, PlayerLevelType};
+use protocol::{to_bytes, PlayerLevelType, ServerPacket};
 
 pub struct SendPlayerLevel {
-	reader: Option<OnPlayerJoinReader>
+	reader: Option<OnPlayerJoinReader>,
 }
 
 #[derive(SystemData)]
@@ -27,9 +26,7 @@ impl<'a> System<'a> for SendPlayerLevel {
 	fn setup(&mut self, res: &mut Resources) {
 		Self::SystemData::setup(res);
 
-		self.reader = Some(
-			res.fetch_mut::<OnPlayerJoin>().register_reader()
-		);
+		self.reader = Some(res.fetch_mut::<OnPlayerJoin>().register_reader());
 	}
 
 	fn run(&mut self, data: Self::SystemData) {
@@ -44,28 +41,25 @@ impl<'a> System<'a> for SendPlayerLevel {
 			let packet = PlayerLevel {
 				id: evt.0,
 				ty: PlayerLevelType::Login,
-				level: *level.get(evt.0).unwrap()
+				level: *level.get(evt.0).unwrap(),
 			};
 
-			conns.send_to_others(evt.0, OwnedMessage::Binary(
-				to_bytes(&ServerPacket::PlayerLevel(packet)).unwrap()
-			));
+			conns.send_to_others(
+				evt.0,
+				OwnedMessage::Binary(to_bytes(&ServerPacket::PlayerLevel(packet)).unwrap()),
+			);
 		}
 	}
 }
 
 impl SystemInfo for SendPlayerLevel {
-	type Dependencies = (
-		super::InitTraits,
-		super::SendLogin
-	);
+	type Dependencies = (super::InitTraits, super::SendLogin);
 
 	fn name() -> &'static str {
 		concat!(module_path!(), "::", line!())
 	}
 
 	fn new() -> Self {
-		Self{ reader: None }
+		Self { reader: None }
 	}
 }
-
