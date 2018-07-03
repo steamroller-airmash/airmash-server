@@ -9,3 +9,6 @@ specgen/.vscode/
 
 ctf/target/
 ctf/.vscode/
+
+base/target/
+base/.vscode/
