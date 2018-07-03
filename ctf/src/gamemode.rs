@@ -56,7 +56,7 @@ impl GameMode for CTFGameMode {
 		}
 	}
 
-	fn respawn_pos(&mut self, _: Entity, team: Team) -> Position {
+	fn spawn_pos(&mut self, _: Entity, team: Team) -> Position {
 		if team == BLUE_TEAM {
 			*BLUE_TEAM_RESPAWN
 		} else if team == RED_TEAM {
@@ -69,5 +69,9 @@ impl GameMode for CTFGameMode {
 
 	fn gametype(&self) -> GameType {
 		GameType::CTF
+	}
+
+	fn room(&self) -> String {
+		"matrix".to_owned()
 	}
 }
