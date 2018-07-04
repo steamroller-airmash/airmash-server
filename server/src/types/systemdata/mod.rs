@@ -4,5 +4,7 @@
 //! must still be done individually
 
 mod isalive;
+mod clock;
 
 pub use self::isalive::IsAlive;
+pub use self::clock::ReadClock;

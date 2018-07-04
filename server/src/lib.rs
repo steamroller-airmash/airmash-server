@@ -34,6 +34,7 @@ extern crate tokio;
 extern crate tokio_core;
 extern crate uuid;
 extern crate websocket;
+extern crate hibitset;
 
 use websocket::futures;
 

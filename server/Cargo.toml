@@ -31,7 +31,7 @@ dimensioned = "*"
 lazy_static = "*"
 fnv = "*"
 rand = "*"
-shred = { version="*", features=["nightly"] }
+shred = { version="*" }
 shred-derive = "*"
 shrev = "*"
 tokio = "*"
@@ -40,6 +40,7 @@ rayon = "1.0"
 phf = "*"
 bit_field = "*"
 htmlescape = "*"
+hibitset = "*"
 
 [dependencies.cadence]
 version = "0.14"

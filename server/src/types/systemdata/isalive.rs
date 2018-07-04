@@ -1,4 +1,5 @@
 use specs::*;
+use hibitset::BitSetLike;
 
 use component::flag::{IsDead, IsSpectating};
 
@@ -14,5 +15,9 @@ impl<'a> IsAlive<'a> {
 		let is_dead = self.is_dead.get(ent).is_none();
 
 		is_spec && is_dead
+	}
+
+	pub fn mask<'b: 'a>(&'b self) -> impl BitSetLike + Join + 'b {
+		!(self.is_spec.mask() | self.is_dead.mask())
 	}
 }
