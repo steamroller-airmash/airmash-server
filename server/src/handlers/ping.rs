@@ -1,7 +1,6 @@
 use specs::*;
 use types::*;
-
-use std::time::Instant;
+use types::systemdata::*;
 
 use consts::timer::PING_DISPATCH;
 
@@ -10,7 +9,6 @@ use protocol::{to_bytes, ServerPacket};
 use OwnedMessage;
 
 use component::channel::{OnTimerEvent, OnTimerEventReader};
-use component::time::*;
 
 pub struct PingTimerHandler {
 	reader: Option<OnTimerEventReader>,
@@ -21,8 +19,7 @@ pub struct PingTimerHandlerData<'a> {
 	pub entities: Entities<'a>,
 	pub conns: Read<'a, Connections>,
 	pub channel: Read<'a, OnTimerEvent>,
-	pub thisframe: Read<'a, ThisFrame>,
-	pub starttime: Read<'a, StartTime>,
+	pub clock: ReadClock<'a>,
 }
 
 impl PingTimerHandler {
@@ -41,7 +38,7 @@ impl<'a> System<'a> for PingTimerHandler {
 	}
 
 	fn run(&mut self, (data, mut pingdata): Self::SystemData) {
-		let clock = (Instant::now() - data.starttime.0).to_clock();
+		let clock = data.clock.get();
 
 		for evt in data.channel.read(self.reader.as_mut().unwrap()) {
 			if evt.ty == *PING_DISPATCH {
@@ -51,7 +48,7 @@ impl<'a> System<'a> for PingTimerHandler {
 			(&*data.entities, &mut pingdata)
 				.join()
 				.for_each(|(ent, pingdata)| {
-					let ping = pingdata.new_ping(data.thisframe.0);
+					let ping = pingdata.new_ping(data.clock.frame.0);
 
 					data.conns.send_to_player(
 						ent,

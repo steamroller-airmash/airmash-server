@@ -1,5 +1,6 @@
 use specs::*;
 use types::*;
+use types::systemdata::*;
 
 use GameMode;
 use GameModeWriter;
@@ -20,6 +21,7 @@ pub struct SendLoginData<'a> {
 	pub conns: Read<'a, Connections>,
 	pub entities: Entities<'a>,
 	pub gamemode: GameModeWriter<'a, GameMode>,
+	pub clock: ReadClock<'a>,
 
 	pub pos: ReadStorage<'a, Position>,
 	pub rot: ReadStorage<'a, Rotation>,
@@ -89,9 +91,8 @@ impl<'a> System<'a> for SendLogin {
 		for evt in data.channel.read(self.reader.as_mut().unwrap()) {
 			let player_data = Self::get_player_data(&data);
 
-			// TODO: Correct clock value and pass session through
 			let packet = Login {
-				clock: 0,
+				clock: data.clock.get(),
 				id: evt.0,
 				room: data.gamemode.get().room(),
 				success: true,

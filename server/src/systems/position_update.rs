@@ -1,5 +1,5 @@
 use specs::*;
-use types::systemdata::IsAlive;
+use types::systemdata::*;
 use types::*;
 
 use component::time::*;
@@ -43,10 +43,10 @@ pub struct PositionUpdateData<'a> {
 	planes: ReadStorage<'a, Plane>,
 	lastframe: Read<'a, LastFrame>,
 	thisframe: Read<'a, ThisFrame>,
-	starttime: Read<'a, StartTime>,
 	entities: Entities<'a>,
 	conns: Read<'a, Connections>,
 	is_alive: IsAlive<'a>,
+	clock: ReadClock<'a>,
 }
 
 impl PositionUpdate {
@@ -173,8 +173,8 @@ impl PositionUpdate {
 		data: &mut PositionUpdateData<'a>,
 		lastupdate: &mut WriteStorage<'a, LastUpdate>,
 	) {
-		let thisframe = data.thisframe.0;
-		let starttime = data.starttime.0;
+		let clock = data.clock.get();
+		let thisframe = data.clock.frame.0;
 
 		(
 			&data.pos,
@@ -202,7 +202,7 @@ impl PositionUpdate {
 					};
 
 					let packet = PlayerUpdate {
-						clock: (thisframe - starttime).to_clock(),
+						clock,
 						id: ent,
 						keystate: state,
 						pos: *pos,
@@ -225,6 +225,8 @@ impl PositionUpdate {
 		data: &mut PositionUpdateData<'a>,
 		lastupdate: &mut WriteStorage<'a, LastUpdate>,
 	) {
+		let clock = data.clock.get();
+
 		(
 			&data.pos,
 			&data.rot,
@@ -255,7 +257,7 @@ impl PositionUpdate {
 					};
 
 					let packet = PlayerUpdate {
-						clock: (data.thisframe.0 - data.starttime.0).to_clock(),
+						clock,
 						id: ent,
 						keystate: state,
 						pos: *pos,

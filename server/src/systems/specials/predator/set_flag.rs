@@ -29,24 +29,29 @@ impl<'a> System<'a> for SetBoostingFlag {
 	fn run(&mut self, mut data: Self::SystemData) {
 		let ref info = data.config.planes[PlaneType::Predator];
 		let mut boosting = data.boosting;
+		let mut clears = vec![];
+		let mut keystate = data.keystate;
 
 		(
 			&data.plane,
 			&data.energy,
-			&mut data.keystate,
+			keystate.mask(),
 			&mut data.energy_regen,
 			&*data.entities,
 		).join()
 			.filter(|(plane, _, _, _, _)| **plane == PlaneType::Predator)
-			.for_each(|(_, energy, keystate, energy_regen, ent)| {
+			.for_each(|(_, energy, _, energy_regen, ent)| {
+				let keystate = keystate.get(ent).unwrap();
+
 				if *energy == Energy::new(0.0) || !keystate.special {
-					keystate.special = false;
-					*energy_regen = info.energy_regen;
 
 					if boosting.get(ent).is_some() {
+						clears.push(ent);
+						*energy_regen = info.energy_regen;
+
 						boosting.remove(ent);
 					}
-				} else if keystate.special {
+				} else if keystate.special && (keystate.up || keystate.down) {
 					*energy_regen = *PREDATOR_SPECIAL_REGEN;
 
 					// Only insert when there is no value there 
@@ -56,10 +61,13 @@ impl<'a> System<'a> for SetBoostingFlag {
 						boosting.insert(ent, IsBoosting).unwrap();
 					}
 				}
-				else {
-					panic!();
-				}
 			});
+
+		// Clear specific keys without iterating over
+		// all key states mutably
+		for ent in clears {
+			keystate.get_mut(ent).unwrap().special = false;
+		}
 	}
 }
 
