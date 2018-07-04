@@ -18,12 +18,9 @@ extern crate lazy_static;
 extern crate serde;
 
 // Regular Dependencies
-extern crate bit_field;
-extern crate ctrlc;
 extern crate fnv;
 extern crate htmlescape;
 extern crate hyper;
-extern crate phf;
 extern crate rand;
 extern crate rayon;
 extern crate shred;

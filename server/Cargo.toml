@@ -19,7 +19,6 @@ debug = true
 lto = true
 
 [build-dependencies]
-phf_codegen = "^0.7"
 specgen = { path = "../specgen" }
 
 [dependencies]
@@ -37,18 +36,12 @@ shrev = "*"
 tokio = "*"
 tokio-core = "*"
 rayon = "1.0"
-phf = "*"
-bit_field = "*"
 htmlescape = "*"
 hibitset = "*"
 
 [dependencies.cadence]
 version = "0.14"
 #optional = true
-
-[dependencies.ctrlc]
-version = "*"
-features = [ "termination" ]
 
 [dependencies.uuid]
 version = "*"
