@@ -19,13 +19,13 @@ RUN cargo fetch
 RUN rm -rf src
 
 ADD server /build/server
-ADD ctf /build/ctf
+ADD base /build/base
 
-WORKDIR /build/ctf
+WORKDIR /build/base
 
 RUN cargo build --release
 RUN mkdir /artifacts
-RUN mv target/x86_64-unknown-linux-musl/release/ctf /artifacts/airmash-server
+RUN mv target/x86_64-unknown-linux-musl/release/base /artifacts/airmash-server
 
 FROM alpine:latest
 
