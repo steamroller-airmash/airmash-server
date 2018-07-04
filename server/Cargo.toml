@@ -2,7 +2,7 @@
 name = "airmash-server"
 version = "0.0.1"
 authors = ["STEAMROLLER"]
-license = "Apache-2.0"
+license = "Apache-2.0 OR MIT"
 
 [features]
 # If enabled, set TCP_NODELAY on incoming connections
