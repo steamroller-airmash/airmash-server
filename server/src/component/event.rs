@@ -58,6 +58,12 @@ pub struct PlayerStealth {
 	pub player: Entity
 }
 
+#[derive(Copy, Clone, Debug)]
+pub struct MissileFire {
+	pub player: Entity,
+	pub missile: Entity
+}
+
 impl Default for TimerEvent {
 	fn default() -> Self {
 		use consts::timer::INVALID;

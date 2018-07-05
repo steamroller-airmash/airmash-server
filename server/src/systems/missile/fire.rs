@@ -4,6 +4,8 @@ use types::*;
 use component::flag::IsMissile;
 use component::reference::PlayerRef;
 use component::time::*;
+use component::event::MissileFire;
+use component::channel::OnMissileFire;
 
 use airmash_protocol::server::{PlayerFire, PlayerFireProjectile};
 use airmash_protocol::{to_bytes, ServerPacket};
@@ -30,6 +32,8 @@ pub struct MissileFireHandlerData<'a> {
 	pub thisframe: Read<'a, ThisFrame>,
 	pub spawntime: WriteStorage<'a, MobSpawnTime>,
 	pub lastshot: WriteStorage<'a, LastShotTime>,
+
+	pub channel: Write<'a, OnMissileFire>
 }
 
 impl<'a> System<'a> for MissileFireHandler {
@@ -55,6 +59,7 @@ impl<'a> System<'a> for MissileFireHandler {
 			conns,
 			mut spawntime,
 			mut lastshot,
+			mut channel,
 			..
 		} = data;
 
@@ -112,7 +117,7 @@ impl<'a> System<'a> for MissileFireHandler {
 						}],
 					};
 
-					conns.send_to_all(OwnedMessage::Binary(
+					conns.send_to_visible(ent, OwnedMessage::Binary(
 						to_bytes(&ServerPacket::PlayerFire(packet)).unwrap(),
 					));
 
@@ -123,7 +128,7 @@ impl<'a> System<'a> for MissileFireHandler {
 
 		for v in new {
 			trace!(
-				target: "",
+				target: "missile-fire",
 				"Fired missile: {:?}",
 				v
 			);
@@ -135,6 +140,11 @@ impl<'a> System<'a> for MissileFireHandler {
 			teams.insert(v.0, v.4).unwrap();
 			owner.insert(v.0, PlayerRef(v.5)).unwrap();
 			spawntime.insert(v.0, MobSpawnTime(thisframe.0)).unwrap();
+
+			channel.single_write(MissileFire {
+				player: v.5,
+				missile: v.0
+			});
 		}
 	}
 }

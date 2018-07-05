@@ -34,9 +34,10 @@ pub fn register<'a, 'b>(disp: Builder<'a, 'b>) -> Builder<'a, 'b> {
 
 	// Other handlers
 	let disp = handlers::register(disp);
+	// Collision handling
+	let disp = collision::register(disp);
 	// Specials
 	let disp = specials::register(disp);
 
-	// Collision handling
-	collision::register(disp)
+	disp
 }

@@ -1,16 +1,15 @@
 use uuid::Uuid;
 
-use airmash_protocol::{self as protocol, FlagCode};
 use specs::*;
 
 use types::ConnectionId;
 
 use std::time::Duration;
 
-pub type Flag = FlagCode;
-pub type Plane = protocol::PlaneType;
-pub type Status = protocol::PlayerStatus;
-pub type Mob = protocol::MobType;
+pub use protocol::FlagCode as Flag;
+pub use protocol::PlaneType as Plane;
+pub use protocol::PlayerStatus as Status;
+pub use protocol::MobType as Mob;
 
 #[derive(Clone, Debug, Default, Component, Eq, PartialEq, Hash)]
 pub struct Name(pub String);
