@@ -1,5 +1,6 @@
 use specs::prelude::*;
 use types::*;
+use types::systemdata::*;
 
 use component::flag::IsMissile;
 use component::reference::PlayerRef;
@@ -32,6 +33,7 @@ pub struct MissileFireHandlerData<'a> {
 	pub thisframe: Read<'a, ThisFrame>,
 	pub spawntime: WriteStorage<'a, MobSpawnTime>,
 	pub lastshot: WriteStorage<'a, LastShotTime>,
+	pub is_alive: IsAlive<'a>,
 
 	pub channel: Write<'a, OnMissileFire>
 }
@@ -60,6 +62,7 @@ impl<'a> System<'a> for MissileFireHandler {
 			mut spawntime,
 			mut lastshot,
 			mut channel,
+			is_alive,
 			..
 		} = data;
 
@@ -74,6 +77,7 @@ impl<'a> System<'a> for MissileFireHandler {
 			&teams,
 			&mut lastshot,
 		).par_join()
+			.filter(|(ent, ..)| is_alive.get(*ent))
 			.filter_map(
 				|(ent, pos, vel, rot, keystate, energy, plane, team, lastshot)| {
 					let ref info = config.planes[*plane];
