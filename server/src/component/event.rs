@@ -52,6 +52,12 @@ pub struct TimerEvent {
 	pub data: Option<Box<Any + Send + Sync>>,
 }
 
+#[derive(Copy, Clone, Debug)]
+pub struct PlayerStealth {
+	pub stealthed: bool,
+	pub player: Entity
+}
+
 impl Default for TimerEvent {
 	fn default() -> Self {
 		use consts::timer::INVALID;

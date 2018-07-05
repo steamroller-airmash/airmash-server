@@ -181,6 +181,16 @@ impl Connections {
 			.for_each(|id| self.1.lock().unwrap().send((*id, msg.clone())).unwrap());
 	}
 
+	pub fn send_to_team(&self, _player: Entity, msg: OwnedMessage) {
+		warn!("send_to_team not implemented yet!");
+		self.send_to_all(msg);
+	}
+
+	pub fn send_to_visible(&self, _player: Entity, msg: OwnedMessage) {
+		warn!("send_to_visible not implemented yet!");
+		self.send_to_all(msg);
+	}
+
 	pub fn iter<'a>(&'a self) -> impl Iterator<Item = &'a ConnectionData> {
 		self.0.values()
 	}

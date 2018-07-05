@@ -1,14 +1,13 @@
-
-extern crate log;
-extern crate specs;
-extern crate simple_logger;
 extern crate airmash_server;
+extern crate log;
+extern crate simple_logger;
+extern crate specs;
 
 use std::env;
 
-use specs::Entity;
-use airmash_server::*;
 use airmash_server::protocol::GameType;
+use airmash_server::*;
+use specs::Entity;
 
 struct EmptyGameMode;
 
