@@ -1,11 +1,16 @@
 
 use specs::*;
 use types::*;
+use types::systemdata::*;
 
 use SystemInfo;
 use component::event::*;
 use component::channel::*;
 use systems::collision::PlayerMissileCollisionSystem;
+
+use protocol::server::EventStealth;
+use protocol::{to_bytes, ServerPacket};
+use websocket::OwnedMessage;
 
 pub struct DestealthOnHit {
 	reader: Option<OnPlayerMissileCollisionReader>,
@@ -14,10 +19,14 @@ pub struct DestealthOnHit {
 #[derive(SystemData)]
 pub struct DestealthOnHitData<'a> {
 	channel: Read<'a, OnPlayerMissileCollision>,
+	conns: Read<'a, Connections>,
 
 	keystate: WriteStorage<'a, KeyState>,
 	plane: ReadStorage<'a, Plane>,
 	is_player: ReadStorage<'a, IsPlayer>,
+	is_alive: IsAlive<'a>,
+	energy: ReadStorage<'a, Energy>,
+	energy_regen: ReadStorage<'a, EnergyRegen>
 }
 
 impl<'a> System<'a> for DestealthOnHit {
@@ -41,11 +50,22 @@ impl<'a> System<'a> for DestealthOnHit {
 			if *data.plane.get(player).unwrap() != Plane::Prowler {
 				continue;
 			}
+			if !data.is_alive.get(player) { continue; }
 
-			match data.keystate.get_mut(player) {
-				Some(keystate) => keystate.stealthed = false,
-				_ => ()
-			}
+			data.keystate.get_mut(player).unwrap().stealthed = false;
+
+			let packet = EventStealth {
+				id: player,
+				state: false,
+				energy: *data.energy.get(player).unwrap(),
+				energy_regen: *data.energy_regen.get(player).unwrap()
+			};
+
+			let message = OwnedMessage::Binary(
+				to_bytes(&ServerPacket::EventStealth(packet)).unwrap()
+			);
+
+			data.conns.send_to_player(player, message);
 		}
 	}
 }

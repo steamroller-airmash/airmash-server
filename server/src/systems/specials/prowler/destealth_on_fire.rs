@@ -6,6 +6,10 @@ use SystemInfo;
 use component::channel::*;
 use systems::missile::MissileFireHandler;
 
+use protocol::server::EventStealth;
+use protocol::{to_bytes, ServerPacket};
+use websocket::OwnedMessage;
+
 pub struct DestealthOnFire {
 	reader: Option<OnMissileFireReader>,
 }
@@ -13,9 +17,12 @@ pub struct DestealthOnFire {
 #[derive(SystemData)]
 pub struct DestealthOnFireData<'a> {
 	channel: Read<'a, OnMissileFire>,
+	conns: Read<'a, Connections>,
 
 	keystate: WriteStorage<'a, KeyState>,
-	plane: ReadStorage<'a, Plane>
+	plane: ReadStorage<'a, Plane>,
+	energy: ReadStorage<'a, Energy>,
+	energy_regen: ReadStorage<'a, EnergyRegen>
 }
 
 impl<'a> System<'a> for DestealthOnFire {
@@ -35,10 +42,20 @@ impl<'a> System<'a> for DestealthOnFire {
 				continue;
 			}
 
-			match data.keystate.get_mut(evt.player) {
-				Some(keystate) => keystate.stealthed = false,
-				_ => ()
-			}
+			data.keystate.get_mut(evt.player).unwrap().stealthed = false;
+
+			let packet = EventStealth {
+				id: evt.player,
+				state: false,
+				energy: *data.energy.get(evt.player).unwrap(),
+				energy_regen: *data.energy_regen.get(evt.player).unwrap()
+			};
+
+			let message = OwnedMessage::Binary(
+				to_bytes(&ServerPacket::EventStealth(packet)).unwrap()
+			);
+
+			data.conns.send_to_player(evt.player, message);
 		}
 	}
 }
