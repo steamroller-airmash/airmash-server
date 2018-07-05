@@ -1,5 +1,4 @@
 mod components;
-mod connection;
 mod flags;
 mod future;
 mod keystate;
@@ -16,10 +15,10 @@ pub mod config;
 pub mod systemdata;
 
 pub(crate) mod gamemode;
+pub(crate) mod connection;
 
 pub use self::components::*;
 pub use self::config::Config;
-pub use self::connection::*;
 pub use self::flags::*;
 pub use self::future::FutureDispatcher;
 pub use self::keystate::*;
@@ -34,3 +33,8 @@ pub mod event {
 }
 
 pub use self::gamemode::{GameMode, GameModeWriter};
+pub use self::connection::{
+	Connections,
+	ConnectionSink,
+	ConnectionType,
+};

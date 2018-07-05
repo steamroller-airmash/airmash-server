@@ -63,8 +63,6 @@ impl<'a> System<'a> for SetStealth {
 		for ent in flips {
 			let ref mut keystate = data.keystate.get_mut(ent).unwrap();
 
-			info!("{:?}", keystate);
-
 			keystate.stealthed = !keystate.stealthed;
 
 			data.channel.single_write(PlayerStealth {

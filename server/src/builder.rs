@@ -8,7 +8,6 @@ use specs::Builder as SpecsBuilder;
 use specs::*;
 
 use futures;
-use websocket::OwnedMessage;
 
 use dispatch::Builder;
 use metrics;
@@ -18,7 +17,8 @@ use timeloop::timeloop;
 use timers;
 
 use types::event::ConnectionEvent;
-use types::{ConnectionId, Connections, FutureDispatcher, GameMode};
+use types::{Connections, FutureDispatcher, GameMode};
+use types::connection::Message;
 
 use component::event::TimerEvent;
 use component::time::{LastFrame, StartTime, ThisFrame};
@@ -50,7 +50,7 @@ where
 
 	event: Channel<ConnectionEvent>,
 	timer: Channel<TimerEvent>,
-	msg: Channel<(ConnectionId, OwnedMessage)>,
+	msg: Channel<Message>,
 
 	pub world: World,
 }
