@@ -141,7 +141,7 @@ impl Default for PlaneInfos {
 				special_energy: Energy::new(0.0), // Actually regen -0.01
 
 				missile_type: MobType::PredatorMissile,
-				missile_offset: Distance::new(25.0),
+				missile_offset: Distance::new(35.0),
 
 				hit_circles: vec![
 					hit_circle(0, 5, 23),
@@ -218,7 +218,7 @@ impl Default for PlaneInfos {
 
 				missile_type: MobType::MohawkMissile,
 				// This will have to be a special case
-				missile_offset: Distance::default(),
+				missile_offset: Distance::new(10.0),
 
 				hit_circles: vec![
 					hit_circle(0, -12, 15),
