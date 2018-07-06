@@ -27,7 +27,7 @@ impl GameMode for EmptyGameMode {
 }
 
 fn main() {
-    simple_logger::init_with_level(log::Level::Info).unwrap();
+    simple_logger::init_with_level(log::Level::Trace).unwrap();
 
     env::set_var("RUST_BACKTRACE", "1");
 
