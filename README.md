@@ -34,3 +34,8 @@ To access the server locally, run a server hosting
 [these](https://nofile.io/f/u9UnVHoGn71/static.zip) files locally, 
 then open that server in a web browser (e.g. `localhost:8000`) and
 use as a normal airmash client.
+
+## License
+
+This project is dual licensed under MIT or Apache-2.0, at your choice.
+All contributions must be licensed as MIT or Apache-2.0
