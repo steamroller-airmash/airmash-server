@@ -57,6 +57,10 @@ pub struct PlayerStealth {
 	pub stealthed: bool,
 	pub player: Entity
 }
+#[derive(Copy, Clone, Debug)]
+pub struct PlayerRepel {
+	pub player: Entity
+}
 
 #[derive(Copy, Clone, Debug)]
 pub struct MissileFire {

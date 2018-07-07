@@ -37,6 +37,7 @@ pub type OnPlayerRespawn = EventChannel<PlayerRespawn>;
 pub type OnPlayerSpectate = EventChannel<PlayerSpectate>;
 pub type OnPlayerStealth = EventChannel<PlayerStealth>;
 pub type OnMissileFire = EventChannel<MissileFire>;
+pub type OnPlayerRepel = EventChannel<PlayerRepel>;
 
 // Collision events
 pub type OnPlayerTerrainCollision = EventChannel<PlayerTerrainCollision>;
@@ -74,6 +75,7 @@ pub type OnPlayerRespawnReader = ReaderId<PlayerRespawn>;
 pub type OnPlayerSpectateReader = ReaderId<PlayerSpectate>;
 pub type OnPlayerStealthReader = ReaderId<PlayerStealth>;
 pub type OnMissileFireReader = ReaderId<MissileFire>;
+pub type OnPlayerRepelReader = ReaderId<PlayerRepel>;
 
 // Collision events
 pub type OnPlayerMissileCollisionReader = ReaderId<PlayerMissileCollision>;
