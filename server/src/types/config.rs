@@ -163,14 +163,12 @@ impl Default for PlaneInfos {
 				flag_speed: Speed::new(5.0),
 				inferno_factor: 0.75,
 
-				// TODO: Set these
 				health_regen: HealthRegen::new(0.0005),
 				energy_regen: EnergyRegen::new(0.005),
 				fire_delay: Duration::from_millis(300),
 
 				damage_factor: 1.0,
 
-				// TODO
 				fire_energy: Energy::new(0.9),
 
 				missile_type: MobType::GoliathMissile,
@@ -275,7 +273,6 @@ impl Default for PlaneInfos {
 				flag_speed: Speed::new(5.0),
 				inferno_factor: 0.75,
 
-				// TODO: Set these
 				health_regen: HealthRegen::new(0.001),
 				energy_regen: EnergyRegen::new(0.006),
 				fire_delay: Duration::from_millis(300),
