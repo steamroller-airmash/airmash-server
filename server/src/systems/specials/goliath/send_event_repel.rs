@@ -8,11 +8,17 @@ use OwnedMessage;
 
 use systems::specials::config::*;
 use component::flag::{IsMissile, IsPlayer};
+use component::reference::PlayerRef;
 use component::channel::{OnPlayerRepel, OnPlayerRepelReader};
 
 use protocol::{to_bytes, ServerPacket};
 use protocol::server::{EventRepel, EventRepelPlayer, EventRepelMob};
 
+/// Send [`EventRepel`] when a goliath uses it's special.
+/// 
+/// This system also position, speed, velocity,
+/// team and owner for players and mobs that
+/// are caught in the deflection.
 #[derive(Default)]
 pub struct SendEventRepel {
 	reader: Option<OnPlayerRepelReader>
@@ -37,6 +43,7 @@ pub struct SendEventRepelData<'a> {
 	energy: ReadStorage<'a, Energy>,
 	health_regen: ReadStorage<'a, HealthRegen>,
 	energy_regen: ReadStorage<'a, EnergyRegen>,
+	owner: WriteStorage<'a, PlayerRef>,
 	keystate: ReadStorage<'a, KeyState>,
 	is_player: ReadStorage<'a, IsPlayer>,
 	is_missile: ReadStorage<'a, IsMissile>,
@@ -102,7 +109,13 @@ impl<'a> System<'a> for SendEventRepel {
 				let dir = (*missile_pos - pos).normalized();
 
 				*data.vel.get_mut(*missile).unwrap() = dir * *GOLIATH_SPECIAL_REFLECT_SPEED;
+				// Change the team of the missile to reflect
+				// that it's now owned by the player that 
+				// reflected it
 				*data.team.get_mut(*missile).unwrap() = team;
+				// Change the owner of the missile now that
+				// it's been reflected
+				*data.owner.get_mut(*missile).unwrap() = PlayerRef(evt.player);
 			}
 
 			let players = hit_players.into_iter()
