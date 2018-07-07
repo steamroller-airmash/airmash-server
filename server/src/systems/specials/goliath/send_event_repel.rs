@@ -45,6 +45,7 @@ pub struct SendEventRepelData<'a> {
 	energy_regen: ReadStorage<'a, EnergyRegen>,
 	owner: WriteStorage<'a, PlayerRef>,
 	keystate: ReadStorage<'a, KeyState>,
+	is_alive: IsAlive<'a>,
 	is_player: ReadStorage<'a, IsPlayer>,
 	is_missile: ReadStorage<'a, IsMissile>,
 }
@@ -75,10 +76,11 @@ impl<'a> System<'a> for SendEventRepel {
 			let hit_players = (
 				&*data.entities,
 				&data.pos,
-				&data.is_player
+				&data.is_player,
+				data.is_alive.mask(),
 			).join()
 				.filter(|(ent, ..)| *ent != evt.player)
-				.filter_map(|(ent, player_pos, _)| {
+				.filter_map(|(ent, player_pos, ..)| {
 					let dist2 = (*player_pos - pos).length2();
 
 					if dist2 < r2 { Some((ent, *player_pos)) } else { None }
