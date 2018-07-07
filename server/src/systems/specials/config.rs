@@ -12,8 +12,11 @@ lazy_static! {
 	// TODO: Replace this with real value (see issue #2)
 	/// The distance out to which a goliath repel has an effect
 	pub static ref GOLIATH_SPECIAL_RADIUS: Distance = Distance::new(100.0);
-
+	/// The speed at which players and mobs will be going when
+	/// they are reflected
 	pub static ref GOLIATH_SPECIAL_REFLECT_SPEED: Speed = Speed::new(5.0);
+	/// Minimum time between reflects
+	pub static ref GOLIATH_SPECIAL_INTERVAL: Duration = Duration::from_secs(1);
 
 	pub static ref TORNADO_SPECIAL_ENERGY: Energy = Energy::new(0.9);
 

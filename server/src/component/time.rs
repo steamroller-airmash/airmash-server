@@ -31,6 +31,9 @@ pub struct JoinTime(pub Instant);
 #[derive(Clone, Debug, Copy, Component)]
 pub struct LastStealthTime(pub Instant);
 
+#[derive(Clone, Debug, Copy, Component)]
+pub struct LastRepelTime(pub Instant);
+
 impl Default for LastFrame {
 	fn default() -> Self {
 		LastFrame(Instant::now())

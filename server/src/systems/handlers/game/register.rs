@@ -18,6 +18,7 @@ pub fn register<'a, 'b>(builder: Builder<'a, 'b>) -> Builder<'a, 'b> {
 		.with::<on_join::InitTraits>()
 		.with::<on_join::InitTransform>()
 		.with::<on_join::InitStealthTime>()
+		.with::<on_join::InitLastRepelTime>()
 		.with::<on_join::SendPlayerNew>()
 		.with::<on_join::SendLogin>()
 		.with::<on_join::SendPlayerLevel>()
