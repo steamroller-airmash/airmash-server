@@ -25,7 +25,8 @@ pub fn register<'a, 'b>(builder: Builder<'a, 'b>) -> Builder<'a, 'b> {
 		.with::<on_join::SendPlayerNew>()
 		.with::<on_join::SendLogin>()
 		.with::<on_join::SendPlayerLevel>()
-		.with::<on_join::SendScoreUpdate>();
+		.with::<on_join::SendScoreUpdate>()
+		.with::<on_join::UpdatePlayersGame>();
 
 	timer::register(builder)
 }

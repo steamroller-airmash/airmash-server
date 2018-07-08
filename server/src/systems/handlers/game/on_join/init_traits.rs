@@ -1,12 +1,14 @@
 use specs::*;
 
-use SystemInfo;
+use std::time::Instant;
 
 use types::*;
 
 use systems::handlers::packet::LoginHandler;
+use SystemInfo;
 
 use component::channel::*;
+use component::time::*;
 use protocol::PlayerStatus;
 
 pub struct InitTraits {
@@ -16,6 +18,7 @@ pub struct InitTraits {
 #[derive(SystemData)]
 pub struct InitTraitsData<'a> {
 	pub channel: Read<'a, OnPlayerJoin>,
+	pub start_time: Read<'a, StartTime>,
 
 	pub score: WriteStorage<'a, Score>,
 	pub level: WriteStorage<'a, Level>,
@@ -24,6 +27,10 @@ pub struct InitTraitsData<'a> {
 	pub status: WriteStorage<'a, Status>,
 	pub session: WriteStorage<'a, Session>,
 	pub flag: WriteStorage<'a, Flag>,
+	pub is_player: WriteStorage<'a, IsPlayer>,
+	pub pingdata: WriteStorage<'a, PingData>,
+	pub lastshot: WriteStorage<'a, LastShotTime>,
+	pub lastupdate: WriteStorage<'a, LastUpdate>,
 }
 
 impl<'a> System<'a> for InitTraits {
@@ -38,6 +45,7 @@ impl<'a> System<'a> for InitTraits {
 	fn run(&mut self, data: Self::SystemData) {
 		let Self::SystemData {
 			channel,
+			start_time,
 
 			mut score,
 			mut level,
@@ -46,6 +54,10 @@ impl<'a> System<'a> for InitTraits {
 			mut status,
 			mut session,
 			mut flag,
+			mut lastupdate,
+			mut is_player,
+			mut pingdata,
+			mut lastshot,
 		} = data;
 
 		for evt in channel.read(self.reader.as_mut().unwrap()) {
@@ -56,6 +68,13 @@ impl<'a> System<'a> for InitTraits {
 			status.insert(evt.id, PlayerStatus::Alive).unwrap();
 			session.insert(evt.id, evt.session.clone()).unwrap();
 			flag.insert(evt.id, evt.flag).unwrap();
+
+			lastupdate
+				.insert(evt.id, LastUpdate(Instant::now()))
+				.unwrap();
+			is_player.insert(evt.id, IsPlayer).unwrap();
+			pingdata.insert(evt.id, PingData::default()).unwrap();
+			lastshot.insert(evt.id, LastShotTime(start_time.0)).unwrap();
 		}
 	}
 }

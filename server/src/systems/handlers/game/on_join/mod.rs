@@ -12,6 +12,7 @@ mod send_level;
 mod send_login;
 mod send_player_new;
 mod send_score;
+mod update_players_game;
 
 pub use self::init_connection::InitConnection;
 pub use self::init_earnings::InitEarnings;
@@ -27,6 +28,7 @@ pub use self::send_level::SendPlayerLevel;
 pub use self::send_login::SendLogin;
 pub use self::send_player_new::SendPlayerNew;
 pub use self::send_score::SendScoreUpdate;
+pub use self::update_players_game::UpdatePlayersGame;
 
 pub type AllJoinHandlers = (
 	InitConnection,
@@ -43,4 +45,5 @@ pub type AllJoinHandlers = (
 	SendLogin,
 	SendPlayerNew,
 	SendScoreUpdate,
+	UpdatePlayersGame,
 );

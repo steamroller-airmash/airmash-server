@@ -4,10 +4,8 @@ use specs::*;
 use uuid::Uuid;
 
 use std::str::FromStr;
-use std::time::Instant;
 
 use component::channel::*;
-use component::counter::PlayersGame;
 use component::event::PlayerJoin;
 use component::time::*;
 use types::*;
@@ -21,11 +19,6 @@ use GameMode;
 pub struct LoginSystemData<'a> {
 	pub entities: Entities<'a>,
 	pub conns: Read<'a, Connections>,
-	pub lastupdate: WriteStorage<'a, LastUpdate>,
-	pub isplayer: WriteStorage<'a, IsPlayer>,
-	pub pingdata: WriteStorage<'a, PingData>,
-	pub playersgame: Write<'a, PlayersGame>,
-	pub lastshot: WriteStorage<'a, LastShotTime>,
 
 	pub startime: Read<'a, StartTime>,
 	pub player_join: Write<'a, OnPlayerJoin>,
@@ -79,16 +72,6 @@ impl LoginHandler {
 		};
 
 		// Set all possible pieces of state for a plane
-		data.lastupdate
-			.insert(entity, LastUpdate(Instant::now()))
-			.unwrap();
-		data.isplayer.insert(entity, IsPlayer {}).unwrap();
-		data.pingdata.insert(entity, PingData::default()).unwrap();
-		data.lastshot
-			.insert(entity, LastShotTime(data.startime.0))
-			.unwrap();
-
-		data.playersgame.0 += 1;
 
 		let team = data.gamemode.get_mut().assign_team(entity);
 		let plane = data.gamemode.get_mut().assign_plane(entity, team);
