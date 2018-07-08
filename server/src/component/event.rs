@@ -3,10 +3,10 @@ use specs::*;
 use std::any::Any;
 use std::time::Instant;
 
-use types::*;
-use types::collision::Collision;
-use utils::timer::TimerEventType;
 use protocol::FlagCode;
+use types::collision::Collision;
+use types::*;
+use utils::timer::TimerEventType;
 
 #[derive(Copy, Clone, Debug, Default, Component)]
 pub struct ScoreDetailedEvent(pub ConnectionId);
@@ -25,6 +25,7 @@ pub struct PlayerJoin {
 	pub name: Name,
 	pub flag: FlagCode,
 	pub session: Session,
+	pub conn: ConnectionId,
 }
 #[derive(Copy, Clone, Debug)]
 pub struct PlayerLeave(pub Entity);

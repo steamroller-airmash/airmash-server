@@ -20,12 +20,7 @@ use GameMode;
 #[derive(SystemData)]
 pub struct LoginSystemData<'a> {
 	pub entities: Entities<'a>,
-	pub name: WriteStorage<'a, Name>,
-	pub session: WriteStorage<'a, Session>,
-	pub level: WriteStorage<'a, Level>,
-	pub flag: WriteStorage<'a, Flag>,
-	pub conns: Write<'a, Connections>,
-	pub associated_conn: WriteStorage<'a, AssociatedConnection>,
+	pub conns: Read<'a, Connections>,
 	pub lastupdate: WriteStorage<'a, LastUpdate>,
 	pub isplayer: WriteStorage<'a, IsPlayer>,
 	pub pingdata: WriteStorage<'a, PingData>,
@@ -83,15 +78,7 @@ impl LoginHandler {
 			Err(_) => None,
 		};
 
-		data.conns.associate(conn, entity, ConnectionType::Primary);
-
 		// Set all possible pieces of state for a plane
-		data.session.insert(entity, Session(session)).unwrap();
-		data.level.insert(entity, Level(0)).unwrap();
-		data.flag.insert(entity, flag).unwrap();
-		data.associated_conn
-			.insert(entity, AssociatedConnection(conn))
-			.unwrap();
 		data.lastupdate
 			.insert(entity, LastUpdate(Instant::now()))
 			.unwrap();
@@ -106,7 +93,7 @@ impl LoginHandler {
 		let team = data.gamemode.get_mut().assign_team(entity);
 		let plane = data.gamemode.get_mut().assign_plane(entity, team);
 
-		data.player_join.single_write(PlayerJoin { 
+		data.player_join.single_write(PlayerJoin {
 			id: entity,
 			level: Level(0),
 			name: Name(login.name),
@@ -114,6 +101,7 @@ impl LoginHandler {
 			flag: flag,
 			team,
 			plane,
+			conn,
 		});
 	}
 }

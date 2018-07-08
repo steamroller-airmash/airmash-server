@@ -12,6 +12,7 @@ pub fn register<'a, 'b>(builder: Builder<'a, 'b>) -> Builder<'a, 'b> {
 		.with::<on_player_killed::SetRespawnTimer>()
 		.with::<on_player_killed::DisplayMessage>()
 		.with::<on_player_killed::UpdateScore>()
+		.with::<on_join::InitConnection>()
 		.with::<on_join::InitKillCounters>()
 		.with::<on_join::InitJoinTime>()
 		.with::<on_join::InitEarnings>()

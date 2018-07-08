@@ -73,7 +73,13 @@ impl<'a> System<'a> for SendScoreUpdate {
 }
 
 impl SystemInfo for SendScoreUpdate {
-	type Dependencies = (InitTraits, InitEarnings, InitKillCounters, SendLogin);
+	type Dependencies = (
+		InitTraits,
+		InitEarnings,
+		InitKillCounters,
+		SendLogin,
+		InitConnection,
+	);
 
 	fn name() -> &'static str {
 		concat!(module_path!(), "::", line!())

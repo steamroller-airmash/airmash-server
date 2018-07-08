@@ -83,7 +83,7 @@ impl<'a> System<'a> for SendPlayerNew {
 }
 
 impl SystemInfo for SendPlayerNew {
-	type Dependencies = super::InitTraits;
+	type Dependencies = (super::InitTraits, super::InitConnection);
 
 	fn name() -> &'static str {
 		concat!(module_path!(), "::", line!())

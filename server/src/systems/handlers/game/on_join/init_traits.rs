@@ -22,6 +22,8 @@ pub struct InitTraitsData<'a> {
 	pub team: WriteStorage<'a, Team>,
 	pub plane: WriteStorage<'a, Plane>,
 	pub status: WriteStorage<'a, Status>,
+	pub session: WriteStorage<'a, Session>,
+	pub flag: WriteStorage<'a, Flag>,
 }
 
 impl<'a> System<'a> for InitTraits {
@@ -42,6 +44,8 @@ impl<'a> System<'a> for InitTraits {
 			mut team,
 			mut plane,
 			mut status,
+			mut session,
+			mut flag,
 		} = data;
 
 		for evt in channel.read(self.reader.as_mut().unwrap()) {
@@ -50,6 +54,8 @@ impl<'a> System<'a> for InitTraits {
 			team.insert(evt.id, evt.team).unwrap();
 			plane.insert(evt.id, evt.plane).unwrap();
 			status.insert(evt.id, PlayerStatus::Alive).unwrap();
+			session.insert(evt.id, evt.session.clone()).unwrap();
+			flag.insert(evt.id, evt.flag).unwrap();
 		}
 	}
 }

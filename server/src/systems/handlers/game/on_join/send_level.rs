@@ -53,7 +53,7 @@ impl<'a> System<'a> for SendPlayerLevel {
 }
 
 impl SystemInfo for SendPlayerLevel {
-	type Dependencies = (super::InitTraits, super::SendLogin);
+	type Dependencies = (super::InitTraits, super::SendLogin, super::InitConnection);
 
 	fn name() -> &'static str {
 		concat!(module_path!(), "::", line!())
