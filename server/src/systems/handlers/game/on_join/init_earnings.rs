@@ -31,7 +31,7 @@ impl<'a> System<'a> for InitEarnings {
 
 	fn run(&mut self, mut data: Self::SystemData) {
 		for evt in data.channel.read(self.reader.as_mut().unwrap()) {
-			data.earnings.insert(evt.0, Earnings(Score(0))).unwrap();
+			data.earnings.insert(evt.id, Earnings(Score(0))).unwrap();
 		}
 	}
 }

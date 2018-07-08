@@ -31,7 +31,7 @@ impl<'a> System<'a> for InitJoinTime {
 	fn run(&mut self, mut data: Self::SystemData) {
 		for evt in data.channel.read(self.reader.as_mut().unwrap()) {
 			data.join_time
-				.insert(evt.0, JoinTime(data.this_frame.0))
+				.insert(evt.id, JoinTime(data.this_frame.0))
 				.unwrap();
 		}
 	}

@@ -93,17 +93,17 @@ impl<'a> System<'a> for SendLogin {
 
 			let packet = Login {
 				clock: data.clock.get(),
-				id: evt.0,
+				id: evt.id,
 				room: data.gamemode.get().room(),
 				success: true,
 				token: "none".to_owned(),
-				team: *data.team.get(evt.0).unwrap(),
+				team: *data.team.get(evt.id).unwrap(),
 				ty: data.gamemode.get().gametype(),
 				players: player_data,
 			};
 
 			data.conns.send_to_player(
-				evt.0,
+				evt.id,
 				OwnedMessage::Binary(to_bytes(&ServerPacket::Login(packet)).unwrap()),
 			);
 		}

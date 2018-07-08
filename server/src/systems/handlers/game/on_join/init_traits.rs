@@ -53,15 +53,15 @@ impl<'a> System<'a> for InitTraits {
 		} = data;
 
 		for evt in channel.read(self.reader.as_mut().unwrap()) {
-			let player_team = gamemode.get_mut().assign_team(evt.0);
+			let player_team = gamemode.get_mut().assign_team(evt.id);
 
-			powerups.insert(evt.0, Powerups::default()).unwrap();
-			upgrades.insert(evt.0, Upgrades::default()).unwrap();
-			score.insert(evt.0, Score(0)).unwrap();
-			level.insert(evt.0, Level(0)).unwrap();
-			team.insert(evt.0, player_team).unwrap();
-			plane.insert(evt.0, PlaneType::Predator).unwrap();
-			status.insert(evt.0, PlayerStatus::Alive).unwrap();
+			powerups.insert(evt.id, Powerups::default()).unwrap();
+			upgrades.insert(evt.id, Upgrades::default()).unwrap();
+			score.insert(evt.id, Score(0)).unwrap();
+			level.insert(evt.id, Level(0)).unwrap();
+			team.insert(evt.id, player_team).unwrap();
+			plane.insert(evt.id, PlaneType::Predator).unwrap();
+			status.insert(evt.id, PlayerStatus::Alive).unwrap();
 		}
 	}
 }

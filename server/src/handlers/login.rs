@@ -117,7 +117,9 @@ impl LoginHandler {
 			.unwrap();
 
 		data.playersgame.0 += 1;
-		data.player_join.single_write(PlayerJoin(entity));
+		data.player_join.single_write(PlayerJoin{
+			id: entity
+		});
 	}
 }
 

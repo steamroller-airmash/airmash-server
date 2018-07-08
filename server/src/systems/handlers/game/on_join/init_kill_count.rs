@@ -30,8 +30,8 @@ impl<'a> System<'a> for InitKillCounters {
 
 	fn run(&mut self, mut data: Self::SystemData) {
 		for evt in data.channel.read(self.reader.as_mut().unwrap()) {
-			data.total_kills.insert(evt.0, TotalKills(0)).unwrap();
-			data.total_deaths.insert(evt.0, TotalDeaths(0)).unwrap();
+			data.total_kills.insert(evt.id, TotalKills(0)).unwrap();
+			data.total_deaths.insert(evt.id, TotalDeaths(0)).unwrap();
 		}
 	}
 }

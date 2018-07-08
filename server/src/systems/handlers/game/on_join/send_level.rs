@@ -39,13 +39,13 @@ impl<'a> System<'a> for SendPlayerLevel {
 
 		for evt in channel.read(self.reader.as_mut().unwrap()) {
 			let packet = PlayerLevel {
-				id: evt.0,
+				id: evt.id,
 				ty: PlayerLevelType::Login,
-				level: *level.get(evt.0).unwrap(),
+				level: *level.get(evt.id).unwrap(),
 			};
 
 			conns.send_to_others(
-				evt.0,
+				evt.id,
 				OwnedMessage::Binary(to_bytes(&ServerPacket::PlayerLevel(packet)).unwrap()),
 			);
 		}

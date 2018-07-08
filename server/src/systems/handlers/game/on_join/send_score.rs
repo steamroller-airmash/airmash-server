@@ -50,14 +50,14 @@ impl<'a> System<'a> for SendScoreUpdate {
 		} = data;
 
 		for evt in channel.read(self.reader.as_mut().unwrap()) {
-			let score = score.get(evt.0).unwrap();
-			let earnings = earnings.get(evt.0).unwrap();
-			let upgrades = upgrades.get(evt.0).unwrap();
-			let total_kills = total_kills.get(evt.0).unwrap();
-			let total_deaths = total_deaths.get(evt.0).unwrap();
+			let score = score.get(evt.id).unwrap();
+			let earnings = earnings.get(evt.id).unwrap();
+			let upgrades = upgrades.get(evt.id).unwrap();
+			let total_kills = total_kills.get(evt.id).unwrap();
+			let total_deaths = total_deaths.get(evt.id).unwrap();
 
 			let packet = ScoreUpdate {
-				id: evt.0,
+				id: evt.id,
 				score: *score,
 				earnings: earnings.0,
 				upgrades: upgrades.unused,

@@ -54,28 +54,28 @@ impl<'a> System<'a> for SendPlayerNew {
 		} = data;
 
 		for evt in channel.read(self.reader.as_mut().unwrap()) {
-			let powerups = *powerups.get(evt.0).unwrap();
+			let powerups = *powerups.get(evt.id).unwrap();
 
 			let upgrades = ProtocolUpgrades {
-				speed: upgrades.get(evt.0).unwrap().speed,
+				speed: upgrades.get(evt.id).unwrap().speed,
 				inferno: powerups.inferno,
 				shield: powerups.shield,
 			};
 
 			let player_new = PlayerNew {
-				id: evt.0,
-				status: *status.get(evt.0).unwrap(),
-				name: name.get(evt.0).unwrap().0.clone(),
-				ty: *plane.get(evt.0).unwrap(),
-				team: *team.get(evt.0).unwrap(),
-				pos: *pos.get(evt.0).unwrap(),
-				rot: *rot.get(evt.0).unwrap(),
-				flag: *flag.get(evt.0).unwrap(),
+				id: evt.id,
+				status: *status.get(evt.id).unwrap(),
+				name: name.get(evt.id).unwrap().0.clone(),
+				ty: *plane.get(evt.id).unwrap(),
+				team: *team.get(evt.id).unwrap(),
+				pos: *pos.get(evt.id).unwrap(),
+				rot: *rot.get(evt.id).unwrap(),
+				flag: *flag.get(evt.id).unwrap(),
 				upgrades,
 			};
 
 			conns.send_to_others(
-				evt.0,
+				evt.id,
 				OwnedMessage::Binary(to_bytes(&ServerPacket::PlayerNew(player_new)).unwrap()),
 			);
 		}

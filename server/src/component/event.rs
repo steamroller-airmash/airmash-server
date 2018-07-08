@@ -16,7 +16,9 @@ pub struct AckEvent(pub ConnectionId);
 pub struct AFKTimerEvent(pub Instant);
 
 #[derive(Copy, Clone, Debug)]
-pub struct PlayerJoin(pub Entity);
+pub struct PlayerJoin {
+	pub id: Entity	
+}
 #[derive(Copy, Clone, Debug)]
 pub struct PlayerLeave(pub Entity);
 #[derive(Copy, Clone, Debug)]

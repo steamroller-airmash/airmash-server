@@ -45,11 +45,11 @@ impl<'a> System<'a> for InitTransform {
 		for evt in channel.read(self.reader.as_mut().unwrap()) {
 			let player_pos = gamemode
 				.get_mut()
-				.spawn_pos(evt.0, *team.get(evt.0).unwrap());
+				.spawn_pos(evt.id, *team.get(evt.id).unwrap());
 
-			pos.insert(evt.0, player_pos).unwrap();
-			rot.insert(evt.0, Rotation::default()).unwrap();
-			vel.insert(evt.0, Velocity::default()).unwrap();
+			pos.insert(evt.id, player_pos).unwrap();
+			rot.insert(evt.id, Rotation::default()).unwrap();
+			vel.insert(evt.id, Velocity::default()).unwrap();
 		}
 	}
 }
