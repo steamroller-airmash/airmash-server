@@ -3,9 +3,10 @@ use specs::*;
 use std::any::Any;
 use std::time::Instant;
 
+use types::*;
 use types::collision::Collision;
-use types::{ConnectionId, Position};
 use utils::timer::TimerEventType;
+use protocol::FlagCode;
 
 #[derive(Copy, Clone, Debug, Default, Component)]
 pub struct ScoreDetailedEvent(pub ConnectionId);
@@ -15,9 +16,15 @@ pub struct AckEvent(pub ConnectionId);
 #[derive(Copy, Clone, Debug, Component)]
 pub struct AFKTimerEvent(pub Instant);
 
-#[derive(Copy, Clone, Debug)]
+#[derive(Clone, Debug)]
 pub struct PlayerJoin {
 	pub id: Entity,
+	pub plane: Plane,
+	pub team: Team,
+	pub level: Level,
+	pub name: Name,
+	pub flag: FlagCode,
+	pub session: Session,
 }
 #[derive(Copy, Clone, Debug)]
 pub struct PlayerLeave(pub Entity);

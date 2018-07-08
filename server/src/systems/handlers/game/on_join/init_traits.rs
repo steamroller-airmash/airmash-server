@@ -1,7 +1,5 @@
 use specs::*;
 
-use GameMode;
-use GameModeWriter;
 use SystemInfo;
 
 use types::*;
@@ -9,7 +7,7 @@ use types::*;
 use systems::handlers::packet::LoginHandler;
 
 use component::channel::*;
-use protocol::{PlaneType, PlayerStatus};
+use protocol::PlayerStatus;
 
 pub struct InitTraits {
 	reader: Option<OnPlayerJoinReader>,
@@ -18,10 +16,7 @@ pub struct InitTraits {
 #[derive(SystemData)]
 pub struct InitTraitsData<'a> {
 	pub channel: Read<'a, OnPlayerJoin>,
-	pub gamemode: GameModeWriter<'a, GameMode>,
 
-	pub powerups: WriteStorage<'a, Powerups>,
-	pub upgrades: WriteStorage<'a, Upgrades>,
 	pub score: WriteStorage<'a, Score>,
 	pub level: WriteStorage<'a, Level>,
 	pub team: WriteStorage<'a, Team>,
@@ -41,10 +36,7 @@ impl<'a> System<'a> for InitTraits {
 	fn run(&mut self, data: Self::SystemData) {
 		let Self::SystemData {
 			channel,
-			mut gamemode,
 
-			mut powerups,
-			mut upgrades,
 			mut score,
 			mut level,
 			mut team,
@@ -53,14 +45,10 @@ impl<'a> System<'a> for InitTraits {
 		} = data;
 
 		for evt in channel.read(self.reader.as_mut().unwrap()) {
-			let player_team = gamemode.get_mut().assign_team(evt.id);
-
-			powerups.insert(evt.id, Powerups::default()).unwrap();
-			upgrades.insert(evt.id, Upgrades::default()).unwrap();
 			score.insert(evt.id, Score(0)).unwrap();
-			level.insert(evt.id, Level(0)).unwrap();
-			team.insert(evt.id, player_team).unwrap();
-			plane.insert(evt.id, PlaneType::Predator).unwrap();
+			level.insert(evt.id, evt.level).unwrap();
+			team.insert(evt.id, evt.team).unwrap();
+			plane.insert(evt.id, evt.plane).unwrap();
 			status.insert(evt.id, PlayerStatus::Alive).unwrap();
 		}
 	}

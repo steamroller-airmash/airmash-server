@@ -31,7 +31,6 @@ pub struct LoginSystemData<'a> {
 	pub pingdata: WriteStorage<'a, PingData>,
 	pub playersgame: Write<'a, PlayersGame>,
 	pub lastshot: WriteStorage<'a, LastShotTime>,
-	pub energyregen: WriteStorage<'a, EnergyRegen>,
 
 	pub startime: Read<'a, StartTime>,
 	pub player_join: Write<'a, OnPlayerJoin>,
@@ -87,7 +86,6 @@ impl LoginHandler {
 		data.conns.associate(conn, entity, ConnectionType::Primary);
 
 		// Set all possible pieces of state for a plane
-		data.name.insert(entity, Name(login.name)).unwrap();
 		data.session.insert(entity, Session(session)).unwrap();
 		data.level.insert(entity, Level(0)).unwrap();
 		data.flag.insert(entity, flag).unwrap();
@@ -104,7 +102,19 @@ impl LoginHandler {
 			.unwrap();
 
 		data.playersgame.0 += 1;
-		data.player_join.single_write(PlayerJoin { id: entity });
+
+		let team = data.gamemode.get_mut().assign_team(entity);
+		let plane = data.gamemode.get_mut().assign_plane(entity, team);
+
+		data.player_join.single_write(PlayerJoin { 
+			id: entity,
+			level: Level(0),
+			name: Name(login.name),
+			session: Session(session),
+			flag: flag,
+			team,
+			plane,
+		});
 	}
 }
 
