@@ -18,6 +18,9 @@ pub trait GameMode: Any + Sync + Send {
 	fn assign_team(&mut self, player: Entity) -> Team;
 	fn spawn_pos(&mut self, player: Entity, team: Team) -> Position;
 
+	fn spawn_plane(&mut self, player: Entity, team: Team) -> Plane {
+		Plane::Predator
+	}
 	fn gametype(&self) -> GameType;
 	fn room(&self) -> String;
 }
