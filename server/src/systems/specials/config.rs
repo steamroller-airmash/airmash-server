@@ -19,6 +19,9 @@ lazy_static! {
 	pub static ref GOLIATH_SPECIAL_INTERVAL: Duration = Duration::from_secs(1);
 
 	pub static ref TORNADO_SPECIAL_ENERGY: Energy = Energy::new(0.9);
+	pub static ref TORNADO_MISSILE_OFFSETS: Vec<Position> = vec![
+
+	];
 
 	pub static ref PROWLER_SPECIAL_ENERGY: Energy = Energy::new(0.6);
 	pub static ref PROWLER_SPECIAL_DELAY: Duration = Duration::from_millis(1500);
