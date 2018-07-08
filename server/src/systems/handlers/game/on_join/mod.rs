@@ -23,3 +23,18 @@ pub use self::send_level::SendPlayerLevel;
 pub use self::send_login::SendLogin;
 pub use self::send_player_new::SendPlayerNew;
 pub use self::send_score::SendScoreUpdate;
+
+pub type AllJoinHandlers = (
+	InitEarnings,
+	InitJoinTime,
+	InitKillCounters,
+	InitLastRepelTime,
+	InitState,
+	InitStealthTime,
+	InitTraits,
+	InitTransform,
+	SendPlayerLevel,
+	SendLogin,
+	SendPlayerNew,
+	SendScoreUpdate,
+);
