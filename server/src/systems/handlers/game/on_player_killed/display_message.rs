@@ -52,10 +52,7 @@ impl<'a> System<'a> for DisplayMessage {
 			};
 
 			if evt.player == evt.killer {
-				warn!(
-					"Player {:?} killed themselves!",
-					evt.player
-				);
+				warn!("Player {:?} killed themselves!", evt.player);
 			}
 
 			data.conns.send_to_all(OwnedMessage::Binary(

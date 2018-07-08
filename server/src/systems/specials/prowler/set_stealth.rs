@@ -1,13 +1,13 @@
 use specs::*;
-use types::*;
 use types::systemdata::*;
+use types::*;
 
-use systems::specials::config::*;
 use systems::handlers::packet::KeyHandler;
+use systems::specials::config::*;
 
-use component::time::{LastStealthTime, ThisFrame};
 use component::channel::OnPlayerStealth;
 use component::event::PlayerStealth;
+use component::time::{LastStealthTime, ThisFrame};
 
 use protocol::PlaneType;
 use SystemInfo;
@@ -67,7 +67,7 @@ impl<'a> System<'a> for SetStealth {
 
 			data.channel.single_write(PlayerStealth {
 				player: ent,
-				stealthed: keystate.stealthed
+				stealthed: keystate.stealthed,
 			});
 		}
 	}

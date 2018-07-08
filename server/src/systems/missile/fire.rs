@@ -1,12 +1,12 @@
 use specs::prelude::*;
-use types::*;
 use types::systemdata::*;
+use types::*;
 
+use component::channel::OnMissileFire;
+use component::event::MissileFire;
 use component::flag::IsMissile;
 use component::reference::PlayerRef;
 use component::time::*;
-use component::event::MissileFire;
-use component::channel::OnMissileFire;
 
 use airmash_protocol::server::{PlayerFire, PlayerFireProjectile};
 use airmash_protocol::{to_bytes, ServerPacket};
@@ -35,7 +35,7 @@ pub struct MissileFireHandlerData<'a> {
 	pub lastshot: WriteStorage<'a, LastShotTime>,
 	pub is_alive: IsAlive<'a>,
 
-	pub channel: Write<'a, OnMissileFire>
+	pub channel: Write<'a, OnMissileFire>,
 }
 
 impl<'a> System<'a> for MissileFireHandler {
@@ -121,9 +121,10 @@ impl<'a> System<'a> for MissileFireHandler {
 						}],
 					};
 
-					conns.send_to_visible(ent, OwnedMessage::Binary(
-						to_bytes(&ServerPacket::PlayerFire(packet)).unwrap(),
-					));
+					conns.send_to_visible(
+						ent,
+						OwnedMessage::Binary(to_bytes(&ServerPacket::PlayerFire(packet)).unwrap()),
+					);
 
 					return Some((m_ent, info.missile_type, m_pos, m_vel, *team, ent));
 				},
@@ -147,7 +148,7 @@ impl<'a> System<'a> for MissileFireHandler {
 
 			channel.single_write(MissileFire {
 				player: v.5,
-				missile: v.0
+				missile: v.0,
 			});
 		}
 	}

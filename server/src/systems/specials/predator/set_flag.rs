@@ -3,8 +3,8 @@ use types::*;
 
 use systems::specials::config::*;
 
-use protocol::PlaneType;
 use component::flag::IsBoosting;
+use protocol::PlaneType;
 use systems::handlers::packet::KeyHandler;
 use SystemInfo;
 
@@ -44,7 +44,6 @@ impl<'a> System<'a> for SetBoostingFlag {
 				let keystate = keystate.get(ent).unwrap();
 
 				if *energy == Energy::new(0.0) || !keystate.special {
-
 					if boosting.get(ent).is_some() {
 						clears.push(ent);
 						*energy_regen = info.energy_regen;
@@ -54,7 +53,7 @@ impl<'a> System<'a> for SetBoostingFlag {
 				} else if keystate.special && (keystate.up || keystate.down) {
 					*energy_regen = *PREDATOR_SPECIAL_REGEN;
 
-					// Only insert when there is no value there 
+					// Only insert when there is no value there
 					// already, to prevent multiple change
 					// flags from being set
 					if boosting.get(ent).is_none() {

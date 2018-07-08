@@ -1,6 +1,6 @@
 use specs::*;
-use types::*;
 use types::systemdata::*;
+use types::*;
 
 use consts::timer::PING_DISPATCH;
 

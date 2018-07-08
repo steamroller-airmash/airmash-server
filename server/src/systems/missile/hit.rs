@@ -100,7 +100,7 @@ impl<'a> System<'a> for MissileHitSystem {
 					killer: owner.0,
 					pos: *pos,
 				});
-			} 
+			}
 
 			let packet = PlayerHit {
 				id: missile.ent,

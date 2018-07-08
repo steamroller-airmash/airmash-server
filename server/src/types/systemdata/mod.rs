@@ -3,8 +3,8 @@
 //! together. Writes to these components
 //! must still be done individually
 
-mod isalive;
 mod clock;
+mod isalive;
 
-pub use self::isalive::IsAlive;
 pub use self::clock::ReadClock;
+pub use self::isalive::IsAlive;

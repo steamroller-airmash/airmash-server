@@ -1,5 +1,5 @@
-use protocol::include::FlagCode;
 use fnv::FnvHashMap;
+use protocol::include::FlagCode;
 
 const COUNTRY_CODES: [Option<&'static str>; 126] = [
 	None,

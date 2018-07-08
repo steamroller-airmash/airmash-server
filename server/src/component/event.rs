@@ -17,7 +17,7 @@ pub struct AFKTimerEvent(pub Instant);
 
 #[derive(Copy, Clone, Debug)]
 pub struct PlayerJoin {
-	pub id: Entity	
+	pub id: Entity,
 }
 #[derive(Copy, Clone, Debug)]
 pub struct PlayerLeave(pub Entity);
@@ -57,17 +57,17 @@ pub struct TimerEvent {
 #[derive(Copy, Clone, Debug)]
 pub struct PlayerStealth {
 	pub stealthed: bool,
-	pub player: Entity
+	pub player: Entity,
 }
 #[derive(Copy, Clone, Debug)]
 pub struct PlayerRepel {
-	pub player: Entity
+	pub player: Entity,
 }
 
 #[derive(Copy, Clone, Debug)]
 pub struct MissileFire {
 	pub player: Entity,
-	pub missile: Entity
+	pub missile: Entity,
 }
 
 impl Default for TimerEvent {

@@ -1,10 +1,10 @@
 use specs::*;
 
-use types::*;
 use types::systemdata::*;
+use types::*;
 
-use SystemInfo;
 use systems::specials::prowler::SetStealth;
+use SystemInfo;
 
 use component::channel::*;
 use component::time::{LastUpdate, StartTime};
@@ -31,9 +31,7 @@ pub struct SendEventStealthData<'a> {
 
 impl SendEventStealth {
 	pub fn new() -> Self {
-		Self {
-			reader: None
-		}
+		Self { reader: None }
 	}
 }
 
@@ -43,11 +41,9 @@ impl<'a> System<'a> for SendEventStealth {
 	fn setup(&mut self, res: &mut Resources) {
 		Self::SystemData::setup(res);
 
-		self.reader = Some(
-			res.fetch_mut::<OnPlayerStealth>().register_reader()
-		);
+		self.reader = Some(res.fetch_mut::<OnPlayerStealth>().register_reader());
 	}
-	
+
 	fn run(&mut self, data: Self::SystemData) {
 		let Self::SystemData {
 			conns,
@@ -61,23 +57,23 @@ impl<'a> System<'a> for SendEventStealth {
 		} = data;
 
 		for evt in channel.read(self.reader.as_mut().unwrap()) {
-			if !is_alive.get(evt.player) { continue; }
+			if !is_alive.get(evt.player) {
+				continue;
+			}
 
 			let packet = EventStealth {
 				id: evt.player,
 				state: evt.stealthed,
 				energy: *energy.get(evt.player).unwrap(),
-				energy_regen: *energy_regen.get(evt.player).unwrap()
+				energy_regen: *energy_regen.get(evt.player).unwrap(),
 			};
 
-			let message = OwnedMessage::Binary(
-				to_bytes(&ServerPacket::EventStealth(packet)).unwrap()
-			);
+			let message =
+				OwnedMessage::Binary(to_bytes(&ServerPacket::EventStealth(packet)).unwrap());
 
 			if evt.stealthed {
 				conns.send_to_visible(evt.player, message);
-			}
-			else {
+			} else {
 				conns.send_to_player(evt.player, message);
 
 				// Force position update system to send an update packet

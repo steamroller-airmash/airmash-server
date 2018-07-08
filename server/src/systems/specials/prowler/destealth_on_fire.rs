@@ -1,10 +1,9 @@
-
 use specs::*;
 use types::*;
 
-use SystemInfo;
 use component::channel::*;
 use systems::missile::MissileFireHandler;
+use SystemInfo;
 
 use protocol::server::EventStealth;
 use protocol::{to_bytes, ServerPacket};
@@ -22,7 +21,7 @@ pub struct DestealthOnFireData<'a> {
 	keystate: WriteStorage<'a, KeyState>,
 	plane: ReadStorage<'a, Plane>,
 	energy: ReadStorage<'a, Energy>,
-	energy_regen: ReadStorage<'a, EnergyRegen>
+	energy_regen: ReadStorage<'a, EnergyRegen>,
 }
 
 impl<'a> System<'a> for DestealthOnFire {
@@ -31,9 +30,7 @@ impl<'a> System<'a> for DestealthOnFire {
 	fn setup(&mut self, res: &mut Resources) {
 		Self::SystemData::setup(res);
 
-		self.reader = Some(
-			res.fetch_mut::<OnMissileFire>().register_reader()
-		);
+		self.reader = Some(res.fetch_mut::<OnMissileFire>().register_reader());
 	}
 
 	fn run(&mut self, mut data: Self::SystemData) {
@@ -48,12 +45,11 @@ impl<'a> System<'a> for DestealthOnFire {
 				id: evt.player,
 				state: false,
 				energy: *data.energy.get(evt.player).unwrap(),
-				energy_regen: *data.energy_regen.get(evt.player).unwrap()
+				energy_regen: *data.energy_regen.get(evt.player).unwrap(),
 			};
 
-			let message = OwnedMessage::Binary(
-				to_bytes(&ServerPacket::EventStealth(packet)).unwrap()
-			);
+			let message =
+				OwnedMessage::Binary(to_bytes(&ServerPacket::EventStealth(packet)).unwrap());
 
 			data.conns.send_to_player(evt.player, message);
 		}
@@ -68,6 +64,6 @@ impl SystemInfo for DestealthOnFire {
 	}
 
 	fn new() -> Self {
-		Self{ reader: None }
+		Self { reader: None }
 	}
 }

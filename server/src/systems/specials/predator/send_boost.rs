@@ -1,11 +1,11 @@
 use shrev::*;
 use specs::*;
 
-use types::*;
 use types::systemdata::*;
+use types::*;
 
-use SystemInfo;
 use systems::specials::predator::SetBoostingFlag;
+use SystemInfo;
 
 use component::flag::{IsBoosting, IsPlayer};
 
@@ -41,7 +41,7 @@ impl SendEventBoost {
 		Self {
 			dirty: Default::default(),
 			insert: None,
-			remove: None
+			remove: None,
 		}
 	}
 
@@ -91,20 +91,16 @@ impl<'a> System<'a> for SendEventBoost {
 		self.insert = Some(storage.track_inserted());
 		self.remove = Some(storage.track_removed());
 	}
-	
+
 	fn run(&mut self, data: Self::SystemData) {
 		self.dirty.clear();
-		data.boosting.populate_inserted(
-			&mut self.insert.as_mut().unwrap(), 
-			&mut self.dirty,
-		);
+		data.boosting
+			.populate_inserted(&mut self.insert.as_mut().unwrap(), &mut self.dirty);
 		self.send_packets(&data, true);
 
 		self.dirty.clear();
-		data.boosting.populate_removed(
-			&mut self.remove.as_mut().unwrap(),
-			&mut self.dirty,
-		);
+		data.boosting
+			.populate_removed(&mut self.remove.as_mut().unwrap(), &mut self.dirty);
 		self.send_packets(&data, false);
 	}
 }

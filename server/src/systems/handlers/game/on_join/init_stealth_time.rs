@@ -30,7 +30,9 @@ impl<'a> System<'a> for InitStealthTime {
 
 	fn run(&mut self, mut data: Self::SystemData) {
 		for evt in data.channel.read(self.reader.as_mut().unwrap()) {
-			data.last_stealth.insert(evt.id, LastStealthTime(data.start_time.0)).unwrap();
+			data.last_stealth
+				.insert(evt.id, LastStealthTime(data.start_time.0))
+				.unwrap();
 		}
 	}
 }

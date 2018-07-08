@@ -16,9 +16,9 @@ use systems;
 use timeloop::timeloop;
 use timers;
 
+use types::connection::Message;
 use types::event::ConnectionEvent;
 use types::{Connections, FutureDispatcher, GameMode};
-use types::connection::Message;
 
 use component::event::TimerEvent;
 use component::time::{LastFrame, StartTime, ThisFrame};

@@ -2,8 +2,8 @@ use metrics::*;
 use specs::prelude::*;
 use std::time::Instant;
 use tokio::prelude::Sink;
-use types::*;
 use types::connection::{Message, MessageInfo};
+use types::*;
 
 use websocket::OwnedMessage;
 
@@ -33,7 +33,7 @@ impl PollComplete {
 	fn send_to_connection<'a>(
 		conns: &mut Write<'a, Connections>,
 		id: ConnectionId,
-		msg: OwnedMessage
+		msg: OwnedMessage,
 	) {
 		match conns.0.get_mut(&id) {
 			Some(ref mut conn) => {
@@ -68,30 +68,24 @@ impl<'a> System<'a> for PollComplete {
 			cnt += 1;
 
 			match msg.info {
-				MessageInfo::ToConnection(id) => {
-					Self::send_to_connection(&mut conns, id, msg.msg)
-				},
+				MessageInfo::ToConnection(id) => Self::send_to_connection(&mut conns, id, msg.msg),
 				MessageInfo::ToTeam(player) => {
 					let player_team = *teams.get(player).unwrap();
 
-					(
-						&associated,
-						&teams
-					).join()
+					(&associated, &teams)
+						.join()
 						.filter(|(_, team)| **team == player_team)
 						.for_each(|(associated, _)| {
 							Self::send_to_connection(&mut conns, associated.0, msg.msg.clone());
 						});
-				},
+				}
 				MessageInfo::ToVisible(_player) => {
 					// TODO: Implement this properly
-					(&associated).join()
-						.for_each(|associated| {
-							Self::send_to_connection(&mut conns, associated.0, msg.msg.clone());
-						});
+					(&associated).join().for_each(|associated| {
+						Self::send_to_connection(&mut conns, associated.0, msg.msg.clone());
+					});
 				}
 			}
-
 		}
 
 		metrics.count("packets-sent", cnt).unwrap();
@@ -126,9 +120,7 @@ impl SystemInfo for PollComplete {
 	}
 
 	fn new_args(mut a: Box<Any>) -> Self {
-		let r = a
-			.downcast_mut::<Receiver<Message>>()
-			.unwrap();
+		let r = a.downcast_mut::<Receiver<Message>>().unwrap();
 		// Replace the channel within the box with a
 		// dummy one, which will be dropped immediately
 		// anyway

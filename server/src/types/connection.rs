@@ -37,12 +37,12 @@ pub enum ConnectionType {
 pub enum MessageInfo {
 	ToConnection(ConnectionId),
 	ToTeam(Entity),
-	ToVisible(Entity)
+	ToVisible(Entity),
 }
 
 pub struct Message {
 	pub info: MessageInfo,
-	pub msg: OwnedMessage
+	pub msg: OwnedMessage,
 }
 
 pub struct Connections(
@@ -159,12 +159,14 @@ impl Connections {
 			id, msg
 		);
 
-		self.1.lock().unwrap().send(
-				Message{
-					info: MessageInfo::ToConnection(id),
-					msg: msg
-				}
-			).unwrap();
+		self.1
+			.lock()
+			.unwrap()
+			.send(Message {
+				info: MessageInfo::ToConnection(id),
+				msg: msg,
+			})
+			.unwrap();
 	}
 
 	pub fn send_to_all(&self, msg: OwnedMessage) {
@@ -179,12 +181,14 @@ impl Connections {
 				None
 			})
 			.for_each(|id| {
-				self.1.lock().unwrap().send(
-					Message{
+				self.1
+					.lock()
+					.unwrap()
+					.send(Message {
 						info: MessageInfo::ToConnection(*id),
-						msg: msg.clone()
-					}
-				).unwrap();
+						msg: msg.clone(),
+					})
+					.unwrap();
 			});
 	}
 
@@ -199,26 +203,38 @@ impl Connections {
 				}
 				None
 			})
-			.for_each(|id| self.1.lock().unwrap().send(
-				Message{
-					info: MessageInfo::ToConnection(*id),
-					msg: msg.clone()
-				}
-			).unwrap());
+			.for_each(|id| {
+				self.1
+					.lock()
+					.unwrap()
+					.send(Message {
+						info: MessageInfo::ToConnection(*id),
+						msg: msg.clone(),
+					})
+					.unwrap()
+			});
 	}
 
 	pub fn send_to_team(&self, player: Entity, msg: OwnedMessage) {
-		self.1.lock().unwrap().send(Message {
-			info: MessageInfo::ToTeam(player),
-			msg: msg
-		}).unwrap();
+		self.1
+			.lock()
+			.unwrap()
+			.send(Message {
+				info: MessageInfo::ToTeam(player),
+				msg: msg,
+			})
+			.unwrap();
 	}
 
 	pub fn send_to_visible(&self, player: Entity, msg: OwnedMessage) {
-		self.1.lock().unwrap().send(Message {
-			info: MessageInfo::ToVisible(player),
-			msg: msg
-		}).unwrap();
+		self.1
+			.lock()
+			.unwrap()
+			.send(Message {
+				info: MessageInfo::ToVisible(player),
+				msg: msg,
+			})
+			.unwrap();
 	}
 
 	pub fn iter<'a>(&'a self) -> impl Iterator<Item = &'a ConnectionData> {

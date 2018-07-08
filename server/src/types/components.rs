@@ -7,9 +7,9 @@ use types::ConnectionId;
 use std::time::Duration;
 
 pub use protocol::FlagCode as Flag;
+pub use protocol::MobType as Mob;
 pub use protocol::PlaneType as Plane;
 pub use protocol::PlayerStatus as Status;
-pub use protocol::MobType as Mob;
 
 #[derive(Clone, Debug, Default, Component, Eq, PartialEq, Hash)]
 pub struct Name(pub String);

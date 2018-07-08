@@ -1,5 +1,5 @@
-use specs::*;
 use hibitset::BitSetLike;
+use specs::*;
 
 use component::flag::{IsDead, IsSpectating};
 

@@ -19,6 +19,7 @@ extern crate serde;
 
 // Regular Dependencies
 extern crate fnv;
+extern crate hibitset;
 extern crate htmlescape;
 extern crate hyper;
 extern crate rand;
@@ -31,7 +32,6 @@ extern crate tokio;
 extern crate tokio_core;
 extern crate uuid;
 extern crate websocket;
-extern crate hibitset;
 
 use websocket::futures;
 

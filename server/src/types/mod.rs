@@ -14,8 +14,8 @@ pub mod collision;
 pub mod config;
 pub mod systemdata;
 
-pub(crate) mod gamemode;
 pub(crate) mod connection;
+pub(crate) mod gamemode;
 
 pub use self::components::*;
 pub use self::config::Config;
@@ -32,9 +32,5 @@ pub mod event {
 	pub use types::connection_events::*;
 }
 
+pub use self::connection::{ConnectionSink, ConnectionType, Connections};
 pub use self::gamemode::{GameMode, GameModeWriter};
-pub use self::connection::{
-	Connections,
-	ConnectionSink,
-	ConnectionType,
-};

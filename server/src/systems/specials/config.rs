@@ -4,7 +4,7 @@ use std::time::Duration;
 
 lazy_static! {
 	/// The pred special causes negative energy regen
-	/// this value is the rate at which it causes 
+	/// this value is the rate at which it causes
 	/// energy to decrease.
 	pub static ref PREDATOR_SPECIAL_REGEN: EnergyRegen = EnergyRegen::new(-0.01);
 

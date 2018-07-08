@@ -219,8 +219,7 @@ impl PositionUpdate {
 
 					if !keystate.stealthed {
 						data.conns.send_to_all(message);
-					}
-					else {
+					} else {
 						data.conns.send_to_team(ent, message);
 					}
 				},
@@ -281,8 +280,7 @@ impl PositionUpdate {
 
 					if !keystate.stealthed {
 						data.conns.send_to_all(message);
-					}
-					else {
+					} else {
 						data.conns.send_to_team(ent, message);
 					}
 				},
