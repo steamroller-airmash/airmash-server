@@ -1,5 +1,5 @@
 use airmash_protocol::client::Login;
-use airmash_protocol::{FlagCode, PlaneType};
+use airmash_protocol::FlagCode;
 use specs::*;
 use uuid::Uuid;
 
@@ -20,13 +20,8 @@ use GameMode;
 #[derive(SystemData)]
 pub struct LoginSystemData<'a> {
 	pub entities: Entities<'a>,
-	pub energy: WriteStorage<'a, Energy>,
-	pub health: WriteStorage<'a, Health>,
-	pub keystate: WriteStorage<'a, KeyState>,
 	pub name: WriteStorage<'a, Name>,
 	pub session: WriteStorage<'a, Session>,
-	pub powerups: WriteStorage<'a, Powerups>,
-	pub upgrades: WriteStorage<'a, Upgrades>,
 	pub level: WriteStorage<'a, Level>,
 	pub flag: WriteStorage<'a, Flag>,
 	pub conns: Write<'a, Connections>,
@@ -92,13 +87,8 @@ impl LoginHandler {
 		data.conns.associate(conn, entity, ConnectionType::Primary);
 
 		// Set all possible pieces of state for a plane
-		data.energy.insert(entity, Energy::new(1.0)).unwrap();
-		data.health.insert(entity, Health::new(1.0)).unwrap();
-		data.keystate.insert(entity, KeyState::default()).unwrap();
 		data.name.insert(entity, Name(login.name)).unwrap();
 		data.session.insert(entity, Session(session)).unwrap();
-		data.powerups.insert(entity, Powerups::default()).unwrap();
-		data.upgrades.insert(entity, Upgrades::default()).unwrap();
 		data.level.insert(entity, Level(0)).unwrap();
 		data.flag.insert(entity, flag).unwrap();
 		data.associated_conn
@@ -111,9 +101,6 @@ impl LoginHandler {
 		data.pingdata.insert(entity, PingData::default()).unwrap();
 		data.lastshot
 			.insert(entity, LastShotTime(data.startime.0))
-			.unwrap();
-		data.energyregen
-			.insert(entity, data.config.planes[PlaneType::Predator].energy_regen)
 			.unwrap();
 
 		data.playersgame.0 += 1;
