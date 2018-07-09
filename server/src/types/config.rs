@@ -232,7 +232,7 @@ impl Default for PlaneInfos {
 				brake_factor: AccelScalar::new(0.025),
 				boost_factor: 1.0,
 
-				max_speed: Speed::new(6.0),
+				max_speed: Speed::new(4.5),
 				min_speed: Speed::new(0.001),
 				flag_speed: Speed::new(5.0),
 				inferno_factor: 0.75,
