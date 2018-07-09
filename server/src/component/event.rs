@@ -72,10 +72,10 @@ pub struct PlayerRepel {
 	pub player: Entity,
 }
 
-#[derive(Copy, Clone, Debug)]
+#[derive(Clone, Debug)]
 pub struct MissileFire {
 	pub player: Entity,
-	pub missile: Entity,
+	pub missiles: Vec<Entity>,
 }
 
 impl Default for TimerEvent {

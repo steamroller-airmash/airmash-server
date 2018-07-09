@@ -19,6 +19,32 @@ lazy_static! {
 	pub static ref GOLIATH_SPECIAL_INTERVAL: Duration = Duration::from_secs(1);
 
 	pub static ref TORNADO_SPECIAL_ENERGY: Energy = Energy::new(0.9);
+	pub static ref TORNADO_MISSILE_DETAILS: Vec<MissileFireInfo> = vec![
+		MissileFireInfo {
+			pos_offset: Position::new(
+				Distance::new(0.0),
+				Distance::new(40.1),
+			),
+			rot_offset: Rotation::new(0.0),
+			ty: Mob::TornadoTripleMissile,
+		},
+		MissileFireInfo {
+			pos_offset: Position::new(
+				Distance::new(15.0),
+				Distance::new(9.6)
+			),
+			rot_offset: Rotation::new(-0.05012323812),
+			ty: Mob::TornadoTripleMissile,
+		},
+		MissileFireInfo {
+			pos_offset: Position::new(
+				Distance::new(-15.0),
+				Distance::new(9.6),
+			),
+			rot_offset: Rotation::new(0.05012323812),
+			ty: Mob::TornadoTripleMissile,
+		}
+	];
 
 	pub static ref PROWLER_SPECIAL_ENERGY: Energy = Energy::new(0.6);
 	pub static ref PROWLER_SPECIAL_DELAY: Duration = Duration::from_millis(1500);
