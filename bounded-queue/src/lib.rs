@@ -63,6 +63,10 @@ impl<T: Default> BoundedQueue<T> {
 
 impl<T: Clone + Default> BoundedQueue<T> {
 	pub fn new(size: usize) -> Self {
+		if size == 0 {
+			panic!("A bounded queue may not be constructed with a size of 0!");
+		}
+
 		Self {
 			front: 0,
 			back: 0,
