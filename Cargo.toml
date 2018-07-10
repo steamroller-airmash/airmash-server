@@ -1,0 +1,12 @@
+
+[profile.release]
+debug = true
+lto = true
+
+[workspace]
+members = [
+	"server",
+	"base",
+	"ctf",
+	"specgen"
+]
