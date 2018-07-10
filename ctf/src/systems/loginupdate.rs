@@ -60,7 +60,7 @@ impl<'a> System<'a> for LoginUpdateSystem {
 					};
 
 					data.conns.send_to_player(
-						evt.0,
+						evt.id,
 						OwnedMessage::Binary(to_bytes(&ServerPacket::GameFlag(packet)).unwrap()),
 					);
 				});
