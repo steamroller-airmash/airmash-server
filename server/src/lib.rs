@@ -32,6 +32,7 @@ extern crate tokio;
 extern crate tokio_core;
 extern crate uuid;
 extern crate websocket;
+extern crate bounded_queue;
 
 use websocket::futures;
 

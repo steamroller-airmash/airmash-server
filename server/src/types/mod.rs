@@ -7,6 +7,7 @@ mod powerups;
 mod units;
 mod upgrades;
 mod vector2;
+mod ratelimit;
 
 mod connection_events;
 

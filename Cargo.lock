@@ -2,6 +2,7 @@
 name = "airmash-server"
 version = "0.0.1"
 dependencies = [
+ "bounded-queue 0.0.1",
  "cadence 0.14.0 (registry+https://github.com/rust-lang/crates.io-index)",
  "dimensioned 0.6.0 (registry+https://github.com/rust-lang/crates.io-index)",
  "fnv 1.0.6 (registry+https://github.com/rust-lang/crates.io-index)",

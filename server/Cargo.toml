@@ -12,7 +12,7 @@ nodelay = []
 geoip = [ "geolocate-ip" ]
 # Enable looking for the X-Forwarded-For header
 # when determining client IP address
-proxied = [ ]# "hyper" ]
+proxied = [ ]
 
 [profile.release]
 debug = true
@@ -30,7 +30,7 @@ dimensioned = "*"
 lazy_static = "*"
 fnv = "*"
 rand = "*"
-shred = { version="*" }
+shred = "*"
 shred-derive = "*"
 shrev = "*"
 tokio = "*"
@@ -38,6 +38,7 @@ tokio-core = "*"
 rayon = "1.0"
 htmlescape = "*"
 hibitset = "*"
+bounded-queue = { path = "../bounded-queue" }
 
 [dependencies.cadence]
 version = "0.14"
