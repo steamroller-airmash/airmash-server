@@ -6,7 +6,7 @@ use std::mem;
 pub struct BoundedQueue<T> {
 	front: usize,
 	back: usize,
-	vals: Box<[T]>
+	vals: Box<[Option<T>]>
 }
 
 impl<T> BoundedQueue<T> {
@@ -31,37 +31,32 @@ impl<T> BoundedQueue<T> {
 	}
 
 	pub fn push(&mut self, val: T) -> Option<T> {
-		let val = mem::replace(&mut self.vals[self.first()], val);
+		let val = mem::replace(&mut self.vals[self.first()], Some(val));
 
 		if self.is_full() {
 			self.back += 1;
-			self.front += 1;
-			Some(val)
 		}
-		else {
-			self.front += 1;
-			None
-		}
-	}
-}
+		self.front += 1;
 
-impl<T: Default> BoundedQueue<T> {
+		val
+	}
+
 	pub fn pop(&mut self) -> Option<T> {
 		if self.is_empty() { return None; }
 
 		let last = self.last();
 		self.back += 1;
 
-		Some(mem::replace(&mut self.vals[last], T::default()))
+		mem::replace(&mut self.vals[last], None)
 	}
 	pub fn peek(&self) -> Option<&T> {
 		if self.is_empty() { return None; }
 
-		Some(&self.vals[self.last()])
+		Some(self.vals[self.last()].as_ref().unwrap())
 	}
 }
 
-impl<T: Clone + Default> BoundedQueue<T> {
+impl<T: Clone> BoundedQueue<T> {
 	pub fn new(size: usize) -> Self {
 		if size == 0 {
 			panic!("A bounded queue may not be constructed with a size of 0!");
@@ -70,7 +65,7 @@ impl<T: Clone + Default> BoundedQueue<T> {
 		Self {
 			front: 0,
 			back: 0,
-			vals: vec![T::default(); size].into_boxed_slice()
+			vals: vec![None; size].into_boxed_slice()
 		}
 	}
 }
