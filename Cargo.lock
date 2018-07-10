@@ -82,6 +82,10 @@ version = "1.0.3"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 
 [[package]]
+name = "bounded-queue"
+version = "0.0.1"
+
+[[package]]
 name = "byteorder"
 version = "1.2.3"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -694,10 +698,6 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 dependencies = [
  "winapi 0.3.5 (registry+https://github.com/rust-lang/crates.io-index)",
 ]
-
-[[package]]
-name = "ringbuffer"
-version = "0.0.1"
 
 [[package]]
 name = "safemem"

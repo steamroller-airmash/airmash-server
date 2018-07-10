@@ -1,5 +1,5 @@
 [package]
-name = "ringbuffer"
+name = "bounded-queue"
 version = "0.0.1"
 authors = ["STEAMROLLER"]
 

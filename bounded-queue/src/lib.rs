@@ -24,22 +24,22 @@ impl<T> BoundedQueue<T> {
 	}
 
 	fn last(&self) -> usize {
-		self.back % self.len()
+		self.back % self.capacity()
 	}
 	fn first(&self) -> usize {
-		self.front % self.len()
+		self.front % self.capacity()
 	}
 
 	pub fn push(&mut self, val: T) -> Option<T> {
 		let val = mem::replace(&mut self.vals[self.first()], val);
 
-		self.front += 1;
-
 		if self.is_full() {
 			self.back += 1;
+			self.front += 1;
 			Some(val)
 		}
 		else {
+			self.front += 1;
 			None
 		}
 	}
