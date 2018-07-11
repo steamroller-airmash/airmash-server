@@ -82,7 +82,22 @@ enum LeaveHorizonType : u8 {
 
 # TODO: transcribe from statsbot
 enum ErrorType : u8 {
-	
+	Disconnected_PacketFlooding = 1,
+	Banned_PacketFlooding = 2,
+	Banned = 3,
+	Respawn_IdleRequired = 5,
+	Disconnected_AfkTimeout = 6,
+	Disconnected_Kicked = 7,
+	Disconnected_InvalidLogin = 8,
+	Disconnected_IncorrectProtocolLevel = 9,
+	Banned_AccountBanned = 10,
+	Disconnected_AccountAlreadyLoggedIn = 11,
+	Respawn_IsBTRGame = 12,
+	Spectate_IdleRequired = 13,
+	NotEnoughUpgrades = 20,
+	ChatThottled = 30,
+	FlagChangeThrottled = 31,
+	UnknownCommand = 100
 }
 
 # TODO: rev-eng
