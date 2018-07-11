@@ -1,6 +1,5 @@
-
-mod parser;
 mod generator;
+mod parser;
 
-pub use parser::SpecFieldType as FieldType;
 pub use generator::Generator as SerdeBuilder;
+pub use parser::SpecFieldType as FieldType;
