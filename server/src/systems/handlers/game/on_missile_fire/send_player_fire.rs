@@ -1,7 +1,7 @@
 use specs::*;
 
-use types::*;
 use types::systemdata::*;
+use types::*;
 
 use dispatch::SystemInfo;
 use systems::missile::MissileFireHandler;
@@ -48,7 +48,8 @@ impl<'a> System<'a> for SendPlayerFire {
 
 	fn run(&mut self, data: Self::SystemData) {
 		for evt in data.channel.read(self.reader.as_mut().unwrap()) {
-			let projectiles = evt.missiles
+			let projectiles = evt
+				.missiles
 				.iter()
 				.map(|&ent| {
 					let ty = *data.mob.get(ent).unwrap();
@@ -73,12 +74,12 @@ impl<'a> System<'a> for SendPlayerFire {
 				id: evt.player,
 				energy: *data.energy.get(evt.player).unwrap(),
 				energy_regen: *data.energy_regen.get(evt.player).unwrap(),
-				projectiles
+				projectiles,
 			};
 
 			data.conns.send_to_visible(
 				evt.player,
-				OwnedMessage::Binary(to_bytes(&ServerPacket::PlayerFire(packet)).unwrap())
+				OwnedMessage::Binary(to_bytes(&ServerPacket::PlayerFire(packet)).unwrap()),
 			);
 		}
 	}

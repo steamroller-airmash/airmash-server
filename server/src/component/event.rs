@@ -80,12 +80,12 @@ pub struct MissileFire {
 
 #[derive(Clone, Debug)]
 pub struct PlayerMute {
-	pub player: Entity
+	pub player: Entity,
 }
 
 #[derive(Clone, Debug)]
 pub struct PlayerThrottle {
-	pub player: Entity
+	pub player: Entity,
 }
 
 #[derive(Clone, Debug)]
@@ -93,14 +93,14 @@ pub enum ChatEventType {
 	Public,
 	Whisper(u16),
 	Team,
-	Say
+	Say,
 }
 
 #[derive(Clone, Debug)]
 pub struct ChatEvent {
 	pub ty: ChatEventType,
 	pub text: String,
-	pub conn: ConnectionId
+	pub conn: ConnectionId,
 }
 
 impl Default for TimerEvent {

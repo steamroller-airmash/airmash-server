@@ -3,7 +3,7 @@ use specs::*;
 use types::*;
 
 use protocol::client::Say;
-use protocol::server::{ChatSay, ServerPacket, Error};
+use protocol::server::{ChatSay, Error, ServerPacket};
 use protocol::{to_bytes, ErrorType};
 use websocket::OwnedMessage;
 
@@ -48,13 +48,18 @@ impl<'a> System<'a> for SayHandler {
 				None => continue,
 			};
 
-			if data.muted.get(player).is_some() { continue; }
-			if data.throttled.get(player).is_some() { 
-				data.conns.send_to(evt.0, OwnedMessage::Binary(
-					to_bytes(&ServerPacket::Error(Error {
-						error: ErrorType::ChatThrottled
-					})).unwrap()
-				));
+			if data.muted.get(player).is_some() {
+				continue;
+			}
+			if data.throttled.get(player).is_some() {
+				data.conns.send_to(
+					evt.0,
+					OwnedMessage::Binary(
+						to_bytes(&ServerPacket::Error(Error {
+							error: ErrorType::ChatThrottled,
+						})).unwrap(),
+					),
+				);
 				continue;
 			}
 

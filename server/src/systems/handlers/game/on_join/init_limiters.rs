@@ -42,13 +42,19 @@ impl<'a> System<'a> for InitLimiters {
 
 	fn run(&mut self, mut data: Self::SystemData) {
 		for evt in data.channel.read(self.reader.as_mut().unwrap()) {
-			data.mute.insert(evt.id, ChatMuteLimiter(
-				RateLimiter::new(MUTE_LIMIT, *MUTE_PERIOD)
-			)).unwrap();
-			
-			data.throttle.insert(evt.id, ChatThrottleLimiter(
-				RateLimiter::new(THROTTLE_LIMIT, *THROTTLE_PERIOD)
-			)).unwrap();
+			data.mute
+				.insert(
+					evt.id,
+					ChatMuteLimiter(RateLimiter::new(MUTE_LIMIT, *MUTE_PERIOD)),
+				)
+				.unwrap();
+
+			data.throttle
+				.insert(
+					evt.id,
+					ChatThrottleLimiter(RateLimiter::new(THROTTLE_LIMIT, *THROTTLE_PERIOD)),
+				)
+				.unwrap();
 		}
 	}
 }

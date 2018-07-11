@@ -1,11 +1,10 @@
-
 use specs::prelude::*;
 use types::systemdata::*;
 use types::*;
 
-use systems::EnergyRegenSystem;
 use systems::handlers::packet::KeyHandler;
 use systems::specials::config::*;
+use systems::EnergyRegenSystem;
 
 pub struct Fire;
 
@@ -32,21 +31,15 @@ impl<'a> System<'a> for Fire {
 			.filter_map(|(ent, keystate, energy, ..)| {
 				if keystate.special {
 					Some((ent, energy))
-				}
-				else {
+				} else {
 					None
 				}
 			})
-			.filter(|(_, energy)| {
-				**energy > *TORNADO_SPECIAL_ENERGY
-			})
+			.filter(|(_, energy)| **energy > *TORNADO_SPECIAL_ENERGY)
 			.map(|(ent, energy)| {
 				*energy -= *TORNADO_SPECIAL_ENERGY;
 
-				(
-					ent,
-					&*TORNADO_MISSILE_DETAILS
-				)
+				(ent, &*TORNADO_MISSILE_DETAILS)
 			})
 			.collect::<Vec<_>>();
 
@@ -60,11 +53,7 @@ use dispatch::SystemInfo;
 use systems::PositionUpdate;
 
 impl SystemInfo for Fire {
-	type Dependencies = (
-		PositionUpdate,
-		EnergyRegenSystem,
-		KeyHandler
-	);
+	type Dependencies = (PositionUpdate, EnergyRegenSystem, KeyHandler);
 
 	fn name() -> &'static str {
 		concat!(module_path!(), "::", line!())

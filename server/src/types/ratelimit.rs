@@ -1,7 +1,6 @@
-
 use bounded_queue::BoundedQueue;
 
-use std::time::{Instant, Duration};
+use std::time::{Duration, Instant};
 
 #[derive(Clone, Debug)]
 pub struct RateLimiter {
@@ -13,7 +12,7 @@ impl RateLimiter {
 	pub fn new(max_events: usize, window: Duration) -> Self {
 		Self {
 			window,
-			events: BoundedQueue::new(max_events + 1)
+			events: BoundedQueue::new(max_events + 1),
 		}
 	}
 
@@ -23,8 +22,7 @@ impl RateLimiter {
 		while let Some(&inst) = self.events.peek() {
 			if inst < prev {
 				self.events.pop();
-			}
-			else {
+			} else {
 				break;
 			}
 		}

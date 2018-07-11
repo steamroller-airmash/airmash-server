@@ -9,10 +9,10 @@ mod timer_handler;
 
 pub mod collision;
 pub mod handlers;
+pub mod limiting;
 pub mod missile;
 pub mod specials;
 pub mod spectate;
-pub mod limiting;
 
 pub use self::energy_regen::EnergyRegenSystem;
 pub use self::health_regen::HealthRegenSystem;

@@ -18,6 +18,7 @@ extern crate lazy_static;
 extern crate serde;
 
 // Regular Dependencies
+extern crate bounded_queue;
 extern crate fnv;
 extern crate hibitset;
 extern crate htmlescape;
@@ -32,7 +33,6 @@ extern crate tokio;
 extern crate tokio_core;
 extern crate uuid;
 extern crate websocket;
-extern crate bounded_queue;
 
 use websocket::futures;
 

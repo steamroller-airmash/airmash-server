@@ -1,7 +1,7 @@
 pub use handlers::*;
 
-mod whisper;
 mod chat_event;
+mod whisper;
 
-pub use self::whisper::WhisperHandler;
 pub use self::chat_event::ChatEventHandler;
+pub use self::whisper::WhisperHandler;

@@ -1,13 +1,12 @@
-
 use specs::*;
 use types::*;
 
 use std::iter::Iterator;
 
-use component::time::*;
-use component::reference::PlayerRef;
 use component::channel::OnMissileFire;
 use component::event::MissileFire;
+use component::reference::PlayerRef;
+use component::time::*;
 
 use super::IsAlive;
 
@@ -46,13 +45,11 @@ pub struct FireMissiles<'a> {
 }
 
 impl<'a> FireMissiles<'a> {
-	pub fn fire_missiles(
-		&mut self,
-		owner: Entity, 
-		missiles: &[MissileFireInfo]
-	)	{
-		self.is_player.get(owner).expect("Entity firing a missile was not a player");
-		
+	pub fn fire_missiles(&mut self, owner: Entity, missiles: &[MissileFireInfo]) {
+		self.is_player
+			.get(owner)
+			.expect("Entity firing a missile was not a player");
+
 		if !self.is_alive.get(owner) {
 			panic!("Entity firing a missile was not alive");
 		}
@@ -61,46 +58,50 @@ impl<'a> FireMissiles<'a> {
 		let vel = *self.vel.get(owner).unwrap();
 		let pos = *self.pos.get(owner).unwrap();
 		let team = *self.team.get(owner).unwrap();
-		let upg_factor = self.config.upgrades.missile.factor[
-			self.upgrades.get(owner).unwrap().missile as usize
-		];
+		let upg_factor =
+			self.config.upgrades.missile.factor[self.upgrades.get(owner).unwrap().missile as usize];
 		let speed = vel.length();
 		let spawn_time = MobSpawnTime(self.this_frame.0);
 
-		let missiles = missiles.iter().map(|info| {
-			let rot = rot + info.rot_offset;
-			// Subtract since airmash's coordinate system is flipped
-			let pos = pos - info.pos_offset.rotate(rot);
+		let missiles = missiles
+			.iter()
+			.map(|info| {
+				let rot = rot + info.rot_offset;
+				// Subtract since airmash's coordinate system is flipped
+				let pos = pos - info.pos_offset.rotate(rot);
 
-			let missile = self.config.mobs[info.ty].missile
-				.expect("Mob was not a missile, you can only fire missiles!");
+				let missile = self.config.mobs[info.ty]
+					.missile
+					.expect("Mob was not a missile, you can only fire missiles!");
 
-			// Rotate starting angle 90 degrees so that
-			// it's inline with the plane. Change this
-			// and missiles will shoot sideways
-			let dir = Vector2::new(rot.sin(), -rot.cos());
+				// Rotate starting angle 90 degrees so that
+				// it's inline with the plane. Change this
+				// and missiles will shoot sideways
+				let dir = Vector2::new(rot.sin(), -rot.cos());
 
-			let vel = dir * (missile.base_speed + speed * missile.speed_factor) * upg_factor;
+				let vel = dir * (missile.base_speed + speed * missile.speed_factor) * upg_factor;
 
-			let missile = self.entities.build_entity()
-				.with(pos, &mut self.pos)
-				.with(vel, &mut self.vel)
-				.with(info.ty, &mut self.mob)
-				.with(IsMissile, &mut self.is_missile)
-				.with(PlayerRef(owner), &mut self.owner)
-				.with(team, &mut self.team)
-				.with(spawn_time, &mut self.spawn_time)
-				.build();
+				let missile = self
+					.entities
+					.build_entity()
+					.with(pos, &mut self.pos)
+					.with(vel, &mut self.vel)
+					.with(info.ty, &mut self.mob)
+					.with(IsMissile, &mut self.is_missile)
+					.with(PlayerRef(owner), &mut self.owner)
+					.with(team, &mut self.team)
+					.with(spawn_time, &mut self.spawn_time)
+					.build();
 
-			trace!(
+				trace!(
 				target: "missile-fire",
 				"{:?} fired missile with id {:?}",
 				owner, missile
 			);
 
-			missile
-		})
-		.collect::<Vec<_>>();
+				missile
+			})
+			.collect::<Vec<_>>();
 
 		self.channel.single_write(MissileFire {
 			player: owner,

@@ -38,27 +38,21 @@ impl<'a> System<'a> for MissileFireHandler {
 
 				if this_frame.0 - lastshot.0 > info.fire_delay {
 					Some((ent, info, energy))
-				}
-				else {
+				} else {
 					None
 				}
 			})
-			.filter(|(_, info, energy)| {
-				**energy > info.fire_energy
-			})
+			.filter(|(_, info, energy)| **energy > info.fire_energy)
 			.map(|(ent, info, energy)| {
 				*energy -= info.fire_energy;
 
 				(
 					ent,
 					MissileFireInfo {
-						pos_offset: Position::new(
-							Distance::default(), 
-							info.missile_offset
-						),
+						pos_offset: Position::new(Distance::default(), info.missile_offset),
 						rot_offset: Rotation::default(),
-						ty: info.missile_type
-					}
+						ty: info.missile_type,
+					},
 				)
 			})
 			.collect::<Vec<_>>();

@@ -1,4 +1,4 @@
-//! Components for keeping track of 
+//! Components for keeping track of
 //! ratelimits. These should all be
 //! wrappers around [`types::RateLimiter`].
 

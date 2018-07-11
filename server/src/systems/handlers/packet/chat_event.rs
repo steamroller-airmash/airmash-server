@@ -1,8 +1,7 @@
-
 use specs::*;
 
-use SystemInfo;
 use systems::PacketHandler;
+use SystemInfo;
 
 use component::channel::*;
 use component::event::*;
@@ -22,7 +21,7 @@ pub struct ChatEventHandlerData<'a> {
 	channel_whisper: Read<'a, OnWhisper>,
 	channel_say: Read<'a, OnSay>,
 
-	channel: Write<'a, OnChatEvent>
+	channel: Write<'a, OnChatEvent>,
 }
 
 impl<'a> System<'a> for ChatEventHandler {
@@ -31,18 +30,10 @@ impl<'a> System<'a> for ChatEventHandler {
 	fn setup(&mut self, res: &mut Resources) {
 		Self::SystemData::setup(res);
 
-		self.chat_reader = Some(
-			res.fetch_mut::<OnChat>().register_reader()
-		);
-		self.team_reader = Some(
-			res.fetch_mut::<OnTeamChat>().register_reader()
-		);
-		self.whisper_reader = Some(
-			res.fetch_mut::<OnWhisper>().register_reader()
-		);
-		self.say_reader = Some(
-			res.fetch_mut::<OnSay>().register_reader()
-		)
+		self.chat_reader = Some(res.fetch_mut::<OnChat>().register_reader());
+		self.team_reader = Some(res.fetch_mut::<OnTeamChat>().register_reader());
+		self.whisper_reader = Some(res.fetch_mut::<OnWhisper>().register_reader());
+		self.say_reader = Some(res.fetch_mut::<OnSay>().register_reader())
 	}
 
 	fn run(&mut self, mut data: Self::SystemData) {
@@ -50,7 +41,7 @@ impl<'a> System<'a> for ChatEventHandler {
 			data.channel.single_write(ChatEvent {
 				ty: ChatEventType::Public,
 				text: evt.1.text.clone(),
-				conn: evt.0
+				conn: evt.0,
 			});
 		}
 
@@ -58,7 +49,7 @@ impl<'a> System<'a> for ChatEventHandler {
 			data.channel.single_write(ChatEvent {
 				ty: ChatEventType::Team,
 				text: evt.1.text.clone(),
-				conn: evt.0
+				conn: evt.0,
 			});
 		}
 
@@ -66,15 +57,18 @@ impl<'a> System<'a> for ChatEventHandler {
 			data.channel.single_write(ChatEvent {
 				ty: ChatEventType::Say,
 				text: evt.1.text.clone(),
-				conn: evt.0
+				conn: evt.0,
 			});
 		}
 
-		for evt in data.channel_whisper.read(self.whisper_reader.as_mut().unwrap()) {
+		for evt in data
+			.channel_whisper
+			.read(self.whisper_reader.as_mut().unwrap())
+		{
 			data.channel.single_write(ChatEvent {
 				ty: ChatEventType::Whisper(evt.1.id),
 				text: evt.1.text.clone(),
-				conn: evt.0
+				conn: evt.0,
 			});
 		}
 	}

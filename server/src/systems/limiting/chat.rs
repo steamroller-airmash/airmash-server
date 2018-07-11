@@ -1,13 +1,12 @@
-
 use specs::*;
 use types::*;
 
 use SystemInfo;
 
-use component::ratelimit::*;
 use component::channel::*;
-use component::flag::*;
 use component::event::*;
+use component::flag::*;
+use component::ratelimit::*;
 use component::time::ThisFrame;
 
 use systems::handlers::game::on_join::InitLimiters;
@@ -29,7 +28,7 @@ pub struct LimitChatData<'a> {
 	mute_channel: Write<'a, OnPlayerMuted>,
 
 	this_frame: Read<'a, ThisFrame>,
-	
+
 	is_throttled: WriteStorage<'a, IsChatThrottled>,
 	is_muted: WriteStorage<'a, IsChatMuted>,
 }
@@ -40,9 +39,7 @@ impl<'a> System<'a> for LimitChat {
 	fn setup(&mut self, res: &mut Resources) {
 		Self::SystemData::setup(res);
 
-		self.reader = Some(
-			res.fetch_mut::<OnChatEvent>().register_reader()
-		);
+		self.reader = Some(res.fetch_mut::<OnChatEvent>().register_reader());
 	}
 
 	fn run(&mut self, mut data: Self::SystemData) {
@@ -62,16 +59,13 @@ impl<'a> System<'a> for LimitChat {
 
 			if throttle.0.limit_reached() {
 				data.is_throttled.insert(player, IsChatThrottled).unwrap();
-				data.throttle_channel.single_write(PlayerThrottle {
-					player
-				});
+				data.throttle_channel
+					.single_write(PlayerThrottle { player });
 			}
 
 			if mute.0.limit_reached() {
 				data.is_muted.insert(player, IsChatMuted).unwrap();
-				data.mute_channel.single_write(PlayerMute {
-					player
-				});
+				data.mute_channel.single_write(PlayerMute { player });
 			}
 		}
 	}
@@ -85,6 +79,6 @@ impl SystemInfo for LimitChat {
 	}
 
 	fn new() -> Self {
-		Self{ reader: None }
+		Self { reader: None }
 	}
 }
