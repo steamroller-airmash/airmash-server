@@ -1,8 +1,8 @@
-use component::{FlagCarrier, IsFlag, LastDrop, Flags};
+use component::{FlagCarrier, Flags, IsFlag, LastDrop};
 
 use server::{Builder, Position, Team};
-use specs::*;
 use specs::Builder as SpecsBuilder;
+use specs::*;
 
 use std::time::Instant;
 
@@ -38,7 +38,7 @@ pub fn register<'a, 'b>(world: &mut World, disp: Builder<'a, 'b>) -> Builder<'a,
 		.with(lastdrop)
 		.build();
 
-    world.add_resource(Flags { red, blue });
+	world.add_resource(Flags { red, blue });
 
 	disp.with::<LoginUpdateSystem>()
 		.with::<PickupFlagSystem>()

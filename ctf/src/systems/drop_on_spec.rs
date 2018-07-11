@@ -1,16 +1,15 @@
-
 use specs::*;
 
 use component::*;
 
-use server::*;
-use server::component::time::*;
-use server::component::flag::*;
 use server::component::channel::*;
+use server::component::flag::*;
+use server::component::time::*;
 use server::systems::handlers::packet::CommandHandler;
+use server::*;
 
 pub struct DropOnSpec {
-	pub reader: Option<OnCommandReader>
+	pub reader: Option<OnCommandReader>,
 }
 
 #[derive(SystemData)]
@@ -37,9 +36,7 @@ impl<'a> System<'a> for DropOnSpec {
 	fn setup(&mut self, res: &mut Resources) {
 		Self::SystemData::setup(res);
 
-		self.reader = Some(
-			res.fetch_mut::<OnCommand>().register_reader()
-		);
+		self.reader = Some(res.fetch_mut::<OnCommand>().register_reader());
 	}
 
 	fn run(&mut self, mut data: Self::SystemData) {
@@ -51,7 +48,9 @@ impl<'a> System<'a> for DropOnSpec {
 				None => continue,
 			};
 
-			if packet.com != "spectate" { continue; }
+			if packet.com != "spectate" {
+				continue;
+			}
 			let target: i32 = match packet.data.parse() {
 				Ok(v) => v,
 				Err(_) => continue,
@@ -62,23 +61,19 @@ impl<'a> System<'a> for DropOnSpec {
 				_ => continue,
 			}
 
-			(
-				&*data.entities,
-				&mut data.carrier,
-				&data.isflag
-			).join()
+			(&*data.entities, &mut data.carrier, &data.isflag)
+				.join()
 				.filter(|(_, carrier, _)| carrier.0.is_some())
 				.filter(|(_, carrier, _)| carrier.0.unwrap() == player)
 				.for_each(|(ent, carrier, _)| {
 					channel.single_write(FlagEvent {
 						ty: FlagEventType::Drop,
 						player: Some(player),
-						flag: ent
+						flag: ent,
 					});
 
 					carrier.0 = None;
 				});
-
 		}
 	}
 }

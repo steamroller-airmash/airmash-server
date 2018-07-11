@@ -6,8 +6,8 @@ use server::protocol::server::GameFlag;
 use server::protocol::FlagUpdateType;
 use server::protocol::{to_bytes, ServerPacket};
 
-use RED_TEAM;
 use BLUE_TEAM;
+use RED_TEAM;
 
 pub struct SendFlagMessageSystem {
 	reader: Option<OnFlagReader>,
@@ -54,20 +54,17 @@ impl<'a> System<'a> for SendFlagMessageSystem {
 				if *team == RED_TEAM {
 					data.scores.blueteam += 1;
 					other = data.flags.blue;
-				}
-				else if *team == BLUE_TEAM {
+				} else if *team == BLUE_TEAM {
 					data.scores.redteam += 1;
 					other = data.flags.red;
-				}
-				else {
+				} else {
 					unimplemented!();
 				}
 
-				let pos;			
+				let pos;
 				if data.carrier.get(other).unwrap().0.is_none() {
 					pos = *data.pos.get(other).unwrap();
-				}
-				else {
+				} else {
 					pos = Position::default();
 				}
 
@@ -79,7 +76,7 @@ impl<'a> System<'a> for SendFlagMessageSystem {
 						id: None,
 						blueteam: data.scores.blueteam,
 						redteam: data.scores.redteam,
-					})).unwrap()
+					})).unwrap(),
 				));
 
 				info!("{:?}", *data.scores);
@@ -95,8 +92,6 @@ impl<'a> System<'a> for SendFlagMessageSystem {
 					redteam: data.scores.redteam,
 				})).unwrap(),
 			));
-
-			
 		}
 	}
 }
