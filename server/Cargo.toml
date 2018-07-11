@@ -14,10 +14,6 @@ geoip = [ "geolocate-ip" ]
 # when determining client IP address
 proxied = [ ]
 
-[profile.release]
-debug = true
-lto = true
-
 [build-dependencies]
 specgen = { path = "../specgen" }
 
