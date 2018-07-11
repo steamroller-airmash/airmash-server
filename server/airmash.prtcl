@@ -80,7 +80,7 @@ enum LeaveHorizonType : u8 {
 	Mob = 1
 }
 
-# TODO: transcribe from statsbot
+# All possible errors that can be sent to the client
 enum ErrorType : u8 {
 	DisconnectedForPacketFlooding = 1,
 	BannedForPacketFlooding = 2,
