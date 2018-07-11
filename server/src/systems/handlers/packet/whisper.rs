@@ -3,8 +3,8 @@ use specs::*;
 use types::*;
 
 use protocol::client::Whisper;
-use protocol::server::{ChatWhisper, ServerPacket};
-use protocol::to_bytes;
+use protocol::server::{ChatWhisper, ServerPacket, Error};
+use protocol::{to_bytes, ErrorType};
 use OwnedMessage;
 
 use component::flag::IsPlayer;
@@ -17,6 +17,9 @@ pub struct WhisperHandler {
 pub struct WhisperHandlerData<'a> {
 	channel: Read<'a, EventChannel<(ConnectionId, Whisper)>>,
 	conns: Read<'a, Connections>,
+
+	throttled: ReadStorage<'a, IsChatThrottled>,
+	muted: ReadStorage<'a, IsChatMuted>,
 
 	entities: Entities<'a>,
 	is_player: ReadStorage<'a, IsPlayer>,
@@ -50,6 +53,16 @@ impl<'a> System<'a> for WhisperHandler {
 				},
 				None => continue,
 			};
+
+			if data.muted.get(player).is_some() { continue; }
+			if data.throttled.get(player).is_some() { 
+				data.conns.send_to(evt.0, OwnedMessage::Binary(
+					to_bytes(&ServerPacket::Error(Error {
+						error: ErrorType::ChatThrottled
+					})).unwrap()
+				));
+				continue;
+			}
 
 			let to = data.entities.entity(evt.1.id as u32);
 

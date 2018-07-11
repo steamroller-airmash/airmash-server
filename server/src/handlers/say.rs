@@ -2,9 +2,9 @@ use shrev::*;
 use specs::*;
 use types::*;
 
-use airmash_protocol::client::Say;
-use airmash_protocol::server::{ChatSay, ServerPacket};
-use airmash_protocol::to_bytes;
+use protocol::client::Say;
+use protocol::server::{ChatSay, ServerPacket, Error};
+use protocol::{to_bytes, ErrorType};
 use websocket::OwnedMessage;
 
 pub struct SayHandler {
@@ -15,6 +15,9 @@ pub struct SayHandler {
 pub struct SayHandlerData<'a> {
 	channel: Read<'a, EventChannel<(ConnectionId, Say)>>,
 	conns: Read<'a, Connections>,
+
+	throttled: ReadStorage<'a, IsChatThrottled>,
+	muted: ReadStorage<'a, IsChatMuted>,
 }
 
 impl SayHandler {
@@ -44,6 +47,16 @@ impl<'a> System<'a> for SayHandler {
 				},
 				None => continue,
 			};
+
+			if data.muted.get(player).is_some() { continue; }
+			if data.throttled.get(player).is_some() { 
+				data.conns.send_to(evt.0, OwnedMessage::Binary(
+					to_bytes(&ServerPacket::Error(Error {
+						error: ErrorType::ChatThrottled
+					})).unwrap()
+				));
+				continue;
+			}
 
 			let chat = ChatSay {
 				id: player,

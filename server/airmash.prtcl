@@ -95,7 +95,7 @@ enum ErrorType : u8 {
 	NoRespawnInBTR = 12,
 	IdleRequiredBeforeSpectate = 13,
 	NotEnoughUpgrades = 20,
-	ChatThottled = 30,
+	ChatThrottled = 30,
 	FlagChangeThrottled = 31,
 	UnknownCommand = 100
 }
