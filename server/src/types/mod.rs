@@ -28,6 +28,7 @@ pub use self::powerups::*;
 pub use self::units::*;
 pub use self::upgrades::*;
 pub use self::vector2::*;
+pub use self::ratelimit::RateLimiter;
 
 pub mod event {
 	pub use types::connection_events::*;

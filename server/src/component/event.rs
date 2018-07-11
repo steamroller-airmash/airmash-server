@@ -78,6 +78,31 @@ pub struct MissileFire {
 	pub missiles: Vec<Entity>,
 }
 
+#[derive(Clone, Debug)]
+pub struct PlayerMute {
+	pub player: Entity
+}
+
+#[derive(Clone, Debug)]
+pub struct PlayerThrottle {
+	pub player: Entity
+}
+
+#[derive(Clone, Debug)]
+pub enum ChatEventType {
+	Public,
+	Whisper(u16),
+	Team,
+	Say
+}
+
+#[derive(Clone, Debug)]
+pub struct ChatEvent {
+	pub ty: ChatEventType,
+	pub text: String,
+	pub conn: ConnectionId
+}
+
 impl Default for TimerEvent {
 	fn default() -> Self {
 		use consts::timer::INVALID;

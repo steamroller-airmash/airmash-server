@@ -21,6 +21,7 @@ pub fn register<'a, 'b>(disp: Builder<'a, 'b>) -> Builder<'a, 'b> {
 		.with::<handlers::packet::CommandHandler>()
 		.with::<handlers::packet::SignalHandler>()
 		.with::<handlers::packet::WhisperHandler>()
+		.with::<handlers::packet::ChatEventHandler>()
 
 		// Systems with dependencies on handlers
 		.with::<PositionUpdate>();
@@ -38,6 +39,8 @@ pub fn register<'a, 'b>(disp: Builder<'a, 'b>) -> Builder<'a, 'b> {
 	let disp = collision::register(disp);
 	// Specials
 	let disp = specials::register(disp);
+	// Limiters
+	let disp = limiting::register(disp);
 
 	disp
 }

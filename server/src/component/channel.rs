@@ -28,6 +28,7 @@ pub type OnVotemute = EventChannel<(ConnectionId, VoteMute)>;
 pub type OnLocalPing = EventChannel<(ConnectionId, LocalPing)>;
 pub type OnScoreDetailed = EventChannel<ScoreDetailedEvent>;
 pub type OnAck = EventChannel<AckEvent>;
+pub type OnChatEvent = EventChannel<ChatEvent>;
 
 // In-game events
 pub type OnPlayerJoin = EventChannel<PlayerJoin>;
@@ -38,6 +39,8 @@ pub type OnPlayerSpectate = EventChannel<PlayerSpectate>;
 pub type OnPlayerStealth = EventChannel<PlayerStealth>;
 pub type OnMissileFire = EventChannel<MissileFire>;
 pub type OnPlayerRepel = EventChannel<PlayerRepel>;
+pub type OnPlayerMuted = EventChannel<PlayerMute>;
+pub type OnPlayerThrottled = EventChannel<PlayerThrottle>;
 
 // Collision events
 pub type OnPlayerTerrainCollision = EventChannel<PlayerTerrainCollision>;
@@ -66,6 +69,7 @@ pub type OnVotemuteReader = ReaderId<(ConnectionId, VoteMute)>;
 pub type OnLocalPingReader = ReaderId<(ConnectionId, LocalPing)>;
 pub type OnScoreDetailedReader = ReaderId<ScoreDetailedEvent>;
 pub type OnAckReader = ReaderId<AckEvent>;
+pub type OnChatEventReader = ReaderId<ChatEvent>;
 
 // In-game events
 pub type OnPlayerJoinReader = ReaderId<PlayerJoin>;
@@ -76,6 +80,8 @@ pub type OnPlayerSpectateReader = ReaderId<PlayerSpectate>;
 pub type OnPlayerStealthReader = ReaderId<PlayerStealth>;
 pub type OnMissileFireReader = ReaderId<MissileFire>;
 pub type OnPlayerRepelReader = ReaderId<PlayerRepel>;
+pub type OnPlayerMutedReader = ReaderId<PlayerMute>;
+pub type OnPlayerThrottledReader = ReaderId<PlayerThrottle>;
 
 // Collision events
 pub type OnPlayerMissileCollisionReader = ReaderId<PlayerMissileCollision>;

@@ -3,6 +3,7 @@ use bounded_queue::BoundedQueue;
 
 use std::time::{Instant, Duration};
 
+#[derive(Clone, Debug)]
 pub struct RateLimiter {
 	window: Duration,
 	events: BoundedQueue<Instant>,

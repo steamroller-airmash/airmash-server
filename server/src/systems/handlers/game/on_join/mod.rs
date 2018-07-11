@@ -7,6 +7,7 @@ mod init_name;
 mod init_state;
 mod init_stealth_time;
 mod init_traits;
+mod init_limiters;
 mod init_transform;
 mod send_level;
 mod send_login;
@@ -23,6 +24,7 @@ pub use self::init_name::InitName;
 pub use self::init_state::InitState;
 pub use self::init_stealth_time::InitStealthTime;
 pub use self::init_traits::InitTraits;
+pub use self::init_limiters::InitLimiters;
 pub use self::init_transform::InitTransform;
 pub use self::send_level::SendPlayerLevel;
 pub use self::send_login::SendLogin;
@@ -38,6 +40,7 @@ pub type AllJoinHandlers = (
 	InitLastRepelTime,
 	InitState,
 	InitName,
+	InitLimiters,
 	InitStealthTime,
 	InitTraits,
 	InitTransform,

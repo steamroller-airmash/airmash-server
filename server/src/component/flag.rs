@@ -24,6 +24,14 @@ pub struct IsDead;
 #[storage(NullStorage)]
 pub struct HitMarker;
 
+#[derive(Copy, Clone, Debug, Default, Component)]
+#[storage(NullStorage)]
+pub struct IsChatThrottled;
+
+#[derive(Copy, Clone, Debug, Default, Component)]
+#[storage(NullStorage)]
+pub struct IsChatMuted;
+
 #[derive(Copy, Clone, Debug, Default)]
 pub struct IsBoosting;
 
