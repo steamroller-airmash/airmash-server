@@ -59,7 +59,7 @@ pub struct PlayerPowerupCollision(pub Collision);
 pub struct TimerEvent {
 	pub ty: TimerEventType,
 	pub instant: Instant,
-	pub data: Option<Box<Any + Send + Sync>>,
+	pub data: Option<Box<Any + Send + Sync + 'static>>,
 }
 
 #[derive(Copy, Clone, Debug)]

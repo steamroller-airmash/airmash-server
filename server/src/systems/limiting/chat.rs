@@ -28,6 +28,7 @@ pub struct LimitChatData<'a> {
 	mute_channel: Write<'a, OnPlayerMuted>,
 
 	this_frame: Read<'a, ThisFrame>,
+	future: ReadExpect<'a, FutureDispatcher>,
 
 	is_throttled: WriteStorage<'a, IsChatThrottled>,
 	is_muted: WriteStorage<'a, IsChatMuted>,

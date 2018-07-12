@@ -9,6 +9,7 @@ pub mod on_missile_fire;
 pub mod on_player_killed;
 pub mod on_spectate_event;
 pub mod timer;
+pub mod on_chat_throttled;
 
 pub use self::register::register;
 

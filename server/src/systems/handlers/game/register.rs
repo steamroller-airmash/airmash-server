@@ -30,5 +30,7 @@ pub fn register<'a, 'b>(builder: Builder<'a, 'b>) -> Builder<'a, 'b> {
 		.with::<on_join::UpdatePlayersGame>()
 		.with::<on_missile_fire::SendPlayerFire>();
 
+	let builder = on_chat_throttled::register(builder);
+
 	timer::register(builder)
 }
