@@ -61,7 +61,8 @@ impl<'a> System<'a> for SendEventRepel {
 	}
 
 	fn run(&mut self, mut data: Self::SystemData) {
-		let r2 = *GOLIATH_SPECIAL_RADIUS * *GOLIATH_SPECIAL_RADIUS;
+		let player_r2 = *GOLIATH_SPECIAL_RADIUS_PLAYER * *GOLIATH_SPECIAL_RADIUS_PLAYER;
+		let missile_r2 =  *GOLIATH_SPECIAL_RADIUS_MISSILE * *GOLIATH_SPECIAL_RADIUS_MISSILE;
 
 		for evt in data.channel.read(self.reader.as_mut().unwrap()) {
 			let pos = *data.pos.get(evt.player).unwrap();
@@ -77,7 +78,7 @@ impl<'a> System<'a> for SendEventRepel {
 				.filter_map(|(ent, player_pos, ..)| {
 					let dist2 = (*player_pos - pos).length2();
 
-					if dist2 < r2 {
+					if dist2 < player_r2 {
 						Some((ent, *player_pos))
 					} else {
 						None
@@ -91,7 +92,7 @@ impl<'a> System<'a> for SendEventRepel {
 				.filter_map(|(ent, missile_pos, ..)| {
 					let dist2 = (*missile_pos - pos).length2();
 
-					if dist2 < r2 {
+					if dist2 < missile_r2 {
 						Some((ent, *missile_pos))
 					} else {
 						None
