@@ -12,3 +12,6 @@ ctf/.vscode/
 
 base/target/
 base/.vscode/
+
+target/
+.vscode/

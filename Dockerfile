@@ -7,11 +7,12 @@ WORKDIR /build/server
 # changed on the server. Since this project downloads
 # a large number of dependencies, this should save 
 # a decent amount of bandwith
-ADD server/Cargo.toml server/Cargo.lock /build/server/
+ADD server/Cargo.toml /build/server/
 RUN mkdir src
 
 # Need to add specgen so cargo fetch works
-ADD specgen /build/specgen
+COPY specgen /build/specgen
+COPY bounded-queue /build/bounded-queue
 
 # Fetch all dependencies to save bandwith
 RUN echo > src/main.rs
