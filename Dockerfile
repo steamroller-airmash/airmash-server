@@ -30,11 +30,6 @@ RUN mv target/x86_64-unknown-linux-musl/release/base /artifacts/airmash-server
 
 FROM alpine:latest
 
-RUN apk add --no-cache supervisor
-
-WORKDIR /app
-
-ADD supervisor.conf /app/supervisor.conf
 COPY --from=0 /artifacts/airmash-server /app/airmash-server
 
-ENTRYPOINT supervisord -c /app/supervisor.conf
+ENTRYPOINT [ "/app/airmash-server" ]
