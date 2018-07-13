@@ -1,107 +1,102 @@
-use airmash_protocol::client::Login;
-use airmash_protocol::FlagCode;
 use specs::*;
-use uuid::Uuid;
-
-use std::str::FromStr;
 
 use component::channel::*;
-use component::event::PlayerJoin;
-use component::time::*;
+use component::event::TimerEvent;
 use types::*;
-use utils::geoip;
+use consts::timer::*;
 
-use GameMode;
+use std::env;
+use std::io::Read as IoRead;
+use std::sync::Arc;
+use std::sync::mpsc::*;
+use std::time::Instant;
 
-// Login needs write access to just
-// about everything
-#[derive(SystemData)]
-pub struct LoginSystemData<'a> {
-	pub entities: Entities<'a>,
-	pub conns: Read<'a, Connections>,
-
-	pub startime: Read<'a, StartTime>,
-	pub player_join: Write<'a, OnPlayerJoin>,
-	pub config: Read<'a, Config>,
-	pub gamemode: GameModeWriter<'a, GameMode>,
-}
-
-struct LoginInfo<'a> {
-	pub id: Entity,
-	pub login: &'a Login,
-	pub flag: FlagCode,
-	pub team: Team,
-	pub plane: Plane,
-	pub pos: Position,
-}
+use hyper::{Client, Url};
 
 pub struct LoginHandler {
 	reader: Option<OnLoginReader>,
+	channel: Option<Sender<TimerEvent>>,
+	upstream: Option<String>,
+	client: Arc<Client>,
 }
 
 impl LoginHandler {
 	pub fn new() -> Self {
-		Self { reader: None }
-	}
-
-	fn do_login<'a>(data: &mut LoginSystemData<'a>, conn: ConnectionId, login: Login) {
-		let entity = data.entities.create();
-
-		if entity.id() > 0xFFFF {
-			error!(
-				target: "server",
-				"Entity created with id greater than 0xFFFF. Aborting to avoid sending invalid packets."
-			);
-			panic!("Entity created with invalid id.");
+		Self { 
+			reader: None, 
+			channel: None,
+			upstream: env::var("IP_FILTER").ok(),
+			client: Arc::new(Client::new())
 		}
-
-		info!(
-			target: "server",
-			"{:?} logging on as {} with id {}",
-			conn, login.name, entity.id()
-		);
-
-		let flag = match FlagCode::from_str(&login.flag) {
-			Some(v) => v,
-			None => geoip::locate(&data.conns.0[&conn].addr).unwrap_or(FlagCode::UnitedNations),
-		};
-
-		let session = match Uuid::from_str(&login.session) {
-			Ok(s) => Some(s),
-			Err(_) => None,
-		};
-
-		// Set all possible pieces of state for a plane
-
-		let team = data.gamemode.get_mut().assign_team(entity);
-		let plane = data.gamemode.get_mut().assign_plane(entity, team);
-
-		data.player_join.single_write(PlayerJoin {
-			id: entity,
-			level: Level(0),
-			name: Name(login.name),
-			session: Session(session),
-			flag: flag,
-			team,
-			plane,
-			conn,
-		});
 	}
 }
 
 impl<'a> System<'a> for LoginHandler {
-	type SystemData = (Read<'a, OnLogin>, LoginSystemData<'a>);
+	type SystemData = (Read<'a, OnLogin>, Read<'a, Connections>);
 
 	fn setup(&mut self, res: &mut Resources) {
-		self.reader = Some(res.fetch_mut::<OnLogin>().register_reader());
-
 		Self::SystemData::setup(res);
+
+		self.reader = Some(res.fetch_mut::<OnLogin>().register_reader());
+		self.channel = Some(res.fetch_mut::<FutureDispatcher>().get_channel());
 	}
 
-	fn run(&mut self, (channel, mut data): Self::SystemData) {
+	fn run(&mut self, (channel, conns): Self::SystemData) {
 		if let Some(ref mut reader) = self.reader {
 			for evt in channel.read(reader).cloned() {
-				Self::do_login(&mut data, evt.0, evt.1);
+				let conninfo = conns.0[&evt.0].info.clone();
+				let channel = self.channel.as_ref().unwrap().clone();
+
+				let connid = evt.0;
+
+				let mut event = TimerEvent {
+					ty: *LOGIN_PASSED,
+					instant: Instant::now(),
+					data: Some(Box::new(evt))
+				};
+
+				let upstream = self.upstream.clone();
+				let mut is_bot = conninfo.origin.is_none();
+
+				if let Some(upstream) = upstream {
+					let url = format!("http://{}/{}", upstream, conninfo.addr);
+					let url = Url::parse(&url).unwrap();
+					let client = Arc::clone(&self.client);
+
+					let is_bot = is_bot || match client.get(url).send() {
+						Ok(mut v) => {
+							let mut s = "".to_owned();
+							v.read_to_string(&mut s).ok();
+
+							match s.parse() {
+								Ok(v) => v,
+								Err(_) => false
+							}
+						},
+						Err(_) => false,
+					};
+
+					if is_bot {
+						event.ty = *LOGIN_FAILED;
+					}
+
+					channel.send(event).unwrap();
+				}
+				else {
+					if is_bot {
+						event.ty = *LOGIN_FAILED;
+					}
+
+					channel.send(event).unwrap();
+				}
+
+				info!(
+					"{:?} with addr {:?} and origin {:?} is a bot? {:?}",
+					connid,
+					conninfo.addr,
+					conninfo.origin,
+					is_bot
+				);
 			}
 		}
 	}

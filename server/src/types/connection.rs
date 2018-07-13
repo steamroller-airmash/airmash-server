@@ -23,6 +23,11 @@ pub struct ConnectionData {
 	pub id: ConnectionId,
 	pub ty: ConnectionType,
 	pub player: Option<Entity>,
+	pub info: ConnectionInfo,
+}
+
+#[derive(Clone, Debug)]
+pub struct ConnectionInfo {
 	pub addr: IpAddr,
 	pub origin: Option<String>,
 }
@@ -73,8 +78,10 @@ impl Connections {
 			ty: ConnectionType::Inactive,
 			player: None,
 			id: id,
-			addr,
-			origin,
+			info: ConnectionInfo {
+				addr,
+				origin,
+			},
 		};
 
 		self.0.insert(id, data);

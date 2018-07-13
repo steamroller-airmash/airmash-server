@@ -45,7 +45,13 @@ impl FutureDispatcher {
 		}
 	}
 
+	/// Retrieves a clone of the timer event channel
+	pub fn get_channel(&self) -> Sender<TimerEvent> {
+		self.channel.lock().unwrap().clone()
+	}
+
 	/// Runs the function after the
+	/// timeout has completed
 	pub fn run_delayed<F: 'static>(&self, dur: Duration, fun: F)
 	where
 		F: Send + Fn(Instant) -> Option<TimerEvent>,
