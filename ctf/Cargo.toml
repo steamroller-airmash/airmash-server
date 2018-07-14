@@ -4,11 +4,6 @@ version = "0.1.0"
 authors = ["STEAMROLLER"]
 license = "Apache-2.0 OR MIT"
 
-[profile.release]
-lto = true
-# Turn on nice backtraces even when in release mode
-debug = true
-
 [dependencies]
 specs = "*"
 shrev = "*"
