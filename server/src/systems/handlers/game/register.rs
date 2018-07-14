@@ -28,7 +28,8 @@ pub fn register<'a, 'b>(builder: Builder<'a, 'b>) -> Builder<'a, 'b> {
 		.with::<on_join::SendPlayerLevel>()
 		.with::<on_join::SendScoreUpdate>()
 		.with::<on_join::UpdatePlayersGame>()
-		.with::<on_missile_fire::SendPlayerFire>();
+		.with::<on_missile_fire::SendPlayerFire>()
+		.with::<on_missile_fire::SetLastShot>();
 
 	let builder = on_chat_throttled::register(builder);
 
