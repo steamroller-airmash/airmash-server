@@ -1,0 +1,12 @@
+[package]
+name = "airmash-server-ctf"
+version = "0.0.1"
+authors = ["STEAMROLLER"]
+license = "Apache-2.0 OR MIT"
+description = "Airmash CTF game mode"
+
+[dependencies]
+specs = "*"
+airmash-server = { path='../server' }
+log = "0.4"
+simple_logger = "*"

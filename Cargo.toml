@@ -8,6 +8,7 @@ members = [
 	"server",
 	"base",
 	"ctf",
+	"ffa",
 	"specgen",
 	"bounded-queue"
 ]
