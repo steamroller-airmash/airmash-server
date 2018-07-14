@@ -28,6 +28,16 @@ dependencies = [
 ]
 
 [[package]]
+name = "airmash-server-base"
+version = "0.0.1"
+dependencies = [
+ "airmash-server 0.0.1",
+ "log 0.4.3 (registry+https://github.com/rust-lang/crates.io-index)",
+ "simple_logger 0.5.0 (registry+https://github.com/rust-lang/crates.io-index)",
+ "specs 0.12.0 (registry+https://github.com/rust-lang/crates.io-index)",
+]
+
+[[package]]
 name = "airmash-server-ctf"
 version = "0.0.1"
 dependencies = [
@@ -51,16 +61,6 @@ dependencies = [
 name = "atom"
 version = "0.3.5"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-
-[[package]]
-name = "base"
-version = "0.0.1"
-dependencies = [
- "airmash-server 0.0.1",
- "log 0.4.3 (registry+https://github.com/rust-lang/crates.io-index)",
- "simple_logger 0.5.0 (registry+https://github.com/rust-lang/crates.io-index)",
- "specs 0.12.0 (registry+https://github.com/rust-lang/crates.io-index)",
-]
 
 [[package]]
 name = "base64"
