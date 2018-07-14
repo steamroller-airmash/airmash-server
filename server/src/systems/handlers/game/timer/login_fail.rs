@@ -1,13 +1,13 @@
 use specs::*;
 
 use component::channel::*;
-use types::*;
 use consts::timer::*;
+use types::*;
 
-use OwnedMessage;
-use protocol::{to_bytes, ErrorType};
 use protocol::client::Login;
 use protocol::server::{Error, ServerPacket};
+use protocol::{to_bytes, ErrorType};
+use OwnedMessage;
 
 // Login needs write access to just
 // about everything
@@ -37,7 +37,9 @@ impl<'a> System<'a> for LoginFailed {
 
 	fn run(&mut self, (channel, data): Self::SystemData) {
 		for evt in channel.read(self.reader.as_mut().unwrap()) {
-			if evt.ty != *LOGIN_FAILED { continue; }
+			if evt.ty != *LOGIN_FAILED {
+				continue;
+			}
 
 			let evt = match evt.data {
 				Some(ref v) => match (*v).downcast_ref::<(ConnectionId, Login)>() {
@@ -47,11 +49,14 @@ impl<'a> System<'a> for LoginFailed {
 				None => continue,
 			};
 
-			data.conns.send_to(evt.0, OwnedMessage::Binary(
-				to_bytes(&ServerPacket::Error(Error {
-					error: ErrorType::Banned
-				})).unwrap()
-			));
+			data.conns.send_to(
+				evt.0,
+				OwnedMessage::Binary(
+					to_bytes(&ServerPacket::Error(Error {
+						error: ErrorType::Banned,
+					})).unwrap(),
+				),
+			);
 			data.conns.send_to(evt.0, OwnedMessage::Close(None));
 		}
 	}

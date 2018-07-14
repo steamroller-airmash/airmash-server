@@ -75,11 +75,13 @@ impl<'a> System<'a> for DecloakProwler {
 
 			for player in hit_players {
 				let keystate = data.keystate.get_mut(player).unwrap();
-				
+
 				keystate.stealthed = false;
 				keystate.special = false;
 
-				data.last_stealth.insert(player, LastStealthTime(data.this_frame.0)).unwrap();
+				data.last_stealth
+					.insert(player, LastStealthTime(data.this_frame.0))
+					.unwrap();
 			}
 		}
 	}

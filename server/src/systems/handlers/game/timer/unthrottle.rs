@@ -3,8 +3,8 @@ use specs::*;
 use types::*;
 
 use component::channel::*;
-use component::flag::*;
 use component::event::*;
+use component::flag::*;
 use consts::timer::*;
 
 use systems::TimerHandler;
@@ -49,8 +49,8 @@ impl<'a> System<'a> for UnthrottlePlayer {
 				None => continue,
 			};
 
-			if !data.entities.is_alive(evt.player) { 
-				continue; 
+			if !data.entities.is_alive(evt.player) {
+				continue;
 			}
 
 			data.throttled.remove(evt.player);

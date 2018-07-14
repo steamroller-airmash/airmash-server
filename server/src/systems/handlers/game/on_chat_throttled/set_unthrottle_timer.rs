@@ -1,24 +1,23 @@
-
 use specs::*;
 use types::*;
 
 use SystemInfo;
 
-use consts::timer::*;
-use component::event::TimerEvent;
 use component::channel::*;
+use component::event::TimerEvent;
+use consts::timer::*;
 
 use std::time::Duration;
 
 pub struct SetUnthrottleTimer {
-	reader: Option<OnPlayerThrottledReader>
+	reader: Option<OnPlayerThrottledReader>,
 }
 
 #[derive(SystemData)]
 pub struct SetUnthrottleTimerData<'a> {
 	channel: Read<'a, OnPlayerThrottled>,
 
-	future: ReadExpect<'a, FutureDispatcher>,	
+	future: ReadExpect<'a, FutureDispatcher>,
 }
 
 impl<'a> System<'a> for SetUnthrottleTimer {
@@ -27,22 +26,18 @@ impl<'a> System<'a> for SetUnthrottleTimer {
 	fn setup(&mut self, res: &mut Resources) {
 		Self::SystemData::setup(res);
 
-		self.reader = Some(
-			res.fetch_mut::<OnPlayerThrottled>()
-				.register_reader()
-		);
+		self.reader = Some(res.fetch_mut::<OnPlayerThrottled>().register_reader());
 	}
 
 	fn run(&mut self, data: Self::SystemData) {
 		for evt in data.channel.read(self.reader.as_mut().unwrap()) {
 			let evt = evt.clone();
-			data.future.run_delayed(
-				Duration::from_secs(5),
-				move |inst| {
+			data.future
+				.run_delayed(Duration::from_secs(5), move |inst| {
 					Some(TimerEvent {
 						ty: *UNTHROTTLE_TIME,
 						instant: inst,
-						data: Some(Box::new(evt.clone()))
+						data: Some(Box::new(evt.clone())),
 					})
 				});
 		}
@@ -57,6 +52,6 @@ impl SystemInfo for SetUnthrottleTimer {
 	}
 
 	fn new() -> Self {
-		Self{ reader: None }
+		Self { reader: None }
 	}
 }

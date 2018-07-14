@@ -2,13 +2,13 @@ use specs::*;
 
 use component::channel::*;
 use component::event::TimerEvent;
-use types::*;
 use consts::timer::*;
+use types::*;
 
 use std::env;
 use std::io::Read as IoRead;
-use std::sync::Arc;
 use std::sync::mpsc::*;
+use std::sync::Arc;
 use std::time::Instant;
 
 use hyper::{Client, Url};
@@ -22,11 +22,11 @@ pub struct LoginHandler {
 
 impl LoginHandler {
 	pub fn new() -> Self {
-		Self { 
-			reader: None, 
+		Self {
+			reader: None,
 			channel: None,
 			upstream: env::var("IP_FILTER").ok(),
-			client: Arc::new(Client::new())
+			client: Arc::new(Client::new()),
 		}
 	}
 }
@@ -52,7 +52,7 @@ impl<'a> System<'a> for LoginHandler {
 				let mut event = TimerEvent {
 					ty: *LOGIN_PASSED,
 					instant: Instant::now(),
-					data: Some(Box::new(evt))
+					data: Some(Box::new(evt)),
 				};
 
 				let upstream = self.upstream.clone();
@@ -70,9 +70,9 @@ impl<'a> System<'a> for LoginHandler {
 
 							match s.parse() {
 								Ok(v) => v,
-								Err(_) => false
+								Err(_) => false,
 							}
-						},
+						}
 						Err(_) => false,
 					};
 
@@ -81,8 +81,7 @@ impl<'a> System<'a> for LoginHandler {
 					}
 
 					channel.send(event).unwrap();
-				}
-				else {
+				} else {
 					if is_bot {
 						event.ty = *LOGIN_FAILED;
 					}
@@ -92,10 +91,7 @@ impl<'a> System<'a> for LoginHandler {
 
 				info!(
 					"{:?} with addr {:?} and origin {:?} is a bot? {:?}",
-					connid,
-					conninfo.addr,
-					conninfo.origin,
-					is_bot
+					connid, conninfo.addr, conninfo.origin, is_bot
 				);
 			}
 		}

@@ -1,7 +1,7 @@
 use specs::*;
 
-use SystemInfo;
 use systems::missile::MissileFireHandler;
+use SystemInfo;
 
 use component::channel::*;
 use component::time::{LastShotTime, ThisFrame};
@@ -35,10 +35,9 @@ impl<'a> System<'a> for SetLastShot {
 
 	fn run(&mut self, mut data: Self::SystemData) {
 		for evt in data.channel.read(self.reader.as_mut().unwrap()) {
-			data.last_shot.insert(
-				evt.player, 
-				LastShotTime(data.this_frame.0)
-			).unwrap();
+			data.last_shot
+				.insert(evt.player, LastShotTime(data.this_frame.0))
+				.unwrap();
 		}
 	}
 }

@@ -62,7 +62,7 @@ impl<'a> System<'a> for SendEventRepel {
 
 	fn run(&mut self, mut data: Self::SystemData) {
 		let player_r2 = *GOLIATH_SPECIAL_RADIUS_PLAYER * *GOLIATH_SPECIAL_RADIUS_PLAYER;
-		let missile_r2 =  *GOLIATH_SPECIAL_RADIUS_MISSILE * *GOLIATH_SPECIAL_RADIUS_MISSILE;
+		let missile_r2 = *GOLIATH_SPECIAL_RADIUS_MISSILE * *GOLIATH_SPECIAL_RADIUS_MISSILE;
 
 		for evt in data.channel.read(self.reader.as_mut().unwrap()) {
 			let pos = *data.pos.get(evt.player).unwrap();

@@ -78,10 +78,7 @@ impl Connections {
 			ty: ConnectionType::Inactive,
 			player: None,
 			id: id,
-			info: ConnectionInfo {
-				addr,
-				origin,
-			},
+			info: ConnectionInfo { addr, origin },
 		};
 
 		self.0.insert(id, data);

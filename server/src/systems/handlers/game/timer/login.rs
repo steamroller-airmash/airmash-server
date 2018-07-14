@@ -8,8 +8,8 @@ use std::str::FromStr;
 use component::channel::*;
 use component::event::PlayerJoin;
 use component::time::*;
-use types::*;
 use consts::timer::*;
+use types::*;
 use utils::geoip;
 
 use GameMode;
@@ -64,7 +64,9 @@ impl LoginHandler {
 
 		let flag = match FlagCode::from_str(&login.flag) {
 			Some(v) => v,
-			None => geoip::locate(&data.conns.0[&conn].info.addr).unwrap_or(FlagCode::UnitedNations),
+			None => {
+				geoip::locate(&data.conns.0[&conn].info.addr).unwrap_or(FlagCode::UnitedNations)
+			}
 		};
 
 		let session = match Uuid::from_str(&login.session) {
@@ -99,7 +101,9 @@ impl<'a> System<'a> for LoginHandler {
 
 	fn run(&mut self, (channel, mut data): Self::SystemData) {
 		for evt in channel.read(self.reader.as_mut().unwrap()) {
-			if evt.ty != *LOGIN_PASSED { continue; }
+			if evt.ty != *LOGIN_PASSED {
+				continue;
+			}
 
 			let evt = match evt.data {
 				Some(ref v) => match (*v).downcast_ref::<(ConnectionId, Login)>() {
