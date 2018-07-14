@@ -16,6 +16,7 @@ pub struct CommandHandlerData<'a> {
 	channel: Read<'a, EventChannel<(ConnectionId, Command)>>,
 	conns: Read<'a, Connections>,
 	config: Read<'a, Config>,
+	team: ReadStorage<'a, Team>,
 	planes: WriteStorage<'a, Plane>,
 	flags: WriteStorage<'a, Flag>,
 	isspec: WriteStorage<'a, IsSpectating>,
@@ -27,6 +28,8 @@ pub struct CommandHandlerData<'a> {
 	health: WriteStorage<'a, Health>,
 	energy: WriteStorage<'a, Energy>,
 	energy_regen: WriteStorage<'a, EnergyRegen>,
+
+	gamemode: GameModeWriter<'a, GameMode>,
 }
 
 impl CommandHandler {
@@ -75,7 +78,12 @@ impl<'a> System<'a> for CommandHandler {
 					None => continue,
 				};
 
-				*data.pos.get_mut(player).unwrap() = Position::default();
+				let pos = data.gamemode.get_mut().spawn_pos(
+					player,
+					*data.team.get(player).unwrap()
+				);
+
+				*data.pos.get_mut(player).unwrap() = pos;
 				*data.vel.get_mut(player).unwrap() = Velocity::default();
 				*data.rot.get_mut(player).unwrap() = Rotation::default();
 				*data.health.get_mut(player).unwrap() = Health::new(1.0);
@@ -105,7 +113,7 @@ impl<'a> System<'a> for CommandHandler {
 	}
 }
 
-use dispatch::SystemInfo;
+use SystemInfo;
 use handlers::OnCloseHandler;
 
 impl SystemInfo for CommandHandler {

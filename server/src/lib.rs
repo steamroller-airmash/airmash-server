@@ -63,5 +63,5 @@ pub use dispatch::{Builder, SystemDeps, SystemInfo};
 
 pub use types::{
 	Accel, AccelScalar, Config, Connections, Distance, FutureDispatcher, GameMode, GameModeWriter,
-	KeyState, Level, Mob, Name, Plane, Position, Speed, Team, Time, Velocity,
+	KeyState, Level, Mob, Name, Plane, Position, Speed, Team, Time, Velocity, Vector2,
 };
