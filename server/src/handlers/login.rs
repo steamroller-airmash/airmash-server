@@ -55,6 +55,11 @@ impl<'a> System<'a> for LoginHandler {
 					data: Some(Box::new(evt)),
 				};
 
+				if cfg!(not(features="block-bots")) {
+					channel.send(event).unwrap();
+					continue;
+				}
+
 				let upstream = self.upstream.clone();
 				let mut is_bot = conninfo.origin.is_none();
 
