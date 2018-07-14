@@ -1,7 +1,8 @@
 
 [profile.release]
+# Turn on nice backtraces even when in release mode
 debug = true
-lto = true
+#lto = true
 
 [workspace]
 members = [
