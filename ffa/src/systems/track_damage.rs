@@ -3,8 +3,11 @@ use specs::*;
 
 use components::TotalDamage;
 
+use super::AddDamage;
+
 use airmash_server::*;
 use airmash_server::component::channel::*;
+use airmash_server::systems::missile::MissileHit;
 
 #[derive(Default)]
 pub struct TrackDamage {
@@ -38,6 +41,15 @@ impl<'a> System<'a> for TrackDamage {
 			if !data.entities.is_alive(evt.player) { continue; }
 
 			let mob = *data.mob.get(evt.missile).unwrap();
+
+			if data.config.mobs[mob].missile.is_none() {
+				error!(
+					"{:?} {:?}",
+					mob, 
+					data.config.mobs[mob].missile
+				);
+			}
+
 			let ref info = data.config.mobs[mob].missile.unwrap();
 
 			data.damage.get_mut(evt.player).unwrap().0 += info.damage;
@@ -46,7 +58,10 @@ impl<'a> System<'a> for TrackDamage {
 }
 
 impl SystemInfo for TrackDamage {
-	type Dependencies = super::AddDamage;
+	type Dependencies = (
+		AddDamage,
+		MissileHit
+	);
 
 	fn name() -> &'static str {
 		concat!(module_path!(), "::", line!())
