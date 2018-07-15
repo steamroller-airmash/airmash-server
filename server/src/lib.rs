@@ -1,4 +1,3 @@
-#![allow(dead_code)]
 #![feature(optin_builtin_traits)]
 #![feature(specialization)]
 

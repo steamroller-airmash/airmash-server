@@ -9,7 +9,7 @@ use std::marker::PhantomData;
 use std::time::Duration;
 
 use airmash_protocol::server::{PlayerUpdate, ServerPacket};
-use airmash_protocol::{to_bytes, ServerKeyState, Upgrades as ServerUpgrades};
+use airmash_protocol::{to_bytes, Upgrades as ServerUpgrades};
 use websocket::OwnedMessage;
 
 const PI: Rotation = Rotation {
@@ -250,8 +250,6 @@ impl PositionUpdate {
 			.filter(|(_, _, _, _, _, _, _, ent, _)| data.is_alive.get(*ent))
 			.for_each(
 				|(pos, rot, vel, plane, keystate, upgrades, powerups, ent, lastupdate)| {
-					type Key = ServerKeyState;
-
 					*lastupdate = LastUpdate(data.thisframe.0);
 
 					let state = keystate.to_server(&plane);

@@ -51,7 +51,7 @@ mod protocol {
 				&"Position24" => return "::protocol::field::pos24",
 				&"Position_f32" => return "::protocol::field::pos_f32",
 				&"Speed" => return "::protocol::field::speed",
-				&"Velocity" => return "::protocol::field::vel_u",
+				&"Velocity" => return "::protocol::field::velocity",
 				&"Accel" => return "::protocol::field::accel",
 				&"LowResPos" => return "::protocol::field::lowrespos",
 				&"Health" => return "::protocol::field::health",
