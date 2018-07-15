@@ -3,7 +3,6 @@ use dispatch::Builder;
 
 pub fn register<'a, 'b>(builder: Builder<'a, 'b>) -> Builder<'a, 'b> {
 	let builder = builder
-		.with::<PlayerKilledCleanup>()
 		.with::<on_spectate_event::SetSpectateFlag>()
 		.with::<on_spectate_event::SendKillPacket>()
 		.with::<on_spectate_event::SendSpectatePacket>()
@@ -29,7 +28,11 @@ pub fn register<'a, 'b>(builder: Builder<'a, 'b>) -> Builder<'a, 'b> {
 		.with::<on_join::SendScoreUpdate>()
 		.with::<on_join::UpdatePlayersGame>()
 		.with::<on_missile_fire::SendPlayerFire>()
-		.with::<on_missile_fire::SetLastShot>();
+		.with::<on_missile_fire::SetLastShot>()
+		.with::<on_player_hit::InflictDamage>()
+		.with::<on_player_hit::SendPacket>()
+		// Needs to be after InflictDamage
+		.with::<PlayerKilledCleanup>();
 
 	let builder = on_chat_throttled::register(builder);
 

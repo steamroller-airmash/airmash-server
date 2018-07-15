@@ -41,6 +41,7 @@ pub type OnMissileFire = EventChannel<MissileFire>;
 pub type OnPlayerRepel = EventChannel<PlayerRepel>;
 pub type OnPlayerMuted = EventChannel<PlayerMute>;
 pub type OnPlayerThrottled = EventChannel<PlayerThrottle>;
+pub type OnPlayerHit = EventChannel<PlayerHit>;
 
 // Collision events
 pub type OnPlayerTerrainCollision = EventChannel<PlayerTerrainCollision>;
@@ -82,6 +83,7 @@ pub type OnMissileFireReader = ReaderId<MissileFire>;
 pub type OnPlayerRepelReader = ReaderId<PlayerRepel>;
 pub type OnPlayerMutedReader = ReaderId<PlayerMute>;
 pub type OnPlayerThrottledReader = ReaderId<PlayerThrottle>;
+pub type OnPlayerHitReader = ReaderId<PlayerHit>;
 
 // Collision events
 pub type OnPlayerMissileCollisionReader = ReaderId<PlayerMissileCollision>;

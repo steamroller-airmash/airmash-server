@@ -3,12 +3,8 @@ use types::collision::*;
 use types::*;
 
 use component::channel::*;
-use component::event::PlayerKilled;
+use component::event::PlayerHit;
 use component::reference::PlayerRef;
-
-use protocol::server::{PlayerHit, PlayerHitPlayer};
-use protocol::{to_bytes, ServerPacket};
-use websocket::OwnedMessage;
 
 pub struct MissileHitSystem {
 	reader: Option<OnPlayerMissileCollisionReader>,
@@ -18,6 +14,7 @@ pub struct MissileHitSystem {
 pub struct MissileHitSystemData<'a> {
 	pub channel: Read<'a, OnPlayerMissileCollision>,
 	pub kill_channel: Write<'a, OnPlayerKilled>,
+	pub hit_channel: Write<'a, OnPlayerHit>,
 	pub config: Read<'a, Config>,
 	pub conns: Read<'a, Connections>,
 
@@ -75,48 +72,13 @@ impl<'a> System<'a> for MissileHitSystem {
 				continue;
 			}
 
-			let plane = data.plane.get(player.ent).unwrap();
-			let health = data.health.get_mut(player.ent).unwrap();
-			let upgrades = data.upgrades.get(player.ent).unwrap();
-
-			let mob = data.mob.get(missile.ent).unwrap();
-			let pos = data.pos.get(missile.ent).unwrap();
-			let owner = data.owner.get(missile.ent).unwrap();
-
-			let ref planeconf = data.config.planes[*plane];
-			let ref mobconf = data.config.mobs[*mob].missile.unwrap();
-			let ref upgconf = data.config.upgrades;
-
-			*health -= mobconf.damage * planeconf.damage_factor
-				/ upgconf.defense.factor[upgrades.defense as usize];
-
 			data.hitmarker.insert(missile.ent, HitMarker {}).unwrap();
 			data.entities.delete(missile.ent).unwrap();
 
-			if health.inner() <= 0.0 {
-				data.kill_channel.single_write(PlayerKilled {
-					missile: missile.ent,
-					player: player.ent,
-					killer: owner.0,
-					pos: *pos,
-				});
-			}
-
-			let packet = PlayerHit {
-				id: missile.ent,
-				owner: owner.0,
-				pos: *pos,
-				ty: *mob,
-				players: vec![PlayerHitPlayer {
-					id: player.ent,
-					health: *health,
-					health_regen: planeconf.health_regen,
-				}],
-			};
-
-			data.conns.send_to_all(OwnedMessage::Binary(
-				to_bytes(&ServerPacket::PlayerHit(packet)).unwrap(),
-			));
+			data.hit_channel.single_write(PlayerHit {
+				player: player.ent,
+				missile: missile.ent
+			});
 		}
 	}
 }

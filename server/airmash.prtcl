@@ -639,7 +639,7 @@ spec server {
 
 	# Per-player data for detailed 
   # (tab) menu in FFA.
-	ScoreDetailedFFAScore {
+	ScoreDetailedFFAEntry {
 		id:     Entity,
 		level:  Level,
 		score:  Score,
@@ -651,11 +651,11 @@ spec server {
 
 	# Detailed score menu (tab) data for FFA.
 	ScoreDetailedFFA {
-		scores: Array[ScoreDetailedFFAScore]
+		scores: Array[ScoreDetailedFFAEntry]
 	}
 
 	# Per-player data for detailed (tab) menu in CTF.
-	ScoreDetailedCTFScore {
+	ScoreDetailedCTFEntry {
 		id:     Entity,
 		level:  Level,
 		captures: u16,
@@ -668,11 +668,11 @@ spec server {
 
 	# Detailed score menu (tab) data for CTF.
 	ScoreDetailedCTF {
-		scores: Array[ScoreDetailedCTFScore]
+		scores: Array[ScoreDetailedCTFEntry]
 	}
 
 	# Per-player data for detailed (tab) menu in BTR.
-	ScoreDetailedBTRScore {
+	ScoreDetailedBTREntry {
 		id:     Entity,
 		level:  Level,
 		alive:  bool,
@@ -685,7 +685,7 @@ spec server {
 	}
 
 	ScoreDetailedBTR {
-		scores: Array[ScoreDetailedBTRScore]
+		scores: Array[ScoreDetailedBTREntry]
 	}
 
 	# Event for when a team chat has been received

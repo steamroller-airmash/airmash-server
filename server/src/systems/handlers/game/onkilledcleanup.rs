@@ -5,8 +5,7 @@ use std::time::Duration;
 use consts::timer::RESPAWN_TIME;
 use types::*;
 
-use dispatch::SystemInfo;
-use systems;
+use SystemInfo;
 
 use component::channel::*;
 use component::event::TimerEvent;
@@ -82,7 +81,7 @@ impl<'a> System<'a> for PlayerKilledCleanup {
 }
 
 impl SystemInfo for PlayerKilledCleanup {
-	type Dependencies = (systems::missile::MissileHit);
+	type Dependencies = super::on_player_hit::InflictDamage;
 
 	fn name() -> &'static str {
 		concat!(module_path!(), "::", line!())
