@@ -23,6 +23,8 @@ pub struct PlayerRespawnSystemData<'a> {
 	pub channel: Read<'a, OnTimerEvent>,
 	pub conns: Read<'a, Connections>,
 
+	pub team: ReadStorage<'a, Team>,
+
 	pub pos: WriteStorage<'a, Position>,
 	pub vel: WriteStorage<'a, Velocity>,
 	pub rot: WriteStorage<'a, Rotation>,
@@ -31,6 +33,8 @@ pub struct PlayerRespawnSystemData<'a> {
 
 	pub is_dead: WriteStorage<'a, IsDead>,
 	pub is_spec: ReadStorage<'a, IsSpectating>,
+
+	pub gamemode: GameModeWriter<'a, GameMode>,
 }
 
 impl<'a> System<'a> for PlayerRespawnSystem {
@@ -60,7 +64,10 @@ impl<'a> System<'a> for PlayerRespawnSystem {
 					None => continue,
 				};
 
-			*data.pos.get_mut(player).unwrap() = Position::default();
+			let team = *data.team.get(player).unwrap();
+			let pos = data.gamemode.get_mut().spawn_pos(player, team);
+
+			*data.pos.get_mut(player).unwrap() = pos;
 			*data.vel.get_mut(player).unwrap() = Velocity::default();
 			*data.rot.get_mut(player).unwrap() = Rotation::default();
 			*data.health.get_mut(player).unwrap() = Health::new(1.0);
