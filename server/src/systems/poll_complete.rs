@@ -54,13 +54,10 @@ impl<'a> System<'a> for PollComplete {
 	type SystemData = PollCompleteData<'a>;
 
 	fn run(&mut self, data: Self::SystemData) {
-		let Self::SystemData {
-			mut conns,
-			metrics,
-
-			associated,
-			teams,
-		} = data;
+		let mut conns = data.conns;
+		let metrics = data.metrics;
+		let associated = data.associated;
+		let teams = data.teams;
 
 		let start = Instant::now();
 		let mut cnt = 0;
