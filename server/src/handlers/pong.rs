@@ -1,26 +1,25 @@
-use component::counter::PlayersGame;
-use component::time::ThisFrame;
-use shrev::*;
 use specs::*;
 use types::*;
 
 use std::time::Instant;
 
-use airmash_protocol::client::Pong;
-use airmash_protocol::server::{PingResult, ServerPacket};
-use airmash_protocol::to_bytes;
+use component::counter::{PlayersGame, PlayerPing};
+use component::channel::{OnPong, OnPongReader};
+
+use protocol::server::{PingResult, ServerPacket};
+use protocol::to_bytes;
 use websocket::OwnedMessage;
 
 pub struct PongHandler {
-	reader: Option<ReaderId<(ConnectionId, Pong)>>,
+	reader: Option<OnPongReader>,
 }
 
 #[derive(SystemData)]
 pub struct PongHandlerData<'a> {
-	channel: Read<'a, EventChannel<(ConnectionId, Pong)>>,
+	channel: Read<'a, OnPong>,
 	conns: Read<'a, Connections>,
-	thisframe: Read<'a, ThisFrame>,
 	playersgame: Read<'a, PlayersGame>,
+	ping: WriteStorage<'a, PlayerPing>,
 }
 
 impl PongHandler {
@@ -34,22 +33,19 @@ impl<'a> System<'a> for PongHandler {
 
 	fn setup(&mut self, res: &mut Resources) {
 		self.reader = Some(
-			res.fetch_mut::<EventChannel<(ConnectionId, Pong)>>()
+			res.fetch_mut::<OnPong>()
 				.register_reader(),
 		);
 
 		Self::SystemData::setup(res);
 	}
 
-	fn run(&mut self, (data, mut pingdata): Self::SystemData) {
+	fn run(&mut self, (mut data, mut pingdata): Self::SystemData) {
 		let now = Instant::now();
 
 		for evt in data.channel.read(self.reader.as_mut().unwrap()) {
-			let player = match data.conns.0.get(&evt.0) {
-				Some(p) => match p.player {
-					Some(p) => p,
-					None => continue,
-				},
+			let player = match data.conns.associated_player(evt.0) {
+				Some(p) => p,
 				None => continue,
 			};
 
@@ -67,6 +63,8 @@ impl<'a> System<'a> for PongHandler {
 				players_game: data.playersgame.0,
 				players_total: data.playersgame.0,
 			};
+
+			data.ping.insert(player, PlayerPing(ping.as_millis() as u32)).unwrap();
 
 			data.conns.send_to(
 				evt.0,

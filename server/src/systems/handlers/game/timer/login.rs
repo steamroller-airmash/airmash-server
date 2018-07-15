@@ -27,15 +27,6 @@ pub struct LoginSystemData<'a> {
 	pub gamemode: GameModeWriter<'a, GameMode>,
 }
 
-struct LoginInfo<'a> {
-	pub id: Entity,
-	pub login: &'a Login,
-	pub flag: FlagCode,
-	pub team: Team,
-	pub plane: Plane,
-	pub pos: Position,
-}
-
 pub struct LoginHandler {
 	reader: Option<OnTimerEventReader>,
 }

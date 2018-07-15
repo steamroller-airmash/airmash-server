@@ -135,16 +135,19 @@ impl ConnectionId {
 
 // Implement new for all custom types (for consistency)
 impl Team {
+	#[allow(dead_code)]
 	fn new(t: u16) -> Self {
 		Team(t)
 	}
 }
 impl Level {
+	#[allow(dead_code)]
 	fn new(t: u8) -> Self {
 		Level(t)
 	}
 }
 impl Score {
+	#[allow(dead_code)]
 	fn new(t: u32) -> Self {
 		Score(t)
 	}

@@ -7,6 +7,9 @@ description = "Airmash CTF game mode"
 
 [dependencies]
 specs = "*"
+shred = "*"
+specs-derive = "*"
+shred-derive = "*"
 airmash-server = { path='../server' }
 log = "0.4"
 simple_logger = "*"

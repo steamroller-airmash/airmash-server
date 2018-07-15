@@ -191,28 +191,6 @@ pub mod accel {
 	}
 }
 
-pub mod velocity {
-	use protocol::field::*;
-	use types::*;
-
-	// Note: This assumes that f32 has enough precision,
-	//       the client uses f64 as it is written in js
-
-	const SHIFT: i32 = 32768;
-	const MULT: f32 = 1638.4;
-
-	pub fn serialize(val: &Velocity, ser: &mut Serializer) -> SerResult {
-		ser.serialize_u16(((val.x.inner() * MULT) as i32 + SHIFT) as u16)?;
-		ser.serialize_u16(((val.y.inner() * MULT) as i32 + SHIFT) as u16)
-	}
-	pub fn deserialize<'de>(de: &mut Deserializer<'de>) -> Result<Velocity, DeError> {
-		let x: f32 = (((de.deserialize_u16()? as i32) - SHIFT) as f32) / MULT;
-		let y: f32 = (((de.deserialize_u16()? as i32) - SHIFT) as f32) / MULT;
-
-		Ok(Velocity::new(Speed::new(x), Speed::new(y)))
-	}
-}
-
 pub mod speed {
 	use protocol::field::*;
 	use types::Speed;
@@ -364,7 +342,7 @@ pub mod pos_f32 {
 	}
 }
 
-pub mod vel_u {
+pub mod velocity {
 	use protocol::field::*;
 	use types::*;
 

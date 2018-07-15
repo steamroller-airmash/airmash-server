@@ -22,12 +22,10 @@ pub struct DecloakProwler {
 #[derive(SystemData)]
 pub struct DecloakProwlerData<'a> {
 	channel: Read<'a, OnPlayerRepel>,
-	config: Read<'a, Config>,
 	entities: Entities<'a>,
 	this_frame: Read<'a, ThisFrame>,
 
 	pos: ReadStorage<'a, Position>,
-	plane: ReadStorage<'a, Plane>,
 	team: WriteStorage<'a, Team>,
 	keystate: WriteStorage<'a, KeyState>,
 	last_stealth: WriteStorage<'a, LastStealthTime>,

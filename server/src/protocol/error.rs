@@ -24,14 +24,3 @@ pub enum DeError {
 	EntityMayNotBeDeserialized,
 	InvalidEnumValue(&'static str, u64),
 }
-
-impl SerError {
-	pub(self) fn desc(&self) -> &str {
-		match self {
-			&SerError::Utf8Error(_) => "Invalid utf-8 in string.",
-			&SerError::ArrayLengthTooBig => {
-				"Array too large to be serialized, maybe textbig or array types should be used."
-			}
-		}
-	}
-}

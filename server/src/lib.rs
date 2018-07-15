@@ -1,4 +1,3 @@
-#![allow(dead_code)]
 #![feature(optin_builtin_traits)]
 #![feature(specialization)]
 
@@ -64,4 +63,5 @@ pub use dispatch::{Builder, SystemDeps, SystemInfo};
 pub use types::{
 	Accel, AccelScalar, Config, Connections, Distance, FutureDispatcher, GameMode, GameModeWriter,
 	KeyState, Level, Mob, Name, Plane, Position, Speed, Team, Time, Velocity, Vector2,
+	Health, Energy, HealthRegen, EnergyRegen, Score,
 };
