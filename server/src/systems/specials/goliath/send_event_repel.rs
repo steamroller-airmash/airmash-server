@@ -84,9 +84,6 @@ impl<'a> System<'a> for SendEventRepel {
 						None
 					}
 				})
-				// If we have more than 255 elements in a smallarray
-				// then serialization will fail
-				.take(255)
 				.collect::<Vec<_>>();
 
 			let hit_missiles = (&*data.entities, &data.pos, &data.team, &data.is_missile)
@@ -101,9 +98,6 @@ impl<'a> System<'a> for SendEventRepel {
 						None
 					}
 				})
-				// If we have more than 255 elements in a smallarray
-				// then serialization will fail
-				.take(255)
 				.collect::<Vec<_>>();
 
 			for (player, player_pos) in hit_players.iter() {
@@ -127,6 +121,8 @@ impl<'a> System<'a> for SendEventRepel {
 
 			let players = hit_players
 				.into_iter()
+				// The largest a serialized SmallArray can be is 255 elements
+				.take(255)
 				.map(|(player, player_pos)| {
 					let plane = *data.plane.get(player).unwrap();
 					let keystate = data.keystate.get(player).unwrap().to_server(&plane);
@@ -148,6 +144,8 @@ impl<'a> System<'a> for SendEventRepel {
 
 			let mobs = hit_missiles
 				.into_iter()
+				// The largest a serialized SmallArray can be is 255 elements
+				.take(255)
 				.map(|(missile, missile_pos)| {
 					let mob = *data.mob.get(missile).unwrap();
 					let ref info = data.config.mobs[mob].missile.unwrap();
