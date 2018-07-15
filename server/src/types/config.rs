@@ -132,11 +132,13 @@ impl Default for PlaneInfos {
 
 				health_regen: HealthRegen::new(0.001),
 				energy_regen: EnergyRegen::new(0.008),
-				fire_delay: Duration::from_millis(550),
+				//fire_delay: Duration::from_millis(550),
+				fire_delay: Duration::from_millis(0),
 
 				damage_factor: 2.0,
 
-				fire_energy: Energy::new(0.6),
+				//fire_energy: Energy::new(0.6),
+				fire_energy: Energy::new(0.0),
 
 				missile_type: MobType::PredatorMissile,
 				missile_offset: Distance::new(35.0),

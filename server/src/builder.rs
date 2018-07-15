@@ -222,7 +222,7 @@ where
 		runtime.spawn(timeloop(
 			move |now| {
 				if Instant::now() - now > Duration::from_millis(30) {
-					warn!("Time has drifted more than 30 ms, skipping frame!");
+					//warn!("Time has drifted more than 30 ms, skipping frame!");
 					return;
 				}
 
@@ -234,7 +234,7 @@ where
 
 				let duration = Instant::now() - now;
 				if duration > Duration::from_millis(17) {
-					warn!(
+					debug!(
 						"Frame took {} ms! (longer than 16.67 ms)",
 						1000 * duration.as_secs() + (duration.subsec_millis() as u64)
 					);
