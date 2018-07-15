@@ -38,6 +38,11 @@ pub struct PlayerKilled {
 }
 #[derive(Copy, Clone, Debug)]
 pub struct PlayerRespawn(pub Entity);
+#[derive(Copy, Clone, Debug)]
+pub struct PlayerHit{
+	pub player: Entity,
+	pub missile: Entity
+}
 
 #[derive(Copy, Clone, Debug)]
 pub struct PlayerSpectate {

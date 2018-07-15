@@ -4,11 +4,12 @@ mod onkilledcleanup;
 
 mod register;
 
-pub mod on_chat_throttled;
 pub mod on_join;
+pub mod on_player_hit;
 pub mod on_missile_fire;
 pub mod on_player_killed;
 pub mod on_spectate_event;
+pub mod on_chat_throttled;
 pub mod timer;
 
 pub use self::register::register;
