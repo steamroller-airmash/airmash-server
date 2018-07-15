@@ -84,6 +84,9 @@ impl<'a> System<'a> for SendEventRepel {
 						None
 					}
 				})
+				// If we have more than 255 elements in a smallarray
+				// then serialization will fail
+				.take(255)
 				.collect::<Vec<_>>();
 
 			let hit_missiles = (&*data.entities, &data.pos, &data.team, &data.is_missile)
@@ -98,6 +101,9 @@ impl<'a> System<'a> for SendEventRepel {
 						None
 					}
 				})
+				// If we have more than 255 elements in a smallarray
+				// then serialization will fail
+				.take(255)
 				.collect::<Vec<_>>();
 
 			for (player, player_pos) in hit_players.iter() {
