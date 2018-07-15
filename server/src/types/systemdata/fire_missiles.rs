@@ -94,10 +94,10 @@ impl<'a> FireMissiles<'a> {
 					.build();
 
 				trace!(
-				target: "missile-fire",
-				"{:?} fired missile with id {:?}",
-				owner, missile
-			);
+					target: "missile-fire",
+					"{:?} fired missile with id {:?}",
+					owner, missile
+				);
 
 				missile
 			})
