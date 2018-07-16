@@ -3,7 +3,7 @@ use std::hash::{Hash, BuildHasher};
 use std::collections::{HashMap, HashSet};
 use std::collections::hash_map::RandomState;
 
-#[derive(Default)]
+#[derive(Debug)]
 pub struct BidirRemovableMap<K, V, S = RandomState>
 where
     K: Eq + Hash,
@@ -41,5 +41,19 @@ where
         }
 
         key
+    }
+}
+
+impl<K, V, S> Default for BidirRemovableMap<K, V, S> 
+where
+    K: Eq + Hash,
+    V: Eq + Hash,
+    S: BuildHasher + Default
+{
+    fn default() -> Self {
+        Self {
+            set: Default::default(),
+            map: Default::default()
+        }
     }
 }
