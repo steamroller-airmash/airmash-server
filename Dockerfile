@@ -13,6 +13,7 @@ RUN mkdir src
 # Need to add specgen so cargo fetch works
 COPY specgen /build/specgen
 COPY bounded-queue /build/bounded-queue
+COPY special-map /build/special-map
 
 # Fetch all dependencies to save bandwith
 RUN echo > src/main.rs
