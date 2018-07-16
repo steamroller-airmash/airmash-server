@@ -47,7 +47,7 @@ impl<'a> System<'a> for TrackDamage {
 
 			let ref info = data.config.mobs[mob].missile.unwrap();
 
-			data.damage.get_mut(owner.0).unwrap().0 += info.damage;
+			data.damage.get_mut(owner.0).unwrap().0 += info.damage * 100.0;
 		}
 	}
 }
