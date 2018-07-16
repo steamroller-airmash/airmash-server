@@ -1,24 +1,23 @@
-
-use std::hash::{Hash, BuildHasher};
-use std::collections::{HashMap, HashSet};
 use std::collections::hash_map::RandomState;
+use std::collections::{HashMap, HashSet};
+use std::hash::{BuildHasher, Hash};
 
 #[derive(Debug)]
 pub struct BidirRemovableMap<K, V, S = RandomState>
 where
     K: Eq + Hash,
     V: Eq + Hash,
-    S: BuildHasher
+    S: BuildHasher,
 {
     set: HashSet<K, S>,
-    map: HashMap<V, K, S>
+    map: HashMap<V, K, S>,
 }
 
 impl<K, V, S> BidirRemovableMap<K, V, S>
 where
     K: Hash + Eq + Clone,
     V: Hash + Eq,
-    S: BuildHasher
+    S: BuildHasher,
 {
     pub fn len(&self) -> usize {
         self.set.len()
@@ -44,16 +43,16 @@ where
     }
 }
 
-impl<K, V, S> Default for BidirRemovableMap<K, V, S> 
+impl<K, V, S> Default for BidirRemovableMap<K, V, S>
 where
     K: Eq + Hash,
     V: Eq + Hash,
-    S: BuildHasher + Default
+    S: BuildHasher + Default,
 {
     fn default() -> Self {
         Self {
             set: Default::default(),
-            map: Default::default()
+            map: Default::default(),
         }
     }
 }
