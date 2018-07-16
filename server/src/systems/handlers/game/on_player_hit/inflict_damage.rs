@@ -20,7 +20,7 @@ pub struct InflictDamageData<'a> {
 	pub kill_channel: Write<'a, OnPlayerKilled>,
 	pub conns: Read<'a, Connections>,
 	pub config: Read<'a, Config>,
-	
+
 	pub health: WriteStorage<'a, Health>,
 	pub plane: ReadStorage<'a, Plane>,
 	pub upgrades: ReadStorage<'a, Upgrades>,

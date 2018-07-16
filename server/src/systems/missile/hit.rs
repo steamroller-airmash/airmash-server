@@ -77,7 +77,7 @@ impl<'a> System<'a> for MissileHitSystem {
 
 			data.hit_channel.single_write(PlayerHit {
 				player: player.ent,
-				missile: missile.ent
+				missile: missile.ent,
 			});
 		}
 	}

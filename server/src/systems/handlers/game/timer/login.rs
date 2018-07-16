@@ -6,9 +6,9 @@ use uuid::Uuid;
 use std::str::FromStr;
 
 use component::channel::*;
+use component::collection::PlayerNames;
 use component::event::PlayerJoin;
 use component::time::*;
-use component::collection::PlayerNames;
 use consts::timer::*;
 use types::*;
 use utils::geoip;

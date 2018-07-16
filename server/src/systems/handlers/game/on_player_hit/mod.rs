@@ -1,6 +1,5 @@
-
-mod send_packet;
 mod inflict_damage;
+mod send_packet;
 
-pub use self::send_packet::SendPacket;
 pub use self::inflict_damage::InflictDamage;
+pub use self::send_packet::SendPacket;

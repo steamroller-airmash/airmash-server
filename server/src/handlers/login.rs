@@ -55,7 +55,7 @@ impl<'a> System<'a> for LoginHandler {
 					data: Some(Box::new(evt)),
 				};
 
-				if cfg!(not(features="block-bots")) {
+				if cfg!(not(features = "block-bots")) {
 					channel.send(event).unwrap();
 					continue;
 				}

@@ -1,6 +1,5 @@
-
-use specs::Entity;
 use special_map::BidirRemovableMap;
+use specs::Entity;
 
 use fnv::FnvBuildHasher;
 

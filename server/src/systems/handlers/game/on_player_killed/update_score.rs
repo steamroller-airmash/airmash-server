@@ -83,7 +83,7 @@ impl<'a> System<'a> for UpdateScore {
 
 			data.score.get_mut(evt.player).unwrap().0 -= transfer;
 			data.score.get_mut(evt.killer).unwrap().0 += transfer + 25;
-			
+
 			data.total_kills.get_mut(evt.killer).unwrap().0 += 1;
 			data.total_deaths.get_mut(evt.player).unwrap().0 += 1;
 
