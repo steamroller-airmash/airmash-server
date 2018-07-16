@@ -27,7 +27,7 @@ specs-derive = "*"
 dimensioned = "*"
 lazy_static = "*"
 fnv = "*"
-rand = "*"
+rand = "0.4"
 shred = "*"
 shred-derive = "*"
 shrev = "*"
@@ -37,6 +37,7 @@ rayon = "1.0"
 htmlescape = "*"
 hibitset = "*"
 bounded-queue = { path = "../bounded-queue" }
+special-map = { path = "../special-map" }
 
 [dependencies.cadence]
 version = "0.14"

@@ -18,6 +18,7 @@ extern crate serde;
 
 // Regular Dependencies
 extern crate bounded_queue;
+extern crate special_map;
 extern crate fnv;
 extern crate hibitset;
 extern crate htmlescape;

@@ -5,6 +5,7 @@ mod onkilledcleanup;
 mod register;
 
 pub mod on_join;
+pub mod on_leave;
 pub mod on_player_hit;
 pub mod on_missile_fire;
 pub mod on_player_killed;

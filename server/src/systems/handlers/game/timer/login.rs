@@ -8,18 +8,21 @@ use std::str::FromStr;
 use component::channel::*;
 use component::event::PlayerJoin;
 use component::time::*;
+use component::collection::PlayerNames;
 use consts::timer::*;
 use types::*;
 use utils::geoip;
 
 use GameMode;
 
-// Login needs write access to just
-// about everything
+use rand;
+use rand::distributions::{IndependentSample, Range};
+
 #[derive(SystemData)]
 pub struct LoginSystemData<'a> {
 	pub entities: Entities<'a>,
 	pub conns: Read<'a, Connections>,
+	pub player_names: Write<'a, PlayerNames>,
 
 	pub startime: Read<'a, StartTime>,
 	pub player_join: Write<'a, OnPlayerJoin>,
@@ -68,10 +71,24 @@ impl LoginHandler {
 		let team = data.gamemode.get_mut().assign_team(entity);
 		let plane = data.gamemode.get_mut().assign_plane(entity, team);
 
+		let mut name = login.name;
+		let range = Range::new(0, 1000);
+		let mut rng = rand::thread_rng();
+		while data.player_names.0.contains(&name) {
+			name = format!("{}#{:03}", name, range.ind_sample(&mut rng));
+		}
+
+		data.player_names.0.insert(name.clone(), entity);
+
+		name.truncate(255);
+		// Avoid carrying around extra bytes on what
+		// should be an immutable string
+		name.shrink_to_fit();
+
 		data.player_join.single_write(PlayerJoin {
 			id: entity,
 			level: Level(0),
-			name: Name(login.name),
+			name: Name(name),
 			session: Session(session),
 			flag: flag,
 			team,
