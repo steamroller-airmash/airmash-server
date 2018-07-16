@@ -7,6 +7,7 @@ use super::AddDamage;
 
 use airmash_server::*;
 use airmash_server::component::channel::*;
+use airmash_server::component::reference::PlayerRef;
 use airmash_server::systems::missile::MissileHit;
 
 #[derive(Default)]
@@ -21,6 +22,7 @@ pub struct TrackDamageData<'a> {
 	channel: Read<'a, OnPlayerHit>,
 
 	mob: ReadStorage<'a, Mob>,
+	owner: ReadStorage<'a, PlayerRef>,
 
 	damage: WriteStorage<'a, TotalDamage>,
 }
@@ -38,21 +40,14 @@ impl<'a> System<'a> for TrackDamage {
 
 	fn run(&mut self, mut data: Self::SystemData) {
 		for evt in data.channel.read(self.reader.as_mut().unwrap()) {
-			if !data.entities.is_alive(evt.player) { continue; }
-
 			let mob = *data.mob.get(evt.missile).unwrap();
+			let owner = *data.owner.get(evt.missile).unwrap();
 
-			if data.config.mobs[mob].missile.is_none() {
-				error!(
-					"{:?} {:?}",
-					mob, 
-					data.config.mobs[mob].missile
-				);
-			}
+			if !data.entities.is_alive(owner.0) { continue; }
 
 			let ref info = data.config.mobs[mob].missile.unwrap();
 
-			data.damage.get_mut(evt.player).unwrap().0 += info.damage;
+			data.damage.get_mut(owner.0).unwrap().0 += info.damage;
 		}
 	}
 }
