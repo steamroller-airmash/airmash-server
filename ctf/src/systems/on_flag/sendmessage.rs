@@ -78,8 +78,6 @@ impl<'a> System<'a> for SendFlagMessageSystem {
 						redteam: data.scores.redteam,
 					})).unwrap(),
 				));
-
-				info!("{:?}", *data.scores);
 			}
 
 			data.conns.send_to_all(OwnedMessage::Binary(

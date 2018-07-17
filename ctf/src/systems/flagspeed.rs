@@ -38,8 +38,6 @@ impl<'a> System<'a> for FlagSpeedSystem {
 		} = data;
 
 		for evt in channel.read(self.reader.as_mut().unwrap()) {
-			info!("{:?}", evt);
-
 			match evt.ty {
 				FlagEventType::Capture => {
 					let player = evt.player.unwrap();
