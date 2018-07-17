@@ -9,6 +9,7 @@ mod pos_update;
 mod register;
 
 pub mod on_flag;
+pub mod on_join;
 
 pub use self::register::register;
 
