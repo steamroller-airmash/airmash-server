@@ -3,7 +3,7 @@ use specs::*;
 
 use component::*;
 
-use super::*;
+use super::PickupFlagSystem;
 
 pub struct FlagSpeedSystem {
 	reader: Option<OnFlagReader>,
@@ -60,7 +60,7 @@ impl<'a> System<'a> for FlagSpeedSystem {
 }
 
 impl SystemInfo for FlagSpeedSystem {
-	type Dependencies = (ReturnFlagSystem, PickupFlagSystem);
+	type Dependencies = (PickupFlagSystem);
 
 	fn name() -> &'static str {
 		concat!(module_path!(), "::", line!())

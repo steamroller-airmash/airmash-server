@@ -69,7 +69,7 @@ impl<'a> System<'a> for ReturnFlagSystem {
 	}
 }
 
-use super::PickupFlagSystem;
+use systems::PickupFlagSystem;
 
 impl SystemInfo for ReturnFlagSystem {
 	type Dependencies = PickupFlagSystem;

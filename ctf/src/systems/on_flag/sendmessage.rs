@@ -96,7 +96,7 @@ impl<'a> System<'a> for SendFlagMessageSystem {
 	}
 }
 
-use super::PickupFlagSystem;
+use systems::PickupFlagSystem;
 
 impl SystemInfo for SendFlagMessageSystem {
 	type Dependencies = PickupFlagSystem;

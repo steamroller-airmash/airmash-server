@@ -42,13 +42,14 @@ pub fn register<'a, 'b>(world: &mut World, disp: Builder<'a, 'b>) -> Builder<'a,
 
 	disp.with::<LoginUpdateSystem>()
 		.with::<PickupFlagSystem>()
-		.with::<SendFlagMessageSystem>()
 		.with::<LeaveUpdateSystem>()
 		.with::<DropSystem>()
-		.with::<ReturnFlagSystem>()
 		.with::<PosUpdateSystem>()
-		.with::<PickupMessageSystem>()
 		.with::<FlagSpeedSystem>()
 		.with::<UpdateGameModeOnPlayerLeave>()
 		.with::<DropOnSpec>()
+		.with::<on_flag::SendFlagMessage>()
+		.with::<on_flag::ReturnFlag>()
+		.with::<on_flag::PickupMessage>()
+		.with::<on_flag::UpdateScore>()
 }

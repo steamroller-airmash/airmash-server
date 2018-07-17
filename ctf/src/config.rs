@@ -39,7 +39,7 @@ lazy_static! {
 	};
 	// TODO: Actually determine this
 	/// Distance that the player must be within to cap
-	pub static ref CAP_RADIUS: Distance = Distance::new(50.0);
+	pub static ref CAP_RADIUS: Distance = Distance::new(100.0);
 
 	pub static ref FLAG_POS: FnvHashMap<Team, Position> = {
 		let mut map = FnvHashMap::default();
@@ -77,4 +77,10 @@ lazy_static! {
 
 		map
 	};
+
+	/// The base score that a player would get if they were
+	/// the only ones on the server and they capped. This
+	/// value will be multiplied by the number of players
+	/// in the server (up to a max of 10 times).
+	pub static ref FLAG_CAP_BOUNTY_BASE: Score = Score(100);
 }

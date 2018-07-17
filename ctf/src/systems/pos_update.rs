@@ -2,7 +2,7 @@ use server::*;
 use specs::*;
 
 use component::*;
-use server::component::flag::*;
+use server::types::systemdata::*;
 
 pub struct PosUpdateSystem;
 
@@ -12,21 +12,17 @@ pub struct PosUpdateSystemData<'a> {
 	pub pos: WriteStorage<'a, Position>,
 	pub flag: ReadStorage<'a, IsFlag>,
 	pub carrier: ReadStorage<'a, FlagCarrier>,
-	pub isdead: ReadStorage<'a, IsDead>,
-	pub isspec: ReadStorage<'a, IsSpectating>,
+	pub is_alive: IsAlive<'a>,
 }
 
 impl<'a> System<'a> for PosUpdateSystem {
 	type SystemData = PosUpdateSystemData<'a>;
 
 	fn run(&mut self, mut data: Self::SystemData) {
-		let carriers = (&data.carrier, &*data.ents, &data.flag)
+		let carriers = (&data.carrier, &*data.ents, &data.flag, data.is_alive.mask())
 			.join()
-			.filter(|(c, _, _)| c.0.is_some())
-			.filter(|(_, ent, _)| {
-				data.isdead.get(*ent).is_none() && data.isspec.get(*ent).is_none()
-			})
-			.map(|(c, ent, _)| (ent, c.0.unwrap()))
+			.filter(|(c, ..)| c.0.is_some())
+			.map(|(c, ent, ..)| (ent, c.0.unwrap()))
 			.collect::<Vec<_>>();
 
 		for (flag, carrier) in carriers {
