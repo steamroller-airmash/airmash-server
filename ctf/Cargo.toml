@@ -1,6 +1,6 @@
 [package]
 name = "airmash-server-ctf"
-version = "0.1.0"
+version = "0.0.1"
 authors = ["STEAMROLLER"]
 license = "Apache-2.0 OR MIT"
 
