@@ -110,7 +110,9 @@ enum ServerMessageType : u8 {
 	# Not sure if this is right
 	FlagMessage = 2,
 	# This doesn't have an equivalent in the offical server AFAIK
-	ShutdownMessage = 15
+	ShutdownMessage = 15,
+	# New type, doesn't have an equivalent within the server
+	BannerMessage = 16,
 }
 
 enum PlayerLevelType : u8 {

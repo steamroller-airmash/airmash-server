@@ -186,6 +186,15 @@ where
 		self
 	}
 
+	pub fn with_alpha_warning(self) -> Self {
+		use systems::notify::*;
+
+		Self {
+			builder: self.builder.with::<NotifyAlpha>(),
+			..self
+		}
+	}
+
 	pub fn run(self) {
 		let Self {
 			builder,
