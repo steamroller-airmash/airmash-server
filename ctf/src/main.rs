@@ -35,7 +35,8 @@ fn main() {
 
 	let mut server = AirmashServer::new("0.0.0.0:3501")
 		.with_engine()
-		.with_gamemode(CTFGameMode::new());
+		.with_gamemode(CTFGameMode::new())
+		.with_notify_alpha();
 
 	server.builder = systems::register(&mut server.world, server.builder);
 
