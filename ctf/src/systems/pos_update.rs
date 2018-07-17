@@ -22,8 +22,7 @@ impl<'a> System<'a> for PosUpdateSystem {
 		let carriers = (&data.carrier, &*data.ents, &data.flag, data.is_alive.mask())
 			.join()
 			.filter(|(c, ..)| c.0.is_some())
-			.map(|(c, ent, ..)| (ent, c.0.unwrap()))
-			.collect::<Vec<_>>();
+			.map(|(c, ent, ..)| (ent, c.0.unwrap()));
 
 		for (flag, carrier) in carriers {
 			// Update flag position to carrier position
