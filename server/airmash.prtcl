@@ -224,7 +224,7 @@ enum FlagCode : u16 {
 	Italy = 101,
 	Georgia = 102,
 	CostaRica = 103,
-	BosniaandHerzegovina = 104,
+	BosniaAndHerzegovina = 104,
 	Philippines = 105,
 	Monaco = 106,
 	Jamaica = 107,
