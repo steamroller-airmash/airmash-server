@@ -48,6 +48,7 @@ pub fn register<'a, 'b>(world: &mut World, disp: Builder<'a, 'b>) -> Builder<'a,
 		.with::<FlagSpeedSystem>()
 		.with::<UpdateGameModeOnPlayerLeave>()
 		.with::<DropOnSpec>()
+		.with::<DropOnDeath>()
 		// On Join Events
 		.with::<on_join::InitCaptures>()
 		// On Flag Events
