@@ -55,13 +55,14 @@ impl SystemInfo for NotifyAlpha {
 	}
 
 	fn new() -> Self {
-		Self { 
+		Self {
 			reader: None,
 			// Note: don't set this to a duration above approximately
 			// 49.7 weeks so that the number of milliseconds does not
 			// overflow a u32
 			duration: Duration::from_secs(5),
-			message: "This server is in alpha! Don't expect things to work correctly or at all.".to_string()
+			message: "This server is in alpha! Don't expect things to work correctly or at all."
+				.to_string(),
 		}
 	}
 }

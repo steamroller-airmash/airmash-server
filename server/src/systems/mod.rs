@@ -11,9 +11,9 @@ pub mod collision;
 pub mod handlers;
 pub mod limiting;
 pub mod missile;
+pub mod notify;
 pub mod specials;
 pub mod spectate;
-pub mod notify;
 
 pub use self::energy_regen::EnergyRegenSystem;
 pub use self::health_regen::HealthRegenSystem;
