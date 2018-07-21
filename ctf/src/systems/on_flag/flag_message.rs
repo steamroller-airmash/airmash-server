@@ -70,10 +70,10 @@ impl<'a> System<'a> for PickupMessageSystem {
 }
 
 use systems::PickupFlagSystem;
-use super::ReturnFlag;
+use super::CaptureFlag;
 
 impl SystemInfo for PickupMessageSystem {
-	type Dependencies = (ReturnFlag, PickupFlagSystem);
+	type Dependencies = (CaptureFlag, PickupFlagSystem);
 
 	fn name() -> &'static str {
 		concat!(module_path!(), "::", line!())

@@ -8,10 +8,10 @@ use component::*;
 use server::protocol::server::{GameFlag, ServerPacket};
 use server::protocol::{to_bytes, FlagUpdateType};
 
-pub struct ReturnFlagSystem;
+pub struct CaptureFlag;
 
 #[derive(SystemData)]
-pub struct ReturnFlagSystemData<'a> {
+pub struct CaptureFlagData<'a> {
 	pub ents: Entities<'a>,
 	pub pos: WriteStorage<'a, Position>,
 	pub team: ReadStorage<'a, Team>,
@@ -22,8 +22,8 @@ pub struct ReturnFlagSystemData<'a> {
 	pub conns: Read<'a, Connections>,
 }
 
-impl<'a> System<'a> for ReturnFlagSystem {
-	type SystemData = ReturnFlagSystemData<'a>;
+impl<'a> System<'a> for CaptureFlag {
+	type SystemData = CaptureFlagData<'a>;
 
 	fn run(&mut self, mut data: Self::SystemData) {
 		let mut channel = data.channel;
@@ -71,7 +71,7 @@ impl<'a> System<'a> for ReturnFlagSystem {
 
 use systems::PickupFlagSystem;
 
-impl SystemInfo for ReturnFlagSystem {
+impl SystemInfo for CaptureFlag {
 	type Dependencies = PickupFlagSystem;
 
 	fn name() -> &'static str {

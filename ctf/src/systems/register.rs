@@ -53,7 +53,7 @@ pub fn register<'a, 'b>(world: &mut World, disp: Builder<'a, 'b>) -> Builder<'a,
 		.with::<on_join::InitCaptures>()
 		// On Flag Events
 		.with::<on_flag::SendFlagMessage>()
-		.with::<on_flag::ReturnFlag>()
+		.with::<on_flag::CaptureFlag>()
 		.with::<on_flag::PickupMessage>()
 		.with::<on_flag::UpdateScore>()
 		.with::<on_flag::UpdateCaptures>()
