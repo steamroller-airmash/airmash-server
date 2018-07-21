@@ -64,10 +64,7 @@ impl<'a> System<'a> for DropOnDeath {
 }
 
 impl SystemInfo for DropOnDeath {
-	type Dependencies = (
-		CommandHandler,
-		PickupFlagSystem
-	);
+	type Dependencies = (CommandHandler, PickupFlagSystem);
 
 	fn name() -> &'static str {
 		concat!(module_path!(), "::", line!())

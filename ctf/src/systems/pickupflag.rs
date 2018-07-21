@@ -1,10 +1,10 @@
 use specs::*;
 
-use server::*;
-use server::types::Sqrt;
 use server::component::flag::*;
-use server::types::systemdata::*;
 use server::component::time::ThisFrame;
+use server::types::systemdata::*;
+use server::types::Sqrt;
+use server::*;
 
 use component::*;
 use config as ctfconfig;

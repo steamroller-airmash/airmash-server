@@ -41,7 +41,7 @@ impl<'a> System<'a> for UpdateCaptures {
 
 			let player = evt.player.unwrap();
 
-			if !data.entities.is_alive(player) { 
+			if !data.entities.is_alive(player) {
 				continue;
 			}
 

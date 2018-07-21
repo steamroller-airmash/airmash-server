@@ -2,8 +2,8 @@ use specs::*;
 
 use component::*;
 
-use server::*;
 use server::component::channel::*;
+use server::*;
 
 pub struct InitCaptures {
 	reader: Option<OnPlayerJoinReader>,

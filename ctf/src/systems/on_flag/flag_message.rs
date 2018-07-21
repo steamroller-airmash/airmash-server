@@ -69,8 +69,8 @@ impl<'a> System<'a> for PickupMessageSystem {
 	}
 }
 
-use systems::PickupFlagSystem;
 use super::CaptureFlag;
+use systems::PickupFlagSystem;
 
 impl SystemInfo for PickupMessageSystem {
 	type Dependencies = (CaptureFlag, PickupFlagSystem);

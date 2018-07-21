@@ -80,10 +80,7 @@ impl<'a> System<'a> for DropOnSpec {
 }
 
 impl SystemInfo for DropOnSpec {
-	type Dependencies = (
-		CommandHandler,
-		PickupFlagSystem
-	);
+	type Dependencies = (CommandHandler, PickupFlagSystem);
 
 	fn name() -> &'static str {
 		concat!(module_path!(), "::", line!())

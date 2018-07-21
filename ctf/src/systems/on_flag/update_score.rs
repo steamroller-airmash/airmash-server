@@ -4,10 +4,10 @@ use specs::*;
 use component::*;
 use config as ctfconfig;
 
-use server::types::*;
 use server::component::counter::*;
 use server::protocol::server::{ScoreUpdate, ServerPacket};
-use server::protocol::{to_bytes};
+use server::protocol::to_bytes;
+use server::types::*;
 
 pub struct UpdateScore {
 	reader: Option<OnFlagReader>,
@@ -76,8 +76,8 @@ impl<'a> System<'a> for UpdateScore {
 	}
 }
 
-use systems::PickupFlagSystem;
 use super::CaptureFlag;
+use systems::PickupFlagSystem;
 
 impl SystemInfo for UpdateScore {
 	type Dependencies = (CaptureFlag, PickupFlagSystem);
