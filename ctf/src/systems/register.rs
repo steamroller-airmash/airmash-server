@@ -23,16 +23,16 @@ pub fn register<'a, 'b>(world: &mut World, disp: Builder<'a, 'b>) -> Builder<'a,
 
 	let blue = world
 		.create_entity()
-		.with(Team(1))
-		.with(config::FLAG_POS[&Team(1)])
+		.with(config::BLUE_TEAM)
+		.with(config::FLAG_HOME_POS[&config::BLUE_TEAM])
 		.with(IsFlag {})
 		.with(FlagCarrier(None))
 		.with(lastdrop)
 		.build();
 	let red = world
 		.create_entity()
-		.with(Team(2))
-		.with(config::FLAG_POS[&Team(2)])
+		.with(config::RED_TEAM)
+		.with(config::FLAG_HOME_POS[&config::RED_TEAM])
 		.with(IsFlag {})
 		.with(FlagCarrier(None))
 		.with(lastdrop)
@@ -57,4 +57,5 @@ pub fn register<'a, 'b>(world: &mut World, disp: Builder<'a, 'b>) -> Builder<'a,
 		.with::<on_flag::PickupMessage>()
 		.with::<on_flag::UpdateScore>()
 		.with::<on_flag::UpdateCaptures>()
+		.with::<on_flag::ReturnFlag>()
 }
