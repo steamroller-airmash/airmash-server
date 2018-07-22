@@ -9,6 +9,7 @@ mod pickupflag;
 mod pos_update;
 mod register;
 
+pub mod flag_event;
 pub mod on_flag;
 pub mod on_join;
 

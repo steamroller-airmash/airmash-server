@@ -76,11 +76,10 @@ impl<'a> System<'a> for UpdateScore {
 	}
 }
 
-use super::CaptureFlag;
 use systems::PickupFlagSystem;
 
 impl SystemInfo for UpdateScore {
-	type Dependencies = (CaptureFlag, PickupFlagSystem);
+	type Dependencies = PickupFlagSystem;
 
 	fn name() -> &'static str {
 		concat!(module_path!(), "::", line!())
