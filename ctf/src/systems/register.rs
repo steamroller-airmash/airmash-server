@@ -23,16 +23,16 @@ pub fn register<'a, 'b>(world: &mut World, disp: Builder<'a, 'b>) -> Builder<'a,
 
 	let blue = world
 		.create_entity()
-		.with(Team(1))
-		.with(config::FLAG_POS[&Team(1)])
+		.with(config::BLUE_TEAM)
+		.with(config::FLAG_HOME_POS[&config::BLUE_TEAM])
 		.with(IsFlag {})
 		.with(FlagCarrier(None))
 		.with(lastdrop)
 		.build();
 	let red = world
 		.create_entity()
-		.with(Team(2))
-		.with(config::FLAG_POS[&Team(2)])
+		.with(config::RED_TEAM)
+		.with(config::FLAG_HOME_POS[&config::RED_TEAM])
 		.with(IsFlag {})
 		.with(FlagCarrier(None))
 		.with(lastdrop)
@@ -42,13 +42,21 @@ pub fn register<'a, 'b>(world: &mut World, disp: Builder<'a, 'b>) -> Builder<'a,
 
 	disp.with::<LoginUpdateSystem>()
 		.with::<PickupFlagSystem>()
-		.with::<SendFlagMessageSystem>()
 		.with::<LeaveUpdateSystem>()
 		.with::<DropSystem>()
-		.with::<ReturnFlagSystem>()
 		.with::<PosUpdateSystem>()
-		.with::<PickupMessageSystem>()
 		.with::<FlagSpeedSystem>()
 		.with::<UpdateGameModeOnPlayerLeave>()
 		.with::<DropOnSpec>()
+		.with::<DropOnDeath>()
+		// On Join Events
+		.with::<on_join::InitCaptures>()
+		// On Flag Events
+		.with::<on_flag::SendFlagMessage>()
+		.with::<on_flag::PickupMessage>()
+		.with::<on_flag::UpdateScore>()
+		.with::<on_flag::UpdateCaptures>()
+		// Flag event sending systems
+		.with::<flag_event::CaptureFlag>()
+		.with::<flag_event::ReturnFlag>()
 }

@@ -78,10 +78,10 @@ impl<'a> System<'a> for CommandHandler {
 					None => continue,
 				};
 
-				let pos = data.gamemode.get_mut().spawn_pos(
-					player,
-					*data.team.get(player).unwrap()
-				);
+				let pos = data
+					.gamemode
+					.get_mut()
+					.spawn_pos(player, *data.team.get(player).unwrap());
 
 				*data.pos.get_mut(player).unwrap() = pos;
 				*data.vel.get_mut(player).unwrap() = Velocity::default();
@@ -113,8 +113,8 @@ impl<'a> System<'a> for CommandHandler {
 	}
 }
 
-use SystemInfo;
 use handlers::OnCloseHandler;
+use SystemInfo;
 
 impl SystemInfo for CommandHandler {
 	type Dependencies = OnCloseHandler;

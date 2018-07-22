@@ -237,7 +237,7 @@ lazy_static! {
 		map.insert("IT", FlagCode::Italy);
 		map.insert("GE", FlagCode::Georgia);
 		map.insert("CR", FlagCode::CostaRica);
-		map.insert("BA", FlagCode::BosniaandHerzegovina);
+		map.insert("BA", FlagCode::BosniaAndHerzegovina);
 		map.insert("PH", FlagCode::Philippines);
 		map.insert("MC", FlagCode::Monaco);
 		map.insert("JM", FlagCode::Jamaica);

@@ -1,9 +1,9 @@
 extern crate airmash_server;
 extern crate log;
+extern crate rand;
+extern crate shred;
 extern crate simple_logger;
 extern crate specs;
-extern crate shred;
-extern crate rand;
 #[macro_use]
 extern crate lazy_static;
 #[macro_use]
@@ -11,9 +11,9 @@ extern crate specs_derive;
 #[macro_use]
 extern crate shred_derive;
 
-mod systems;
-mod gamemode;
 mod components;
+mod gamemode;
+mod systems;
 
 use std::env;
 

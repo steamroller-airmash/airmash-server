@@ -3,14 +3,17 @@ use dispatch::Builder;
 
 pub fn register<'a, 'b>(builder: Builder<'a, 'b>) -> Builder<'a, 'b> {
 	let builder = builder
+		// Spectate events
 		.with::<on_spectate_event::SetSpectateFlag>()
 		.with::<on_spectate_event::SendKillPacket>()
 		.with::<on_spectate_event::SendSpectatePacket>()
 		.with::<on_spectate_event::SendTimerEvent>()
 		.with::<on_spectate_event::SetSpectateTarget>()
+		// On player killed
 		.with::<on_player_killed::SetRespawnTimer>()
 		.with::<on_player_killed::DisplayMessage>()
 		.with::<on_player_killed::UpdateScore>()
+		// On player joined
 		.with::<on_join::InitConnection>()
 		.with::<on_join::InitKillCounters>()
 		.with::<on_join::InitJoinTime>()
@@ -27,8 +30,12 @@ pub fn register<'a, 'b>(builder: Builder<'a, 'b>) -> Builder<'a, 'b> {
 		.with::<on_join::SendPlayerLevel>()
 		.with::<on_join::SendScoreUpdate>()
 		.with::<on_join::UpdatePlayersGame>()
+		// On player leave
+		.with::<on_leave::FreeName>()
+		// On missile fire
 		.with::<on_missile_fire::SendPlayerFire>()
 		.with::<on_missile_fire::SetLastShot>()
+		// On player hit
 		.with::<on_player_hit::InflictDamage>()
 		.with::<on_player_hit::SendPacket>()
 		// Needs to be after InflictDamage

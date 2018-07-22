@@ -1,9 +1,10 @@
-use server::types::Sqrt;
-use server::*;
 use specs::*;
 
 use server::component::flag::*;
 use server::component::time::ThisFrame;
+use server::types::systemdata::*;
+use server::types::Sqrt;
+use server::*;
 
 use component::*;
 use config as ctfconfig;
@@ -22,8 +23,7 @@ pub struct PickupFlagSystemData<'a> {
 	// Player data
 	pub plane: ReadStorage<'a, Plane>,
 	pub is_player: ReadStorage<'a, IsPlayer>,
-	pub is_spec: ReadStorage<'a, IsSpectating>,
-	pub is_dead: ReadStorage<'a, IsDead>,
+	pub is_alive: IsAlive<'a>,
 
 	// These ones are for both
 	pub pos: WriteStorage<'a, Position>,
@@ -47,9 +47,6 @@ impl<'a> System<'a> for PickupFlagSystem {
 			&data.is_flag,
 			&data.lastdrop,
 		).join()
-			.filter(|(ent, _, _, _, _, _)| {
-				data.is_dead.get(*ent).is_none() && data.is_spec.get(*ent).is_none()
-			})
 			.map(|(ent, pos, team, carrier, _, lastdrop)| (ent, *pos, *team, *carrier, *lastdrop))
 			.collect::<Vec<(Entity, Position, Team, FlagCarrier, LastDrop)>>();
 
@@ -64,15 +61,16 @@ impl<'a> System<'a> for PickupFlagSystem {
 				&data.team,
 				&data.is_player,
 				&data.plane,
+				data.is_alive.mask(),
 			).join()
-				.filter(|(_, _, p_team, _, _)| f_team != **p_team)
-				.filter(|(ent, _, _, _, _)| {
+				.filter(|(_, _, p_team, ..)| f_team != **p_team)
+				.filter(|(ent, ..)| {
 					// Check against time-since-drop
 					(data.thisframe.0 - lastdrop.time) > *ctfconfig::FLAG_NO_REGRAB_TIME
 						// Then check against contained player id
 						|| lastdrop.player.map(|x| x != *ent).unwrap_or(false)
 				})
-				.filter_map(|(p_ent, p_pos, _, _, p_plane)| {
+				.filter_map(|(p_ent, p_pos, _, _, p_plane, ..)| {
 					let rad = ctfconfig::FLAG_RADIUS[&p_plane];
 					let dst = (*p_pos - f_pos).length2();
 

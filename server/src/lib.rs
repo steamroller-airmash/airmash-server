@@ -27,6 +27,7 @@ extern crate rayon;
 extern crate shred;
 extern crate shrev;
 extern crate simple_logger;
+extern crate special_map;
 extern crate specs;
 extern crate tokio;
 extern crate tokio_core;
@@ -61,7 +62,7 @@ pub use metrics::MetricsHandler;
 pub use dispatch::{Builder, SystemDeps, SystemInfo};
 
 pub use types::{
-	Accel, AccelScalar, Config, Connections, Distance, FutureDispatcher, GameMode, GameModeWriter,
-	KeyState, Level, Mob, Name, Plane, Position, Speed, Team, Time, Velocity, Vector2,
-	Health, Energy, HealthRegen, EnergyRegen, Score,
+	Accel, AccelScalar, Config, Connections, Distance, Energy, EnergyRegen, FutureDispatcher,
+	GameMode, GameModeWriter, Health, HealthRegen, KeyState, Level, Mob, Name, Plane, Position,
+	Score, Speed, Team, Time, Vector2, Velocity,
 };

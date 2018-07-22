@@ -10,8 +10,14 @@ pub const RED_TEAM: Team = Team(2);
 pub const BLUE_TEAM: Team = Team(1);
 
 lazy_static! {
-	static ref RED_TEAM_RESPAWN: Position = Position::default();
-	static ref BLUE_TEAM_RESPAWN: Position = Position::default();
+	static ref BLUE_TEAM_RESPAWN: Position = Position::new(
+		Distance::new(-8878.0),
+		Distance::new(-2971.0)
+	);
+	static ref RED_TEAM_RESPAWN: Position = Position::new(
+		Distance::new(7818.0),
+		Distance::new(-2930.0)
+	);
 }
 
 #[derive(Default, Debug)]

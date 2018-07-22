@@ -13,6 +13,7 @@ RUN mkdir src
 # Need to add specgen so cargo fetch works
 COPY specgen /build/specgen
 COPY bounded-queue /build/bounded-queue
+COPY special-map /build/special-map
 
 # Fetch all dependencies to save bandwith
 RUN echo > src/main.rs
@@ -26,7 +27,7 @@ WORKDIR /build/base
 
 RUN cargo build --release
 RUN mkdir /artifacts
-RUN mv target/x86_64-unknown-linux-musl/release/base /artifacts/airmash-server
+RUN mv target/x86_64-unknown-linux-musl/release/airmash-server-base /artifacts/airmash-server
 
 FROM alpine:latest
 

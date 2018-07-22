@@ -3,8 +3,8 @@ use types::*;
 
 use std::time::Instant;
 
-use component::counter::{PlayersGame, PlayerPing};
 use component::channel::{OnPong, OnPongReader};
+use component::counter::{PlayerPing, PlayersGame};
 
 use protocol::server::{PingResult, ServerPacket};
 use protocol::to_bytes;
@@ -32,10 +32,7 @@ impl<'a> System<'a> for PongHandler {
 	type SystemData = (PongHandlerData<'a>, WriteStorage<'a, PingData>);
 
 	fn setup(&mut self, res: &mut Resources) {
-		self.reader = Some(
-			res.fetch_mut::<OnPong>()
-				.register_reader(),
-		);
+		self.reader = Some(res.fetch_mut::<OnPong>().register_reader());
 
 		Self::SystemData::setup(res);
 	}
@@ -64,7 +61,9 @@ impl<'a> System<'a> for PongHandler {
 				players_total: data.playersgame.0,
 			};
 
-			data.ping.insert(player, PlayerPing(ping.as_millis() as u32)).unwrap();
+			data.ping
+				.insert(player, PlayerPing(ping.as_millis() as u32))
+				.unwrap();
 
 			data.conns.send_to(
 				evt.0,

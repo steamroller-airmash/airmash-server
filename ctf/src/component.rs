@@ -46,5 +46,8 @@ pub struct Flags {
 	pub blue: Entity,
 }
 
+#[derive(Copy, Clone, Debug, Component)]
+pub struct Captures(pub u32);
+
 pub type OnFlag = EventChannel<FlagEvent>;
 pub type OnFlagReader = ReaderId<FlagEvent>;

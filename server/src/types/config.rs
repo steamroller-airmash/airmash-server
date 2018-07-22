@@ -132,13 +132,11 @@ impl Default for PlaneInfos {
 
 				health_regen: HealthRegen::new(0.001),
 				energy_regen: EnergyRegen::new(0.008),
-				//fire_delay: Duration::from_millis(550),
-				fire_delay: Duration::from_millis(0),
+				fire_delay: Duration::from_millis(550),
 
 				damage_factor: 2.0,
 
-				//fire_energy: Energy::new(0.6),
-				fire_energy: Energy::new(0.0),
+				fire_energy: Energy::new(0.6),
 
 				missile_type: MobType::PredatorMissile,
 				missile_offset: Distance::new(35.0),
@@ -318,7 +316,7 @@ impl Default for MobInfos {
 			MobType::PredatorMissile,
 			MobInfo {
 				// TODO: Figure out missile lifetime
-				lifetime: Duration::from_secs(10),
+				lifetime: Duration::from_millis(2300),
 				missile: Some(MissileInfo {
 					max_speed: Speed::new(9.0),
 					accel: AccelScalar::new(0.105),
@@ -332,7 +330,7 @@ impl Default for MobInfos {
 		map.insert(
 			MobType::GoliathMissile,
 			MobInfo {
-				lifetime: Duration::from_secs(10),
+				lifetime: Duration::from_millis(3550),
 				missile: Some(MissileInfo {
 					max_speed: Speed::new(6.0),
 					accel: AccelScalar::new(0.0375),
@@ -346,7 +344,7 @@ impl Default for MobInfos {
 		map.insert(
 			MobType::MohawkMissile,
 			MobInfo {
-				lifetime: Duration::from_secs(10),
+				lifetime: Duration::from_millis(2250),
 				missile: Some(MissileInfo {
 					max_speed: Speed::new(9.0),
 					accel: AccelScalar::new(0.14),
@@ -360,7 +358,7 @@ impl Default for MobInfos {
 		map.insert(
 			MobType::TornadoSingleMissile,
 			MobInfo {
-				lifetime: Duration::from_secs(10),
+				lifetime: Duration::from_millis(2500),
 				missile: Some(MissileInfo {
 					max_speed: Speed::new(7.0),
 					accel: AccelScalar::new(0.0875),
@@ -374,7 +372,7 @@ impl Default for MobInfos {
 		map.insert(
 			MobType::TornadoTripleMissile,
 			MobInfo {
-				lifetime: Duration::from_secs(10),
+				lifetime: Duration::from_millis(1500),
 				missile: Some(MissileInfo {
 					max_speed: Speed::new(7.0),
 					accel: AccelScalar::new(0.0875),
@@ -388,7 +386,7 @@ impl Default for MobInfos {
 		map.insert(
 			MobType::ProwlerMissile,
 			MobInfo {
-				lifetime: Duration::from_secs(10),
+				lifetime: Duration::from_millis(2270),
 				missile: Some(MissileInfo {
 					max_speed: Speed::new(7.0),
 					accel: AccelScalar::new(0.07),

@@ -78,8 +78,6 @@ impl<'a> System<'a> for SendFlagMessageSystem {
 						redteam: data.scores.redteam,
 					})).unwrap(),
 				));
-
-				info!("{:?}", *data.scores);
 			}
 
 			data.conns.send_to_all(OwnedMessage::Binary(
@@ -96,7 +94,7 @@ impl<'a> System<'a> for SendFlagMessageSystem {
 	}
 }
 
-use super::PickupFlagSystem;
+use systems::PickupFlagSystem;
 
 impl SystemInfo for SendFlagMessageSystem {
 	type Dependencies = PickupFlagSystem;

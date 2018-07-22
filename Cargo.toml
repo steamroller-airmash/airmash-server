@@ -11,5 +11,6 @@ members = [
 	"ctf",
 	"ffa",
 	"specgen",
-	"bounded-queue"
+	"bounded-queue",
+	"special-map"
 ]

@@ -39,9 +39,9 @@ lazy_static! {
 	};
 	// TODO: Actually determine this
 	/// Distance that the player must be within to cap
-	pub static ref CAP_RADIUS: Distance = Distance::new(50.0);
+	pub static ref CAP_RADIUS: Distance = Distance::new(100.0);
 
-	pub static ref FLAG_POS: FnvHashMap<Team, Position> = {
+	pub static ref FLAG_HOME_POS: FnvHashMap<Team, Position> = {
 		let mut map = FnvHashMap::default();
 
 		// Blue team
@@ -61,8 +61,8 @@ lazy_static! {
 		let mut map = FnvHashMap::default();
 
 		// Flags get returned at the opposite base
-		map.insert(Team(2), FLAG_POS[&Team(1)]);
-		map.insert(Team(1), FLAG_POS[&Team(2)]);
+		map.insert(Team(2), FLAG_HOME_POS[&Team(1)]);
+		map.insert(Team(1), FLAG_HOME_POS[&Team(2)]);
 
 		map
 	};
@@ -77,4 +77,13 @@ lazy_static! {
 
 		map
 	};
+
+	/// The base score that a player would get if they were
+	/// the only ones on the server and they capped. This
+	/// value will be multiplied by the number of players
+	/// in the server (up to a max of 10 times).
+	pub static ref FLAG_CAP_BOUNTY_BASE: Score = Score(100);
 }
+
+pub const BLUE_TEAM: Team = Team(1);
+pub const RED_TEAM: Team = Team(2);

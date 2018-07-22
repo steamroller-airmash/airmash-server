@@ -186,6 +186,15 @@ where
 		self
 	}
 
+	pub fn with_alpha_warning(self) -> Self {
+		use systems::notify::*;
+
+		Self {
+			builder: self.builder.with::<NotifyAlpha>(),
+			..self
+		}
+	}
+
 	pub fn run(self) {
 		let Self {
 			builder,
@@ -233,9 +242,10 @@ where
 				world.add_resource(LastFrame(now));
 
 				let duration = Instant::now() - now;
-				if duration > Duration::from_millis(17) {
-					debug!(
-						"Frame took {} ms! (longer than 16.67 ms)",
+				if duration > Duration::from_millis(30) {
+					// Adjust this down once it becomes a more rare event
+					warn!(
+						"Frame took {} ms! (longer than 30 ms)",
 						1000 * duration.as_secs() + (duration.subsec_millis() as u64)
 					);
 				} else {

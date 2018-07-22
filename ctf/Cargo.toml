@@ -1,6 +1,6 @@
 [package]
 name = "airmash-server-ctf"
-version = "0.1.0"
+version = "0.0.1"
 authors = ["STEAMROLLER"]
 license = "Apache-2.0 OR MIT"
 
@@ -10,7 +10,7 @@ shrev = "*"
 shred = "*"
 fnv = "*"
 log = "0.4"
-rand = "*"
+rand = "0.4"
 specs-derive = "*"
 shred-derive = "*"
 lazy_static = "*"

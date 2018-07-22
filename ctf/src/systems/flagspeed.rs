@@ -3,7 +3,7 @@ use specs::*;
 
 use component::*;
 
-use super::*;
+use super::PickupFlagSystem;
 
 pub struct FlagSpeedSystem {
 	reader: Option<OnFlagReader>,
@@ -38,8 +38,6 @@ impl<'a> System<'a> for FlagSpeedSystem {
 		} = data;
 
 		for evt in channel.read(self.reader.as_mut().unwrap()) {
-			info!("{:?}", evt);
-
 			match evt.ty {
 				FlagEventType::Capture => {
 					let player = evt.player.unwrap();
@@ -60,7 +58,7 @@ impl<'a> System<'a> for FlagSpeedSystem {
 }
 
 impl SystemInfo for FlagSpeedSystem {
-	type Dependencies = (ReturnFlagSystem, PickupFlagSystem);
+	type Dependencies = (PickupFlagSystem);
 
 	fn name() -> &'static str {
 		concat!(module_path!(), "::", line!())

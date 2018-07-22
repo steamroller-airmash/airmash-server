@@ -4,9 +4,9 @@ use types::*;
 use component::channel::*;
 use component::reference::PlayerRef;
 
-use OwnedMessage;
 use protocol::server::{PlayerHit, PlayerHitPlayer};
 use protocol::{to_bytes, ServerPacket};
+use OwnedMessage;
 
 pub struct SendPacket {
 	reader: Option<OnPlayerHitReader>,
@@ -40,10 +40,7 @@ impl<'a> System<'a> for SendPacket {
 	fn setup(&mut self, res: &mut Resources) {
 		Self::SystemData::setup(res);
 
-		self.reader = Some(
-			res.fetch_mut::<OnPlayerHit>()
-				.register_reader(),
-		);
+		self.reader = Some(res.fetch_mut::<OnPlayerHit>().register_reader());
 	}
 
 	fn run(&mut self, data: Self::SystemData) {
@@ -51,7 +48,7 @@ impl<'a> System<'a> for SendPacket {
 			let pos = data.pos.get(evt.missile).unwrap();
 			let mob = data.mob.get(evt.missile).unwrap();
 			let owner = data.owner.get(evt.missile).unwrap();
-			
+
 			let health = data.health.get(evt.player).unwrap();
 			let plane = data.plane.get(evt.player).unwrap();
 
