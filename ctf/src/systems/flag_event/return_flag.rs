@@ -55,7 +55,7 @@ impl<'a> System<'a> for ReturnFlag {
 					.join()
 					.filter(|(_, _, _, carrier, ..)| carrier.0.is_none())
 					.filter(|(_, pos, team, ..)| {
-						(ctfconfig::FLAG_RETURN_POS[&team] - **pos)
+						(ctfconfig::FLAG_HOME_POS[&team] - **pos)
 							.length2()
 							.inner() > 0.01
 					})
@@ -98,6 +98,8 @@ impl<'a> System<'a> for ReturnFlag {
 
 		for (player, flag, team) in returned {
 			let flag_pos = pos.get_mut(flag).unwrap();
+
+			info!("{:?}", flag_pos);
 
 			*flag_pos = ctfconfig::FLAG_HOME_POS[&team];
 
