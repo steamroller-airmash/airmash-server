@@ -32,6 +32,7 @@ pub fn register<'a, 'b>(builder: Builder<'a, 'b>) -> Builder<'a, 'b> {
 		.with::<on_join::UpdatePlayersGame>()
 		// On player leave
 		.with::<on_leave::FreeName>()
+		.with::<on_leave::UpdatePlayersGame>()
 		// On missile fire
 		.with::<on_missile_fire::SendPlayerFire>()
 		.with::<on_missile_fire::SetLastShot>()
