@@ -15,6 +15,7 @@ pub struct LoginUpdateSystem {
 pub struct LoginUpdateSystemData<'a> {
 	pub conns: Read<'a, Connections>,
 	pub join_channel: Read<'a, OnPlayerJoin>,
+	pub scores: Read<'a, GameScores>,
 
 	// These ones are for both
 	pub pos: ReadStorage<'a, Position>,
@@ -55,8 +56,8 @@ impl<'a> System<'a> for LoginUpdateSystem {
 						flag: *team,
 						pos: *pos,
 						id: carrier.0,
-						blueteam: 0,
-						redteam: 0,
+						blueteam: data.scores.blueteam,
+						redteam: data.scores.redteam,
 					};
 
 					data.conns.send_to_player(

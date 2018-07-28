@@ -72,3 +72,9 @@ Multiple ideas here
 ### Custom Gamemodes
 ## Tag
 - Drop flag when hit with missile
+
+### Control Protocol
+- Make the engine scriptable through a 
+  separate protocol
+- Allow a client to hook into all engine events
+- Allows clients to be written in other languages too
