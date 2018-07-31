@@ -31,7 +31,7 @@ pub struct FlagEvent {
 
 #[derive(Copy, Clone, Debug)]
 pub struct GameWinEvent {
-	pub winning_team: Team
+	pub winning_team: Team,
 }
 
 #[derive(Copy, Clone, Debug, Component)]

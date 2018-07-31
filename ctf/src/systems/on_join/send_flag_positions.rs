@@ -7,12 +7,12 @@ use server::*;
 
 use component::*;
 
-pub struct LoginUpdateSystem {
+pub struct SendFlagPosition {
 	reader: Option<OnPlayerJoinReader>,
 }
 
 #[derive(SystemData)]
-pub struct LoginUpdateSystemData<'a> {
+pub struct SendFlagPositionData<'a> {
 	pub conns: Read<'a, Connections>,
 	pub join_channel: Read<'a, OnPlayerJoin>,
 	pub scores: Read<'a, GameScores>,
@@ -26,14 +26,14 @@ pub struct LoginUpdateSystemData<'a> {
 	pub carrier: ReadStorage<'a, FlagCarrier>,
 }
 
-impl LoginUpdateSystem {
+impl SendFlagPosition {
 	pub fn new() -> Self {
 		Self { reader: None }
 	}
 }
 
-impl<'a> System<'a> for LoginUpdateSystem {
-	type SystemData = LoginUpdateSystemData<'a>;
+impl<'a> System<'a> for SendFlagPosition {
+	type SystemData = SendFlagPositionData<'a>;
 
 	fn setup(&mut self, res: &mut Resources) {
 		Self::SystemData::setup(res);
@@ -69,7 +69,7 @@ impl<'a> System<'a> for LoginUpdateSystem {
 	}
 }
 
-impl SystemInfo for LoginUpdateSystem {
+impl SystemInfo for SendFlagPosition {
 	type Dependencies = ();
 
 	fn name() -> &'static str {

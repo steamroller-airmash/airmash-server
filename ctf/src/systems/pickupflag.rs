@@ -8,6 +8,7 @@ use server::*;
 
 use component::*;
 use config as ctfconfig;
+use systems::on_join::SendFlagPosition;
 
 use std::cmp::Ordering;
 
@@ -115,11 +116,10 @@ impl<'a> System<'a> for PickupFlagSystem {
 	}
 }
 
-use super::LoginUpdateSystem;
 use server::systems::PositionUpdate;
 
 impl SystemInfo for PickupFlagSystem {
-	type Dependencies = (PositionUpdate, LoginUpdateSystem);
+	type Dependencies = (PositionUpdate, SendFlagPosition);
 
 	fn name() -> &'static str {
 		concat!(module_path!(), "::", line!())

@@ -8,12 +8,12 @@ use server::protocol::{to_bytes, FlagUpdateType, ServerPacket};
 
 use component::*;
 
-pub struct LeaveUpdateSystem {
+pub struct Drop {
 	reader: Option<OnPlayerLeaveReader>,
 }
 
 #[derive(SystemData)]
-pub struct LeaveUpdateSystemData<'a> {
+pub struct DropData<'a> {
 	pub entities: Entities<'a>,
 	pub channel: Read<'a, OnPlayerLeave>,
 	pub conns: Read<'a, Connections>,
@@ -25,14 +25,14 @@ pub struct LeaveUpdateSystemData<'a> {
 	pub thisframe: Read<'a, ThisFrame>,
 }
 
-impl LeaveUpdateSystem {
+impl Drop {
 	pub fn new() -> Self {
 		Self { reader: None }
 	}
 }
 
-impl<'a> System<'a> for LeaveUpdateSystem {
-	type SystemData = LeaveUpdateSystemData<'a>;
+impl<'a> System<'a> for Drop {
+	type SystemData = DropData<'a>;
 
 	fn setup(&mut self, res: &mut Resources) {
 		Self::SystemData::setup(res);
@@ -93,7 +93,7 @@ impl<'a> System<'a> for LeaveUpdateSystem {
 
 use server::systems::PositionUpdate;
 
-impl SystemInfo for LeaveUpdateSystem {
+impl SystemInfo for Drop {
 	type Dependencies = PositionUpdate;
 
 	fn name() -> &'static str {

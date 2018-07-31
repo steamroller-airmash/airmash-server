@@ -1,9 +1,8 @@
-
 use specs::*;
 
-use server::*;
-use config::{RED_TEAM, BLUE_TEAM};
 use component::*;
+use config::{BLUE_TEAM, RED_TEAM};
+use server::*;
 
 use super::SendFlagMessage;
 
@@ -25,9 +24,7 @@ impl<'a> System<'a> for CheckWin {
 	fn setup(&mut self, res: &mut Resources) {
 		Self::SystemData::setup(res);
 
-		self.reader = Some(
-			res.fetch_mut::<OnFlag>().register_reader()
-		);
+		self.reader = Some(res.fetch_mut::<OnFlag>().register_reader());
 	}
 
 	fn run(&mut self, mut data: Self::SystemData) {
@@ -46,13 +43,11 @@ impl<'a> System<'a> for CheckWin {
 
 			let winning_team = if data.scores.redteam >= 3 {
 				RED_TEAM
-			}	else {
+			} else {
 				BLUE_TEAM
 			};
 
-			data.win_channel.single_write(GameWinEvent {
-				winning_team
-			});
+			data.win_channel.single_write(GameWinEvent { winning_team });
 		}
 	}
 }

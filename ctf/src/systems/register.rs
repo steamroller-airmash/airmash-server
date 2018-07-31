@@ -40,17 +40,19 @@ pub fn register<'a, 'b>(world: &mut World, disp: Builder<'a, 'b>) -> Builder<'a,
 
 	world.add_resource(Flags { red, blue });
 
-	disp.with::<LoginUpdateSystem>()
+	disp
 		.with::<PickupFlagSystem>()
-		.with::<LeaveUpdateSystem>()
 		.with::<DropSystem>()
 		.with::<PosUpdateSystem>()
 		.with::<FlagSpeedSystem>()
-		.with::<UpdateGameModeOnPlayerLeave>()
 		.with::<DropOnSpec>()
 		.with::<DropOnDeath>()
+		// On Leave Events
+		.with::<on_leave::UpdateGameMode>()
+		.with::<on_leave::Drop>()
 		// On Join Events
 		.with::<on_join::InitCaptures>()
+		.with::<on_join::SendFlagPosition>()
 		// On Flag Events
 		.with::<on_flag::SendFlagMessage>()
 		.with::<on_flag::PickupMessage>()
