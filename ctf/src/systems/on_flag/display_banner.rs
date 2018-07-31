@@ -46,6 +46,13 @@ impl<'a> System<'a> for PickupMessageSystem {
 				FlagEventType::Drop => continue,
 			};
 
+			// If this event happens on it's own
+			// (end of game or system event) then
+			// don't display a message
+			if evt.player.is_none() {
+				continue;
+			}
+
 			let flag_team = data.teams.get(evt.flag).unwrap();
 			let name = data.names.get(evt.player.unwrap()).unwrap();
 

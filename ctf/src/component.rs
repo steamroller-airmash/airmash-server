@@ -1,6 +1,8 @@
 use shrev::*;
 use specs::*;
 
+use server::Team;
+
 use std::time::Instant;
 
 #[derive(Copy, Clone, Debug, Default, Component)]
@@ -27,6 +29,11 @@ pub struct FlagEvent {
 	pub flag: Entity,
 }
 
+#[derive(Copy, Clone, Debug)]
+pub struct GameWinEvent {
+	pub winning_team: Team
+}
+
 #[derive(Copy, Clone, Debug, Component)]
 #[storage(HashMapStorage)]
 pub struct LastDrop {
@@ -51,3 +58,6 @@ pub struct Captures(pub u32);
 
 pub type OnFlag = EventChannel<FlagEvent>;
 pub type OnFlagReader = ReaderId<FlagEvent>;
+
+pub type OnGameWin = EventChannel<GameWinEvent>;
+pub type OnGameWinReader = ReaderId<GameWinEvent>;
