@@ -9,4 +9,5 @@ lazy_static! {
 	pub static ref UNTHROTTLE_TIME: TimerEventType = register_event_type();
 	pub static ref LOGIN_PASSED: TimerEventType = register_event_type();
 	pub static ref LOGIN_FAILED: TimerEventType = register_event_type();
+	pub static ref DELAYED_MESSAGE: TimerEventType = register_event_type();
 }
