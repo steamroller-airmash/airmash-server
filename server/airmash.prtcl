@@ -107,12 +107,13 @@ enum ServerCustomType : u8 {
 
 # TODO: rev-eng
 enum ServerMessageType : u8 {
+	TimeToGameStart = 1,
 	# Not sure if this is right
-	FlagMessage = 2,
+	Flag = 2,
 	# This doesn't have an equivalent in the offical server AFAIK
-	ShutdownMessage = 15,
+	Shutdown = 15,
 	# New type, doesn't have an equivalent within the server
-	BannerMessage = 16,
+	Banner = 16,
 }
 
 enum PlayerLevelType : u8 {

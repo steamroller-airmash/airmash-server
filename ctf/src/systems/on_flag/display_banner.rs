@@ -64,7 +64,7 @@ impl<'a> System<'a> for PickupMessageSystem {
 			);
 
 			let packet = ServerMessage {
-				ty: ServerMessageType::FlagMessage,
+				ty: ServerMessageType::Flag,
 				duration: 3000,
 				text: msg,
 			};

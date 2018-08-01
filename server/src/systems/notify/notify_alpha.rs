@@ -34,7 +34,7 @@ impl<'a> System<'a> for NotifyAlpha {
 	fn run(&mut self, data: Self::SystemData) {
 		for evt in data.channel.read(self.reader.as_mut().unwrap()) {
 			let packet = ServerMessage {
-				ty: ServerMessageType::BannerMessage,
+				ty: ServerMessageType::Banner,
 				text: self.message.clone(),
 				duration: (self.duration.as_secs() * 1000) as u32 + self.duration.subsec_millis(),
 			};

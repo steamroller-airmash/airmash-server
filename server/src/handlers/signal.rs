@@ -27,7 +27,7 @@ impl<'a> System<'a> for SignalHandler {
 
 				let msg = ServerMessage {
 					duration: 15000,
-					ty: ServerMessageType::ShutdownMessage,
+					ty: ServerMessageType::Shutdown,
 					text: "Server shutting down in 30 seconds!".to_string(),
 				};
 
