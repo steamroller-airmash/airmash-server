@@ -1,9 +1,9 @@
 use std::cmp::{Ordering, Reverse};
 use std::collections::BinaryHeap;
+use std::mem;
 use std::sync::mpsc::Sender;
 use std::sync::Mutex;
 use std::time::{Duration, Instant};
-use std::mem;
 
 use component::event::TimerEvent;
 
@@ -64,12 +64,12 @@ impl FutureDispatcher {
 		self.tasks.lock().unwrap().push(Task {
 			time: instant,
 			func: Box::new(move |inst| {
-				// This is a little bit hack, but since 
+				// This is a little bit hack, but since
 				// it is impossible to call a Box<FnOnce(...) -> ...>
 				// in stable rust without enabling yet another
 				// nightly extension this will have to do instead.
-				let fun = mem::replace(&mut opt, None)
-					.expect("Delayed task was executed more than once");
+				let fun =
+					mem::replace(&mut opt, None).expect("Delayed task was executed more than once");
 
 				fun(inst).into()
 			}),
