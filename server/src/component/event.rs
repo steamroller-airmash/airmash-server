@@ -6,7 +6,7 @@ use std::time::Instant;
 use protocol::FlagCode;
 use types::collision::Collision;
 use types::*;
-use utils::timer::TimerEventType;
+pub use utils::timer::TimerEventType;
 
 #[derive(Copy, Clone, Debug, Default, Component)]
 pub struct ScoreDetailedEvent(pub ConnectionId);
