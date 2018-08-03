@@ -32,12 +32,10 @@ impl<'a> System<'a> for SetupRespawn {
 	fn run(&mut self, data: Self::SystemData) {
 		for _ in data.channel.read(self.reader.as_mut().unwrap()) {
 			data.future
-				.run_delayed(Duration::from_secs(85), move |inst| {
-					TimerEvent {
-						ty: *RESPAWN_TIME,
-						instant: inst,
-						data: None,
-					}
+				.run_delayed(Duration::from_secs(85), move |inst| TimerEvent {
+					ty: *RESPAWN_TIME,
+					instant: inst,
+					data: None,
 				});
 		}
 	}

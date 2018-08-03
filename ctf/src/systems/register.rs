@@ -41,9 +41,6 @@ pub fn register<'a, 'b>(world: &mut World, disp: Builder<'a, 'b>) -> Builder<'a,
 	world.add_resource(Flags { red, blue });
 
 	disp
-		.with::<DropSystem>()
-		.with::<PosUpdateSystem>()
-		.with::<FlagSpeedSystem>()
 		.with::<DropOnSpec>()
 		.with::<DropOnDeath>()
 		// On Leave Events
@@ -54,11 +51,15 @@ pub fn register<'a, 'b>(world: &mut World, disp: Builder<'a, 'b>) -> Builder<'a,
 		.with::<on_join::SendFlagPosition>()
 		// Needs to happen after SendFlagPosition
 		.with::<PickupFlagSystem>()
+		.with::<DropSystem>()
+		.with::<PosUpdateSystem>()
+		.with::<FlagSpeedSystem>()
 		// On Flag Events
 		.with::<on_flag::SendFlagMessage>()
 		.with::<on_flag::PickupMessage>()
 		.with::<on_flag::UpdateScore>()
 		.with::<on_flag::UpdateCaptures>()
+		.with::<on_flag::CheckWin>()
 		// Flag event sending systems
 		.with::<flag_event::CaptureFlag>()
 		.with::<flag_event::ReturnFlag>()
