@@ -3,6 +3,7 @@ use specs::*;
 use server::component::channel::*;
 use server::protocol::server::{GameFlag, ServerPacket};
 use server::protocol::{to_bytes, FlagUpdateType};
+use server::systems::handlers::game::on_join::AllJoinHandlers;
 use server::*;
 
 use component::*;
@@ -70,7 +71,10 @@ impl<'a> System<'a> for SendFlagPosition {
 }
 
 impl SystemInfo for SendFlagPosition {
-	type Dependencies = ();
+	// I could find the specific system that
+	// sends the LoginPacket, but this was 
+	// easier.
+	type Dependencies = AllJoinHandlers;
 
 	fn name() -> &'static str {
 		concat!(module_path!(), "::", line!())
