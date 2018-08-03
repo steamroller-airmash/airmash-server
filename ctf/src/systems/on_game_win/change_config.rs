@@ -10,20 +10,29 @@ use server::types::FutureDispatcher;
 
 use std::time::Duration;
 
+/// Set missile damage to 0 in the config
+/// and dispatch a timer event to trigger
+/// a config reset.
+///
+/// This system is a bit bizarre since it
+/// writes to config, which isn't a normal
+/// thing for a system to do, but I think
+/// it's OK in this case since it cleanly
+/// acheives the required functionality.
 #[derive(Default)]
-pub struct SetupMessages {
+pub struct ChangeConfig {
 	reader: Option<OnGameWinReader>,
 }
 
 #[derive(SystemData)]
-pub struct SetupMessagesData<'a> {
+pub struct ChangeConfigData<'a> {
 	channel: Read<'a, OnGameWin>,
 	config: Write<'a, Config>,
 	future: ReadExpect<'a, FutureDispatcher>,
 }
 
-impl<'a> System<'a> for SetupMessages {
-	type SystemData = SetupMessagesData<'a>;
+impl<'a> System<'a> for ChangeConfig {
+	type SystemData = ChangeConfigData<'a>;
 
 	fn setup(&mut self, res: &mut Resources) {
 		Self::SystemData::setup(res);
@@ -56,7 +65,7 @@ impl<'a> System<'a> for SetupMessages {
 	}
 }
 
-impl SystemInfo for SetupMessages {
+impl SystemInfo for ChangeConfig {
 	type Dependencies = CheckWin;
 
 	fn name() -> &'static str {

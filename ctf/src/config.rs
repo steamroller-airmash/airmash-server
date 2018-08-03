@@ -78,12 +78,16 @@ lazy_static! {
 		map
 	};
 
-	/// The base score that a player would get if they were
-	/// the only ones on the server and they capped. This
-	/// value will be multiplied by the number of players
-	/// in the server (up to a max of 10 times).
-	pub static ref FLAG_CAP_BOUNTY_BASE: Score = Score(100);
 }
 
 pub const BLUE_TEAM: Team = Team(1);
 pub const RED_TEAM: Team = Team(2);
+
+/// The base score that a player would get if they were
+/// the only ones on the server and they capped. This
+/// value will be multiplied by the number of players
+/// in the server (up to a max of 10 times).
+pub const FLAG_CAP_BOUNTY_BASE: Score = Score(100);
+/// The base score that a winning player would get
+/// if they were the only ones on the server.
+pub const GAME_WIN_BOUNTY_BASE: Score = Score(100);

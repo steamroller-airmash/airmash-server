@@ -41,7 +41,6 @@ pub fn register<'a, 'b>(world: &mut World, disp: Builder<'a, 'b>) -> Builder<'a,
 	world.add_resource(Flags { red, blue });
 
 	disp
-		.with::<PickupFlagSystem>()
 		.with::<DropSystem>()
 		.with::<PosUpdateSystem>()
 		.with::<FlagSpeedSystem>()
@@ -53,6 +52,8 @@ pub fn register<'a, 'b>(world: &mut World, disp: Builder<'a, 'b>) -> Builder<'a,
 		// On Join Events
 		.with::<on_join::InitCaptures>()
 		.with::<on_join::SendFlagPosition>()
+		// Needs to happen after SendFlagPosition
+		.with::<PickupFlagSystem>()
 		// On Flag Events
 		.with::<on_flag::SendFlagMessage>()
 		.with::<on_flag::PickupMessage>()
@@ -63,4 +64,8 @@ pub fn register<'a, 'b>(world: &mut World, disp: Builder<'a, 'b>) -> Builder<'a,
 		.with::<flag_event::ReturnFlag>()
 		// On Game Win events
 		.with::<on_game_win::SetupMessages>()
+		.with::<on_game_win::ChangeConfig>()
+		.with::<on_game_win::DisplayWin>()
+		// Timer events
+		.with::<timer::RestoreConfig>()
 }
