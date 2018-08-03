@@ -64,6 +64,7 @@ pub fn register<'a, 'b>(world: &mut World, disp: Builder<'a, 'b>) -> Builder<'a,
 		.with::<flag_event::ReturnFlag>()
 		// On Game Win events
 		.with::<on_game_win::SetupMessages>()
+		.with::<on_game_win::SetupRespawn>()
 		.with::<on_game_win::ChangeConfig>()
 		.with::<on_game_win::DisplayWin>()
 		// Timer events
