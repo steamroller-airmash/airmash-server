@@ -3,7 +3,7 @@ use specs::*;
 use server::component::channel::*;
 use server::protocol::server::{GameFlag, ServerPacket};
 use server::protocol::{to_bytes, FlagUpdateType};
-use server::systems::handlers::game::on_join::AllJoinHandlers;
+use server::systems::handlers::game::on_join::SendLogin;
 use server::*;
 
 use component::*;
@@ -71,10 +71,9 @@ impl<'a> System<'a> for SendFlagPosition {
 }
 
 impl SystemInfo for SendFlagPosition {
-	// I could find the specific system that
-	// sends the LoginPacket, but this was 
-	// easier.
-	type Dependencies = AllJoinHandlers;
+	// The client ignores packets that are
+	// sent before the login packet
+	type Dependencies = SendLogin;
 
 	fn name() -> &'static str {
 		concat!(module_path!(), "::", line!())
