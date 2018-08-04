@@ -13,7 +13,6 @@ pub struct RespawnAll {
 #[derive(SystemData)]
 pub struct RespawnAllData<'a> {
 	channel: Read<'a, OnTimerEvent>,
-	config: Write<'a, Config>,
 }
 
 impl<'a> System<'a> for RespawnAll {
@@ -27,24 +26,11 @@ impl<'a> System<'a> for RespawnAll {
 
 	fn run(&mut self, mut data: Self::SystemData) {
 		for evt in data.channel.read(self.reader.as_mut().unwrap()) {
-			if evt.ty != *RESTORE_CONFIG {
+			if evt.ty != *RESPAWN_TIMER {
 				continue;
 			}
 
-			let config = match evt.data {
-				Some(ref dat) => match (*dat).downcast_ref::<Config>() {
-					Some(val) => val,
-					None => {
-						error!("Unable to downcast TimerEvent data to Config!");
-						continue;
-					}
-				},
-				None => continue,
-			};
-
-			// This is costly, but it only happens once per
-			// match so it should be ok
-			*data.config = config.clone()
+			// TODO
 		}
 	}
 }

@@ -5,23 +5,23 @@ use server::types::FutureDispatcher;
 use server::*;
 
 use component::*;
-use consts::RESPAWN_TIMER;
+use consts::RETEAM_TIMER;
 use std::time::Duration;
 use systems::on_flag::CheckWin;
 
 #[derive(Default)]
-pub struct SetupRespawn {
+pub struct SetupReteam {
 	reader: Option<OnGameWinReader>,
 }
 
 #[derive(SystemData)]
-pub struct SetupRespawnData<'a> {
+pub struct SetupReteamData<'a> {
 	channel: Read<'a, OnGameWin>,
 	future: ReadExpect<'a, FutureDispatcher>,
 }
 
-impl<'a> System<'a> for SetupRespawn {
-	type SystemData = SetupRespawnData<'a>;
+impl<'a> System<'a> for SetupReteam {
+	type SystemData = SetupReteamData<'a>;
 
 	fn setup(&mut self, res: &mut Resources) {
 		Self::SystemData::setup(res);
@@ -32,8 +32,8 @@ impl<'a> System<'a> for SetupRespawn {
 	fn run(&mut self, data: Self::SystemData) {
 		for _ in data.channel.read(self.reader.as_mut().unwrap()) {
 			data.future
-				.run_delayed(Duration::from_secs(85), move |inst| TimerEvent {
-					ty: *RESPAWN_TIMER,
+				.run_delayed(Duration::from_secs(55), move |inst| TimerEvent {
+					ty: *RETEAM_TIMER,
 					instant: inst,
 					data: None,
 				});
@@ -41,7 +41,7 @@ impl<'a> System<'a> for SetupRespawn {
 	}
 }
 
-impl SystemInfo for SetupRespawn {
+impl SystemInfo for SetupReteam {
 	type Dependencies = CheckWin;
 
 	fn name() -> &'static str {
