@@ -59,6 +59,7 @@ pub fn register<'a, 'b>(world: &mut World, disp: Builder<'a, 'b>) -> Builder<'a,
 		.with::<on_flag::PickupMessage>()
 		.with::<on_flag::UpdateScore>()
 		.with::<on_flag::UpdateCaptures>()
+		.with::<on_flag::UpdateLastDrop>()
 		.with::<on_flag::CheckWin>()
 		// Flag event sending systems
 		.with::<flag_event::CaptureFlag>()
