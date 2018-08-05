@@ -3,8 +3,8 @@ use specs::*;
 use server::component::channel::*;
 use server::*;
 
-use consts::*;
 use component::*;
+use consts::*;
 
 /// Routes the [`GAME_START_TIMER`] into a separate
 /// event ([`OnGameStart`]).

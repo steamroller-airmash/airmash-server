@@ -64,7 +64,7 @@ impl SystemInfo for RespawnAll {
 		AllJoinHandlers,
 		// We want to run in the same frame as the
 		// GameStart event is triggered.
-		GameStart
+		GameStart,
 	);
 
 	fn name() -> &'static str {

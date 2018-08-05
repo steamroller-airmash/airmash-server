@@ -5,7 +5,7 @@ use server::*;
 use component::*;
 use systems::timer::GameStart;
 
-/// Resets game score to 0-0 when the 
+/// Resets game score to 0-0 when the
 /// game starts.
 #[derive(Default)]
 pub struct ResetScore {
@@ -34,18 +34,16 @@ impl<'a> System<'a> for ResetScore {
 		for _ in data.channel.read(self.reader.as_mut().unwrap()) {
 			*data.scores = GameScores {
 				blueteam: 0,
-				redteam: 0
+				redteam: 0,
 			};
 
 			// This is a bit of a hack
 			// TODO: Establish what the official server does
-			data.flag_channel.single_write(
-				FlagEvent {
-					ty: FlagEventType::Return,
-					flag: data.flags.red,
-					player: None
-				}
-			);
+			data.flag_channel.single_write(FlagEvent {
+				ty: FlagEventType::Return,
+				flag: data.flags.red,
+				player: None,
+			});
 		}
 	}
 }
