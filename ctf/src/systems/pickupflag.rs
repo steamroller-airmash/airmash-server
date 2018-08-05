@@ -20,6 +20,7 @@ pub struct PickupFlagSystemData<'a> {
 	pub entities: Entities<'a>,
 	pub channel: Write<'a, OnFlag>,
 	pub thisframe: Read<'a, ThisFrame>,
+	pub game_active: Read<'a, GameActive>,
 
 	// Player data
 	pub plane: ReadStorage<'a, Plane>,
@@ -40,6 +41,11 @@ impl<'a> System<'a> for PickupFlagSystem {
 	type SystemData = PickupFlagSystemData<'a>;
 
 	fn run(&mut self, mut data: Self::SystemData) {
+		// Flags can only be captured when a game is active
+		if !data.game_active.0 {
+			return;
+		}
+
 		let flags = (
 			&*data.entities,
 			&data.pos,
