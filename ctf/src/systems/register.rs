@@ -70,6 +70,7 @@ pub fn register<'a, 'b>(world: &mut World, disp: Builder<'a, 'b>) -> Builder<'a,
 		.with::<on_game_win::SetupReteam>()
 		.with::<on_game_win::ChangeConfig>()
 		.with::<on_game_win::DisplayWin>()
+		.with::<on_game_win::SetGameActive>()
 		// Timer events
 		.with::<timer::RestoreConfig>()
 		.with::<timer::GameStart>()
@@ -77,4 +78,5 @@ pub fn register<'a, 'b>(world: &mut World, disp: Builder<'a, 'b>) -> Builder<'a,
 		.with::<on_game_start::RespawnAllUnspec>()
 		.with::<on_game_start::RespawnAll>()
 		.with::<on_game_start::ResetScore>()
+		.with::<on_game_start::SetGameActive>()
 }

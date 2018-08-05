@@ -50,11 +50,14 @@ pub struct GameScores {
 	pub blueteam: u8,
 }
 
-#[derive(Copy, Clone)]
+#[derive(Copy, Clone, Debug)]
 pub struct Flags {
 	pub red: Entity,
 	pub blue: Entity,
 }
+
+#[derive(Copy, Clone, Debug)]
+pub struct GameActive(pub bool);
 
 #[derive(Copy, Clone, Debug, Component)]
 pub struct Captures(pub u32);
@@ -67,3 +70,9 @@ pub type OnGameWinReader = ReaderId<GameWinEvent>;
 
 pub type OnGameStart = EventChannel<GameStartEvent>;
 pub type OnGameStartReader = ReaderId<GameStartEvent>;
+
+impl Default for GameActive {
+	fn default() -> Self {
+		GameActive(true)
+	}
+}
