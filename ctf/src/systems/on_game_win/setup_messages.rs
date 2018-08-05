@@ -21,7 +21,7 @@ const MESSAGE_2_SECONDS: &'static str = "Game starting in 2 seconds";
 const MESSAGE_1_SECONDS: &'static str = "Game starting in a second";
 const MESSAGE_0_SECONDS: &'static str = "Game starting!";
 
-const MESSAGES: [(u64, u32, &'static str); 9] = [
+const MESSAGES: [(u32, u64, &'static str); 9] = [
 	(12, 25, MESSAGE_1_MIN),
 	(7, 55, MESSAGE_30_SECONDS),
 	(7, 75, MESSAGE_10_SECONDS),
@@ -55,7 +55,7 @@ impl<'a> System<'a> for SetupMessages {
 
 	fn run(&mut self, data: Self::SystemData) {
 		for _ in data.channel.read(self.reader.as_mut().unwrap()) {
-			for (delay, duration, msg) in MESSAGES.iter() {
+			for (duration, delay, msg) in MESSAGES.iter() {
 				data.future
 					.run_delayed(Duration::from_secs(*delay), move |inst| {
 						Some(TimerEvent {

@@ -30,6 +30,9 @@ pub struct FlagEvent {
 }
 
 #[derive(Copy, Clone, Debug)]
+pub struct GameStartEvent;
+
+#[derive(Copy, Clone, Debug)]
 pub struct GameWinEvent {
 	pub winning_team: Team,
 }
@@ -61,3 +64,6 @@ pub type OnFlagReader = ReaderId<FlagEvent>;
 
 pub type OnGameWin = EventChannel<GameWinEvent>;
 pub type OnGameWinReader = ReaderId<GameWinEvent>;
+
+pub type OnGameStart = EventChannel<GameStartEvent>;
+pub type OnGameStartReader = ReaderId<GameStartEvent>;

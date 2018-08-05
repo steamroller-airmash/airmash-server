@@ -65,9 +65,15 @@ pub fn register<'a, 'b>(world: &mut World, disp: Builder<'a, 'b>) -> Builder<'a,
 		.with::<flag_event::ReturnFlag>()
 		// On Game Win events
 		.with::<on_game_win::SetupMessages>()
-		.with::<on_game_win::SetupRespawn>()
+		.with::<on_game_win::SetupGameStart>()
+		.with::<on_game_win::SetupReteam>()
 		.with::<on_game_win::ChangeConfig>()
 		.with::<on_game_win::DisplayWin>()
 		// Timer events
 		.with::<timer::RestoreConfig>()
+		.with::<timer::GameStart>()
+		// Game Start events
+		.with::<on_game_start::RespawnAllUnspec>()
+		.with::<on_game_start::RespawnAll>()
+		.with::<on_game_start::ResetScore>()
 }
