@@ -33,13 +33,13 @@ impl<'a> PlayerRespawner<'a> {
 	/// health, and energy to the appropriate values for
 	/// respawning each player. It also removes the [`IsDead`]
 	/// flag from the player entity
-	pub fn respawn_players<'b, I>(&mut self, players: I)
+	pub fn respawn_players<I>(&mut self, players: I)
 	where
-		I: IntoIterator<Item = &'b Entity>,
+		I: IntoIterator<Item = Entity>,
 	{
 		let gamemode = self.gamemode.get_mut();
 
-		for &player in players {
+		for player in players {
 			let team = *self.team.get(player).unwrap();
 			let pos = gamemode.spawn_pos(player, team);
 
@@ -67,8 +67,14 @@ impl<'a> PlayerRespawner<'a> {
 		}
 	}
 
+	/// Respawn a player, sending a `PlayerRespawn`
+	/// packet if the player is not spectating.
 	///
+	/// This function sets the position, velocity, rotation
+	/// health, and energy to the appropriate values for
+	/// respawning the player. It also removes the [`IsDead`]
+	/// flag from the player entity.
 	pub fn respawn_player(&mut self, player: Entity) {
-		self.respawn_players([player].iter())
+		self.respawn_players([player].iter().map(|x| *x))
 	}
 }
