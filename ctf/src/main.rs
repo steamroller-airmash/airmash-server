@@ -20,6 +20,7 @@ use airmash_server as server;
 
 mod component;
 mod config;
+mod consts;
 mod gamemode;
 mod systems;
 

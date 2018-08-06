@@ -8,6 +8,7 @@ use server::*;
 
 use component::*;
 use config as ctfconfig;
+use systems::on_join::SendFlagPosition;
 
 use std::cmp::Ordering;
 
@@ -19,6 +20,7 @@ pub struct PickupFlagSystemData<'a> {
 	pub entities: Entities<'a>,
 	pub channel: Write<'a, OnFlag>,
 	pub thisframe: Read<'a, ThisFrame>,
+	pub game_active: Read<'a, GameActive>,
 
 	// Player data
 	pub plane: ReadStorage<'a, Plane>,
@@ -39,6 +41,11 @@ impl<'a> System<'a> for PickupFlagSystem {
 	type SystemData = PickupFlagSystemData<'a>;
 
 	fn run(&mut self, mut data: Self::SystemData) {
+		// Flags can only be captured when a game is active
+		if !data.game_active.0 {
+			return;
+		}
+
 		let flags = (
 			&*data.entities,
 			&data.pos,
@@ -115,11 +122,10 @@ impl<'a> System<'a> for PickupFlagSystem {
 	}
 }
 
-use super::LoginUpdateSystem;
 use server::systems::PositionUpdate;
 
 impl SystemInfo for PickupFlagSystem {
-	type Dependencies = (PositionUpdate, LoginUpdateSystem);
+	type Dependencies = (PositionUpdate, SendFlagPosition);
 
 	fn name() -> &'static str {
 		concat!(module_path!(), "::", line!())

@@ -5,7 +5,6 @@ use types::event::*;
 use types::*;
 
 use std::fmt::Debug;
-use std::io::Write;
 use std::net::ToSocketAddrs;
 use std::sync::mpsc::Sender;
 use std::sync::Mutex;
@@ -13,6 +12,11 @@ use std::sync::Mutex;
 use futures::{Future, Stream};
 use websocket::server::async::Server;
 use websocket::OwnedMessage;
+
+use hyper::header::{ContentType, Headers};
+use hyper::mime::{Attr, Mime, SubLevel, TopLevel, Value};
+use hyper::server::Response;
+use status;
 
 #[cfg(feature = "proxied")]
 mod hyperuse {
@@ -72,14 +76,6 @@ use self::hyperuse::*;
 
 use tokio_core::reactor::Core;
 
-const RESPONSE_STR: &'static [u8] = b"\
-418 IM_A_TEAPOT\n\
-Content-Type: text/html\n\
-\n\
-<body>\
-	<img src=\"https://upload.wikimedia.org/wikipedia/commons/thumb/4/44/Black_tea_pot_cropped.jpg/330px-Black_tea_pot_cropped.jpg\"\
-</body>";
-
 pub fn run_acceptor<A>(addr: A, channel: Sender<ConnectionEvent>)
 where
 	A: ToSocketAddrs + Debug,
@@ -98,16 +94,27 @@ where
 	let f = socket
 		.incoming()
 		.map_err(|e| {
-			info!(
-				"A client failed to connect with error: {}",
-				e.error
-			);
-
 			if let Some(mut stream) = e.stream {
-				// Make a best-effort attempt to
-				// send a response, if this fails
-				// we ignore it
-				stream.write_all(RESPONSE_STR).err();
+				let mut headers = Headers::new();
+				headers.set(ContentType(Mime(
+						TopLevel::Application,
+						SubLevel::Json,
+						vec![(Attr::Charset, Value::Utf8)]
+				)));
+
+				let response = Response::new(
+					&mut stream,
+					&mut headers
+				);
+
+				let status = status::generate_status_page();
+
+				if let Err(e) = response.send(status.as_bytes()) {
+					warn!(
+						"Failed to respond with status page to request with error {}",
+						e
+					);
+				}
 			}
 		})
 		// The following two operators filter out

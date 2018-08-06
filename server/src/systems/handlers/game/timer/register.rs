@@ -8,4 +8,5 @@ pub fn register<'a, 'b>(builder: Builder<'a, 'b>) -> Builder<'a, 'b> {
 		.with::<UnthrottlePlayer>()
 		.with::<LoginFailed>()
 		.with::<LoginHandler>()
+		.with::<DelayMessage>()
 }

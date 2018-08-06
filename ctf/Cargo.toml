@@ -16,6 +16,8 @@ shred-derive = "*"
 lazy_static = "*"
 htmlescape = "*"
 simple_logger = "*"
+serde = { version = "*", features = [ "derive" ]}
+serde_json = "*"
 
 [dependencies.airmash-server]
 path = '../server'

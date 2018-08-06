@@ -55,9 +55,7 @@ impl<'a> System<'a> for ReturnFlag {
 					.join()
 					.filter(|(_, _, _, carrier, ..)| carrier.0.is_none())
 					.filter(|(_, pos, team, ..)| {
-						(ctfconfig::FLAG_HOME_POS[&team] - **pos)
-							.length2()
-							.inner() > 0.01
+						(ctfconfig::FLAG_HOME_POS[&team] - **pos).length2().inner() > 0.01
 					})
 					.map(|(ent, pos, team, ..)| (ent, *pos, *team))
 					.collect::<Vec<_>>()

@@ -1,6 +1,8 @@
 use shrev::*;
 use specs::*;
 
+use server::Team;
+
 use std::time::Instant;
 
 #[derive(Copy, Clone, Debug, Default, Component)]
@@ -27,6 +29,14 @@ pub struct FlagEvent {
 	pub flag: Entity,
 }
 
+#[derive(Copy, Clone, Debug)]
+pub struct GameStartEvent;
+
+#[derive(Copy, Clone, Debug)]
+pub struct GameWinEvent {
+	pub winning_team: Team,
+}
+
 #[derive(Copy, Clone, Debug, Component)]
 #[storage(HashMapStorage)]
 pub struct LastDrop {
@@ -40,14 +50,29 @@ pub struct GameScores {
 	pub blueteam: u8,
 }
 
-#[derive(Copy, Clone)]
+#[derive(Copy, Clone, Debug)]
 pub struct Flags {
 	pub red: Entity,
 	pub blue: Entity,
 }
+
+#[derive(Copy, Clone, Debug)]
+pub struct GameActive(pub bool);
 
 #[derive(Copy, Clone, Debug, Component)]
 pub struct Captures(pub u32);
 
 pub type OnFlag = EventChannel<FlagEvent>;
 pub type OnFlagReader = ReaderId<FlagEvent>;
+
+pub type OnGameWin = EventChannel<GameWinEvent>;
+pub type OnGameWinReader = ReaderId<GameWinEvent>;
+
+pub type OnGameStart = EventChannel<GameStartEvent>;
+pub type OnGameStartReader = ReaderId<GameStartEvent>;
+
+impl Default for GameActive {
+	fn default() -> Self {
+		GameActive(true)
+	}
+}

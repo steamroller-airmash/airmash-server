@@ -1,12 +1,10 @@
 use specs::*;
 
-use super::*;
 use component::*;
 
 use server::component::channel::*;
 use server::component::flag::*;
 use server::component::time::*;
-use server::systems::handlers::packet::CommandHandler;
 use server::*;
 
 pub struct DropOnSpec {
@@ -80,7 +78,7 @@ impl<'a> System<'a> for DropOnSpec {
 }
 
 impl SystemInfo for DropOnSpec {
-	type Dependencies = (CommandHandler, PickupFlagSystem);
+	type Dependencies = ();
 
 	fn name() -> &'static str {
 		concat!(module_path!(), "::", line!())

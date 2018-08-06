@@ -45,24 +45,52 @@ lazy_static! {
 		let mut map = FnvHashMap::default();
 
 		// Blue team
-		map.insert(Team(1), Position::new(
+		map.insert(Team(2), Position::new(
 			Distance::new(-9670.0),
 			Distance::new(-1470.0))
 		);
 		// Red team
-		map.insert(Team(2), Position::new(
+		map.insert(Team(1), Position::new(
 			Distance::new(8600.0),
 			Distance::new(-940.0))
 		);
+
+
+		/*
+		// Blue team
+		map.insert(Team(2), Position::new(
+			Distance::new(-9370.0),
+			Distance::new(-1470.0))
+		);
+		// Red team
+		map.insert(Team(1), Position::new(
+			Distance::new(8300.0),
+			Distance::new(-940.0))
+		);
+		*/
 
 		map
 	};
 	pub static ref FLAG_RETURN_POS: FnvHashMap<Team, Position> = {
 		let mut map = FnvHashMap::default();
 
+		/*
 		// Flags get returned at the opposite base
 		map.insert(Team(2), FLAG_HOME_POS[&Team(1)]);
 		map.insert(Team(1), FLAG_HOME_POS[&Team(2)]);
+		*/
+
+
+		// Blue team
+		map.insert(Team(2), Position::new(
+			Distance::new(-9670.0),
+			Distance::new(-1470.0))
+		);
+		// Red team
+		map.insert(Team(1), Position::new(
+			Distance::new(8600.0),
+			Distance::new(-940.0))
+		);
 
 		map
 	};
@@ -78,12 +106,16 @@ lazy_static! {
 		map
 	};
 
-	/// The base score that a player would get if they were
-	/// the only ones on the server and they capped. This
-	/// value will be multiplied by the number of players
-	/// in the server (up to a max of 10 times).
-	pub static ref FLAG_CAP_BOUNTY_BASE: Score = Score(100);
 }
 
 pub const BLUE_TEAM: Team = Team(1);
 pub const RED_TEAM: Team = Team(2);
+
+/// The base score that a player would get if they were
+/// the only ones on the server and they capped. This
+/// value will be multiplied by the number of players
+/// in the server (up to a max of 10 times).
+pub const FLAG_CAP_BOUNTY_BASE: Score = Score(100);
+/// The base score that a winning player would get
+/// if they were the only ones on the server.
+pub const GAME_WIN_BOUNTY_BASE: Score = Score(100);

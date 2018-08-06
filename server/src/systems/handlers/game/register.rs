@@ -32,12 +32,17 @@ pub fn register<'a, 'b>(builder: Builder<'a, 'b>) -> Builder<'a, 'b> {
 		.with::<on_join::UpdatePlayersGame>()
 		// On player leave
 		.with::<on_leave::FreeName>()
+		.with::<on_leave::UpdatePlayersGame>()
 		// On missile fire
 		.with::<on_missile_fire::SendPlayerFire>()
 		.with::<on_missile_fire::SetLastShot>()
 		// On player hit
 		.with::<on_player_hit::InflictDamage>()
 		.with::<on_player_hit::SendPacket>()
+		// On player respawn
+		.with::<on_player_respawn::ResetKeyState>()
+		.with::<on_player_respawn::SetTraits>()
+		.with::<on_player_respawn::SendPlayerRespawn>()
 		// Needs to be after InflictDamage
 		.with::<PlayerKilledCleanup>();
 

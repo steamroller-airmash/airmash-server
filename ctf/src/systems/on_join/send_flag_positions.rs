@@ -3,18 +3,20 @@ use specs::*;
 use server::component::channel::*;
 use server::protocol::server::{GameFlag, ServerPacket};
 use server::protocol::{to_bytes, FlagUpdateType};
+use server::systems::handlers::game::on_join::SendLogin;
 use server::*;
 
 use component::*;
 
-pub struct LoginUpdateSystem {
+pub struct SendFlagPosition {
 	reader: Option<OnPlayerJoinReader>,
 }
 
 #[derive(SystemData)]
-pub struct LoginUpdateSystemData<'a> {
+pub struct SendFlagPositionData<'a> {
 	pub conns: Read<'a, Connections>,
 	pub join_channel: Read<'a, OnPlayerJoin>,
+	pub scores: Read<'a, GameScores>,
 
 	// These ones are for both
 	pub pos: ReadStorage<'a, Position>,
@@ -25,14 +27,14 @@ pub struct LoginUpdateSystemData<'a> {
 	pub carrier: ReadStorage<'a, FlagCarrier>,
 }
 
-impl LoginUpdateSystem {
+impl SendFlagPosition {
 	pub fn new() -> Self {
 		Self { reader: None }
 	}
 }
 
-impl<'a> System<'a> for LoginUpdateSystem {
-	type SystemData = LoginUpdateSystemData<'a>;
+impl<'a> System<'a> for SendFlagPosition {
+	type SystemData = SendFlagPositionData<'a>;
 
 	fn setup(&mut self, res: &mut Resources) {
 		Self::SystemData::setup(res);
@@ -55,8 +57,8 @@ impl<'a> System<'a> for LoginUpdateSystem {
 						flag: *team,
 						pos: *pos,
 						id: carrier.0,
-						blueteam: 0,
-						redteam: 0,
+						blueteam: data.scores.blueteam,
+						redteam: data.scores.redteam,
 					};
 
 					data.conns.send_to_player(
@@ -68,8 +70,10 @@ impl<'a> System<'a> for LoginUpdateSystem {
 	}
 }
 
-impl SystemInfo for LoginUpdateSystem {
-	type Dependencies = ();
+impl SystemInfo for SendFlagPosition {
+	// The client ignores packets that are
+	// sent before the login packet
+	type Dependencies = SendLogin;
 
 	fn name() -> &'static str {
 		concat!(module_path!(), "::", line!())

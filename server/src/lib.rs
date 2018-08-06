@@ -1,5 +1,4 @@
 #![feature(optin_builtin_traits)]
-#![feature(specialization)]
 
 // Crates with macros
 #[macro_use]
@@ -42,6 +41,7 @@ mod dispatch;
 mod handlers;
 mod metrics;
 mod server;
+mod status;
 mod timeloop;
 mod timers;
 mod utils;

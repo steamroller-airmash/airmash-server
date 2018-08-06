@@ -40,23 +40,43 @@ pub fn register<'a, 'b>(world: &mut World, disp: Builder<'a, 'b>) -> Builder<'a,
 
 	world.add_resource(Flags { red, blue });
 
-	disp.with::<LoginUpdateSystem>()
+	disp
+		.with::<DropOnSpec>()
+		.with::<DropOnDeath>()
+		// On Leave Events
+		.with::<on_leave::UpdateGameMode>()
+		.with::<on_leave::Drop>()
+		// On Join Events
+		.with::<on_join::InitCaptures>()
+		.with::<on_join::SendFlagPosition>()
+		// Needs to happen after SendFlagPosition
 		.with::<PickupFlagSystem>()
-		.with::<LeaveUpdateSystem>()
 		.with::<DropSystem>()
 		.with::<PosUpdateSystem>()
 		.with::<FlagSpeedSystem>()
-		.with::<UpdateGameModeOnPlayerLeave>()
-		.with::<DropOnSpec>()
-		.with::<DropOnDeath>()
-		// On Join Events
-		.with::<on_join::InitCaptures>()
 		// On Flag Events
 		.with::<on_flag::SendFlagMessage>()
 		.with::<on_flag::PickupMessage>()
 		.with::<on_flag::UpdateScore>()
 		.with::<on_flag::UpdateCaptures>()
+		.with::<on_flag::UpdateLastDrop>()
+		.with::<on_flag::CheckWin>()
 		// Flag event sending systems
 		.with::<flag_event::CaptureFlag>()
 		.with::<flag_event::ReturnFlag>()
+		// On Game Win events
+		.with::<on_game_win::SetupMessages>()
+		.with::<on_game_win::SetupGameStart>()
+		.with::<on_game_win::SetupReteam>()
+		.with::<on_game_win::ChangeConfig>()
+		.with::<on_game_win::DisplayWin>()
+		.with::<on_game_win::SetGameActive>()
+		// Timer events
+		.with::<timer::RestoreConfig>()
+		.with::<timer::GameStart>()
+		// Game Start events
+		.with::<on_game_start::RespawnAllUnspec>()
+		.with::<on_game_start::RespawnAll>()
+		.with::<on_game_start::ResetScore>()
+		.with::<on_game_start::SetGameActive>()
 }

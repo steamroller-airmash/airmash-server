@@ -6,7 +6,7 @@ use std::time::Instant;
 use protocol::FlagCode;
 use types::collision::Collision;
 use types::*;
-use utils::timer::TimerEventType;
+pub use utils::timer::TimerEventType;
 
 #[derive(Copy, Clone, Debug, Default, Component)]
 pub struct ScoreDetailedEvent(pub ConnectionId);
@@ -37,7 +37,9 @@ pub struct PlayerKilled {
 	pub pos: Position,
 }
 #[derive(Copy, Clone, Debug)]
-pub struct PlayerRespawn(pub Entity);
+pub struct PlayerRespawn {
+	pub player: Entity,
+}
 #[derive(Copy, Clone, Debug)]
 pub struct PlayerHit {
 	pub player: Entity,
