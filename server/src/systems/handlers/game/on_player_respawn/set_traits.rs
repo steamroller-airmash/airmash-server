@@ -9,15 +9,14 @@ use systems::handlers::game::on_join::AllJoinHandlers;
 /// Set transform, health, energy and flags
 /// for a player when they respawn.
 ///
-/// More specifically, this system sets the
-/// following:
+/// More specifically, this system removes the
+/// [`IsDead`] flag and sets the following:
 ///
 /// - [`Position`]
 /// - [`Velocity`]
 /// - [`Rotation`]
 /// - [`Health`]
 /// - [`Energy`]
-/// and removes the [`IsDead`] flag.
 #[derive(Default)]
 pub struct SetTraits {
 	reader: Option<OnPlayerRespawnReader>,

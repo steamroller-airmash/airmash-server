@@ -12,6 +12,9 @@ use OwnedMessage;
 use systems::handlers::game::on_join::AllJoinHandlers;
 use systems::handlers::game::on_player_respawn::SetTraits;
 
+/// Send a [`PlayerRespawn`] packet to
+/// all visible players if the target
+/// player is not currently spectating.
 #[derive(Default)]
 pub struct SendPlayerRespawn {
 	reader: Option<OnPlayerRespawnReader>,
