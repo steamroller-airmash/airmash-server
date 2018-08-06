@@ -37,7 +37,9 @@ pub struct PlayerKilled {
 	pub pos: Position,
 }
 #[derive(Copy, Clone, Debug)]
-pub struct PlayerRespawn(pub Entity);
+pub struct PlayerRespawn {
+	pub player: Entity,
+}
 #[derive(Copy, Clone, Debug)]
 pub struct PlayerHit {
 	pub player: Entity,

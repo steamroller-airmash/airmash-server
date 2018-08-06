@@ -39,6 +39,10 @@ pub fn register<'a, 'b>(builder: Builder<'a, 'b>) -> Builder<'a, 'b> {
 		// On player hit
 		.with::<on_player_hit::InflictDamage>()
 		.with::<on_player_hit::SendPacket>()
+		// On player respawn
+		.with::<on_player_respawn::ResetKeyState>()
+		.with::<on_player_respawn::SetTraits>()
+		.with::<on_player_respawn::SendPlayerRespawn>()
 		// Needs to be after InflictDamage
 		.with::<PlayerKilledCleanup>();
 
