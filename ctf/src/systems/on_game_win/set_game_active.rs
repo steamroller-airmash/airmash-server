@@ -1,8 +1,19 @@
-use server::*;
 use specs::*;
 
+use server::component::event::*;
+use server::types::FutureDispatcher;
+use server::*;
+
 use component::*;
+use config::*;
+use consts::*;
 use systems::on_flag::CheckWin;
+
+use std::time::Duration;
+
+lazy_static! {
+	static ref TIMER_DURATION: Duration = *GAME_RESET_TIME + Duration::from_millis(100);
+}
 
 /// Change GameActive state to false.
 ///
@@ -18,6 +29,7 @@ pub struct SetGameActive {
 pub struct SetGameActiveData<'a> {
 	channel: Read<'a, OnGameWin>,
 	game_active: Write<'a, GameActive>,
+	dispatcher: ReadExpect<'a, FutureDispatcher>,
 }
 
 impl<'a> System<'a> for SetGameActive {
@@ -32,6 +44,13 @@ impl<'a> System<'a> for SetGameActive {
 	fn run(&mut self, mut data: Self::SystemData) {
 		for _ in data.channel.read(self.reader.as_mut().unwrap()) {
 			data.game_active.0 = false;
+
+			data.dispatcher
+				.run_delayed(*TIMER_DURATION, |inst| TimerEvent {
+					ty: *SET_GAME_ACTIVE,
+					instant: inst,
+					data: None,
+				})
 		}
 	}
 }

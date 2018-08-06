@@ -106,6 +106,8 @@ lazy_static! {
 		map
 	};
 
+	/// Time between winning a game and a new game starting
+	pub static ref GAME_RESET_TIME: Duration = Duration::from_secs(85);
 }
 
 pub const BLUE_TEAM: Team = Team(1);
