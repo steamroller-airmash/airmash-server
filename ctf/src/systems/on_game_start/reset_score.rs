@@ -32,6 +32,12 @@ impl<'a> System<'a> for ResetScore {
 
 	fn run(&mut self, mut data: Self::SystemData) {
 		for _ in data.channel.read(self.reader.as_mut().unwrap()) {
+			let flag = if data.scores.redteam == 3 {
+				data.flags.blue
+			} else {
+				data.flags.red
+			};
+
 			*data.scores = GameScores {
 				blueteam: 0,
 				redteam: 0,
@@ -41,7 +47,7 @@ impl<'a> System<'a> for ResetScore {
 			// TODO: Establish what the official server does
 			data.flag_channel.single_write(FlagEvent {
 				ty: FlagEventType::Return,
-				flag: data.flags.red,
+				flag: flag,
 				player: None,
 			});
 		}

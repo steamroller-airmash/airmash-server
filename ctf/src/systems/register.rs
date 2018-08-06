@@ -74,9 +74,9 @@ pub fn register<'a, 'b>(world: &mut World, disp: Builder<'a, 'b>) -> Builder<'a,
 		// Timer events
 		.with::<timer::RestoreConfig>()
 		.with::<timer::GameStart>()
+		.with::<timer::SetGameActive>()
 		// Game Start events
 		.with::<on_game_start::RespawnAllUnspec>()
 		.with::<on_game_start::RespawnAll>()
 		.with::<on_game_start::ResetScore>()
-		.with::<on_game_start::SetGameActive>()
 }

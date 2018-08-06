@@ -8,6 +8,7 @@ use server::types::FutureDispatcher;
 use server::*;
 
 use component::*;
+use config::*;
 use std::time::Duration;
 use systems::on_flag::CheckWin;
 
@@ -22,15 +23,15 @@ const MESSAGE_1_SECONDS: &'static str = "Game starting in a second";
 const MESSAGE_0_SECONDS: &'static str = "Game starting!";
 
 const MESSAGES: [(u32, u64, &'static str); 9] = [
-	(12, 25, MESSAGE_1_MIN),
-	(7, 55, MESSAGE_30_SECONDS),
-	(7, 75, MESSAGE_10_SECONDS),
-	(2, 80, MESSAGE_5_SECONDS),
-	(2, 81, MESSAGE_4_SECONDS),
-	(2, 82, MESSAGE_3_SECONDS),
-	(2, 83, MESSAGE_2_SECONDS),
-	(2, 84, MESSAGE_1_SECONDS),
-	(3, 85, MESSAGE_0_SECONDS),
+	(12, 60, MESSAGE_1_MIN),
+	(7, 30, MESSAGE_30_SECONDS),
+	(7, 10, MESSAGE_10_SECONDS),
+	(2, 5, MESSAGE_5_SECONDS),
+	(2, 4, MESSAGE_4_SECONDS),
+	(2, 3, MESSAGE_3_SECONDS),
+	(2, 2, MESSAGE_2_SECONDS),
+	(2, 1, MESSAGE_1_SECONDS),
+	(3, 0, MESSAGE_0_SECONDS),
 ];
 
 #[derive(Default)]
@@ -56,8 +57,9 @@ impl<'a> System<'a> for SetupMessages {
 	fn run(&mut self, data: Self::SystemData) {
 		for _ in data.channel.read(self.reader.as_mut().unwrap()) {
 			for (duration, delay, msg) in MESSAGES.iter() {
-				data.future
-					.run_delayed(Duration::from_secs(*delay), move |inst| {
+				data.future.run_delayed(
+					*GAME_RESET_TIME - Duration::from_secs(*delay),
+					move |inst| {
 						Some(TimerEvent {
 							ty: *DELAYED_MESSAGE,
 							instant: inst,
@@ -67,7 +69,8 @@ impl<'a> System<'a> for SetupMessages {
 								text: msg.to_string(),
 							})),
 						})
-					});
+					},
+				);
 			}
 		}
 	}
