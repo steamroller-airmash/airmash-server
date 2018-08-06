@@ -1,8 +1,9 @@
 use specs::*;
 
 use server::component::flag::*;
+use server::component::event::*;
+use server::component::channel::*;
 use server::systems::handlers::game::on_join::AllJoinHandlers;
-use server::types::systemdata::PlayerRespawner;
 use server::*;
 
 use component::*;
@@ -20,7 +21,7 @@ pub struct RespawnAll {
 #[derive(SystemData)]
 pub struct RespawnAllData<'a> {
 	channel: Read<'a, OnGameStart>,
-	respawner: PlayerRespawner<'a>,
+	respawn_channel: Write<'a, OnPlayerRespawn>,
 
 	entities: Entities<'a>,
 	is_player: ReadStorage<'a, IsPlayer>,
@@ -39,9 +40,12 @@ impl<'a> System<'a> for RespawnAll {
 		for _ in data.channel.read(self.reader.as_mut().unwrap()) {
 			let players = (&*data.entities, data.is_player.mask())
 				.join()
-				.map(|(ent, ..)| ent);
+				.map(|(ent, ..)| PlayerRespawn {
+					player: ent
+				})
+				.collect::<Vec<_>>();
 
-			data.respawner.respawn_players(players);
+			data.respawn_channel.iter_write(players.into_iter());
 		}
 	}
 }
