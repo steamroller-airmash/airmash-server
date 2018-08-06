@@ -3,16 +3,12 @@ use specs::*;
 use types::*;
 
 use component::channel::*;
+use component::event::*;
 use component::flag::*;
 use consts::timer::*;
 
 use systems::TimerHandler;
 use SystemInfo;
-
-use protocol::server::PlayerRespawn;
-use protocol::Upgrades as ProtocolUpgrades;
-use protocol::{to_bytes, ServerPacket};
-use OwnedMessage;
 
 pub struct PlayerRespawnSystem {
 	reader: Option<OnTimerEventReader>,
@@ -22,6 +18,7 @@ pub struct PlayerRespawnSystem {
 pub struct PlayerRespawnSystemData<'a> {
 	pub channel: Read<'a, OnTimerEvent>,
 	pub conns: Read<'a, Connections>,
+	pub respawn_channel: Write<'a, OnPlayerRespawn>,
 
 	pub team: ReadStorage<'a, Team>,
 
@@ -64,26 +61,7 @@ impl<'a> System<'a> for PlayerRespawnSystem {
 					None => continue,
 				};
 
-			let team = *data.team.get(player).unwrap();
-			let pos = data.gamemode.get_mut().spawn_pos(player, team);
-
-			*data.pos.get_mut(player).unwrap() = pos;
-			*data.vel.get_mut(player).unwrap() = Velocity::default();
-			*data.rot.get_mut(player).unwrap() = Rotation::default();
-			*data.health.get_mut(player).unwrap() = Health::new(1.0);
-			*data.energy.get_mut(player).unwrap() = Energy::new(1.0);
-			data.is_dead.remove(player);
-
-			if data.is_spec.get(player).is_none() {
-				data.conns.send_to_all(OwnedMessage::Binary(
-					to_bytes(&ServerPacket::PlayerRespawn(PlayerRespawn {
-						id: player,
-						pos: *data.pos.get(player).unwrap(),
-						rot: *data.rot.get(player).unwrap(),
-						upgrades: ProtocolUpgrades::default(),
-					})).unwrap(),
-				));
-			}
+			data.respawn_channel.single_write(PlayerRespawn { player });
 		}
 	}
 }

@@ -1,8 +1,8 @@
 use specs::*;
 
-use server::component::flag::*;
-use server::component::event::*;
 use server::component::channel::*;
+use server::component::event::*;
+use server::component::flag::*;
 use server::systems::handlers::game::on_join::AllJoinHandlers;
 use server::*;
 
@@ -40,9 +40,7 @@ impl<'a> System<'a> for RespawnAll {
 		for _ in data.channel.read(self.reader.as_mut().unwrap()) {
 			let players = (&*data.entities, data.is_player.mask())
 				.join()
-				.map(|(ent, ..)| PlayerRespawn {
-					player: ent
-				})
+				.map(|(ent, ..)| PlayerRespawn { player: ent })
 				.collect::<Vec<_>>();
 
 			data.respawn_channel.iter_write(players.into_iter());
