@@ -73,7 +73,7 @@ impl<'a> System<'a> for CommandHandler {
 				*data.planes.get_mut(player).unwrap() = ty;
 				data.isspec.remove(player);
 
-				data.respawn_channel.single_write(PlayerRespawn{ player });
+				data.respawn_channel.single_write(PlayerRespawn { player });
 
 				packet = ServerPacket::PlayerType(PlayerType { id: player, ty: ty });
 			} else {
