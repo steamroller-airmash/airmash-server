@@ -2,34 +2,26 @@ use shrev::*;
 use specs::*;
 use types::*;
 
+use component::channel::*;
+use component::event::*;
+
 use protocol::client::Command;
-use protocol::server::{PlayerFlag, PlayerRespawn, PlayerType};
-use protocol::{to_bytes, FlagCode, ServerPacket, Upgrades as ProtocolUpgrades};
+use protocol::server::{PlayerFlag, PlayerType};
+use protocol::{to_bytes, FlagCode, ServerPacket};
 use websocket::OwnedMessage;
 
 pub struct CommandHandler {
-	reader: Option<ReaderId<(ConnectionId, Command)>>,
+	reader: Option<OnCommandReader>,
 }
 
 #[derive(SystemData)]
 pub struct CommandHandlerData<'a> {
-	channel: Read<'a, EventChannel<(ConnectionId, Command)>>,
+	channel: Read<'a, OnCommand>,
+	respawn_channel: Write<'a, OnPlayerRespawn>,
 	conns: Read<'a, Connections>,
-	config: Read<'a, Config>,
-	team: ReadStorage<'a, Team>,
 	planes: WriteStorage<'a, Plane>,
 	flags: WriteStorage<'a, Flag>,
 	isspec: WriteStorage<'a, IsSpectating>,
-	isdead: WriteStorage<'a, IsDead>,
-
-	pos: WriteStorage<'a, Position>,
-	rot: WriteStorage<'a, Rotation>,
-	vel: WriteStorage<'a, Velocity>,
-	health: WriteStorage<'a, Health>,
-	energy: WriteStorage<'a, Energy>,
-	energy_regen: WriteStorage<'a, EnergyRegen>,
-
-	gamemode: GameModeWriter<'a, GameMode>,
 }
 
 impl CommandHandler {
@@ -78,29 +70,10 @@ impl<'a> System<'a> for CommandHandler {
 					None => continue,
 				};
 
-				let pos = data
-					.gamemode
-					.get_mut()
-					.spawn_pos(player, *data.team.get(player).unwrap());
-
-				*data.pos.get_mut(player).unwrap() = pos;
-				*data.vel.get_mut(player).unwrap() = Velocity::default();
-				*data.rot.get_mut(player).unwrap() = Rotation::default();
-				*data.health.get_mut(player).unwrap() = Health::new(1.0);
-				*data.energy.get_mut(player).unwrap() = Energy::new(1.0);
-				*data.energy_regen.get_mut(player).unwrap() = data.config.planes[ty].energy_regen;
 				*data.planes.get_mut(player).unwrap() = ty;
 				data.isspec.remove(player);
-				data.isdead.remove(player);
 
-				data.conns.send_to_all(OwnedMessage::Binary(
-					to_bytes(&ServerPacket::PlayerRespawn(PlayerRespawn {
-						id: player,
-						pos: *data.pos.get(player).unwrap(),
-						rot: *data.rot.get(player).unwrap(),
-						upgrades: ProtocolUpgrades::default(),
-					})).unwrap(),
-				));
+				data.respawn_channel.single_write(PlayerRespawn{ player });
 
 				packet = ServerPacket::PlayerType(PlayerType { id: player, ty: ty });
 			} else {
