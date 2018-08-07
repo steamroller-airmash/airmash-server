@@ -7,9 +7,6 @@ license = "Apache-2.0 OR MIT"
 [features]
 # If enabled, set TCP_NODELAY on incoming connections
 nodelay = []
-# Enable using the client's IP to determine
-# a default flag if they don't provide one.
-geoip = [ "geolocate-ip" ]
 # Enable looking for the X-Forwarded-For header
 # when determining client IP address
 proxied = []
@@ -22,7 +19,7 @@ specgen = { path = "../specgen" }
 [dependencies]
 simple_logger = "*"
 log = "0.4.1"
-specs = "*"
+specs = { version = "*", features = ["nightly"] }
 specs-derive = "*"
 dimensioned = "*"
 lazy_static = "*"
@@ -55,7 +52,3 @@ version = "0.10"
 version = "0.20"
 default-features = false
 features = [ "async", "async-ssl" ]
-
-[dependencies.geolocate-ip]
-git = "https://github.com/phantomical/rust-geolocate-ip"
-optional = true

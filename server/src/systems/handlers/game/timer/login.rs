@@ -11,7 +11,6 @@ use component::event::PlayerJoin;
 use component::time::*;
 use consts::timer::*;
 use types::*;
-use utils::geoip;
 
 use GameMode;
 
@@ -56,12 +55,7 @@ impl LoginHandler {
 			conn, login.name, entity.id()
 		);
 
-		let flag = match FlagCode::from_str(&login.flag) {
-			Some(v) => v,
-			None => {
-				geoip::locate(&data.conns.0[&conn].info.addr).unwrap_or(FlagCode::UnitedNations)
-			}
-		};
+		let flag = FlagCode::from_str(&login.flag).unwrap_or(FlagCode::UnitedNations);
 
 		let session = match Uuid::from_str(&login.session) {
 			Ok(s) => Some(s),
