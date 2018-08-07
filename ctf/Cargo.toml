@@ -7,7 +7,7 @@ license = "Apache-2.0 OR MIT"
 [dependencies]
 specs = "*"
 shrev = "*"
-shred = "*"
+shred = { version = "*", features= ["nightly"] }
 fnv = "*"
 log = "0.4"
 rand = "0.4"

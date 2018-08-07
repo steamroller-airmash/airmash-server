@@ -22,6 +22,7 @@ mod component;
 mod config;
 mod consts;
 mod gamemode;
+mod shuffle;
 mod systems;
 
 use std::env;
@@ -40,6 +41,7 @@ fn main() {
 		.with_alpha_warning();
 
 	server.builder = systems::register(&mut server.world, server.builder);
+	server.world.add_resource(shuffle::get_shuffle());
 
 	server.run();
 }
