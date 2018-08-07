@@ -1,7 +1,9 @@
+mod even_shuffle;
 mod no_shuffle;
 mod random_shuffle;
 mod structs;
 
+pub use self::even_shuffle::EvenShuffle;
 pub use self::no_shuffle::NoShuffle;
 pub use self::random_shuffle::RandomShuffle;
 
@@ -12,5 +14,5 @@ pub trait ShuffleProvider {
 }
 
 pub fn get_shuffle() -> Box<ShuffleProvider + Sync + Send> {
-	Box::new(RandomShuffle)
+	Box::new(EvenShuffle)
 }
