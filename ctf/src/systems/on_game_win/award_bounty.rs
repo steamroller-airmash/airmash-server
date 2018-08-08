@@ -16,6 +16,7 @@ use component::*;
 use config::GAME_WIN_BOUNTY_BASE;
 use systems::on_flag::CheckWin;
 
+/// Award bounty to all members of the winning team
 #[derive(Default)]
 pub struct AwardBounty {
 	reader: Option<OnGameWinReader>,
