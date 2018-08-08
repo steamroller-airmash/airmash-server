@@ -38,7 +38,7 @@ impl<'a> System<'a> for DisplayWin {
 			let text = format!(
 				"{{\"w\":{},\"b\":{},\"t\":{}}}",
 				evt.winning_team.0,
-				data.players_game.0 * GAME_WIN_BOUNTY_BASE.0,
+				data.players_game.0.min(10) * GAME_WIN_BOUNTY_BASE.0,
 				13, // seconds
 			);
 
