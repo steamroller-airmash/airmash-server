@@ -45,12 +45,12 @@ lazy_static! {
 		let mut map = FnvHashMap::default();
 
 		// Blue team
-		map.insert(Team(2), Position::new(
+		map.insert(Team(1), Position::new(
 			Distance::new(-9670.0),
 			Distance::new(-1470.0))
 		);
 		// Red team
-		map.insert(Team(1), Position::new(
+		map.insert(Team(2), Position::new(
 			Distance::new(8600.0),
 			Distance::new(-940.0))
 		);
