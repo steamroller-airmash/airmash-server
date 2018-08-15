@@ -1,6 +1,6 @@
 extern crate airmash_server;
-extern crate log;
 extern crate env_logger;
+extern crate log;
 extern crate specs;
 
 use std::env;

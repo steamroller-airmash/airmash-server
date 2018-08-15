@@ -1,8 +1,8 @@
 extern crate airmash_server;
+extern crate env_logger;
 extern crate log;
 extern crate rand;
 extern crate shred;
-extern crate env_logger;
 extern crate specs;
 #[macro_use]
 extern crate lazy_static;

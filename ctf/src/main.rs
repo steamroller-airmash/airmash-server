@@ -8,12 +8,12 @@ extern crate lazy_static;
 extern crate log;
 
 extern crate airmash_server;
+extern crate env_logger;
 extern crate fnv;
 extern crate htmlescape;
 extern crate rand;
 extern crate shred;
 extern crate shrev;
-extern crate env_logger;
 extern crate specs;
 
 use airmash_server as server;
