@@ -2,7 +2,7 @@ extern crate airmash_server;
 extern crate log;
 extern crate rand;
 extern crate shred;
-extern crate simple_logger;
+extern crate env_logger;
 extern crate specs;
 #[macro_use]
 extern crate lazy_static;
@@ -22,9 +22,8 @@ use gamemode::EmptyGameMode;
 use airmash_server::*;
 
 fn main() {
-    simple_logger::init_with_level(log::Level::Info).unwrap();
-
     env::set_var("RUST_BACKTRACE", "1");
+    env_logger::init();
 
     let mut server = AirmashServer::new("0.0.0.0:3501")
         .with_engine()

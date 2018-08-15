@@ -13,7 +13,7 @@ extern crate htmlescape;
 extern crate rand;
 extern crate shred;
 extern crate shrev;
-extern crate simple_logger;
+extern crate env_logger;
 extern crate specs;
 
 use airmash_server as server;
@@ -33,7 +33,7 @@ use server::AirmashServer;
 fn main() {
 	env::set_var("RUST_BACKTRACE", "1");
 
-	simple_logger::init_with_level(log::Level::Info).unwrap();
+	env_logger::init();
 
 	let mut server = AirmashServer::new("0.0.0.0:3501")
 		.with_engine()

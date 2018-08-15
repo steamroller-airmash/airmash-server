@@ -1,6 +1,6 @@
 extern crate airmash_server;
 extern crate log;
-extern crate simple_logger;
+extern crate env_logger;
 extern crate specs;
 
 use std::env;
@@ -27,7 +27,7 @@ impl GameMode for EmptyGameMode {
 }
 
 fn main() {
-	simple_logger::init_with_level(log::Level::Info).unwrap();
+	env_logger::init();
 
 	env::set_var("RUST_BACKTRACE", "1");
 

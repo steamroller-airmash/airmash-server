@@ -15,7 +15,7 @@ specs-derive = "*"
 shred-derive = "*"
 lazy_static = "*"
 htmlescape = "*"
-simple_logger = "*"
+env_logger = "*"
 serde = { version = "*", features = [ "derive" ]}
 serde_json = "*"
 
