@@ -33,6 +33,8 @@ FROM alpine:latest
 
 EXPOSE 3501
 
+ENV RUST_LOG=info,airmash:packet-dump=trace
+
 COPY --from=0 /artifacts/airmash-server /app/airmash-server
 
 ENTRYPOINT [ "/app/airmash-server" ]

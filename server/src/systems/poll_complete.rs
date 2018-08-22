@@ -37,6 +37,12 @@ impl PollComplete {
 	) {
 		match conns.0.get_mut(&id) {
 			Some(ref mut conn) => {
+				trace!(
+					target: "airmash:packet-dump",
+					"Sent packet to {:?} with data {:?}",
+					id, msg
+				);
+
 				Connections::send_sink(&mut conn.sink, msg);
 			}
 			// The connection probably closed,
