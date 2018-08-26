@@ -14,9 +14,12 @@ lazy_static! {
 			MobType::TornadoSingleMissile,
 			MobType::TornadoTripleMissile,
 			MobType::ProwlerMissile,
+			MobType::Upgrade,
+			MobType::Shield,
+			MobType::Inferno,
 		];
 
-		for val in vals.iter() {
+		for val in vals.into_iter() {
 			map.insert(*val, vec![(Position::default(), Distance::new(1.0))]);
 		}
 

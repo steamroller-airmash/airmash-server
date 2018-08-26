@@ -48,6 +48,7 @@ pub type OnPlayerTerrainCollision = EventChannel<PlayerTerrainCollision>;
 pub type OnPlayerMissileCollision = EventChannel<PlayerMissileCollision>;
 pub type OnPlayerPowerupCollision = EventChannel<PlayerPowerupCollision>;
 pub type OnMissileTerrainCollision = EventChannel<MissileTerrainCollision>;
+pub type OnPlayerUpgradeCollision = EventChannel<PlayerUpgradeCollision>;
 
 // Readers
 pub type OnOpenReader = ReaderId<ConnectionOpen>;
@@ -90,3 +91,4 @@ pub type OnPlayerMissileCollisionReader = ReaderId<PlayerMissileCollision>;
 pub type OnPlayerTerrainCollisionReader = ReaderId<PlayerTerrainCollision>;
 pub type OnPlayerPowerupCollisionReader = ReaderId<PlayerPowerupCollision>;
 pub type OnMissileTerrainCollisionReader = ReaderId<MissileTerrainCollision>;
+pub type OnPlayerUpgradeCollisionReader = ReaderId<PlayerUpgradeCollision>;
