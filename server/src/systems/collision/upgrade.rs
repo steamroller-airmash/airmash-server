@@ -1,12 +1,14 @@
 use fnv::FnvHashSet;
 use specs::prelude::*;
 
+use Mob;
+
 use types::collision::*;
+use types::systemdata::IsAlive;
 use types::*;
 
 use component::channel::*;
 use component::event::PlayerUpgradeCollision;
-use component::flag::IsSpectating;
 
 use consts::config::PLANE_HIT_CIRCLES;
 
@@ -22,8 +24,7 @@ pub struct PlayerUpgradeCollisionSystemData<'a> {
 	pub team: ReadStorage<'a, Team>,
 	pub plane: ReadStorage<'a, Plane>,
 	pub player_flag: ReadStorage<'a, IsPlayer>,
-	pub isspec: ReadStorage<'a, IsSpectating>,
-	pub isdead: ReadStorage<'a, IsDead>,
+	pub isalive: IsAlive<'a>,
 
 	pub mob: ReadStorage<'a, Mob>,
 	pub missile_flag: ReadStorage<'a, IsMissile>,
@@ -48,8 +49,7 @@ impl<'a> System<'a> for PlayerUpgradeCollisionSystem {
 			team,
 			plane,
 			player_flag,
-			isspec,
-			isdead,
+			isalive,
 
 			mob,
 			missile_flag,
@@ -57,10 +57,16 @@ impl<'a> System<'a> for PlayerUpgradeCollisionSystem {
 
 		let mut buckets = Array2D::<Bucket>::new(BUCKETS_X, BUCKETS_Y);
 
-		(&*ent, &pos, &rot, &team, &plane, &player_flag)
-			.join()
-			.filter(|(ent, _, _, _, _, _)| isspec.get(*ent).is_none() && isdead.get(*ent).is_none())
-			.for_each(|(ent, pos, rot, team, plane, _)| {
+		(
+			&*ent,
+			&pos,
+			&rot,
+			&team,
+			&plane,
+			&player_flag,
+			isalive.mask(),
+		).join()
+			.for_each(|(ent, pos, rot, team, plane, ..)| {
 				PLANE_HIT_CIRCLES[plane].iter().for_each(|hc| {
 					let offset = hc.offset.rotate(*rot);
 
@@ -79,7 +85,8 @@ impl<'a> System<'a> for PlayerUpgradeCollisionSystem {
 
 		let collisions = (&*ent, &pos, &team, &mob, !missile_flag.mask())
 			.par_join()
-			.map(|(ent, pos, team, mob, _)| {
+			.filter(|(_, _, _, &mob, ..)| mob == Mob::Upgrade)
+			.map(|(ent, pos, team, mob, ..)| {
 				let mut collisions = vec![];
 
 				for (offset, rad) in COLLIDERS[mob].iter() {
