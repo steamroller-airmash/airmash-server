@@ -41,6 +41,8 @@ pub fn register<'a, 'b>(disp: Builder<'a, 'b>) -> Builder<'a, 'b> {
 	let disp = specials::register(disp);
 	// Limiters
 	let disp = limiting::register(disp);
+	// Upgrades
+	let disp = upgrades::register(disp);
 
 	disp
 }
