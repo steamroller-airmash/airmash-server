@@ -9,6 +9,8 @@ use types::*;
 use component::channel::*;
 use component::event::PlayerTerrainCollision;
 
+use consts::config::PLANE_HIT_CIRCLES;
+
 #[derive(Default)]
 pub struct PlaneCollisionSystem {
 	terrain: Terrain,
@@ -18,7 +20,6 @@ pub struct PlaneCollisionSystem {
 pub struct PlaneCollisionSystemData<'a> {
 	pub entities: Entities<'a>,
 	pub collisions: Write<'a, OnPlayerTerrainCollision>,
-	pub config: Read<'a, Config>,
 	pub pos: ReadStorage<'a, Position>,
 	pub rot: ReadStorage<'a, Rotation>,
 	pub planes: ReadStorage<'a, Plane>,
@@ -54,11 +55,9 @@ impl<'a> System<'a> for PlaneCollisionSystem {
 			&data.teams,
 		).par_join()
 			.map(|(ent, pos, rot, plane, team)| {
-				let ref cfg = data.config.planes[*plane];
-
 				let mut collisions = vec![];
 
-				cfg.hit_circles.iter().for_each(|hc| {
+				(*PLANE_HIT_CIRCLES)[plane].iter().for_each(|hc| {
 					let offset = hc.offset.rotate(*rot);
 
 					let circle = HitCircle {

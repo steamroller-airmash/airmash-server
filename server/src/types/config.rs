@@ -2,15 +2,10 @@ use airmash_protocol::{MobType, PlaneType};
 use fnv::FnvHashMap;
 use std::ops::Index;
 use std::time::Duration;
-use std::vec::Vec;
 
 use types::*;
 
-#[derive(Copy, Clone, Debug, Default)]
-pub struct HitCircle {
-	pub radius: Distance,
-	pub offset: Position,
-}
+pub use consts::config::HitCircle;
 
 #[derive(Debug, Clone)]
 pub struct PlaneInfo {
@@ -43,9 +38,9 @@ pub struct PlaneInfo {
 	pub missile_type: Mob,
 	// Offset of missile (in the Y dir) when fired
 	pub missile_offset: Distance,
-
 	// Collisions
-	pub hit_circles: Vec<HitCircle>,
+	//#[deprecated]
+	//pub hit_circles: Vec<HitCircle>,
 }
 
 #[derive(Copy, Clone, Debug, Default)]
@@ -105,13 +100,6 @@ impl Index<Mob> for MobInfos {
 	}
 }
 
-fn hit_circle(x: i16, y: i16, r: i16) -> HitCircle {
-	HitCircle {
-		offset: Position::new(Distance::new(x as f32), Distance::new(y as f32)),
-		radius: Distance::new(r as f32),
-	}
-}
-
 impl Default for PlaneInfos {
 	fn default() -> Self {
 		let mut map = FnvHashMap::default();
@@ -140,12 +128,6 @@ impl Default for PlaneInfos {
 
 				missile_type: MobType::PredatorMissile,
 				missile_offset: Distance::new(35.0),
-
-				hit_circles: vec![
-					hit_circle(0, 5, 23),
-					hit_circle(0, -15, 15),
-					hit_circle(0, -25, 12),
-				],
 			},
 		);
 
@@ -173,18 +155,6 @@ impl Default for PlaneInfos {
 
 				missile_type: MobType::GoliathMissile,
 				missile_offset: Distance::new(35.0),
-
-				hit_circles: vec![
-					hit_circle(0, 0, 35),
-					hit_circle(50, 14, 16),
-					hit_circle(74, 26, 14),
-					hit_circle(30, 8, 23),
-					hit_circle(63, 22, 15),
-					hit_circle(-50, 14, 16),
-					hit_circle(-74, 26, 14),
-					hit_circle(-30, 8, 23),
-					hit_circle(-63, 22, 15),
-				],
 			},
 		);
 
@@ -213,13 +183,6 @@ impl Default for PlaneInfos {
 				missile_type: MobType::MohawkMissile,
 				// This will have to be a special case
 				missile_offset: Distance::new(10.0),
-
-				hit_circles: vec![
-					hit_circle(0, -12, 15),
-					hit_circle(0, 0, 17),
-					hit_circle(0, 13, 15),
-					hit_circle(0, 26, 15),
-				],
 			},
 		);
 
@@ -247,15 +210,6 @@ impl Default for PlaneInfos {
 
 				missile_type: MobType::TornadoSingleMissile,
 				missile_offset: Distance::new(40.0),
-
-				hit_circles: vec![
-					hit_circle(0, 8, 18),
-					hit_circle(14, 12, 13),
-					hit_circle(-14, 12, 13),
-					hit_circle(0, -12, 16),
-					hit_circle(0, -26, 14),
-					hit_circle(0, -35, 12),
-				],
 			},
 		);
 
@@ -283,14 +237,6 @@ impl Default for PlaneInfos {
 
 				missile_type: MobType::ProwlerMissile,
 				missile_offset: Distance::new(35.0),
-
-				hit_circles: vec![
-					hit_circle(0, 11, 25),
-					hit_circle(0, -8, 18),
-					hit_circle(19, 20, 10),
-					hit_circle(-19, 20, 10),
-					hit_circle(0, -20, 14),
-				],
 			},
 		);
 

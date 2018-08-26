@@ -8,12 +8,13 @@ use component::channel::*;
 use component::event::PlayerMissileCollision;
 use component::flag::IsSpectating;
 
+use consts::config::PLANE_HIT_CIRCLES;
+
 pub struct PlayerMissileCollisionSystem;
 
 #[derive(SystemData)]
 pub struct PlayerMissileCollisionSystemData<'a> {
 	pub channel: Write<'a, OnPlayerMissileCollision>,
-	pub config: Read<'a, Config>,
 	pub ent: Entities<'a>,
 
 	pub pos: ReadStorage<'a, Position>,
@@ -40,7 +41,6 @@ impl<'a> System<'a> for PlayerMissileCollisionSystem {
 	fn run(&mut self, data: Self::SystemData) {
 		let Self::SystemData {
 			mut channel,
-			config,
 			ent,
 
 			pos,
@@ -61,9 +61,7 @@ impl<'a> System<'a> for PlayerMissileCollisionSystem {
 			.join()
 			.filter(|(ent, _, _, _, _, _)| isspec.get(*ent).is_none() && isdead.get(*ent).is_none())
 			.for_each(|(ent, pos, rot, team, plane, _)| {
-				let ref cfg = config.planes[*plane];
-
-				cfg.hit_circles.iter().for_each(|hc| {
+				PLANE_HIT_CIRCLES[plane].iter().for_each(|hc| {
 					let offset = hc.offset.rotate(*rot);
 
 					let circle = HitCircle {
