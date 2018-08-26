@@ -5,8 +5,6 @@ use std::time::Duration;
 
 use types::*;
 
-pub use consts::config::HitCircle;
-
 #[derive(Debug, Clone)]
 pub struct PlaneInfo {
 	// Rotation
