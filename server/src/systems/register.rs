@@ -5,7 +5,7 @@ use systems::*;
 use dispatch::Builder;
 
 pub fn register<'a, 'b>(disp: Builder<'a, 'b>) -> Builder<'a, 'b> {
-	let disp = disp
+	disp
 		.with::<run_futures::RunTimedFutures>()
 
 		// Add handlers here
@@ -24,25 +24,22 @@ pub fn register<'a, 'b>(disp: Builder<'a, 'b>) -> Builder<'a, 'b> {
 		.with::<handlers::packet::ChatEventHandler>()
 
 		// Systems with dependencies on handlers
-		.with::<PositionUpdate>();
-
-	let disp = missile::register(disp)
+		.with::<PositionUpdate>()
+		// Register missle handlers
+		.with_registrar(missile::register)
 		// EnergyRegen depends on MissileHit
 		.with::<EnergyRegenSystem>()
-		.with::<HealthRegenSystem>();
-	// Spectate handling
-	let disp = spectate::register(disp);
-
-	// Other handlers
-	let disp = handlers::register(disp);
-	// Collision handling
-	let disp = collision::register(disp);
-	// Specials
-	let disp = specials::register(disp);
-	// Limiters
-	let disp = limiting::register(disp);
-	// Upgrades
-	let disp = upgrades::register(disp);
-
-	disp
+		.with::<HealthRegenSystem>()
+		// Spectate handling
+		.with_registrar(spectate::register)
+		// Other handlers
+		.with_registrar(handlers::register)
+		// Collision handling
+		.with_registrar(collision::register)
+		// Specials
+		.with_registrar(specials::register)
+		// Limiters
+		.with_registrar(limiting::register)
+		// Upgrades
+		.with_registrar(upgrades::register)
 }
