@@ -42,6 +42,7 @@ pub type OnPlayerRepel = EventChannel<PlayerRepel>;
 pub type OnPlayerMuted = EventChannel<PlayerMute>;
 pub type OnPlayerThrottled = EventChannel<PlayerThrottle>;
 pub type OnPlayerHit = EventChannel<PlayerHit>;
+pub type OnUpgradePickup = EventChannel<UpgradePickupEvent>;
 
 // Collision events
 pub type OnPlayerTerrainCollision = EventChannel<PlayerTerrainCollision>;
@@ -85,6 +86,7 @@ pub type OnPlayerRepelReader = ReaderId<PlayerRepel>;
 pub type OnPlayerMutedReader = ReaderId<PlayerMute>;
 pub type OnPlayerThrottledReader = ReaderId<PlayerThrottle>;
 pub type OnPlayerHitReader = ReaderId<PlayerHit>;
+pub type OnUpgradePickupReader = ReaderId<UpgradePickupEvent>;
 
 // Collision events
 pub type OnPlayerMissileCollisionReader = ReaderId<PlayerMissileCollision>;

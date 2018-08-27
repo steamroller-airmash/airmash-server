@@ -112,6 +112,13 @@ pub struct ChatEvent {
 	pub conn: ConnectionId,
 }
 
+#[derive(Copy, Clone, Debug)]
+pub struct UpgradePickupEvent {
+	pub pos: Position,
+	pub upgrade: Entity,
+	pub player: Entity,
+}
+
 impl Default for TimerEvent {
 	fn default() -> Self {
 		use consts::timer::INVALID;
