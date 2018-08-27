@@ -7,21 +7,8 @@ use dispatch::Builder;
 pub fn register<'a, 'b>(disp: Builder<'a, 'b>) -> Builder<'a, 'b> {
 	disp
 		.with::<run_futures::RunTimedFutures>()
-
-		// Add handlers here
-		.with::<handlers::packet::OnOpenHandler>()
-		.with::<handlers::packet::OnCloseHandler>()
-		.with::<handlers::packet::LoginHandler>()
-		.with::<handlers::packet::KeyHandler>()
-		.with::<handlers::packet::ChatHandler>()
-		.with::<handlers::packet::SayHandler>()
-		.with::<handlers::packet::PongHandler>()
-		.with::<handlers::packet::ScoreBoardTimerHandler>()
-		.with::<handlers::packet::PingTimerHandler>()
-		.with::<handlers::packet::CommandHandler>()
-		.with::<handlers::packet::SignalHandler>()
-		.with::<handlers::packet::WhisperHandler>()
-		.with::<handlers::packet::ChatEventHandler>()
+		// Other handlers
+		.with_registrar(handlers::register)
 
 		// Systems with dependencies on handlers
 		.with::<PositionUpdate>()
@@ -32,8 +19,6 @@ pub fn register<'a, 'b>(disp: Builder<'a, 'b>) -> Builder<'a, 'b> {
 		.with::<HealthRegenSystem>()
 		// Spectate handling
 		.with_registrar(spectate::register)
-		// Other handlers
-		.with_registrar(handlers::register)
 		// Collision handling
 		.with_registrar(collision::register)
 		// Specials

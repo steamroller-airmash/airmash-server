@@ -2,7 +2,7 @@ use super::*;
 use dispatch::Builder;
 
 pub fn register<'a, 'b>(builder: Builder<'a, 'b>) -> Builder<'a, 'b> {
-	let builder = builder
+	builder
 		// Spectate events
 		.with::<on_spectate_event::SetSpectateFlag>()
 		.with::<on_spectate_event::SendKillPacket>()
@@ -44,9 +44,7 @@ pub fn register<'a, 'b>(builder: Builder<'a, 'b>) -> Builder<'a, 'b> {
 		.with::<on_player_respawn::SetTraits>()
 		.with::<on_player_respawn::SendPlayerRespawn>()
 		// Needs to be after InflictDamage
-		.with::<PlayerKilledCleanup>();
-
-	let builder = on_chat_throttled::register(builder);
-
-	timer::register(builder)
+		.with::<PlayerKilledCleanup>()
+		.with_registrar(on_chat_throttled::register)
+		.with_registrar(timer::register)
 }
