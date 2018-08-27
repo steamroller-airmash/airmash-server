@@ -17,6 +17,11 @@ impl<'a, 'b> Builder<'a, 'b> {
 		}
 	}
 
+	/// Add a new system to be scheduled.
+	///
+	/// The system's dependencies will be automatically
+	/// determined from its implementation of the
+	/// [`SystemInfo`] trait.
 	pub fn with<T>(self) -> Self
 	where
 		T: for<'c> System<'c> + Send + SystemInfo + 'a,
@@ -25,6 +30,12 @@ impl<'a, 'b> Builder<'a, 'b> {
 		self.with_args::<T, ()>(())
 	}
 
+	/// Add a new system to be scheduled with a specified
+	/// argument.
+	///
+	/// The system's dependencies will be automatically
+	/// determined from its implementation of the
+	/// [`SystemInfo`] trait.
 	pub fn with_args<T, U: Any>(self, args: U) -> Self
 	where
 		T: for<'c> System<'c> + Send + SystemInfo + 'a,
@@ -40,6 +51,22 @@ impl<'a, 'b> Builder<'a, 'b> {
 		}
 	}
 
+	/// Call the passed in function with self and
+	/// return whatever the function returns.
+	///
+	/// This is meant as an ease-of-use wrapper
+	/// for `register` style functions.
+	pub fn with_registrar<F>(self, fun: F) -> Self
+	where
+		F: FnOnce(Self) -> Self,
+	{
+		fun(self)
+	}
+
+	/// Add a thread-local system.
+	///
+	/// Note that thread-local systems are
+	/// executed in the order that they are added.
 	pub fn with_thread_local<T: 'static>(self) -> Self
 	where
 		T: for<'c> System<'c> + SystemInfo + 'b,
