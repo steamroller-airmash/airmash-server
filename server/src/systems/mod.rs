@@ -15,6 +15,7 @@ pub mod notify;
 pub mod specials;
 pub mod spectate;
 pub mod upgrades;
+pub mod admin;
 
 pub use self::energy_regen::EnergyRegenSystem;
 pub use self::health_regen::HealthRegenSystem;

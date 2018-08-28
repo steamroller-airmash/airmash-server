@@ -27,4 +27,6 @@ pub fn register<'a, 'b>(disp: Builder<'a, 'b>) -> Builder<'a, 'b> {
 		.with_registrar(limiting::register)
 		// Upgrades
 		.with_registrar(upgrades::register)
+		// Admin/Debug Commands
+		.with_registrar(admin::register)
 }
