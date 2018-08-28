@@ -20,6 +20,7 @@ block-bots = []
 specgen = { path = "../specgen" }
 
 [dependencies]
+ws = "*"
 simple_logger = "*"
 log = "0.4.1"
 specs = { version = "*", features = ["nightly"] }
