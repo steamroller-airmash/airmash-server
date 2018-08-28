@@ -1,20 +1,19 @@
-
 use specs::*;
 
 use SystemInfo;
 
-use types::*;
 use types::collision::*;
+use types::*;
 
-use component::flag::*;
-use component::event::*;
 use component::channel::*;
+use component::event::*;
+use component::flag::*;
 
 use systems::collision::PlayerUpgradeCollisionSystem;
 
 #[derive(Default)]
 pub struct PickupUpgrade {
-	reader: Option<OnPlayerUpgradeCollisionReader>
+	reader: Option<OnPlayerUpgradeCollisionReader>,
 }
 
 #[derive(SystemData)]
@@ -34,7 +33,8 @@ impl<'a> System<'a> for PickupUpgrade {
 		Self::SystemData::setup(res);
 
 		self.reader = Some(
-			res.fetch_mut::<OnPlayerUpgradeCollision>().register_reader()
+			res.fetch_mut::<OnPlayerUpgradeCollision>()
+				.register_reader(),
 		);
 	}
 
@@ -44,7 +44,7 @@ impl<'a> System<'a> for PickupUpgrade {
 
 			let (player, upgrade) = match data.is_player.get(c1.ent) {
 				Some(_) => (c1, c2),
-				None => (c2, c1)
+				None => (c2, c1),
 			};
 
 			if !data.entities.is_alive(upgrade.ent) {
@@ -52,11 +52,11 @@ impl<'a> System<'a> for PickupUpgrade {
 			}
 
 			data.upgrades.get_mut(player.ent).unwrap().unused += 1;
-			
+
 			data.upgrade_channel.single_write(UpgradePickupEvent {
 				pos: upgrade.pos,
 				upgrade: upgrade.ent,
-				player: player.ent
+				player: player.ent,
 			})
 		}
 	}
