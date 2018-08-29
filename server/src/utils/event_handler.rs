@@ -8,14 +8,14 @@ use dispatch::{SystemInfo, SystemParent};
 use utils::maybe_init::MaybeInit;
 
 pub trait EventHandler<'a> {
-	type SystemData: SystemData<'a>;
+	type SystemData: SystemData<'a> + Clone;
 	type Event: 'static;
 
 	fn setup(&mut self, res: &mut Resources) {
 		Self::SystemData::setup(res);
 	}
 
-	fn on_event(&mut self, evt: &Self::Event);
+	fn on_event(&mut self, evt: &Self::Event, data: Self::SystemData);
 }
 
 pub struct EventHandlerWrapper<'a, T>
@@ -43,7 +43,7 @@ where
 
 	fn run(&mut self, data: Self::SystemData) {
 		for evt in data.0.read(&mut self.reader) {
-			self.handler.on_event(evt);
+			self.handler.on_event(evt, data.1.clone());
 		}
 	}
 }
