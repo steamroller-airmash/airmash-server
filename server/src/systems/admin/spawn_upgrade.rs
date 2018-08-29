@@ -20,8 +20,6 @@ pub struct SpawnUpgradeData<'a> {
 	channel: Read<'a, OnCommand>,
 }
 
-
-
 impl<'a> System<'a> for SpawnUpgrade {
 	type SystemData = SpawnUpgradeData<'a>;
 

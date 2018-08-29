@@ -3,12 +3,12 @@ use specs::*;
 use std::any::Any;
 use std::time::Instant;
 
-use protocol::FlagCode;
 use protocol::client::*;
+use protocol::FlagCode;
 use types::collision::Collision;
+pub use types::event::{ConnectionClose, ConnectionOpen, Message};
 use types::*;
 pub use utils::timer::TimerEventType;
-pub use types::event::{ConnectionOpen, ConnectionClose, Message};
 
 pub type BinaryEvent = Message;
 pub type LoginEvent = (ConnectionId, Login);
@@ -17,11 +17,11 @@ pub type CommandEvent = (ConnectionId, Command);
 pub type HorizonEvent = (ConnectionId, Horizon);
 pub type KeyEvent = (ConnectionId, Key);
 pub type PongEvent = (ConnectionId, Pong);
-//pub type ChatEvent = (ConnectionId, Chat);
+pub type ChatEvent = (ConnectionId, Chat);
 pub type SayEvent = (ConnectionId, Say);
 pub type TeamChatEvent = (ConnectionId, TeamChat);
 pub type WhisperEvent = (ConnectionId, Whisper);
-pub type VoteMuteEvent = (ConnectionId, VoteMute);
+pub type VotemuteEvent = (ConnectionId, VoteMute);
 pub type LocalPingEvent = (ConnectionId, LocalPing);
 
 #[derive(Copy, Clone, Debug, Default, Component)]
