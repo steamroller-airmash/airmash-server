@@ -28,7 +28,7 @@ pub type OnVotemute = EventChannel<(ConnectionId, VoteMute)>;
 pub type OnLocalPing = EventChannel<(ConnectionId, LocalPing)>;
 pub type OnScoreDetailed = EventChannel<ScoreDetailedEvent>;
 pub type OnAck = EventChannel<AckEvent>;
-pub type OnChatEvent = EventChannel<ChatEvent>;
+pub type OnAnyChatEvent = EventChannel<AnyChatEvent>;
 
 // In-game events
 pub type OnPlayerJoin = EventChannel<PlayerJoin>;
@@ -42,7 +42,11 @@ pub type OnPlayerRepel = EventChannel<PlayerRepel>;
 pub type OnPlayerMuted = EventChannel<PlayerMute>;
 pub type OnPlayerThrottled = EventChannel<PlayerThrottle>;
 pub type OnPlayerHit = EventChannel<PlayerHit>;
+
+// Upgrade Events
+pub type OnUpgradeSpawn = EventChannel<UpgradeSpawnEvent>;
 pub type OnUpgradePickup = EventChannel<UpgradePickupEvent>;
+pub type OnUpgradeDespawn = EventChannel<UpgradeDespawnEvent>;
 
 // Collision events
 pub type OnPlayerTerrainCollision = EventChannel<PlayerTerrainCollision>;
@@ -72,7 +76,7 @@ pub type OnVotemuteReader = ReaderId<(ConnectionId, VoteMute)>;
 pub type OnLocalPingReader = ReaderId<(ConnectionId, LocalPing)>;
 pub type OnScoreDetailedReader = ReaderId<ScoreDetailedEvent>;
 pub type OnAckReader = ReaderId<AckEvent>;
-pub type OnChatEventReader = ReaderId<ChatEvent>;
+pub type OnChatEventReader = ReaderId<AnyChatEvent>;
 
 // In-game events
 pub type OnPlayerJoinReader = ReaderId<PlayerJoin>;
@@ -86,6 +90,8 @@ pub type OnPlayerRepelReader = ReaderId<PlayerRepel>;
 pub type OnPlayerMutedReader = ReaderId<PlayerMute>;
 pub type OnPlayerThrottledReader = ReaderId<PlayerThrottle>;
 pub type OnPlayerHitReader = ReaderId<PlayerHit>;
+
+// Upgrade Events
 pub type OnUpgradePickupReader = ReaderId<UpgradePickupEvent>;
 
 // Collision events

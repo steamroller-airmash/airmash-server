@@ -7,6 +7,7 @@ mod register;
 mod run_futures;
 mod timer_handler;
 
+pub mod admin;
 pub mod collision;
 pub mod handlers;
 pub mod limiting;
@@ -15,7 +16,6 @@ pub mod notify;
 pub mod specials;
 pub mod spectate;
 pub mod upgrades;
-pub mod admin;
 
 pub use self::energy_regen::EnergyRegenSystem;
 pub use self::health_regen::HealthRegenSystem;

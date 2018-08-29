@@ -18,7 +18,7 @@ pub struct LimitChat {
 
 #[derive(SystemData)]
 pub struct LimitChatData<'a> {
-	channel: Read<'a, OnChatEvent>,
+	channel: Read<'a, OnAnyChatEvent>,
 	conns: Read<'a, Connections>,
 
 	throttle: WriteStorage<'a, ChatThrottleLimiter>,
@@ -39,7 +39,7 @@ impl<'a> System<'a> for LimitChat {
 	fn setup(&mut self, res: &mut Resources) {
 		Self::SystemData::setup(res);
 
-		self.reader = Some(res.fetch_mut::<OnChatEvent>().register_reader());
+		self.reader = Some(res.fetch_mut::<OnAnyChatEvent>().register_reader());
 	}
 
 	fn run(&mut self, mut data: Self::SystemData) {

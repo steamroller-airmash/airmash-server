@@ -1,3 +1,6 @@
+
+#![allow(dead_code)]
+
 use std::convert::*;
 use std::ops::{Deref, DerefMut};
 
