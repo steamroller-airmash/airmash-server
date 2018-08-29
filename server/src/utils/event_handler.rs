@@ -4,8 +4,7 @@ use specs::*;
 
 use std::any::Any;
 
-use SystemInfo;
-
+use dispatch::{SystemInfo, SystemParent};
 use utils::maybe_init::MaybeInit;
 
 pub trait EventHandler<'a> {
@@ -70,4 +69,12 @@ where
 			handler: T::new_args(args),
 		}
 	}
+}
+
+impl<'a, T> SystemParent for EventHandlerWrapper<'a, T>
+where
+	T: for<'c> System<'c> + EventHandler<'a> + Send + SystemInfo,
+	T::Event: Send + Sync + 'static,
+{
+	type Inner = T;
 }
