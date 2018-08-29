@@ -4,6 +4,7 @@ use std::any::Any;
 
 use dispatch::sysbuilder::*;
 use dispatch::sysinfo::*;
+use dispatch::sysparent::*;
 use dispatch::syswrapper::*;
 
 pub struct Builder<'a, 'b> {
@@ -24,10 +25,18 @@ impl<'a, 'b> Builder<'a, 'b> {
 	/// [`SystemInfo`] trait.
 	pub fn with<T>(self) -> Self
 	where
+		T: SystemParent,
+		T::Inner: for<'c> System<'c> + Send + SystemInfo + 'a,
+		<T::Inner as SystemInfo>::Dependencies: SystemDeps,
+	{
+		self.with_internal::<T::Inner>()
+	}
+	fn with_internal<T>(self) -> Self
+	where
 		T: for<'c> System<'c> + Send + SystemInfo + 'a,
 		T::Dependencies: SystemDeps,
 	{
-		self.with_args::<T, ()>(())
+		self.with_args_internal::<T, ()>(())
 	}
 
 	/// Add a new system to be scheduled with a specified
@@ -37,6 +46,15 @@ impl<'a, 'b> Builder<'a, 'b> {
 	/// determined from its implementation of the
 	/// [`SystemInfo`] trait.
 	pub fn with_args<T, U: Any>(self, args: U) -> Self
+	where
+		T: SystemParent,
+		T::Inner: for<'c> System<'c> + Send + SystemInfo + 'a,
+		<T::Inner as SystemInfo>::Dependencies: SystemDeps,
+	{
+		self.with_args_internal::<T::Inner, U>(args)
+	}
+
+	fn with_args_internal<T, U: Any>(self, args: U) -> Self
 	where
 		T: for<'c> System<'c> + Send + SystemInfo + 'a,
 		T::Dependencies: SystemDeps,
