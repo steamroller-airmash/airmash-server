@@ -2,5 +2,6 @@
 //! don't really belong anywhere specific.
 //! (not a system, handler, component, or type)
 
+pub mod event_handler;
 pub mod maybe_init;
 pub mod timer;
