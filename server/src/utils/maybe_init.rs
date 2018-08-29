@@ -1,7 +1,7 @@
 use std::convert::*;
 use std::ops::{Deref, DerefMut};
 
-#[derive(Copy, Clone, Debug, Hash, Eq, PartialEq, Default)]
+#[derive(Copy, Clone, Debug, Hash, Eq, PartialEq)]
 pub struct MaybeInit<T>(Option<T>);
 
 impl<T> MaybeInit<T> {
@@ -76,5 +76,11 @@ impl<T> AsRef<T> for MaybeInit<T> {
 impl<T> AsMut<T> for MaybeInit<T> {
 	fn as_mut(&mut self) -> &mut T {
 		self.deref_mut()
+	}
+}
+
+impl<T> Default for MaybeInit<T> {
+	fn default() -> Self {
+		Self::uninit()
 	}
 }
