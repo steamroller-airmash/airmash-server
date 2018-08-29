@@ -1,3 +1,4 @@
+use std::convert::From;
 use std::sync::atomic::{AtomicUsize, Ordering, ATOMIC_USIZE_INIT};
 use std::time::Duration;
 
@@ -79,6 +80,13 @@ pub mod detail {
 			Self::new(T::default())
 		}
 	}
+
+	impl<T, U> From<T> for AirmashUnits<T, U> {
+		fn from(v: T) -> Self {
+			Self::new(v)
+		}
+	}
+
 }
 
 pub type Distance = detail::Distance<BaseType>;

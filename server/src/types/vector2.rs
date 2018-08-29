@@ -19,8 +19,14 @@ pub struct Vector2<T> {
 }
 
 impl<T> Vector2<T> {
-	pub fn new(x: T, y: T) -> Self {
-		Self { x, y }
+	pub fn new<X>(x: X, y: X) -> Self
+	where
+		X: Into<T>,
+	{
+		Self {
+			x: x.into(),
+			y: y.into(),
+		}
 	}
 
 	pub fn dot<U>(self, rhs: Vector2<U>) -> <<T as Mul<U>>::Output as Add>::Output

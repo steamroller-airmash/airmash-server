@@ -77,7 +77,7 @@ impl<'a> FireMissiles<'a> {
 				// Rotate starting angle 90 degrees so that
 				// it's inline with the plane. Change this
 				// and missiles will shoot sideways
-				let dir = Vector2::new(rot.sin(), -rot.cos());
+				let dir = Vector2::<f32>::new(rot.sin(), -rot.cos());
 
 				let vel = dir * (missile.base_speed + speed * missile.speed_factor) * upg_factor;
 

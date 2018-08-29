@@ -1,4 +1,4 @@
-#![feature(optin_builtin_traits)]
+#![feature(optin_builtin_traits, specialization)]
 
 // Crates with macros
 #[macro_use]

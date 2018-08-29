@@ -4,35 +4,39 @@ use specs::*;
 
 use std::any::Any;
 
-use dispatch::{SystemInfo, SystemParent};
+use dispatch::SystemInfo;
 use utils::maybe_init::MaybeInit;
 
-pub trait EventHandler<'a> {
-	type SystemData: SystemData<'a> + Clone;
-	type Event: 'static;
+pub trait EventHandlerTypeProvider {
+	type Event: Send + Sync + 'static;
+}
+
+pub trait EventHandler<'a>: EventHandlerTypeProvider + Send {
+	type SystemData: SystemData<'a>;
 
 	fn setup(&mut self, res: &mut Resources) {
 		Self::SystemData::setup(res);
 	}
 
-	fn on_event(&mut self, evt: &Self::Event, data: Self::SystemData);
+	fn on_event(&mut self, evt: &Self::Event, data: &mut Self::SystemData);
 }
 
-pub struct EventHandlerWrapper<'a, T>
+pub struct EventHandlerWrapper<T>
 where
-	T: EventHandler<'a>,
-	T::Event: Sync + Send,
+	T: EventHandlerTypeProvider,
 {
 	reader: MaybeInit<ReaderId<T::Event>>,
 	handler: T,
 }
 
-impl<'a, T> System<'a> for EventHandlerWrapper<'a, T>
+impl<'a, T> System<'a> for EventHandlerWrapper<T>
 where
-	T: EventHandler<'a>,
-	T::Event: Sync + Send,
+	T: EventHandler<'a> + EventHandlerTypeProvider,
 {
-	type SystemData = (Read<'a, EventChannel<T::Event>>, T::SystemData);
+	type SystemData = (
+		Read<'a, EventChannel<T::Event>>,
+		<T as EventHandler<'a>>::SystemData,
+	);
 
 	fn setup(&mut self, res: &mut Resources) {
 		Read::<EventChannel<T::Event>>::setup(res);
@@ -41,17 +45,16 @@ where
 		self.reader = MaybeInit::new(res.fetch_mut::<EventChannel<T::Event>>().register_reader());
 	}
 
-	fn run(&mut self, data: Self::SystemData) {
+	fn run(&mut self, mut data: Self::SystemData) {
 		for evt in data.0.read(&mut self.reader) {
-			self.handler.on_event(evt, data.1.clone());
+			self.handler.on_event(evt, &mut data.1);
 		}
 	}
 }
 
-impl<'a, T> SystemInfo for EventHandlerWrapper<'a, T>
+impl<T> SystemInfo for EventHandlerWrapper<T>
 where
-	T: SystemInfo + EventHandler<'a>,
-	T::Event: Send + Sync + 'static,
+	T: SystemInfo + EventHandlerTypeProvider,
 {
 	type Dependencies = T::Dependencies;
 
@@ -69,12 +72,4 @@ where
 			handler: T::new_args(args),
 		}
 	}
-}
-
-impl<'a, T> SystemParent for EventHandlerWrapper<'a, T>
-where
-	T: for<'c> System<'c> + EventHandler<'a> + Send + SystemInfo,
-	T::Event: Send + Sync + 'static,
-{
-	type Inner = T;
 }

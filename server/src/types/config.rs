@@ -80,6 +80,7 @@ pub struct Config {
 	pub planes: PlaneInfos,
 	pub mobs: MobInfos,
 	pub upgrades: UpgradeInfos,
+	pub admin_enabled: bool,
 }
 
 impl Index<Plane> for PlaneInfos {

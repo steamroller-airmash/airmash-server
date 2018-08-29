@@ -122,7 +122,7 @@ impl PositionUpdate {
 
 				if let Some(angle) = movement_angle {
 					let mult = info.accel_factor * delta * boost_factor;
-					*vel += Vector2::new(mult * angle.sin(), mult * -angle.cos());
+					*vel += Velocity::new(mult * angle.sin(), mult * -angle.cos());
 				}
 
 				let oldspeed = *vel;
