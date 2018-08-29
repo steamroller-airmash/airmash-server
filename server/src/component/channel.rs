@@ -1,9 +1,7 @@
 use shrev::*;
 
 use component::event::*;
-use protocol::client::*;
-use types::event::{ConnectionClose, ConnectionOpen, Message};
-use types::ConnectionId;
+use types::event::{ConnectionClose, ConnectionOpen};
 
 // Connection Events
 pub type OnOpen = EventChannel<ConnectionOpen>;
