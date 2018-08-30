@@ -3,6 +3,8 @@ use std::ops::*;
 use dimensioned::Sqrt;
 use specs::*;
 
+use serde::{Deserialize, Deserializer, Serialize, Serializer};
+
 /// Required trait to allow specialized impls for self
 /// TODO: Use specialization instead?
 #[doc(hidden)]
@@ -181,4 +183,29 @@ where
 
 impl<T: 'static + Send + Sync> Component for Vector2<T> {
 	type Storage = VecStorage<Vector2<T>>;
+}
+
+impl<T> Serialize for Vector2<T>
+where
+	T: Serialize + Clone,
+{
+	fn serialize<S>(&self, s: S) -> Result<S::Ok, S::Error>
+	where
+		S: Serializer,
+	{
+		(self.x.clone(), self.y.clone()).serialize(s)
+	}
+}
+
+impl<'de, T> Deserialize<'de> for Vector2<T>
+where
+	T: Deserialize<'de>,
+{
+	fn deserialize<D>(de: D) -> Result<Self, D::Error>
+	where
+		D: Deserializer<'de>,
+	{
+		let (x, y) = <(T, T)>::deserialize(de)?;
+		Ok(Self { x, y })
+	}
 }

@@ -36,9 +36,6 @@ pub struct PlaneInfo {
 	pub missile_type: Mob,
 	// Offset of missile (in the Y dir) when fired
 	pub missile_offset: Distance,
-	// Collisions
-	//#[deprecated]
-	//pub hit_circles: Vec<HitCircle>,
 }
 
 #[derive(Copy, Clone, Debug, Default)]

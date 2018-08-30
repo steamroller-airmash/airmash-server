@@ -13,6 +13,7 @@ pub type BaseType = f32;
 pub mod detail {
 	use types::BaseType;
 
+	use serde::{Deserialize, Deserializer, Serialize, Serializer};
 	use specs::{Component, VecStorage};
 
 	make_units! {
@@ -87,6 +88,29 @@ pub mod detail {
 		}
 	}
 
+	impl<T, U> Serialize for AirmashUnits<T, U>
+	where
+		T: Serialize,
+	{
+		fn serialize<S>(&self, ser: S) -> Result<S::Ok, S::Error>
+		where
+			S: Serializer,
+		{
+			self.value_unsafe.serialize(ser)
+		}
+	}
+
+	impl<'de, T, U> Deserialize<'de> for AirmashUnits<T, U>
+	where
+		T: Deserialize<'de>,
+	{
+		fn deserialize<D>(de: D) -> Result<Self, D::Error>
+		where
+			D: Deserializer<'de>,
+		{
+			Ok(T::deserialize(de)?.into())
+		}
+	}
 }
 
 pub type Distance = detail::Distance<BaseType>;

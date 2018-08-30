@@ -1,4 +1,4 @@
-#![feature(optin_builtin_traits, specialization)]
+#![feature(optin_builtin_traits)]
 
 // Crates with macros
 #[macro_use]
@@ -11,8 +11,6 @@ extern crate specs_derive;
 extern crate shred_derive;
 #[macro_use]
 extern crate lazy_static;
-#[cfg_attr(feature = "serde", macro_use)]
-#[cfg(feature = "serde")]
 extern crate serde;
 
 // Regular Dependencies
