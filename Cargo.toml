@@ -12,5 +12,6 @@ members = [
 	"ffa",
 	"specgen",
 	"bounded-queue",
-	"special-map"
+	"special-map",
+	"protocol-v5"
 ]
