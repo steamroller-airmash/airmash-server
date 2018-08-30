@@ -7,3 +7,6 @@ publish = false
 repository = 'https://github.com/steamroller-airmash/airmash-server'
 
 [dependencies]
+
+[build-dependencies]
+specgen = { path="../specgen" }
