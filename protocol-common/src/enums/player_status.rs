@@ -6,6 +6,6 @@
 /// - [`PlayerNew`]
 #[derive(Copy, Clone, Debug, Hash, Eq, PartialEq, Serialize, Deserialize)]
 pub enum PlayerStatus {
-    Alive = 0,
-    Dead = 1,
+	Alive = 0,
+	Dead = 1,
 }

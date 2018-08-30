@@ -7,6 +7,6 @@
 /// relying upon them.
 #[derive(Copy, Clone, Debug, Hash, Eq, PartialEq, Serialize, Deserialize)]
 pub enum LeaveHorizonType {
-    Player = 0,
-    Mob = 1,
+	Player = 0,
+	Mob = 1,
 }

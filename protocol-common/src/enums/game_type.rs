@@ -13,7 +13,7 @@
 /// - TODO
 #[derive(Copy, Clone, Debug, Hash, Eq, PartialEq, Serialize, Deserialize)]
 pub enum GameType {
-    FFA = 1,
-    CTF = 2,
-    BTR = 3,
+	FFA = 1,
+	CTF = 2,
+	BTR = 3,
 }

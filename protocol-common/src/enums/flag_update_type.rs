@@ -13,6 +13,6 @@
 /// looking to see if anything turns up here.
 #[derive(Copy, Clone, Debug, Hash, Eq, PartialEq, Serialize, Deserialize)]
 pub enum FlagUpdateType {
-    Position = 1,
-    Carrier = 2,
+	Position = 1,
+	Carrier = 2,
 }
