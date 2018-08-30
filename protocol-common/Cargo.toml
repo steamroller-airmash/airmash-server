@@ -8,3 +8,5 @@ publish = false
 [dependencies]
 specs = "*"
 serde = { version = "*", features = ["derive"] }
+lazy_static = "*"
+fnv = "*"

@@ -1,3 +1,5 @@
+use std::convert::TryFrom;
+
 /// All player flags currently available within
 /// the game.
 #[derive(Copy, Clone, Debug, Hash, Eq, PartialEq, Serialize, Deserialize)]
@@ -127,4 +129,26 @@ pub enum FlagCode {
     HongKong = 123,
     CzechRepublic = 124,
     Bulgaria = 125,
+}
+
+impl<'a> TryFrom<&'a str> for FlagCode {
+    type Error = ();
+
+    fn try_from(s: &'a str) -> Result<Self, ()> {
+        Self::try_from(s.to_owned())
+    }
+}
+
+impl TryFrom<String> for FlagCode {
+    type Error = ();
+
+    fn try_from(s: String) -> Result<Self, ()> {
+        use consts::flags::STR_TO_FLAG;
+        let ref_str: &str = &s.to_uppercase();
+
+        match STR_TO_FLAG.get(ref_str) {
+            Some(&f) => Ok(f),
+            None => Err(()),
+        }
+    }
 }
