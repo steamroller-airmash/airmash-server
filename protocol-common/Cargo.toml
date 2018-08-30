@@ -1,0 +1,10 @@
+[package]
+name = "protocol-common"
+version = "0.0.1"
+authors = ["STEAMROLLER"]
+publish = false
+
+
+[dependencies]
+specs = "*"
+serde = { version = "*", features = ["derive"] }
