@@ -1,6 +1,6 @@
 [package]
 name = "protocol-v5"
-version = "0.1.0"
-authors = ["steamroller-airmash <38710707+steamroller-airmash@users.noreply.github.com>"]
+version = "0.0.1"
+authors = ["STEAMROLLER"]
 
 [dependencies]

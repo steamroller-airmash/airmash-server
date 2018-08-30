@@ -1,0 +1,964 @@
+
+# External entities
+
+enum PlayerStatus : u8 {
+	Alive = 0,
+	Dead = 1
+}
+
+enum PlaneType : u8 {
+	Predator = 1,
+	Goliath = 2,
+	Mohawk = 3,
+	Tornado = 4,
+	Prowler = 5
+}
+
+enum KeyCode : u8 {
+	Up = 1,
+	Down = 2,
+	Left = 3,
+	Right = 4,
+	Fire = 5,
+	Special = 6
+}
+
+enum MobType : u8 {
+	PredatorMissile = 1,
+	GoliathMissile = 2,
+	MohawkMissile = 3,
+	Upgrade = 4,
+	TornadoSingleMissile = 5,
+	TornadoTripleMissile = 6,
+	ProwlerMissile = 7,
+	Shield = 8,
+	Inferno = 9
+}
+
+enum GameType : u8 {
+	FFA = 1,
+	CTF = 2,
+	BTR = 3
+}
+
+# TODO: reverse-eng this
+enum CommandReplyType : u8 {
+
+}
+
+# TODO: rev-eng or determine if just plane type
+enum UpgradeType : u8 {
+
+}
+
+# TODO: rev-eng
+enum PowerupType : u8 {
+
+}
+
+# TODO: rev-eng
+enum FlagUpdateType : u8 {
+	Position = 1,
+	Carrier = 2
+}
+
+# TODO: rev-eng
+enum FirewallUpdateType : u8 {
+
+}
+
+# TODO: rev-eng
+enum FirewallStatus : u8 {
+
+}
+
+# TODO: rev-eng
+# NOTE: The current values are not certain
+# and should be verified before using them
+enum LeaveHorizonType : u8 {
+	Player = 0,
+	Mob = 1
+}
+
+# All possible errors that can be sent to the client
+enum ErrorType : u8 {
+	DisconnectedForPacketFlooding = 1,
+	BannedForPacketFlooding = 2,
+	Banned = 3,
+	IdleRequiredBeforeRespawn = 5,
+	AfkTimeout = 6,
+	Kicked = 7,
+	InvalidLogin = 8,
+	IncorrectProtocolLevel = 9,
+	AccountBanned = 10,
+	AccountAlreadyLoggedIn = 11,
+	NoRespawnInBTR = 12,
+	IdleRequiredBeforeSpectate = 13,
+	NotEnoughUpgrades = 20,
+	ChatThrottled = 30,
+	FlagChangeThrottled = 31,
+	UnknownCommand = 100
+}
+
+# TODO: rev-eng
+enum ServerCustomType : u8 {
+	# Not sure if this is the right description
+	CTFWin = 2,
+}
+
+# TODO: rev-eng
+enum ServerMessageType : u8 {
+	TimeToGameStart = 1,
+	# Not sure if this is right
+	Flag = 2,
+	# This doesn't have an equivalent in the offical server AFAIK
+	Shutdown = 15,
+	# New type, doesn't have an equivalent within the server
+	# used by this server for banner messages on player join.
+	Banner = 16,
+}
+
+enum PlayerLevelType : u8 {
+	Login = 0,
+	LevelUp = 1
+}
+
+enum FlagCode : u16 {
+	SyrianArabRepublic = 1,
+	Thailand = 2,
+	Turkmenistan = 3,
+	Tunisia = 4,
+	Turkey = 5,
+	TrinidadandTobago = 6,
+	Taiwan = 7,
+	Tanzania = 8,
+	Ukraine = 9,
+	UnitedNations = 10,
+	UnitedStates = 11,
+	Uruguay = 12,
+	Uzbekistan = 13,
+	Venezuela = 14,
+	VietNam = 15,
+	PuertoRico = 16,
+	Portugal = 17,
+	Paraguay = 18,
+	Qatar = 19,
+	Rainbow = 20,
+	Romania = 21,
+	Serbia = 22,
+	RussianFederation = 23,
+	SaudiArabia = 24,
+	Sweden = 25,
+	Singapore = 26,
+	Slovenia = 27,
+	Slovakia = 28,
+	SanMarino = 29,
+	Macedonia = 30,
+	Macao = 31,
+	Malta = 32,
+	Mexico = 33,
+	Malaysia = 34,
+	Nigeria = 35,
+	Netherlands = 36,
+	Norway = 37,
+	Nepal = 38,
+	NewZealand = 39,
+	Oman = 40,
+	Panama = 41,
+	Peru = 42,
+	Japan = 43,
+	DPRK = 44,
+	SouthKorea = 45,
+	Kuwait = 46,
+	Kazakhstan = 47,
+	Lebanon = 48,
+	Liechtenstein = 49,
+	SriLanka = 50,
+	Lithuania = 51,
+	Luxembourg = 52,
+	Latvia = 53,
+	Honduras = 54,
+	Croatia = 55,
+	Hungary = 56,
+	Indonesia = 57,
+	Ireland = 58,
+	Israel = 59,
+	IsleofMan = 60,
+	ImperialJapan = 61,
+	India = 62,
+	Iraq = 63,
+	Germany = 64,
+	Denmark = 65,
+	DominicanRepublic = 66,
+	Algeria = 67,
+	Ecuador = 68,
+	Estonia = 69,
+	Egypt = 70,
+	Spain = 71,
+	EuropeanUnion = 72,
+	Bahrain = 73,
+	Bolivia = 74,
+	Brazil = 75,
+	Bhutan = 76,
+	Belarus = 77,
+	Canada = 78,
+	Switzerland = 79,
+	Andorra = 80,
+	UnitedArabEmirates = 81,
+	Albania = 82,
+	Armenia = 83,
+	Chile = 84,
+	Antarctica = 85,
+	China = 86,
+	Argentina = 87,
+	Finland = 88,
+	Colombia = 89,
+	Austria = 90,
+	Iran = 91,
+	France = 92,
+	Communist = 93,
+	Australia = 94,
+	LibyanArabJamahiriya = 95,
+	Iceland = 96,
+	UnitedKingdom = 97,
+	Confederate = 98,
+	Azerbaijan = 99,
+	Morocco = 100,
+	Italy = 101,
+	Georgia = 102,
+	CostaRica = 103,
+	BosniaAndHerzegovina = 104,
+	Philippines = 105,
+	Monaco = 106,
+	Jamaica = 107,
+	Greece = 108,
+	Cuba = 109,
+	Bangladesh = 110,
+	Somalia = 111,
+	Pakistan = 112,
+	Moldova = 113,
+	Jordan = 114,
+	Guatemala = 115,
+	Cyprus = 116,
+	Belgium = 117,
+	SouthAfrica = 118,
+	ElSalvador = 119,
+	Poland = 120,
+	Montenegro = 121,
+	JollyRogers = 122,
+	HongKong = 123,
+	CzechRepublic = 124,
+	Bulgaria = 125
+}
+
+
+
+spec server {
+	# Initial data passed in for a 
+	# player when the server starts.
+	# 
+	# This is an element of the `players`
+	# array within the 
+	# [`Login`](struct.login.html)
+	# packet.
+	LoginPlayer {
+		id:       Entity,
+		status:   PlayerStatus,
+		level:    Level,
+		name:     Text,
+		type:     PlaneType,
+		team:     Team,
+		pos:      Position,
+		rot:      Rotation,
+		flag:     FlagCode,
+		upgrades: Upgrades
+	}
+
+	# Initial login packet sent to the server
+	Login {
+		success: bool,
+		id:      Entity,
+		team:    Team,
+		clock:   u32,
+		token:   Text,
+		type:    GameType,
+		room:    Text,
+		players: Array[LoginPlayer]
+	}
+
+	# A ping request by the server. 
+  # 
+  # All clients must respond with a
+  # [`Pong`](../client/struct.pong.html)
+  # with `num` set to the same value
+  # as this packet. If a client does
+  # not do this, the client will be
+  # disconnected by the server.
+	Ping {
+		clock: u32,
+		num:   u32
+	}
+
+	# Resulting ping data sent back from 
+	# the server.
+	PingResult {
+		ping: u16,
+		players_total: u32,
+		players_game:  u32
+	}
+
+	# Reply to a
+  # [`Command`](client/struct.command.html).
+	CommandReply {
+		type: CommandReplyType,
+		text: TextBig 
+	}
+
+	# Data for a newly arrived player.
+	PlayerNew {
+		id:       Entity,
+		status:   PlayerStatus,
+		name:     Text,
+		type:     PlaneType,
+		team:     Team,
+		pos:      Position,
+		rot:      Rotation,
+		flag:     FlagCode,
+		upgrades: Upgrades
+	}
+
+	# Packet sent whan a player leaves the room.
+	PlayerLeave {
+		id: Entity
+	}
+
+	# Movement update for a player
+	PlayerUpdate {
+		clock:    u32,
+		id:       Entity,
+		keystate: ServerKeyState,
+		upgrades: Upgrades,
+		pos:      Position24,
+		rot:      Rotation,
+		speed:    Velocity
+	}
+
+	# Data on a projectile fired by a plane.
+	# 
+	# This is data for the `projectiles`
+	# array of a 
+	# [`PlayerFire`](struct.playerfire.html)
+	# packet.
+	PlayerFireProjectile {
+		id:        Entity,
+		type:      MobType,
+		pos:       Position,
+		speed:     Velocity,
+		accel:     Accel,
+		max_speed: Speed
+	}
+
+	# Packet for when a player fires missiles
+	PlayerFire {
+		clock:  u32,
+		id:     Entity,
+		energy: Energy,
+		energy_regen: EnergyRegen,
+		projectiles:  ArraySmall[PlayerFireProjectile]
+	}
+
+	# Event indicating that a player respawned
+	PlayerRespawn {
+		id:       Entity,
+		pos:      Position24,
+		rot:      Rotation,
+		upgrades: Upgrades
+	}
+
+	# Event indicating the a player has 
+  # changed their flag.
+	PlayerFlag {
+		id:   Entity,
+		flag: FlagCode
+	}
+
+	# Assign a level to a player
+	PlayerLevel {
+		id:    Entity,
+		type:  PlayerLevelType,
+		level: Level
+	}
+
+  # Data on a player that has been
+  # hit by a shot fired by another 
+  # player.
+	PlayerHitPlayer {
+		id:     Entity,
+		health: Health,
+		health_regen: HealthRegen
+	}
+
+	# Event for when players have been
+  # hit by a projectile.
+	PlayerHit {
+		id:    Entity,
+		type:  MobType,
+		pos:   Position,
+		owner: Entity,
+		players: ArraySmall[PlayerHitPlayer]
+	}
+
+	# A player has been killed
+	PlayerKill {
+		id:     Entity,
+		killer: Option[Entity],
+		pos:    Position
+	}
+
+	# A player has upgraded themselves
+	PlayerUpgrade {
+		upgrades: Upgrades,
+		# Is this actually PlaneType?
+		type:     UpgradeType,
+		speed:    u8,
+		defense:  u8,
+		energy:   u8,
+		missile:  u8
+	}
+
+	# A player has switched planes
+	PlayerType {
+		id:   Entity,
+		type: PlaneType
+	}
+
+	# A player picked up a powerup
+	PlayerPowerup {
+		type:     PowerupType,
+		# Maybe make this a Duration?
+		duration: u32
+	}
+
+	# Info about a player that has changed teams
+	PlayerReteamPlayer {
+		id:   Entity,
+		team: Team
+	}
+
+	# Players have changed teams
+	PlayerReteam {
+		# List of players that have changed
+		# teams. Note that this does not 
+		# include players that have remained
+		# on the same team.
+		players: Array[PlayerReteamPlayer]
+	}
+
+	# Update position of a flag in CTF
+	GameFlag {
+		type: FlagUpdateType,
+		flag: Flag,
+		id:   Option[Entity],
+		pos:  Position24,
+		# Team scores
+		blueteam: u8,
+		redteam: u8
+	}
+
+	# A different player is now being spectated
+	GameSpectate {
+		id: Entity
+	}
+
+	# Info on number of players currently alive
+	GamePlayersAlive {
+		# Number of players currently alive
+		players: u16
+	}
+
+	# Update of the "Ring of Fire" in BTR
+	GameFirewall {
+		type:   FirewallUpdateType,
+		status: FirewallStatus,
+		pos:    Position,
+		radius: f32,
+		speed:  f32
+	}
+
+	# A player has been repelled by a goliath special
+	EventRepelPlayer {
+		id:       Entity,
+		keystate: ServerKeyState,
+		pos:      Position,
+		rot:      Rotation,
+		speed:    Velocity,
+		energy:   Energy,
+		energy_regen: EnergyRegen,
+		health:   Health,
+		health_regen: HealthRegen	
+	}
+
+	# A projectile has been repelled by a goliath special
+	EventRepelMob {
+		id:        Entity,
+		type:      MobType,
+		pos:       Position,
+		speed:     Velocity,
+		accel:     Accel,
+		max_speed: Speed
+	}
+
+	# Event triggered when something
+ 	# (players or projectiles) is deflected
+  # by a goliath repel.
+	EventRepel {
+		clock:  u32,
+		id:     Entity,
+		pos:    Position,
+		rot:    Rotation,
+		speed:  Velocity,
+		energy: Energy,
+		energy_regen: EnergyRegen,
+		players: ArraySmall[EventRepelPlayer],
+		mobs:    ArraySmall[EventRepelMob]
+	}
+
+	# A predator has begun/stopped boosting
+	EventBoost {
+		clock: u32,
+		id:     Entity,
+		boost:  bool,
+		pos:    Position24,
+		rot:    Rotation,
+		speed:  Velocity,
+		energy: Energy,
+		energy_regen: EnergyRegen,
+	}
+
+	# A player has run into a wall
+	EventBounce {
+		clock:    u32,
+		id:       Entity,
+		keystate: ServerKeyState,
+		pos:      Position24,
+		rot:      Rotation,
+		speed:    Velocity
+	}
+
+	# A prowler has entered/exited stealth mode
+	EventStealth {
+		id:    Entity,
+		state: bool,
+		energy: Energy,
+		energy_regen: EnergyRegen
+	}
+
+	# Event for when a player goes beyond
+  # the horizon that the server will send
+  # updates for.
+  # 
+  # No more updates will be sent for planes 
+  # outside the horizon once this packet
+  # has been sent.
+	EventLeaveHorizon {
+		type: LeaveHorizonType,
+		id:   Entity
+	}
+
+	# Update of missile or powerup
+	MobUpdate {
+		clock:     u32,
+		id:        Entity,
+		type:      MobType,
+		pos:       Position,
+		speed:     Velocity,
+		accel:     Accel,
+		max_speed: Speed
+	}
+
+	# Update for powerups
+	MobUpdateStationary {
+		id:   Entity,
+		type: MobType,
+		# Why is this f32!?!
+		pos:  Position_f32
+	}
+
+	# A mob despawned
+	# This is used when a powerup despawns
+	# and when a missile despawns without
+	# hitting anything. It does not cause 
+	# an explosion to be shown at the location.
+	MobDespawn {
+		id:   Entity,
+		type: MobType
+	}
+
+	# A missile despawned with an explosion
+	# This is used when a missile 
+	# collides with a mountain to
+	# generate an explosion client-side
+	MobDespawnCoords {
+		id:   Entity,
+		type: MobType,
+		pos:  Position
+	}
+
+	# Stats for the current player
+	ScoreUpdate {
+		id:       Entity,
+		score:    Score,
+		earnings: Score,
+		# This appears to just be a count of unused upgrades
+		upgrades: u16,
+		total_kills:  u32,
+		total_deaths: u32
+	}
+
+	# Leaderboard data, part of the
+  # [`ScoreBoard`](struct.scoreboard.html)
+  # packet.
+	ScoreBoardData {
+		id:    Entity,
+		score: Score,
+		level: Level
+	}
+
+	# Low-res player positions, part of the
+  # [`ScoreBoard`](struct.scoreboard.html)
+  # packet.
+	ScoreBoardRanking {
+		id:  Entity,
+		pos: LowResPos
+	}
+
+	# Leaderboard + Global player positions
+  # 
+  # This is sent every 5 seconds by the
+  # server and is used by the client to
+  # update the leaderboard and minimap.
+	ScoreBoard {
+		data:     Array[ScoreBoardData],
+		rankings: Array[ScoreBoardRanking]
+	}
+
+	# Per-player data for detailed 
+  # (tab) menu in FFA.
+	ScoreDetailedFFAEntry {
+		id:     Entity,
+		level:  Level,
+		score:  Score,
+		kills:  u16,
+		deaths: u16,
+		damage: f32,
+		ping:   u16
+	}
+
+	# Detailed score menu (tab) data for FFA.
+	ScoreDetailedFFA {
+		scores: Array[ScoreDetailedFFAEntry]
+	}
+
+	# Per-player data for detailed (tab) menu in CTF.
+	ScoreDetailedCTFEntry {
+		id:     Entity,
+		level:  Level,
+		captures: u16,
+		score:  Score,
+		kills:  u16,
+		deaths: u16,
+		damage: f32,
+		ping:   u16
+	}
+
+	# Detailed score menu (tab) data for CTF.
+	ScoreDetailedCTF {
+		scores: Array[ScoreDetailedCTFEntry]
+	}
+
+	# Per-player data for detailed (tab) menu in BTR.
+	ScoreDetailedBTREntry {
+		id:     Entity,
+		level:  Level,
+		alive:  bool,
+		wins:   u16,
+		score:  Score,
+		kills:  u16,
+		deaths: u16,
+		damage: f32,
+		ping:   u16
+	}
+
+	ScoreDetailedBTR {
+		scores: Array[ScoreDetailedBTREntry]
+	}
+
+	# Event for when a team chat has been received
+	ChatTeam {
+		id:   Entity,
+		text: Text
+	}
+
+	# Public chat
+	ChatPublic {
+		id:   Entity,
+		text: Text
+	}
+
+	# Speech bubble
+	ChatSay {
+		id:   Entity,
+		text: Text
+	}
+
+	# A whisper happened involving the current player
+	ChatWhisper {
+		from: Entity,
+		to:   Entity,
+		text: Text
+	}
+
+	# A player has been votemuted
+	ChatVoteMutePassed {
+		id:   Entity,
+	}
+
+	# Server banner message
+	ServerMessage {
+		type: ServerMessageType,
+		duration: u32,
+		# HTML banner text
+		text: TextBig
+	}
+
+	# End of game packet for CTF and BTR.
+  # 
+  # # CTF
+  # In CTF, the data of this packet contains 
+  # a JSON string with 3 fields.
+  # 
+  # - `w`: The id of the winning team.
+  # - `b`: The bounty given to each player
+  # of the winning team.
+  # - `t`: The time (in seconds) that the
+  # banner should remain on screen before 
+  # closing (unless closed by the player).
+  # 
+  # # BTR
+  # TODO
+	ServerCustom {
+		type: ServerCustomType,
+		data: TextBig
+	}
+
+	# The client has tried to do an invalid action,
+	# has been ratelimited, or has been banned.
+	Error {
+		error: ErrorType
+	}
+}
+
+spec client {
+  # Initial packet sent to log in to
+  # the server.
+  # 
+  # This is sent to the server 
+  # when the player first joins.
+	Login {
+		# The current protocol version.
+    # Should always be 5 as of the 
+    # writing of this documentation.
+		protocol: u8,
+		# The name that the player wishes
+    # to be called on the server. The 
+    # actual name of the player given 
+    # by the server will be returned 
+    # in the [`Login`](../server/struct.login.html)
+    # packet returned by the server.
+		name: Text,
+    # A session token for the current
+    # player. This is how a player logs
+    # into the server. If the player
+    # logging in wishes to be associated 
+    # with an account, this must be
+    # set. Otherwise, `"none"` works
+    # to avoid being given an account.
+		session: Text,
+		# Theoretically should set the size
+    # of the horizon beyond which players
+    # are not sent to the server. In practice
+    # doesn't appear to do anything.
+		horizon_x: u16,
+    # Theoretically should set the size
+    # of the horizon beyond which players
+    # are not sent to the server. In practice
+    # doesn't appear to do anything.
+		horizon_y: u16,
+    # The flag of the player, it should be a 
+    # 2-letter ISO country code corresponding
+    # to the country with the desired flag.
+		# It can also be one of the special flag
+		# codes.
+		flag: Text
+	}
+
+  # Opening packet for opening a second
+  # server connection for the same client.
+  # 
+  # This packet is used to allow for 
+  # multiple websocket connections to
+  # the airmash server. To open a second 
+  # connection, open a websocket connection
+  # to the server, then send this packet
+  # as the first packet instead of sending
+  # [`Login`](struct.login.html). The server
+  # will respond to client packets sent through
+  # this channel, allowing for some reduction 
+  # in packet roundtrip times.
+	Backup {
+		token: Text
+	}
+
+  # In theory this should resize the horizon
+  # of the player. In practice the airmash
+  # server appears to ignore these packets.
+	Horizon {
+		horizon_x: u16,
+		horizon_y: u16
+	}
+
+	# Response packet to the server
+  # [`Ping`](../server/struct.ping.html)
+  # packet.
+	Pong {
+    # The ping number, should correspond 
+    # to the `num` field within in the 
+    # [`Ping`](../server/ping.html) packet
+    # sent by the server.
+		num: u32
+	}
+
+	# Send keystate of client
+	Key {
+		seq:   u32,
+		key:   KeyCode,
+		state: bool
+	}
+
+  # A free form command to be sent to the server.
+  # This is used for changing flags, respawning,
+  # spectating players, and selecting upgrades.
+  # 
+  # # Changing a flag
+  # ```
+  # # extern crate airmash_protocol;
+  # # use airmash_protocol::client::Command;
+  # # fn main() {
+  # let cmd = Command {
+  #     com: "flag".to_string(),
+  #     // Set to desired flag code,
+  #     // unknown will result in UN flag.
+  #     // Here we will set to the UN flag.
+  #     data: "XX".to_string()
+  # };
+  # 
+  # // Serialize and send to server here...
+  # # }
+  # ```
+  # 
+  # # Respawning as a plane
+  # ```
+  # # extern crate airmash_protocol;
+  # # use airmash_protocol::client::Command;
+  # # fn main() {
+  # let cmd = Command {
+  #     com: "respawn".to_string(),
+  #     // Choose the plane type here,
+  #     // each type is associated with
+  #     // an integer. Here we will pick
+  #     // predator.
+  #     data: "1".to_string()
+  # };
+  # 
+  # // Serialize and send to server here...
+  # # }
+  # ```
+  # 
+  # # Selecting Upgrades
+  # ```
+  # # extern crate airmash_protocol;
+  # # use airmash_protocol::client::Command;
+  # # fn main() {
+  # let cmd = Command {
+  #     com: "upgrade".to_string(),
+  #     // Choose upgrade type here.
+  #     // Here speed should be 1.
+  #     data: "1".to_string()
+  # };
+  # 
+  # // Serialize and send to server here...
+  # # }
+  # ```
+  # 
+  # # Going into spectate or spectating a different player
+  # ```
+  # # extern crate airmash_protocol;
+  # # use airmash_protocol::client::Command;
+  # # fn main() {
+  # let cmd = Command {
+  #     com: "spectate".to_string(),
+  #     // This can either be a player id, or
+  #     // one of -1, -2, or -3. -3 will force
+  #     // the player to go into spectate,
+  #     // -1 switches focus to the next player,
+  #     // and -2 switches focus to the previous
+  #     // player. Here we will force the player
+  #     // to go into spectate.
+  #     data: "-3".to_string()
+  # };
+  # 
+  # // Serialize and send to server here...
+  # # }
+  # 
+	Command {
+    # The command to send to the server,
+    # this can be one of `"spectate"`,
+    # `"upgrade"`, `"flag"`, or 
+    # `"respawn"`.
+		com: Text,
+    # The data associated with the command,
+    # valid values depend on the given command.
+		data: Text
+	}
+
+	# Say something in chat
+	Chat {
+		text: Text
+	}
+
+	# Send a whisper to a player
+	Whisper {
+		id:   u16,
+		text: Text
+	}
+
+	# Say a message in a chat bubble
+	Say {
+		text: Text
+	}
+
+	# Send a message to your team
+	TeamChat {
+		text: Text
+	}
+
+	# Vote to mute a player
+	VoteMute {
+		id: Entity
+	}
+
+	# What does this do?
+	LocalPing {
+		auth: u32
+	}
+}

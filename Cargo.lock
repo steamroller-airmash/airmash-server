@@ -671,7 +671,7 @@ dependencies = [
 
 [[package]]
 name = "protocol-v5"
-version = "0.1.0"
+version = "0.0.1"
 
 [[package]]
 name = "quick-error"
