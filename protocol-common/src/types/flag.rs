@@ -1,6 +1,8 @@
-/// A player ID
-#[derive(Copy, Clone, Debug, Default, Eq, PartialEq, Hash)]
-pub struct Flag(u16);
+use types::Team;
+
+/// A flag ID
+#[derive(Copy, Clone, Debug, Eq, PartialEq, Hash)]
+pub struct Flag(pub Team);
 
 wrapper_serde_decl!(Flag);
 
