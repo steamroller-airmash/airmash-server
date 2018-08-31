@@ -1,6 +1,5 @@
-
-use types::{Player, Level};
-use enums::PLayerLevelType;
+use enums::PlayerLevelType;
+use types::{Level, Player};
 
 /// Assign a level to a player. Either the player
 /// levelled up, or the server is updating their
@@ -9,7 +8,6 @@ use enums::PLayerLevelType;
 pub struct PlayerLevel {
 	pub id: Player,
 	#[serde(rename = "type")]
-	pub ty: PLayerLevelType,
-	pub level: Level
+	pub ty: PlayerLevelType,
+	pub level: Level,
 }
-
