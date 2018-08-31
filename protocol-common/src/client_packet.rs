@@ -1,4 +1,3 @@
-
 use client::*;
 
 /// All possible client packets.
@@ -17,7 +16,7 @@ use client::*;
 /// this enum.
 #[derive(Clone, Debug, Serialize, Deserialize)]
 pub enum ClientPacket {
-	Login(ClientLogin),
+	Login(Login),
 	Backup(Backup),
 	Horizon(Horizon),
 	Ack,
@@ -36,13 +35,13 @@ pub enum ClientPacket {
 macro_rules! impl_from_newtype {
 	($type:tt) => {
 		impl_from_newtype_inner!(ClientPacket, $type);
-	}
+	};
 }
 
 macro_rules! impl_from_empty {
 	($type:tt) => {
 		impl_from_empty_inner!(ClientPacket, $type);
-	}
+	};
 }
 
 impl_from_newtype!(Login);
