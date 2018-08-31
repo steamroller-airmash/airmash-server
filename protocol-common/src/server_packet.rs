@@ -58,56 +58,62 @@ pub enum ServerPacket {
 	ServerCustom(ServerCustom),
 }
 
-macro_rules! impl_from {
+macro_rules! impl_from_newtype {
 	($type:tt) => {
-		impl From<$type> for ServerPacket {
-			fn from(v: $type) -> Self {
-				ServerPacket::$type(v)
-			}
-		}
+		impl_from_newtype_inner!(ServerPacket, $type);
 	};
 }
 
-impl_from!(Login);
-impl_from!(Ping);
-impl_from!(PingResult);
-impl_from!(Error);
-impl_from!(CommandReply);
-impl_from!(PlayerNew);
-impl_from!(PlayerLeave);
-impl_from!(PlayerUpdate);
-impl_from!(PlayerFire);
-impl_from!(PlayerRespawn);
-impl_from!(PlayerFlag);
-impl_from!(PlayerHit);
-impl_from!(PlayerKill);
-impl_from!(PlayerUpgrade);
-impl_from!(PlayerType);
-impl_from!(PlayerPowerup);
-impl_from!(PlayerLevel);
-impl_from!(PlayerReteam);
-impl_from!(GameFlag);
-impl_from!(GameSpectate);
-impl_from!(GamePlayersAlive);
-impl_from!(GameFirewall);
-impl_from!(EventRepel);
-impl_from!(EventBoost);
-impl_from!(EventBounce);
-impl_from!(EventStealth);
-impl_from!(EventLeaveHorizon);
-impl_from!(MobUpdate);
-impl_from!(MobUpdateStationary);
-impl_from!(MobDespawn);
-impl_from!(MobDespawnCoords);
-impl_from!(ScoreUpdate);
-impl_from!(ScoreBoard);
-impl_from!(ScoreDetailedFFA);
-impl_from!(ScoreDetailedCTF);
-impl_from!(ScoreDetailedBTR);
-impl_from!(ChatTeam);
-impl_from!(ChatPublic);
-impl_from!(ChatSay);
-impl_from!(ChatWhisper);
-impl_from!(ChatVoteMutePassed);
-impl_from!(ServerMessage);
-impl_from!(ServerCustom);
+macro_rules! impl_from_empty {
+	($type:tt) => {
+		impl_from_empty_inner!(ServerPacket, $type);
+	};
+}
+
+impl_from_newtype!(Login);
+impl_from_newtype!(Ping);
+impl_from_newtype!(PingResult);
+impl_from_newtype!(Error);
+impl_from_newtype!(CommandReply);
+impl_from_newtype!(PlayerNew);
+impl_from_newtype!(PlayerLeave);
+impl_from_newtype!(PlayerUpdate);
+impl_from_newtype!(PlayerFire);
+impl_from_newtype!(PlayerRespawn);
+impl_from_newtype!(PlayerFlag);
+impl_from_newtype!(PlayerHit);
+impl_from_newtype!(PlayerKill);
+impl_from_newtype!(PlayerUpgrade);
+impl_from_newtype!(PlayerType);
+impl_from_newtype!(PlayerPowerup);
+impl_from_newtype!(PlayerLevel);
+impl_from_newtype!(PlayerReteam);
+impl_from_newtype!(GameFlag);
+impl_from_newtype!(GameSpectate);
+impl_from_newtype!(GamePlayersAlive);
+impl_from_newtype!(GameFirewall);
+impl_from_newtype!(EventRepel);
+impl_from_newtype!(EventBoost);
+impl_from_newtype!(EventBounce);
+impl_from_newtype!(EventStealth);
+impl_from_newtype!(EventLeaveHorizon);
+impl_from_newtype!(MobUpdate);
+impl_from_newtype!(MobUpdateStationary);
+impl_from_newtype!(MobDespawn);
+impl_from_newtype!(MobDespawnCoords);
+impl_from_newtype!(ScoreUpdate);
+impl_from_newtype!(ScoreBoard);
+impl_from_newtype!(ScoreDetailedFFA);
+impl_from_newtype!(ScoreDetailedCTF);
+impl_from_newtype!(ScoreDetailedBTR);
+impl_from_newtype!(ChatTeam);
+impl_from_newtype!(ChatPublic);
+impl_from_newtype!(ChatSay);
+impl_from_newtype!(ChatWhisper);
+impl_from_newtype!(ChatVoteMutePassed);
+impl_from_newtype!(ServerMessage);
+impl_from_newtype!(ServerCustom);
+
+impl_from_empty!(Backup);
+impl_from_empty!(Ack);
+impl_from_empty!(ChatVoteMuted);

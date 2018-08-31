@@ -32,3 +32,31 @@ pub enum ClientPacket {
 	VoteMute(VoteMute),
 	LocalPing(LocalPing),
 }
+
+macro_rules! impl_from_newtype {
+	($type:tt) => {
+		impl_from_newtype_inner!(ClientPacket, $type);
+	}
+}
+
+macro_rules! impl_from_empty {
+	($type:tt) => {
+		impl_from_empty_inner!(ClientPacket, $type);
+	}
+}
+
+impl_from_newtype!(Login);
+impl_from_newtype!(Backup);
+impl_from_newtype!(Horizon);
+impl_from_newtype!(Pong);
+impl_from_newtype!(Key);
+impl_from_newtype!(Command);
+impl_from_newtype!(Chat);
+impl_from_newtype!(TeamChat);
+impl_from_newtype!(Whisper);
+impl_from_newtype!(Say);
+impl_from_newtype!(VoteMute);
+impl_from_newtype!(LocalPing);
+
+impl_from_empty!(Ack);
+impl_from_empty!(ScoreDetailed);
