@@ -673,6 +673,7 @@ dependencies = [
 name = "protocol-common"
 version = "0.0.1"
 dependencies = [
+ "dimensioned 0.6.0 (registry+https://github.com/rust-lang/crates.io-index)",
  "fnv 1.0.6 (registry+https://github.com/rust-lang/crates.io-index)",
  "lazy_static 1.0.2 (registry+https://github.com/rust-lang/crates.io-index)",
  "serde 1.0.70 (registry+https://github.com/rust-lang/crates.io-index)",
