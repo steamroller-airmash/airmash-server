@@ -8,7 +8,8 @@ use server::*;
 /// Some packets do not contain any data
 /// and thus do not have any data within
 /// their enum variants.
-#[derive(Clone, Debug, Serialize, Deserialize)]
+#[derive(Clone, Debug)]
+#[cfg_attr(features = "serde", derive(Serialize, Deserialize))]
 pub enum ServerPacket {
 	Login(Login),
 	Backup,

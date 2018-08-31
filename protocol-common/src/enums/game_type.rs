@@ -15,7 +15,8 @@
 /// [0]: server/struct.ScoreDetailedFFA.html
 /// [1]: server/struct.ScoreDetailedCTF.html
 /// [2]: server/struct.ScoreDetailedBTR.html
-#[derive(Copy, Clone, Debug, Hash, Eq, PartialEq, Serialize, Deserialize)]
+#[derive(Copy, Clone, Debug, Hash, Eq, PartialEq)]
+#[cfg_attr(features = "serde", derive(Serialize, Deserialize))]
 pub enum GameType {
 	FFA = 1,
 	CTF = 2,

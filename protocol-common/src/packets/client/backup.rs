@@ -11,7 +11,8 @@
 /// will respond to client packets sent through
 /// this channel, allowing for some reduction
 /// in head of line blocking.
-#[derive(Clone, Debug, Serialize, Deserialize)]
+#[derive(Clone, Debug)]
+#[cfg_attr(features = "serde", derive(Serialize, Deserialize))]
 pub struct Backup {
 	pub token: String,
 }

@@ -3,7 +3,8 @@
 ///
 /// Used in:
 /// - TODO
-#[derive(Copy, Clone, Debug, Hash, Eq, PartialEq, Serialize, Deserialize)]
+#[derive(Copy, Clone, Debug, Hash, Eq, PartialEq)]
+#[cfg_attr(features = "serde", derive(Serialize, Deserialize))]
 pub enum PlaneType {
 	Predator = 1,
 	Goliath = 2,

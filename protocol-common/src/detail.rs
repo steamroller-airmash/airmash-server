@@ -1,5 +1,6 @@
 macro_rules! wrapper_serde_decl {
 	($type:tt) => {
+		#[cfg(features = "serde")]
 		impl ::serde::Serialize for $type {
 			fn serialize<S>(&self, ser: S) -> Result<S::Ok, S::Error>
 			where
@@ -9,6 +10,7 @@ macro_rules! wrapper_serde_decl {
 			}
 		}
 
+		#[cfg(feature = "serde")]
 		impl<'de> ::serde::Deserialize<'de> for $type {
 			fn deserialize<D>(de: D) -> Result<Self, D::Error>
 			where

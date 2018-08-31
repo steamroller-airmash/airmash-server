@@ -7,9 +7,10 @@ use enums::LeaveHorizonType;
 /// server will stop sending updates about
 /// this plane until it comes back within the
 /// event horizon.
-#[derive(Copy, Clone, Debug, Serialize, Deserialize)]
+#[derive(Copy, Clone, Debug)]
+#[cfg_attr(features = "serde", derive(Serialize, Deserialize))]
 pub struct EventLeaveHorizon {
-	#[serde(rename = "type")]
+	#[cfg_attr(features = "serde", serde(rename = "type"))]
 	pub ty: LeaveHorizonType,
 	/// This could be either a player or a mob
 	/// TODO: Create Entity type

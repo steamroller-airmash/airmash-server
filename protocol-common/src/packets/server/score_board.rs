@@ -1,7 +1,8 @@
 use types::{Level, Player, Position, Score};
 
 /// Leaderboard data, part of the [`ScoreBoard`] packet.
-#[derive(Copy, Clone, Debug, Serialize, Deserialize)]
+#[derive(Copy, Clone, Debug)]
+#[cfg_attr(features = "serde", derive(Serialize, Deserialize))]
 pub struct ScoreBoardData {
 	pub id: Player,
 	pub score: Score,
@@ -10,7 +11,8 @@ pub struct ScoreBoardData {
 
 /// Low-res player positions, part of the
 /// [`ScoreBoard`] packet.
-#[derive(Copy, Clone, Debug, Serialize, Deserialize)]
+#[derive(Copy, Clone, Debug)]
+#[cfg_attr(features = "serde", derive(Serialize, Deserialize))]
 pub struct ScoreBoardRanking {
 	pub id: Player,
 	pub pos: Position,
@@ -21,7 +23,8 @@ pub struct ScoreBoardRanking {
 /// This is sent every 5 seconds by the
 /// server and is used by the client to
 /// update the leaderboard and minimap.
-#[derive(Clone, Debug, Serialize, Deserialize)]
+#[derive(Clone, Debug)]
+#[cfg_attr(features = "serde", derive(Serialize, Deserialize))]
 pub struct ScoreBoard {
 	pub data: Vec<ScoreBoardData>,
 	pub rankings: Vec<ScoreBoardRanking>,

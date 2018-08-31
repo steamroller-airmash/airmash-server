@@ -6,7 +6,8 @@
 /// as this packet. If a client does
 /// not do this, the client will be
 /// disconnected by the server.
-#[derive(Copy, Clone, Debug, Serialize, Deserialize)]
+#[derive(Copy, Clone, Debug)]
+#[cfg_attr(features = "serde", derive(Serialize, Deserialize))]
 pub struct Ping {
 	pub clock: u32,
 	pub num: u32,

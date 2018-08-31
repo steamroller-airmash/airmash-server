@@ -1,7 +1,8 @@
 use types::{Level, Player, Score};
 
 /// Per-player data for detailed (tab) menu in BTR.
-#[derive(Copy, Clone, Debug, Serialize, Deserialize)]
+#[derive(Copy, Clone, Debug)]
+#[cfg_attr(features = "serde", derive(Serialize, Deserialize))]
 pub struct ScoreDetailedBTREntry {
 	pub id: Player,
 	pub level: Level,
@@ -14,7 +15,8 @@ pub struct ScoreDetailedBTREntry {
 	pub ping: u16,
 }
 
-#[derive(Clone, Debug, Serialize, Deserialize)]
+#[derive(Clone, Debug)]
+#[cfg_attr(features = "serde", derive(Serialize, Deserialize))]
 pub struct ScoreDetailedBTR {
 	pub scores: Vec<ScoreDetailedBTREntry>,
 }

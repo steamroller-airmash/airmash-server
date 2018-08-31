@@ -6,9 +6,10 @@ use types::Mob;
 /// and when a missile despawns without
 /// hitting anything. It does not cause
 /// an explosion to be shown at the location.
-#[derive(Copy, Clone, Debug, Serialize, Deserialize)]
+#[derive(Copy, Clone, Debug)]
+#[cfg_attr(features = "serde", derive(Serialize, Deserialize))]
 pub struct MobDespawn {
 	pub id: Mob,
-	#[serde(rename = "type")]
+	#[cfg_attr(features = "serde", serde(rename = "type"))]
 	pub ty: MobType,
 }

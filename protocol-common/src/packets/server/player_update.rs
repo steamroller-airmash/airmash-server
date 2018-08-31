@@ -1,7 +1,8 @@
 use types::{Player, Position, Rotation, ServerKeyState, Upgrades, Velocity};
 
 /// Movement update for a player.
-#[derive(Copy, Clone, Debug, Serialize, Deserialize)]
+#[derive(Copy, Clone, Debug)]
+#[cfg_attr(features = "serde", derive(Serialize, Deserialize))]
 pub struct PlayerUpdate {
 	pub clock: u32,
 	pub id: Player,

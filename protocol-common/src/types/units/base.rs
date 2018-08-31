@@ -1,3 +1,4 @@
+#[cfg(features = "serde")]
 use serde::{Deserialize, Deserializer, Serialize, Serializer};
 use specs::{Component, VecStorage};
 
@@ -75,6 +76,7 @@ impl<T, U> From<T> for AirmashUnits<T, U> {
 	}
 }
 
+#[cfg(features = "serde")]
 impl<T, U> Serialize for AirmashUnits<T, U>
 where
 	T: Serialize,
@@ -87,6 +89,7 @@ where
 	}
 }
 
+#[cfg(features = "serde")]
 impl<'de, T, U> Deserialize<'de> for AirmashUnits<T, U>
 where
 	T: Deserialize<'de>,

@@ -4,10 +4,15 @@ version = "0.0.1"
 authors = ["STEAMROLLER"]
 publish = false
 
+[features]
 
 [dependencies]
 specs = "*"
-serde = { version = "*", features = ["derive"] }
 lazy_static = "*"
 fnv = "*"
 dimensioned = "*"
+
+[dependencies.serde]
+version = "*"
+features = ["derive"]
+optional = true

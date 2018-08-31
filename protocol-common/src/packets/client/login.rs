@@ -2,7 +2,8 @@
 ///
 /// This sent to the server when the player
 /// first joins
-#[derive(Clone, Debug, Serialize, Deserialize)]
+#[derive(Clone, Debug)]
+#[cfg_attr(features = "serde", derive(Serialize, Deserialize))]
 pub struct Login {
 	/// The current protocol version.
 	/// Should always be 5 as of the

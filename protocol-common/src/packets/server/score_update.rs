@@ -1,7 +1,8 @@
 use types::{Player, Score};
 
 /// Stats for the current player
-#[derive(Copy, Clone, Debug, Serialize, Deserialize)]
+#[derive(Copy, Clone, Debug)]
+#[cfg_attr(features = "serde", derive(Serialize, Deserialize))]
 pub struct ScoreUpdate {
 	pub id: Player,
 	pub score: Score,

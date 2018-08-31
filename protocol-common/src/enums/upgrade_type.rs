@@ -3,5 +3,6 @@
 /// This might be just [`PlaneType`][0] instead.
 ///
 /// [0]: struct.PlaneType.html
-#[derive(Copy, Clone, Debug, Hash, Eq, PartialEq, Serialize, Deserialize)]
+#[derive(Copy, Clone, Debug, Hash, Eq, PartialEq)]
+#[cfg_attr(features = "serde", derive(Serialize, Deserialize))]
 pub enum UpgradeType {}

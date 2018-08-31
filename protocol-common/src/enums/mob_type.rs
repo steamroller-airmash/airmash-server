@@ -6,7 +6,8 @@
 ///
 /// Used by:
 /// - TODO
-#[derive(Copy, Clone, Debug, Hash, Eq, PartialEq, Serialize, Deserialize)]
+#[derive(Copy, Clone, Debug, Hash, Eq, PartialEq)]
+#[cfg_attr(features = "serde", derive(Serialize, Deserialize))]
 pub enum MobType {
 	PredatorMissile = 1,
 	GoliathMissile = 2,

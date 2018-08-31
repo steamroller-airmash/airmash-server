@@ -15,9 +15,10 @@ use enums::ServerCustomType;
 ///
 /// # BTR
 /// TODO
-#[derive(Clone, Debug, Serialize, Deserialize)]
+#[derive(Clone, Debug)]
+#[cfg_attr(features = "serde", derive(Serialize, Deserialize))]
 pub struct ServerCustom {
-	#[serde(rename = "type")]
+	#[cfg_attr(features = "serde", serde(rename = "type"))]
 	pub ty: ServerCustomType,
 	pub data: String,
 }

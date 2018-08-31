@@ -5,10 +5,11 @@ use types::{Accel, Energy, EnergyRegen, Mob, Player, Position, Speed, Velocity};
 ///
 /// This is used in the `projectiles` array
 /// of the [`PlayerFire`] packet.
-#[derive(Copy, Clone, Debug, Serialize, Deserialize)]
+#[derive(Copy, Clone, Debug)]
+#[cfg_attr(features = "serde", derive(Serialize, Deserialize))]
 pub struct PlayerFireProjectile {
 	pub id: Mob,
-	#[serde(rename = "type")]
+	#[cfg_attr(features = "serde", serde(rename = "type"))]
 	pub ty: MobType,
 	pub pos: Position,
 	pub speed: Velocity,
@@ -17,7 +18,8 @@ pub struct PlayerFireProjectile {
 }
 
 /// Packet for whan a player fires missiles.
-#[derive(Clone, Debug, Serialize, Deserialize)]
+#[derive(Clone, Debug)]
+#[cfg_attr(features = "serde", derive(Serialize, Deserialize))]
 pub struct PlayerFire {
 	pub clock: u32,
 	pub id: Player,

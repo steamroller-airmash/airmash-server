@@ -6,7 +6,8 @@ use enums::KeyCode;
 /// - `seq` should be monotonically increasing
 ///   with every key press.
 /// - `state`: `true` -> pressed, `false` -> released.
-#[derive(Copy, Clone, Debug, Serialize, Deserialize)]
+#[derive(Copy, Clone, Debug)]
+#[cfg_attr(features = "serde", derive(Serialize, Deserialize))]
 pub struct Key {
 	pub seq: u32,
 	pub key: KeyCode,

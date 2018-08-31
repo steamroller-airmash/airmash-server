@@ -1,5 +1,6 @@
 /// All possible "keys" that a player can have activated.
-#[derive(Copy, Clone, Debug, Hash, Eq, PartialEq, Serialize, Deserialize)]
+#[derive(Copy, Clone, Debug, Hash, Eq, PartialEq)]
+#[cfg_attr(features = "serde", derive(Serialize, Deserialize))]
 pub struct ServerKeyState {
 	pub up: bool,
 	pub down: bool,

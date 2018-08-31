@@ -2,7 +2,8 @@
 ///
 /// These are all server errors that the vanilla AIRMASH
 /// client (and the current STARMASH client) understands.
-#[derive(Copy, Clone, Debug, Hash, Eq, PartialEq, Serialize, Deserialize)]
+#[derive(Copy, Clone, Debug, Hash, Eq, PartialEq)]
+#[cfg_attr(features = "serde", derive(Serialize, Deserialize))]
 pub enum ErrorType {
 	DisconnectedForPacketFlooding = 1,
 	BannedForPacketFlooding = 2,

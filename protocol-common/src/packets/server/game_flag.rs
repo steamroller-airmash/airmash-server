@@ -2,9 +2,10 @@ use enums::FlagUpdateType;
 use types::{Flag, Player, Position};
 
 /// Update position of flag in CTF
-#[derive(Copy, Clone, Debug, Serialize, Deserialize)]
+#[derive(Copy, Clone, Debug)]
+#[cfg_attr(features = "serde", derive(Serialize, Deserialize))]
 pub struct GameFlag {
-	#[serde(rename = "type")]
+	#[cfg_attr(features = "serde", serde(rename = "type"))]
 	pub ty: FlagUpdateType,
 	pub flag: Flag,
 	pub id: Option<Player>,

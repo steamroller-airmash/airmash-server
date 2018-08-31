@@ -5,10 +5,11 @@ use types::{Mob, Position};
 /// This is used when a missile
 /// collides with a mountain to
 /// generate an explosion client-side
-#[derive(Copy, Clone, Debug, Serialize, Deserialize)]
+#[derive(Copy, Clone, Debug)]
+#[cfg_attr(features = "serde", derive(Serialize, Deserialize))]
 pub struct MobDespawnCoords {
 	pub id: Mob,
-	#[serde(rename = "type")]
+	#[cfg_attr(features = "serde", serde(rename = "type"))]
 	pub ty: MobType,
 	pub pos: Position,
 }

@@ -73,7 +73,8 @@
 /// // Serialize and send to server here...
 /// # }
 ///
-#[derive(Clone, Debug, Serialize, Deserialize)]
+#[derive(Clone, Debug)]
+#[cfg_attr(features = "serde", derive(Serialize, Deserialize))]
 pub struct Command {
 	/// The command to send to the server. The
 	/// official server recognizes the commands

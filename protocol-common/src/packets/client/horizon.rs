@@ -4,7 +4,8 @@
 /// In theory this should expand the visible range
 /// for the client, in practice the official server
 /// appears to ignore these packets.
-#[derive(Copy, Clone, Debug, Serialize, Deserialize)]
+#[derive(Copy, Clone, Debug)]
+#[cfg_attr(features = "serde", derive(Serialize, Deserialize))]
 pub struct Horizon {
 	pub horizon_x: u16,
 	pub horizon_y: u16,

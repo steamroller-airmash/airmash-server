@@ -1,7 +1,8 @@
 use types::{Level, Player, Score};
 
 /// Per-player data for detailed (tab) menu in CTF.
-#[derive(Copy, Clone, Debug, Serialize, Deserialize)]
+#[derive(Copy, Clone, Debug)]
+#[cfg_attr(features = "serde", derive(Serialize, Deserialize))]
 pub struct ScoreDetailedCTFEntry {
 	pub id: Player,
 	pub level: Level,
@@ -14,7 +15,8 @@ pub struct ScoreDetailedCTFEntry {
 }
 
 /// Detailed score menu (tab) data for CTF.
-#[derive(Clone, Debug, Serialize, Deserialize)]
+#[derive(Clone, Debug)]
+#[cfg_attr(features = "serde", derive(Serialize, Deserialize))]
 pub struct ScoreDetailedCTF {
 	pub scores: Vec<ScoreDetailedCTFEntry>,
 }

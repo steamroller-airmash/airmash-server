@@ -3,6 +3,7 @@ use std::ops::*;
 use dimensioned::Sqrt;
 use specs::*;
 
+#[cfg(features = "serde")]
 use serde::{Deserialize, Deserializer, Serialize, Serializer};
 
 /// Required trait to allow specialized impls for self
@@ -185,6 +186,7 @@ impl<T: 'static + Send + Sync> Component for Vector2<T> {
 	type Storage = VecStorage<Vector2<T>>;
 }
 
+#[cfg(features = "serde")]
 impl<T> Serialize for Vector2<T>
 where
 	T: Serialize + Clone,
@@ -197,6 +199,7 @@ where
 	}
 }
 
+#[cfg(features = "serde")]
 impl<'de, T> Deserialize<'de> for Vector2<T>
 where
 	T: Deserialize<'de>,

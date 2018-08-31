@@ -11,7 +11,8 @@ use client::*;
 /// packets do not have an associated struct
 /// and as such are just empty variants within
 /// this enum.
-#[derive(Clone, Debug, Serialize, Deserialize)]
+#[derive(Clone, Debug)]
+#[cfg_attr(features = "serde", derive(Serialize, Deserialize))]
 pub enum ClientPacket {
 	Login(Login),
 	Backup(Backup),

@@ -6,13 +6,14 @@ use types::{Level, Player, Position, Rotation, Team, Upgrades};
 ///
 /// This is an element of the `players`
 /// array within the [`Login`] packet.
-#[derive(Clone, Debug, Serialize, Deserialize)]
+#[derive(Clone, Debug)]
+#[cfg_attr(features = "serde", derive(Serialize, Deserialize))]
 pub struct LoginPlayer {
 	pub id: Player,
 	pub status: PlayerStatus,
 	pub level: Level,
 	pub name: String,
-	#[serde(rename = "type")]
+	#[cfg_attr(features = "serde", serde(rename = "type"))]
 	pub ty: PlaneType,
 	pub team: Team,
 	pub pos: Position,
@@ -22,14 +23,15 @@ pub struct LoginPlayer {
 }
 
 /// Initial Login packet sent to the server
-#[derive(Clone, Debug, Serialize, Deserialize)]
+#[derive(Clone, Debug)]
+#[cfg_attr(features = "serde", derive(Serialize, Deserialize))]
 pub struct Login {
 	pub success: bool,
 	pub id: Player,
 	pub team: Team,
 	pub clock: u32,
 	pub token: String,
-	#[serde(rename = "type")]
+	#[cfg_attr(features = "serde", serde(rename = "type"))]
 	pub ty: GameType,
 	pub room: String,
 	pub players: Vec<LoginPlayer>,

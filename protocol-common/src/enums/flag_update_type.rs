@@ -11,7 +11,8 @@
 /// comment on it but it doesn't seem to be missing
 /// any values. It might be worth doing some more
 /// looking to see if anything turns up here.
-#[derive(Copy, Clone, Debug, Hash, Eq, PartialEq, Serialize, Deserialize)]
+#[derive(Copy, Clone, Debug, Hash, Eq, PartialEq)]
+#[cfg_attr(features = "serde", derive(Serialize, Deserialize))]
 pub enum FlagUpdateType {
 	Position = 1,
 	Carrier = 2,
