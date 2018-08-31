@@ -5,10 +5,7 @@ use client::*;
 /// This contains all valid packets that
 /// the client can send to the server
 /// (in the current version of the airmash
-/// protocol). It can be serialized and
-/// deserialized to/from byte buffers
-/// using [`to_bytes`](fn.to_bytes.html)
-/// and [`from_bytes`](fn.from_bytes.html).
+/// protocol).
 ///
 /// Some packets don't contain any data, these
 /// packets do not have an associated struct

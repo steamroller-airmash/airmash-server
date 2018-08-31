@@ -22,6 +22,8 @@ mod server_packet;
 
 pub mod error;
 
+pub use self::client_packet::*;
 pub use self::enums::*;
 pub use self::packets::*;
+pub use self::server_packet::*;
 pub use self::types::*;
