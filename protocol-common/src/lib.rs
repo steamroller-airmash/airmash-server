@@ -18,6 +18,7 @@ mod detail;
 mod consts;
 mod enums;
 mod packets;
+mod traits;
 mod types;
 
 mod client_packet;
@@ -29,4 +30,5 @@ pub use self::client_packet::*;
 pub use self::enums::*;
 pub use self::packets::*;
 pub use self::server_packet::*;
+pub use self::traits::*;
 pub use self::types::*;
