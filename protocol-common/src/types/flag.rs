@@ -4,7 +4,8 @@ pub struct Flag(u16);
 
 wrapper_serde_decl!(Flag);
 
-mod detail {
+#[cfg(features = "specs")]
+mod specs_convert {
 	use super::Flag;
 	use error::EntityIdOutOfRangeError;
 	use specs::Entity;

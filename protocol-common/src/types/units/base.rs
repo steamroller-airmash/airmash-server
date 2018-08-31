@@ -1,5 +1,6 @@
 #[cfg(features = "serde")]
 use serde::{Deserialize, Deserializer, Serialize, Serializer};
+#[cfg(features = "specs")]
 use specs::{Component, VecStorage};
 
 pub type BaseType = f32;
@@ -56,6 +57,7 @@ impl<U> AirmashUnits<BaseType, U> {
 	}
 }
 
+#[cfg(features = "specs")]
 impl<T: 'static, U: 'static> Component for AirmashUnits<T, U>
 where
 	T: Sync + Send,

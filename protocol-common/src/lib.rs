@@ -3,13 +3,14 @@
 #[macro_use]
 extern crate lazy_static;
 extern crate fnv;
-extern crate specs;
 #[macro_use]
 extern crate dimensioned;
 
 #[cfg(features = "serde")]
 #[cfg_attr(features = "serde", macro_use)]
 extern crate serde;
+#[cfg(features = "specs")]
+extern crate specs;
 
 #[macro_use]
 mod detail;

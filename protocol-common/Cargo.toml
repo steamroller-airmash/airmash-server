@@ -7,10 +7,13 @@ publish = false
 [features]
 
 [dependencies]
-specs = "*"
 lazy_static = "*"
 fnv = "*"
 dimensioned = "*"
+
+[dependencies.specs]
+version = "*"
+optional = true
 
 [dependencies.serde]
 version = "*"

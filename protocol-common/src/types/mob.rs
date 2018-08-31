@@ -4,7 +4,8 @@ pub struct Mob(u16);
 
 wrapper_serde_decl!(Mob);
 
-mod detail {
+#[cfg(features = "specs")]
+mod specs_convert {
 	use super::Mob;
 	use error::EntityIdOutOfRangeError;
 	use specs::Entity;

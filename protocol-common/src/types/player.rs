@@ -4,7 +4,8 @@ pub struct Player(u16);
 
 wrapper_serde_decl!(Player);
 
-mod detail {
+#[cfg(features = "specs")]
+mod specs_convert {
 	use super::Player;
 	use error::EntityIdOutOfRangeError;
 	use specs::Entity;

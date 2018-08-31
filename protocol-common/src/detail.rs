@@ -10,7 +10,7 @@ macro_rules! wrapper_serde_decl {
 			}
 		}
 
-		#[cfg(feature = "serde")]
+		#[cfg(features = "serde")]
 		impl<'de> ::serde::Deserialize<'de> for $type {
 			fn deserialize<D>(de: D) -> Result<Self, D::Error>
 			where

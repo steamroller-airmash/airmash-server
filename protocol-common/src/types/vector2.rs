@@ -1,6 +1,7 @@
 use std::ops::*;
 
 use dimensioned::Sqrt;
+#[cfg(features = "specs")]
 use specs::*;
 
 #[cfg(features = "serde")]
@@ -182,6 +183,7 @@ where
 	}
 }
 
+#[cfg(features = "specs")]
 impl<T: 'static + Send + Sync> Component for Vector2<T> {
 	type Storage = VecStorage<Vector2<T>>;
 }
