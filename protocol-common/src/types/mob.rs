@@ -1,6 +1,6 @@
 /// A mob (missile, upgrade, or powerup) ID
 #[derive(Copy, Clone, Debug, Default, Eq, PartialEq, Hash)]
-pub struct Mob(u16);
+pub struct Mob(pub u16);
 
 wrapper_serde_decl!(Mob);
 

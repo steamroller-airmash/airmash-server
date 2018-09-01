@@ -10,6 +10,8 @@ publish = false
 lazy_static = "*"
 fnv = "*"
 dimensioned = "*"
+#num_traits = "*"
+#enum_from_primitive = "*"
 
 [dependencies.specs]
 version = "*"

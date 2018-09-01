@@ -80,8 +80,8 @@ pub struct Command {
 	/// official server recognizes the commands
 	/// `"spectate"`, `"upgrade"`, `"flag"`, and
 	/// `"respawn"`.
-	com: String,
+	pub com: String,
 	/// The data associated with the command,
 	/// value values epend on the given command.
-	data: String,
+	pub data: String,
 }

@@ -7,5 +7,5 @@ pub struct Pong {
 	/// to the `num` field within in the
 	/// [`Ping`](../server/ping.html) packet
 	/// sent by the server.
-	num: u32,
+	pub num: u32,
 }
