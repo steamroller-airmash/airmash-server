@@ -2,6 +2,11 @@
 /// calculate movement. This also includes the shielded
 /// state of the player.
 ///
+/// Note that since a player should never have more than
+/// 5 upgrades on the official server, `protocol-v5` can
+/// only represent amounts of speed upgrades in the range
+/// 0 to 7.
+///
 /// Used in:
 /// - [`Login`](server/struct.Login.html), specifically
 ///   [`LoginPlayer`](server/struct.LoginPlayer.html)
