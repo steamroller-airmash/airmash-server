@@ -3,6 +3,7 @@
 use std::num::TryFromIntError;
 
 pub struct EntityIdOutOfRangeError;
+pub struct EnumValueOutOfRangeError<T>(pub T);
 
 impl From<TryFromIntError> for EntityIdOutOfRangeError {
 	fn from(_: TryFromIntError) -> Self {
@@ -10,6 +11,12 @@ impl From<TryFromIntError> for EntityIdOutOfRangeError {
 	}
 }
 impl From<!> for EntityIdOutOfRangeError {
+	fn from(never: !) -> Self {
+		never
+	}
+}
+
+impl<T> From<!> for EnumValueOutOfRangeError<T> {
 	fn from(never: !) -> Self {
 		never
 	}

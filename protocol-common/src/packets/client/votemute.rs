@@ -4,5 +4,5 @@ use types::Player;
 #[derive(Copy, Clone, Debug)]
 #[cfg_attr(features = "serde", derive(Serialize, Deserialize))]
 pub struct VoteMute {
-	id: Player,
+	pub id: Player,
 }

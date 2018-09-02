@@ -1,3 +1,5 @@
+impl_try_from_enum!{
+
 /// All error codes that can be sent to the client.
 ///
 /// These are all server errors that the vanilla AIRMASH
@@ -21,4 +23,5 @@ pub enum ErrorType {
 	ChatThrottled = 30,
 	FlagChangeThrottled = 31,
 	UnknownCommand = 100,
+}
 }

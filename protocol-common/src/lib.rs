@@ -1,4 +1,9 @@
-#![feature(try_from, optin_builtin_traits, never_type)]
+#![feature(
+	try_from,
+	macro_at_most_once_rep,
+	never_type,
+	optin_builtin_traits
+)]
 
 #[macro_use]
 extern crate lazy_static;

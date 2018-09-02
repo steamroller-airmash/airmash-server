@@ -41,3 +41,90 @@ macro_rules! impl_from_empty_inner {
 		}
 	};
 }
+
+macro_rules! impl_try_from_enum_inner1 {
+	{
+		enum $name:ident : $base:ty {
+			$(
+				$case:ident,
+			)*
+		}
+	} => {
+		impl ::std::convert::TryFrom<$base> for $name {
+			type Error = ::error::EnumValueOutOfRangeError<$base>;
+
+			#[allow(non_upper_case_globals, unreachable_code)]
+			fn try_from(v: $base) -> Result<Self, Self::Error> {
+				$(
+					const $case: $base = $name::$case as $base;
+				)*
+
+				Ok(match v {
+					$(
+						$case => $name::$case,
+					)*
+					x => return Err(::error::EnumValueOutOfRangeError(x))
+				})
+			}
+		}
+	}
+}
+
+macro_rules! impl_try_from_enum {
+	{
+		$(
+			#[$attr:meta]
+		)*
+		pub enum $name:ident {
+			$(
+				$(
+					#[$caseattr:meta]
+				)*
+				$case:ident = $val:expr,
+			)*
+		}
+	} => {
+		$(
+			#[$attr]
+		)*
+		pub enum $name {
+			$(
+				$(
+					#[$caseattr]
+				)*
+				$case = $val,
+			)*
+		}
+
+		impl_try_from_enum_inner1! {
+			enum $name : u8 {
+				$( $case, )*
+			}
+		}
+		impl_try_from_enum_inner1! {
+			enum $name : u16 {
+				$( $case, )*
+			}
+		}
+		impl_try_from_enum_inner1! {
+			enum $name : u32 {
+				$( $case, )*
+			}
+		}
+		impl_try_from_enum_inner1! {
+			enum $name : i8 {
+				$( $case, )*
+			}
+		}
+		impl_try_from_enum_inner1! {
+			enum $name : i16 {
+				$( $case, )*
+			}
+		}
+		impl_try_from_enum_inner1! {
+			enum $name : i32 {
+				$( $case, )*
+			}
+		}
+	}
+}
