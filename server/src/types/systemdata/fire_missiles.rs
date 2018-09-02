@@ -7,6 +7,7 @@ use component::channel::OnMissileFire;
 use component::event::MissileFire;
 use component::reference::PlayerRef;
 use component::time::*;
+use component::missile::{MissileTrajectory};
 
 use super::IsAlive;
 
@@ -42,6 +43,7 @@ pub struct FireMissiles<'a> {
 	pub mob: WriteStorage<'a, Mob>,
 	pub is_missile: WriteStorage<'a, IsMissile>,
 	pub spawn_time: WriteStorage<'a, MobSpawnTime>,
+	pub missile_trajectory: WriteStorage<'a, MissileTrajectory>,
 }
 
 impl<'a> FireMissiles<'a> {
@@ -81,6 +83,11 @@ impl<'a> FireMissiles<'a> {
 
 				let vel = dir * (missile.base_speed + speed * missile.speed_factor) * upg_factor;
 
+				let missile_trajectory = MissileTrajectory(
+					*self.pos.get(owner).unwrap(),
+					missile.distance
+				);
+
 				let missile = self
 					.entities
 					.build_entity()
@@ -91,6 +98,7 @@ impl<'a> FireMissiles<'a> {
 					.with(PlayerRef(owner), &mut self.owner)
 					.with(team, &mut self.team)
 					.with(spawn_time, &mut self.spawn_time)
+					.with(missile_trajectory, &mut self.missile_trajectory)
 					.build();
 
 				trace!(
