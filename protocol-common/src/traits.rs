@@ -12,16 +12,74 @@ pub trait Protocol: Sync + Send {
 	/// Unique version number for the protocol.
 	fn version(&self) -> u8;
 
+	/// Serialize a client packet into some number of
+	/// binary packet bodies.
+	///
+	/// For most packets this should be a 1-to-1 deserialization
+	/// but the iterator return type is there to allow for
+	/// polyfilling of the packets behind the scenes if a
+	/// protocol backend doesn't support them directly.
+	/// This can be used (for example) to send multiple packets
+	/// for when more than 255 missiles are reflected with
+	/// the same goliath deflect (which is not supported by
+	/// protocol-v5).
+	///
+	/// For users of this interface it will most likely be
+	/// more convienient to call
+	/// [`ProtocolSerializationExt::serialize()`][2] with a
+	/// [`ClientPacket`][1] instead, since it provides a
+	/// unified interface to serializing a [`ClientPacket`][1]
+	/// and a [`ServerPacket`][0].
+	///
+	/// # Panics
+	/// This method should never panic (based on the input),
+	/// instead it should return an appropriate error within
+	/// the SerializeError type.
+	///
+	/// [0]: struct.ServerPacket.html
+	/// [1]: struct.ClientPacket.html
+	/// [2]: trait.ProtocolSerializationExt.html#ty.serialize
 	fn serialize_client(
 		&self,
 		packet: &ClientPacket,
 	) -> Result<ServerPacketIterator, Self::SerializeError>;
+
+	/// Serialize a server packet into some number of
+	/// binary packet bodies.
+	///
+	/// For most packets this should be a 1-to-1 deserialization
+	/// but the iterator return type is there to allow for
+	/// polyfilling of the packets behind the scenes if a
+	/// protocol backend doesn't support them directly.
+	/// This can be used (for example) to send multiple packets
+	/// for when more than 255 missiles are reflected with
+	/// the same goliath deflect (which is not supported by
+	/// protocol-v5).
+	///
+	/// For users of this interface it will most likely be
+	/// more convienient to call
+	/// [`ProtocolSerializationExt::serialize()`][2] with a
+	/// [`ServerPacket`][0] instead, since it provides a
+	/// unified interface to serializing a [`ServerPacket`][0]
+	/// and a [`ClientPacket`][1].
+	///
+	/// # Panics
+	/// This method should never panic (based on the input),
+	/// instead it should return an appropriate error within
+	/// the SerializeError type.
+	///
+	/// [0]: struct.ServerPacket.html
+	/// [1]: struct.ClientPacket.html
+	/// [2]: trait.ProtocolSerializationExt.html#ty.serialize
 	fn serialize_server(
 		&self,
 		packet: &ServerPacket,
 	) -> Result<ServerPacketIterator, Self::SerializeError>;
 
+	/// Deserialize a binary packet into a client packet.
 	fn deserialize_client(&self, data: &[u8]) -> Result<ClientPacket, Self::DeserializeError>;
+
+	/// Deserialize a binary packet into a server packet.
 	fn deserialize_server(&self, data: &[u8]) -> Result<ServerPacket, Self::DeserializeError>;
 }
 
