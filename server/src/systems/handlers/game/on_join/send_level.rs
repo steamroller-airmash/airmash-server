@@ -44,10 +44,7 @@ impl<'a> System<'a> for SendPlayerLevel {
 				level: *level.get(evt.id).unwrap(),
 			};
 
-			conns.send_to_others(
-				evt.id,
-				OwnedMessage::Binary(to_bytes(&ServerPacket::PlayerLevel(packet)).unwrap()),
-			);
+			conns.send_to_others(evt.id, packet);
 		}
 	}
 }

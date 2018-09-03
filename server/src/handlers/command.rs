@@ -80,8 +80,7 @@ impl<'a> System<'a> for CommandHandler {
 				continue;
 			}
 
-			data.conns
-				.send_to_all(OwnedMessage::Binary(to_bytes(&packet).unwrap()));
+			data.conns.send_to_all(packet);
 		}
 	}
 }

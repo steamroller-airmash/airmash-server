@@ -172,10 +172,7 @@ impl<'a> System<'a> for SendEventRepel {
 				players,
 			};
 
-			data.conns.send_to_visible(
-				evt.player,
-				OwnedMessage::Binary(to_bytes(&ServerPacket::EventRepel(packet)).unwrap()),
-			);
+			data.conns.send_to_visible(evt.player, packet);
 		}
 	}
 }

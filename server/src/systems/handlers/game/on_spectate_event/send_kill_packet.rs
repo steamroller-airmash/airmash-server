@@ -48,10 +48,7 @@ impl<'a> System<'a> for SendKillPacket {
 				pos: Position::default(),
 			};
 
-			data.conns.send_to_player(
-				evt.player,
-				OwnedMessage::Binary(to_bytes(&ServerPacket::PlayerKill(packet)).unwrap()),
-			);
+			data.conns.send_to_player(evt.player, packet);
 		}
 	}
 }

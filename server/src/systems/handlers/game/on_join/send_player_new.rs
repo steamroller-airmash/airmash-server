@@ -74,10 +74,7 @@ impl<'a> System<'a> for SendPlayerNew {
 				upgrades,
 			};
 
-			conns.send_to_others(
-				evt.id,
-				OwnedMessage::Binary(to_bytes(&ServerPacket::PlayerNew(player_new)).unwrap()),
-			);
+			conns.send_to_others(evt.id, player_new);
 		}
 	}
 }

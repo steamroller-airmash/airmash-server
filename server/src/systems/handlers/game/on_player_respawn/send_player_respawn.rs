@@ -49,14 +49,12 @@ impl<'a> System<'a> for SendPlayerRespawn {
 
 			data.conns.send_to_visible(
 				player,
-				OwnedMessage::Binary(
-					to_bytes(&ServerPacket::PlayerRespawn(PlayerRespawn {
-						id: player,
-						pos: *data.pos.get(player).unwrap(),
-						rot: *data.rot.get(player).unwrap(),
-						upgrades: ProtocolUpgrades::default(),
-					})).unwrap(),
-				),
+				PlayerRespawn {
+					id: player,
+					pos: *data.pos.get(player).unwrap(),
+					rot: *data.rot.get(player).unwrap(),
+					upgrades: ProtocolUpgrades::default(),
+				},
 			);
 		}
 	}

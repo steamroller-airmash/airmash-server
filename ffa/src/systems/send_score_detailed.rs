@@ -73,14 +73,8 @@ impl<'a> System<'a> for SendScoreDetailed {
             // Avoid going over the capacity of Array
             entries.truncate(0xFFFF);
 
-            data.conns.send_to(
-                conn,
-                OwnedMessage::Binary(
-                    to_bytes(&ServerPacket::ScoreDetailedFFA(ScoreDetailedFFA {
-                        scores: entries,
-                    })).unwrap(),
-                ),
-            );
+            data.conns
+                .send_to(conn, ScoreDetailedFFA { scores: entries });
         }
     }
 }

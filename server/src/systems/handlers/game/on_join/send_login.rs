@@ -102,10 +102,7 @@ impl<'a> System<'a> for SendLogin {
 				players: player_data,
 			};
 
-			data.conns.send_to_player(
-				evt.id,
-				OwnedMessage::Binary(to_bytes(&ServerPacket::Login(packet)).unwrap()),
-			);
+			data.conns.send_to_player(evt.id, packet);
 		}
 	}
 }

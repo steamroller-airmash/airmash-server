@@ -68,13 +68,10 @@ impl<'a> System<'a> for SendEventStealth {
 				energy_regen: *energy_regen.get(evt.player).unwrap(),
 			};
 
-			let message =
-				OwnedMessage::Binary(to_bytes(&ServerPacket::EventStealth(packet)).unwrap());
-
 			if evt.stealthed {
-				conns.send_to_visible(evt.player, message);
+				conns.send_to_visible(evt.player, packet);
 			} else {
-				conns.send_to_player(evt.player, message);
+				conns.send_to_player(evt.player, packet);
 
 				// Force position update system to send an update packet
 				// by changing the time of the last update to the server

@@ -81,12 +81,7 @@ impl<'a> System<'a> for AwardBounty {
 							upgrades: upgrades.unused,
 						};
 
-						conns.send_to_player(
-							player,
-							OwnedMessage::Binary(
-								to_bytes(&ServerPacket::ScoreUpdate(packet)).unwrap(),
-							),
-						)
+						conns.send_to_player(player, packet)
 					},
 				);
 

@@ -286,7 +286,8 @@ impl Generator {
                 }
 
                 writeln!(writer, "}})")?;
-                writeln!(writer, "}}\n}}")?;
+                writeln!(writer, "}}")?;
+                writeln!(writer, "}}")?;
             }
 
             writeln!(writer, "}}")?;

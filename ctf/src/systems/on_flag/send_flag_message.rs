@@ -68,28 +68,24 @@ impl<'a> System<'a> for SendFlagMessageSystem {
 					pos = Position::default();
 				}
 
-				data.conns.send_to_all(OwnedMessage::Binary(
-					to_bytes(&ServerPacket::GameFlag(GameFlag {
-						ty,
-						flag: *data.team.get(other).unwrap(),
-						pos: pos,
-						id: None,
-						blueteam: data.scores.blueteam,
-						redteam: data.scores.redteam,
-					})).unwrap(),
-				));
-			}
-
-			data.conns.send_to_all(OwnedMessage::Binary(
-				to_bytes(&ServerPacket::GameFlag(GameFlag {
+				data.conns.send_to_all(GameFlag {
 					ty,
-					flag: *team,
-					pos: *data.pos.get(evt.flag).unwrap(),
-					id: evt.player,
+					flag: *data.team.get(other).unwrap(),
+					pos: pos,
+					id: None,
 					blueteam: data.scores.blueteam,
 					redteam: data.scores.redteam,
-				})).unwrap(),
-			));
+				});
+			}
+
+			data.conns.send_to_all(GameFlag {
+				ty,
+				flag: *team,
+				pos: *data.pos.get(evt.flag).unwrap(),
+				id: evt.player,
+				blueteam: data.scores.blueteam,
+				redteam: data.scores.redteam,
+			});
 		}
 	}
 }

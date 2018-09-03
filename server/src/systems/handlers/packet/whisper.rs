@@ -60,11 +60,9 @@ impl<'a> System<'a> for WhisperHandler {
 			if data.throttled.get(player).is_some() {
 				data.conns.send_to(
 					evt.0,
-					OwnedMessage::Binary(
-						to_bytes(&ServerPacket::Error(Error {
-							error: ErrorType::ChatThrottled,
-						})).unwrap(),
-					),
+					Error {
+						error: ErrorType::ChatThrottled,
+					},
 				);
 				continue;
 			}
@@ -88,11 +86,9 @@ impl<'a> System<'a> for WhisperHandler {
 
 			let packet = ServerPacket::ChatWhisper(chat);
 
-			data.conns
-				.send_to(evt.0, OwnedMessage::Binary(to_bytes(&packet).unwrap()));
+			data.conns.send_to(evt.0, packet.clone());
 
-			data.conns
-				.send_to_player(to, OwnedMessage::Binary(to_bytes(&packet).unwrap()));
+			data.conns.send_to_player(to, packet);
 		}
 	}
 }

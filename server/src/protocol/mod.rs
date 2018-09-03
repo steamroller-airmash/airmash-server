@@ -77,6 +77,7 @@ mod ser;
 mod codes;
 mod impls;
 mod include;
+mod macros;
 mod packet;
 mod packet_impls;
 

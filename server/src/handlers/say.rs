@@ -54,11 +54,9 @@ impl<'a> System<'a> for SayHandler {
 			if data.throttled.get(player).is_some() {
 				data.conns.send_to(
 					evt.0,
-					OwnedMessage::Binary(
-						to_bytes(&ServerPacket::Error(Error {
-							error: ErrorType::ChatThrottled,
-						})).unwrap(),
-					),
+					Error {
+						error: ErrorType::ChatThrottled,
+					},
 				);
 				continue;
 			}
@@ -68,9 +66,7 @@ impl<'a> System<'a> for SayHandler {
 				text: evt.1.text.clone(),
 			};
 
-			data.conns.send_to_all(OwnedMessage::Binary(
-				to_bytes(&ServerPacket::ChatSay(chat)).unwrap(),
-			));
+			data.conns.send_to_all(chat);
 		}
 	}
 }

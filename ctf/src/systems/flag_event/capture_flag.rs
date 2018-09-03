@@ -75,9 +75,7 @@ impl<'a> System<'a> for CaptureFlag {
 					redteam: scores.redteam + redinc,
 				};
 
-				conns.send_to_all(OwnedMessage::Binary(
-					to_bytes(&ServerPacket::GameFlag(packet)).unwrap(),
-				));
+				conns.send_to_all(packet);
 
 				channel.single_write(FlagEvent {
 					ty: FlagEventType::Capture,

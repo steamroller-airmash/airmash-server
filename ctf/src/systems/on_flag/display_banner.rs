@@ -69,9 +69,7 @@ impl<'a> System<'a> for PickupMessageSystem {
 				text: msg,
 			};
 
-			data.conns.send_to_all(OwnedMessage::Binary(
-				to_bytes(&ServerPacket::ServerMessage(packet)).unwrap(),
-			));
+			data.conns.send_to_all(packet);
 		}
 	}
 }

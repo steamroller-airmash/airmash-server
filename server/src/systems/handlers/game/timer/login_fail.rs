@@ -51,13 +51,11 @@ impl<'a> System<'a> for LoginFailed {
 
 			data.conns.send_to(
 				evt.0,
-				OwnedMessage::Binary(
-					to_bytes(&ServerPacket::Error(Error {
-						error: ErrorType::Banned,
-					})).unwrap(),
-				),
+				Error {
+					error: ErrorType::Banned,
+				},
 			);
-			data.conns.send_to(evt.0, OwnedMessage::Close(None));
+			data.conns.close(evt.0);
 		}
 	}
 }

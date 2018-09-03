@@ -47,9 +47,7 @@ impl<'a> System<'a> for DisplayWin {
 				data: text,
 			};
 
-			data.conns.send_to_all(OwnedMessage::Binary(
-				to_bytes(&ServerPacket::ServerCustom(packet)).unwrap(),
-			))
+			data.conns.send_to_all(packet)
 		}
 	}
 }

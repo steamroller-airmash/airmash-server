@@ -64,10 +64,7 @@ impl<'a> System<'a> for DestealthOnHit {
 				energy_regen: *data.energy_regen.get(player).unwrap(),
 			};
 
-			let message =
-				OwnedMessage::Binary(to_bytes(&ServerPacket::EventStealth(packet)).unwrap());
-
-			data.conns.send_to_player(player, message);
+			data.conns.send_to_player(player, packet);
 		}
 	}
 }

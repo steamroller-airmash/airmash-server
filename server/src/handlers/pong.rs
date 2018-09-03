@@ -65,10 +65,7 @@ impl<'a> System<'a> for PongHandler {
 				.insert(player, PlayerPing(ping.as_millis() as u32))
 				.unwrap();
 
-			data.conns.send_to(
-				evt.0,
-				OwnedMessage::Binary(to_bytes(&ServerPacket::PingResult(result)).unwrap()),
-			);
+			data.conns.send_to(evt.0, result);
 		}
 	}
 }

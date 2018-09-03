@@ -43,10 +43,7 @@ impl<'a> System<'a> for SendSpectatePacket {
 				id: evt.target.unwrap(),
 			};
 
-			data.conns.send_to_player(
-				evt.player,
-				OwnedMessage::Binary(to_bytes(&ServerPacket::GameSpectate(packet)).unwrap()),
-			);
+			data.conns.send_to_player(evt.player, packet);
 		}
 	}
 }

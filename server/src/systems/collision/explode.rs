@@ -61,9 +61,7 @@ impl<'a> System<'a> for MissileExplodeSystem {
 				pos: *data.pos.get(missile_ent).unwrap(),
 			};
 
-			data.conns.send_to_all(OwnedMessage::Binary(
-				to_bytes(&ServerPacket::MobDespawnCoords(packet)).unwrap(),
-			));
+			data.conns.send_to_all(packet);
 		}
 	}
 }

@@ -56,23 +56,17 @@ impl<'a> System<'a> for ChatHandler {
 			if data.throttled.get(player).is_some() {
 				data.conns.send_to(
 					evt.0,
-					OwnedMessage::Binary(
-						to_bytes(&ServerPacket::Error(Error {
-							error: ErrorType::ChatThrottled,
-						})).unwrap(),
-					),
+					Error {
+						error: ErrorType::ChatThrottled,
+					},
 				);
 				continue;
 			}
 
-			let chat = ChatPublic {
+			data.conns.send_to_all(ChatPublic {
 				id: player,
 				text: evt.1.text.clone(),
-			};
-
-			data.conns.send_to_all(OwnedMessage::Binary(
-				to_bytes(&ServerPacket::ChatPublic(chat)).unwrap(),
-			));
+			});
 		}
 	}
 }

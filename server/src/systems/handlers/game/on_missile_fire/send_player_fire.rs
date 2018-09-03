@@ -77,10 +77,7 @@ impl<'a> System<'a> for SendPlayerFire {
 				projectiles,
 			};
 
-			data.conns.send_to_visible(
-				evt.player,
-				OwnedMessage::Binary(to_bytes(&ServerPacket::PlayerFire(packet)).unwrap()),
-			);
+			data.conns.send_to_visible(evt.player, packet);
 		}
 	}
 }

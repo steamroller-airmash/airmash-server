@@ -52,13 +52,11 @@ impl<'a> System<'a> for PingTimerHandler {
 
 					data.conns.send_to_player(
 						ent,
-						OwnedMessage::Binary(
-							to_bytes(&ServerPacket::Ping(ServerPing {
-								clock,
-								num: ping.idx,
-							})).unwrap(),
-						),
-					)
+						ServerPing {
+							clock,
+							num: ping.idx,
+						},
+					);
 				});
 		}
 	}

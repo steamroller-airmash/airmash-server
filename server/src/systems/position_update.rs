@@ -213,14 +213,10 @@ impl PositionUpdate {
 
 					trace!(target: "server", "Update: {:?}", packet);
 
-					let message = OwnedMessage::Binary(
-						to_bytes(&ServerPacket::PlayerUpdate(packet)).unwrap(),
-					);
-
 					if !keystate.stealthed {
-						data.conns.send_to_all(message);
+						data.conns.send_to_all(packet);
 					} else {
-						data.conns.send_to_team(ent, message);
+						data.conns.send_to_team(ent, packet);
 					}
 				},
 			)
@@ -272,14 +268,10 @@ impl PositionUpdate {
 
 					trace!(target: "server", "Update: {:?}", packet);
 
-					let message = OwnedMessage::Binary(
-						to_bytes(&ServerPacket::PlayerUpdate(packet)).unwrap(),
-					);
-
 					if !keystate.stealthed {
-						data.conns.send_to_all(message);
+						data.conns.send_to_all(packet);
 					} else {
-						data.conns.send_to_team(ent, message);
+						data.conns.send_to_team(ent, packet);
 					}
 				},
 			)

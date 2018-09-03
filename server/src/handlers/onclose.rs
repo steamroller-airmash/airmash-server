@@ -65,9 +65,7 @@ impl<'a> System<'a> for OnCloseHandler {
 
 						// Send out PlayerLeave message
 						let player_leave = PlayerLeave { id: ent };
-						connections.send_to_all(OwnedMessage::Binary(
-							to_bytes(&ServerPacket::PlayerLeave(player_leave)).unwrap(),
-						));
+						connections.send_to_all(player_leave);
 
 						onleave.single_write(EvtPlayerLeave(ent));
 						// Delete player entity

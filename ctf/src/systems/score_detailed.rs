@@ -67,10 +67,7 @@ impl<'a> System<'a> for ScoreDetailed {
 
 			let packet = ScoreDetailedCTF { scores };
 
-			data.conns.send_to(
-				evt.0,
-				OwnedMessage::Binary(to_bytes(&ServerPacket::ScoreDetailedCTF(packet)).unwrap()),
-			);
+			data.conns.send_to(evt.0, packet);
 		}
 	}
 }

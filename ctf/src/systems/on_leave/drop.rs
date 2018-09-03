@@ -83,9 +83,7 @@ impl<'a> System<'a> for Drop {
 						time: thisframe.0,
 					};
 
-					conns.send_to_all(OwnedMessage::Binary(
-						to_bytes(&ServerPacket::GameFlag(packet)).unwrap(),
-					));
+					conns.send_to_all(packet);
 				});
 		}
 	}

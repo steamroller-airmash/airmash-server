@@ -69,9 +69,7 @@ impl<'a> System<'a> for UpdateScore {
 				upgrades: data.upgrades.get(player).unwrap().unused,
 			};
 
-			data.conns.send_to_all(OwnedMessage::Binary(
-				to_bytes(&ServerPacket::ScoreUpdate(packet)).unwrap(),
-			));
+			data.conns.send_to_all(packet);
 		}
 	}
 }

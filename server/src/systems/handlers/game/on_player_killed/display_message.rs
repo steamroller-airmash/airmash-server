@@ -55,9 +55,7 @@ impl<'a> System<'a> for DisplayMessage {
 				warn!("Player {:?} killed themselves!", evt.player);
 			}
 
-			data.conns.send_to_all(OwnedMessage::Binary(
-				to_bytes(&ServerPacket::PlayerKill(packet)).unwrap(),
-			));
+			data.conns.send_to_all(packet);
 
 			data.timerevent.single_write(TimerEvent {
 				ty: *SCORE_BOARD,

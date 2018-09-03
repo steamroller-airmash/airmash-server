@@ -42,9 +42,7 @@ impl<'a> System<'a> for MissileCull {
 
 				let packet = MobDespawn { id: ent, ty: mob };
 
-				data.conns.send_to_all(OwnedMessage::Binary(
-					to_bytes(&ServerPacket::MobDespawn(packet)).unwrap(),
-				));
+				data.conns.send_to_all(packet);
 			});
 	}
 }

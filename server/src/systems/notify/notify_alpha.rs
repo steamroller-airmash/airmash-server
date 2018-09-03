@@ -39,10 +39,7 @@ impl<'a> System<'a> for NotifyAlpha {
 				duration: (self.duration.as_secs() * 1000) as u32 + self.duration.subsec_millis(),
 			};
 
-			data.conns.send_to_player(
-				evt.id,
-				OwnedMessage::Binary(to_bytes(&ServerPacket::ServerMessage(packet)).unwrap()),
-			);
+			data.conns.send_to_player(evt.id, packet);
 		}
 	}
 }

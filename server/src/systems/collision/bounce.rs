@@ -98,9 +98,7 @@ impl<'a> System<'a> for BounceSystem {
 					keystate: state,
 				};
 
-				data.conns.send_to_all(OwnedMessage::Binary(
-					to_bytes(&ServerPacket::EventBounce(packet)).unwrap(),
-				));
+				data.conns.send_to_all(packet);
 			}
 		}
 	}

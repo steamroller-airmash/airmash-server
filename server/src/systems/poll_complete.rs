@@ -2,10 +2,12 @@ use metrics::*;
 use specs::prelude::*;
 use std::time::Instant;
 use tokio::prelude::Sink;
-use types::connection::{Message, MessageInfo};
+use types::connection::{Message, MessageBody, MessageInfo};
 use types::*;
 
 use websocket::OwnedMessage;
+
+use protocol::to_bytes;
 
 use std::mem;
 use std::sync::mpsc::{channel, Receiver};
@@ -70,8 +72,14 @@ impl<'a> System<'a> for PollComplete {
 		while let Ok(msg) = self.channel.try_recv() {
 			cnt += 1;
 
+			let data = match msg.msg {
+				MessageBody::Packet(ref packet) => OwnedMessage::Binary(to_bytes(packet).unwrap()),
+				MessageBody::Binary(bin) => OwnedMessage::Binary(bin),
+				MessageBody::Close => OwnedMessage::Close(None),
+			};
+
 			match msg.info {
-				MessageInfo::ToConnection(id) => Self::send_to_connection(&mut conns, id, msg.msg),
+				MessageInfo::ToConnection(id) => Self::send_to_connection(&mut conns, id, data),
 				MessageInfo::ToTeam(player) => {
 					let player_team = *teams.get(player).unwrap();
 
@@ -79,13 +87,13 @@ impl<'a> System<'a> for PollComplete {
 						.join()
 						.filter(|(_, team)| **team == player_team)
 						.for_each(|(associated, _)| {
-							Self::send_to_connection(&mut conns, associated.0, msg.msg.clone());
+							Self::send_to_connection(&mut conns, associated.0, data.clone());
 						});
 				}
 				MessageInfo::ToVisible(_player) => {
 					// TODO: Implement this properly
 					(&associated).join().for_each(|associated| {
-						Self::send_to_connection(&mut conns, associated.0, msg.msg.clone());
+						Self::send_to_connection(&mut conns, associated.0, data.clone());
 					});
 				}
 			}

@@ -73,9 +73,7 @@ impl SendEventBoost {
 					energy_regen: *energy_regen,
 				};
 
-				data.conns.send_to_all(OwnedMessage::Binary(
-					to_bytes(&ServerPacket::EventBoost(packet)).unwrap(),
-				));
+				data.conns.send_to_all(packet);
 			});
 	}
 }

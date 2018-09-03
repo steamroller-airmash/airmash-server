@@ -31,9 +31,7 @@ impl<'a> System<'a> for SignalHandler {
 					text: "Server shutting down in 30 seconds!".to_string(),
 				};
 
-				data.send_to_all(OwnedMessage::Binary(
-					to_bytes(&ServerPacket::ServerMessage(msg)).unwrap(),
-				));
+				data.send_to_all(msg);
 
 				info!(
 					target:"server",

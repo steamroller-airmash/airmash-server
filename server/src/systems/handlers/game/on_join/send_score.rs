@@ -65,9 +65,7 @@ impl<'a> System<'a> for SendScoreUpdate {
 				total_deaths: total_deaths.0,
 			};
 
-			conns.send_to_all(OwnedMessage::Binary(
-				to_bytes(&ServerPacket::ScoreUpdate(packet)).unwrap(),
-			));
+			conns.send_to_all(packet);
 		}
 	}
 }

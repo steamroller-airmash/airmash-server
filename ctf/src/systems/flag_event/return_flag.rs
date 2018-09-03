@@ -110,9 +110,7 @@ impl<'a> System<'a> for ReturnFlag {
 				redteam: scores.redteam,
 			};
 
-			conns.send_to_all(OwnedMessage::Binary(
-				to_bytes(&ServerPacket::GameFlag(packet)).unwrap(),
-			));
+			conns.send_to_all(packet);
 
 			channel.single_write(FlagEvent {
 				ty: FlagEventType::Return,

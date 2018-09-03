@@ -109,9 +109,7 @@ impl<'a> System<'a> for ScoreBoardTimerHandler {
 				rankings: rankings,
 			};
 
-			data.conns.send_to_all(OwnedMessage::Binary(
-				to_bytes(&ServerPacket::ScoreBoard(score_board)).unwrap(),
-			));
+			data.conns.send_to_all(score_board);
 		}
 	}
 }

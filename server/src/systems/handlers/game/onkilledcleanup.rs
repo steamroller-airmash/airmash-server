@@ -61,9 +61,7 @@ impl<'a> System<'a> for PlayerKilledCleanup {
 				pos: evt.pos,
 			};
 
-			data.conns.send_to_all(OwnedMessage::Binary(
-				to_bytes(&ServerPacket::MobDespawnCoords(despawn_packet)).unwrap(),
-			));
+			data.conns.send_to_all(despawn_packet);
 
 			let player = evt.player;
 

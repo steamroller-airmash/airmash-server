@@ -84,9 +84,7 @@ impl<'a> System<'a> for Shuffle {
 
 			let packet = PlayerReteam { players: swaps };
 
-			data.conns.send_to_all(OwnedMessage::Binary(
-				to_bytes(&ServerPacket::PlayerReteam(packet)).unwrap(),
-			));
+			data.conns.send_to_all(packet);
 		}
 	}
 }

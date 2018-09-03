@@ -61,10 +61,7 @@ impl<'a> System<'a> for SendFlagPosition {
 						redteam: data.scores.redteam,
 					};
 
-					data.conns.send_to_player(
-						evt.id,
-						OwnedMessage::Binary(to_bytes(&ServerPacket::GameFlag(packet)).unwrap()),
-					);
+					data.conns.send_to_player(evt.id, packet);
 				});
 		}
 	}
