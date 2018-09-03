@@ -84,6 +84,8 @@ impl Serialize for ClientPacket {
 		use self::consts::*;
 		use self::ClientPacket::*;
 
+		// TODO: Implement trace info here
+
 		match self {
 			Login(x) => (LOGIN, x).serialize(ser),
 			Backup(x) => (BACKUP, x).serialize(ser),

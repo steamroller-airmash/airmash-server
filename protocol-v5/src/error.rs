@@ -8,7 +8,6 @@ use protocol_common::error::EnumValueOutOfRangeError;
 pub enum FieldName {
 	Name(&'static str),
 	Index(usize),
-	None,
 }
 
 #[derive(Copy, Clone, Debug)]
@@ -19,7 +18,7 @@ pub struct FieldSpec {
 
 #[derive(Debug)]
 pub enum SerializeErrorType {
-	ArrayTooLarge,
+	ArrayTooLarge(usize),
 }
 
 #[derive(Debug)]
@@ -41,21 +40,89 @@ pub struct DeserializeError {
 	pub trace: Vec<FieldSpec>,
 }
 
+impl Display for SerializeErrorType {
+	fn fmt(&self, fmt: &mut Formatter) -> Result<(), FmtError> {
+		use SerializeErrorType::*;
+		match self {
+			ArrayTooLarge(size) => write!(
+				fmt,
+				"Array too large. This type of array can have at most {size} elements.",
+				size = size
+			),
+		}
+	}
+}
+
+impl Display for DeserializeErrorType {
+	fn fmt(&self, fmt: &mut Formatter) -> Result<(), FmtError> {
+		use DeserializeErrorType::*;
+
+		match self {
+			UnexpectedEndOfMessage => {
+				write!(
+					fmt,
+					"Reached the end of the buffer before deserialization was complete!"
+				)
+			},
+			Utf8Error(e) => {
+				write!(
+					fmt,
+					"A string contained invalid UTF-8. Inner error: {}",
+					e
+				)
+			},
+			InvalidEnumValue(v) => {
+				write!(
+					fmt,
+					"Attempted to deserialize an enum with an invalid value. {} does not deserialize to an enum case.",
+					v
+				)
+			}
+		}
+	}
+}
+
+fn display_trace(trace: &[FieldSpec], fmt: &mut Formatter) -> Result<(), FmtError> {
+	for spec in trace.iter().rev() {
+		match spec.field {
+			FieldName::Name(field) => writeln!(
+				fmt,
+				"\tat {ty}::{field},",
+				ty = spec.ty.unwrap_or("<unnamed>"),
+				field = field
+			)?,
+			FieldName::Index(i) => writeln!(fmt, "\tat index ${idx},", idx = i)?,
+		}
+	}
+
+	Ok(())
+}
+
 impl Display for SerializeError {
 	fn fmt(&self, fmt: &mut Formatter) -> Result<(), FmtError> {
-		unimplemented!()
+		writeln!(fmt, "{}", self.ty)?;
+		display_trace(&self.trace, fmt)
 	}
 }
 
 impl Display for DeserializeError {
 	fn fmt(&self, fmt: &mut Formatter) -> Result<(), FmtError> {
-		unimplemented!()
+		writeln!(fmt, "{}", self.ty)?;
+		display_trace(&self.trace, fmt)
 	}
 }
 
 impl Error for SerializeError {}
 
-impl Error for DeserializeError {}
+impl Error for DeserializeError {
+	fn cause(&self) -> Option<&Error> {
+		use DeserializeErrorType::*;
+		match self.ty {
+			Utf8Error(ref e) => Some(e),
+			_ => None,
+		}
+	}
+}
 
 impl From<FromUtf8Error> for DeserializeError {
 	fn from(e: FromUtf8Error) -> Self {

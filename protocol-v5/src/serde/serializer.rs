@@ -71,7 +71,7 @@ impl Serializer {
 
 		if len > 0xFF {
 			return Err(SerializeError {
-				ty: SerializeErrorType::ArrayTooLarge,
+				ty: SerializeErrorType::ArrayTooLarge(0xFF),
 				trace: vec![],
 			});
 		}
@@ -84,7 +84,7 @@ impl Serializer {
 
 		if len > 0xFFFF {
 			return Err(SerializeError {
-				ty: SerializeErrorType::ArrayTooLarge,
+				ty: SerializeErrorType::ArrayTooLarge(0xFFFF),
 				trace: vec![],
 			});
 		}
