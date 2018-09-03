@@ -6,6 +6,8 @@ use std::iter::once;
 
 type SerValue = Box<Iterator<Item = Vec<u8>>>;
 
+/// Serializer/Deserialize for the airmash protocol version 5.
+#[derive(Copy, Clone, Debug, Default)]
 pub struct ProtocolV5;
 
 impl Protocol for ProtocolV5 {
