@@ -15,7 +15,7 @@ pub struct ScoreBoardData {
 #[cfg_attr(features = "serde", derive(Serialize, Deserialize))]
 pub struct ScoreBoardRanking {
 	pub id: Player,
-	pub pos: Position,
+	pub pos: Option<Position>,
 }
 
 /// Leaderboard + Global player positions

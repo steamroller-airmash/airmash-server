@@ -67,6 +67,17 @@ macro_rules! impl_try_from_enum_inner1 {
 				})
 			}
 		}
+
+		impl From<$name> for $base {
+			#[allow(unreachable_code)]
+			fn from(v: $name) -> Self {
+				match v {
+					$(
+						$name::$case => $name::$case as $base,
+					)*
+				}
+			}
+		}
 	}
 }
 

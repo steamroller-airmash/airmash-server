@@ -684,6 +684,7 @@ dependencies = [
 name = "protocol-v5"
 version = "0.0.1"
 dependencies = [
+ "protocol-common 0.0.1",
  "specgen 0.1.0",
 ]
 

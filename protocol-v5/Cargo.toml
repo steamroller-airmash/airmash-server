@@ -7,6 +7,7 @@ publish = false
 repository = 'https://github.com/steamroller-airmash/airmash-server'
 
 [dependencies]
+protocol-common = { path="../protocol-common" }
 
 [build-dependencies]
 specgen = { path="../specgen" }

@@ -7,5 +7,5 @@ pub struct PlayerPowerup {
 	#[cfg_attr(features = "serde", serde(rename = "type"))]
 	pub ty: PowerupType,
 	// Maybe make this a Duration?
-	duration: u32,
+	pub duration: u32,
 }
