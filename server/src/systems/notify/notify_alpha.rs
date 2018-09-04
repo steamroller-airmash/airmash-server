@@ -1,14 +1,13 @@
 use specs::*;
 use types::*;
 
-use OwnedMessage;
 use SystemInfo;
 
 use std::time::Duration;
 
 use component::channel::*;
 use protocol::server::ServerMessage;
-use protocol::{to_bytes, ServerMessageType, ServerPacket};
+use protocol::ServerMessageType;
 
 pub struct NotifyAlpha {
 	reader: Option<OnPlayerJoinReader>,

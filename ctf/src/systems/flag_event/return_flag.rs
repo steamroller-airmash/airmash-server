@@ -8,8 +8,8 @@ use component::*;
 use std::cmp::Ordering;
 
 use server::component::flag::IsPlayer;
-use server::protocol::server::{GameFlag, ServerPacket};
-use server::protocol::{to_bytes, FlagUpdateType};
+use server::protocol::server::GameFlag;
+use server::protocol::FlagUpdateType;
 use server::types::systemdata::*;
 
 pub struct ReturnFlag;

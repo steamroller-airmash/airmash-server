@@ -6,9 +6,7 @@ use std::time::Instant;
 use component::channel::{OnPong, OnPongReader};
 use component::counter::{PlayerPing, PlayersGame};
 
-use protocol::server::{PingResult, ServerPacket};
-use protocol::to_bytes;
-use websocket::OwnedMessage;
+use protocol::server::PingResult;
 
 pub struct PongHandler {
 	reader: Option<OnPongReader>,

@@ -6,8 +6,8 @@ use config as ctfconfig;
 
 use htmlescape;
 
-use server::protocol::server::{ServerMessage, ServerPacket};
-use server::protocol::{to_bytes, ServerMessageType};
+use server::protocol::server::ServerMessage;
+use server::protocol::ServerMessageType;
 
 pub struct PickupMessageSystem {
 	reader: Option<OnFlagReader>,

@@ -6,9 +6,8 @@ use config::*;
 use systems::on_flag::CheckWin;
 
 use server::component::counter::PlayersGame;
-use server::protocol::server::{ServerCustom, ServerPacket};
-use server::protocol::{to_bytes, ServerCustomType};
-use server::OwnedMessage;
+use server::protocol::server::ServerCustom;
+use server::protocol::ServerCustomType;
 
 #[derive(Default)]
 pub struct DisplayWin {

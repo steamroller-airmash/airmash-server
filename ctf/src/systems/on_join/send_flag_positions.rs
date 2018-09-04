@@ -1,8 +1,8 @@
 use specs::*;
 
 use server::component::channel::*;
-use server::protocol::server::{GameFlag, ServerPacket};
-use server::protocol::{to_bytes, FlagUpdateType};
+use server::protocol::server::GameFlag;
+use server::protocol::FlagUpdateType;
 use server::systems::handlers::game::on_join::SendLogin;
 use server::*;
 

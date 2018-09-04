@@ -5,8 +5,7 @@ use component::*;
 use config as ctfconfig;
 
 use server::component::counter::*;
-use server::protocol::server::{ScoreUpdate, ServerPacket};
-use server::protocol::to_bytes;
+use server::protocol::server::ScoreUpdate;
 use server::types::*;
 
 pub struct UpdateScore {

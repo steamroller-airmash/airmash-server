@@ -6,8 +6,6 @@ use systems::missile::MissileFireHandler;
 use SystemInfo;
 
 use protocol::server::EventStealth;
-use protocol::{to_bytes, ServerPacket};
-use websocket::OwnedMessage;
 
 pub struct DestealthOnFire {
 	reader: Option<OnMissileFireReader>,

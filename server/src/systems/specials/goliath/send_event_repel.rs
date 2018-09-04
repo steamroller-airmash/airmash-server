@@ -2,7 +2,6 @@ use specs::*;
 use types::systemdata::*;
 use types::*;
 
-use OwnedMessage;
 use SystemInfo;
 
 use component::channel::{OnPlayerRepel, OnPlayerRepelReader};
@@ -11,7 +10,6 @@ use component::reference::PlayerRef;
 use systems::specials::config::*;
 
 use protocol::server::{EventRepel, EventRepelMob, EventRepelPlayer};
-use protocol::{to_bytes, ServerPacket};
 
 /// Send [`EventRepel`] when a goliath uses it's special.
 ///

@@ -5,8 +5,8 @@ use config as ctfconfig;
 
 use component::*;
 
-use server::protocol::server::{GameFlag, ServerPacket};
-use server::protocol::{to_bytes, FlagUpdateType};
+use server::protocol::server::GameFlag;
+use server::protocol::FlagUpdateType;
 
 pub struct CaptureFlag;
 

@@ -3,9 +3,8 @@ use specs::*;
 use types::*;
 
 use protocol::client::Say;
-use protocol::server::{ChatSay, Error, ServerPacket};
-use protocol::{to_bytes, ErrorType};
-use websocket::OwnedMessage;
+use protocol::server::{ChatSay, Error};
+use protocol::ErrorType;
 
 pub struct SayHandler {
 	reader: Option<ReaderId<(ConnectionId, Say)>>,

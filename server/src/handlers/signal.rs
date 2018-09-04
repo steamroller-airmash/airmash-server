@@ -7,8 +7,6 @@ use std::time::{Duration, Instant};
 
 use protocol::server::ServerMessage;
 use protocol::ServerMessageType;
-use protocol::{to_bytes, ServerPacket};
-use websocket::OwnedMessage;
 
 use std::process;
 

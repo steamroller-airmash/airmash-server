@@ -10,7 +10,6 @@ use server::types::Upgrades;
 use server::*;
 
 use server::protocol::server::ScoreUpdate;
-use server::protocol::{to_bytes, ServerPacket};
 
 use component::*;
 use config::GAME_WIN_BOUNTY_BASE;

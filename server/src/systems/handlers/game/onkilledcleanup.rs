@@ -13,8 +13,6 @@ use component::flag::IsDead;
 use component::time::ThisFrame;
 
 use protocol::server::MobDespawnCoords;
-use protocol::{to_bytes, ServerPacket};
-use websocket::OwnedMessage;
 
 pub struct PlayerKilledCleanup {
 	reader: Option<OnPlayerKilledReader>,

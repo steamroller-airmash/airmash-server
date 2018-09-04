@@ -1,12 +1,11 @@
 use specs::*;
 use types::*;
 
-use OwnedMessage;
 use SystemInfo;
 
 use component::channel::*;
 use protocol::server::PlayerNew;
-use protocol::{to_bytes, ServerPacket, Upgrades as ProtocolUpgrades};
+use protocol::Upgrades as ProtocolUpgrades;
 
 pub struct SendPlayerNew {
 	reader: Option<OnPlayerJoinReader>,

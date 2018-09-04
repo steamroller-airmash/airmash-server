@@ -6,7 +6,6 @@ use server::component::flag::*;
 use server::*;
 
 use server::protocol::server::{PlayerReteam, PlayerReteamPlayer};
-use server::protocol::{to_bytes, ServerPacket};
 
 use component::*;
 use consts::*;

@@ -7,9 +7,7 @@ use component::channel::*;
 use systems::spectate::CommandHandler;
 
 use protocol::server::GameSpectate;
-use protocol::{to_bytes, ServerPacket};
 
-use OwnedMessage;
 use SystemInfo;
 
 pub struct SendSpectatePacket {

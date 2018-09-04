@@ -3,8 +3,8 @@ use specs::*;
 
 use server::component::channel::{OnCommand, OnCommandReader};
 use server::component::time::ThisFrame;
-use server::protocol::server::{GameFlag, ServerPacket};
-use server::protocol::{to_bytes, FlagUpdateType};
+use server::protocol::server::GameFlag;
+use server::protocol::FlagUpdateType;
 
 use component::*;
 

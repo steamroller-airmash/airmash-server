@@ -4,7 +4,6 @@ use specs::*;
 use component::*;
 use server::protocol::server::GameFlag;
 use server::protocol::FlagUpdateType;
-use server::protocol::{to_bytes, ServerPacket};
 
 use BLUE_TEAM;
 use RED_TEAM;

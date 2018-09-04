@@ -5,8 +5,6 @@ use component::channel::*;
 use component::reference::PlayerRef;
 
 use protocol::server::{PlayerHit, PlayerHitPlayer};
-use protocol::{to_bytes, ServerPacket};
-use OwnedMessage;
 
 pub struct SendPacket {
 	reader: Option<OnPlayerHitReader>,

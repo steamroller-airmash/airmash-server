@@ -47,11 +47,6 @@ pub enum MessageInfo {
 	ToVisible(Entity),
 }
 
-pub struct RegularMessage {
-	pub info: MessageInfo,
-	pub msg: ServerPacket,
-}
-
 pub enum MessageBody {
 	Packet(ServerPacket),
 	Binary(Vec<u8>),

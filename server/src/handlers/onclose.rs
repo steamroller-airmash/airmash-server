@@ -1,9 +1,7 @@
 use airmash_protocol::server::PlayerLeave;
-use airmash_protocol::{to_bytes, ServerPacket};
 use shrev::*;
 use specs::*;
 use types::*;
-use websocket::OwnedMessage;
 
 use component::channel::{OnClose, OnPlayerLeave};
 use component::counter::PlayersGame;

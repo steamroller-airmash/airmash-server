@@ -9,8 +9,6 @@ use systems::missile::MissileFireHandler;
 use component::channel::*;
 
 use airmash_protocol::server::{PlayerFire, PlayerFireProjectile};
-use airmash_protocol::{to_bytes, ServerPacket};
-use websocket::OwnedMessage;
 
 pub struct SendPlayerFire {
 	reader: Option<OnMissileFireReader>,

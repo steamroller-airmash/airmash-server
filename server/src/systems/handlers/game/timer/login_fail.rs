@@ -5,9 +5,8 @@ use consts::timer::*;
 use types::*;
 
 use protocol::client::Login;
-use protocol::server::{Error, ServerPacket};
-use protocol::{to_bytes, ErrorType};
-use OwnedMessage;
+use protocol::server::Error;
+use protocol::ErrorType;
 
 // Login needs write access to just
 // about everything

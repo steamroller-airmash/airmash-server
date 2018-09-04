@@ -1,12 +1,11 @@
 use specs::*;
 use types::*;
 
-use OwnedMessage;
 use SystemInfo;
 
 use component::channel::*;
 use protocol::server::PlayerLevel;
-use protocol::{to_bytes, PlayerLevelType, ServerPacket};
+use protocol::PlayerLevelType;
 
 pub struct SendPlayerLevel {
 	reader: Option<OnPlayerJoinReader>,

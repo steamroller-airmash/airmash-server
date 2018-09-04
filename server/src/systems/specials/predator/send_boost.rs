@@ -10,8 +10,6 @@ use SystemInfo;
 use component::flag::{IsBoosting, IsPlayer};
 
 use protocol::server::EventBoost;
-use protocol::{to_bytes, ServerPacket};
-use websocket::OwnedMessage;
 
 pub struct SendEventBoost {
 	pub dirty: BitSet,

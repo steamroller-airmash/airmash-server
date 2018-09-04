@@ -4,7 +4,6 @@ use server::component::channel::*;
 use server::component::counter::*;
 use server::component::flag::*;
 use server::protocol::server::{ScoreDetailedCTF, ScoreDetailedCTFEntry};
-use server::protocol::{to_bytes, ServerPacket};
 use server::*;
 
 use component::Captures;

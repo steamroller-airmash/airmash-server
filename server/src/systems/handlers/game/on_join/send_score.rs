@@ -3,14 +3,12 @@ use types::*;
 
 use super::*;
 
-use OwnedMessage;
 use SystemInfo;
 
 use component::channel::*;
 use component::counter::*;
 
 use protocol::server::ScoreUpdate;
-use protocol::{to_bytes, ServerPacket};
 
 pub struct SendScoreUpdate {
 	reader: Option<OnPlayerJoinReader>,

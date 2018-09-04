@@ -11,8 +11,6 @@ use component::event::TimerEvent;
 use component::time::ThisFrame;
 
 use protocol::server::ScoreUpdate;
-use protocol::{to_bytes, ServerPacket};
-use websocket::OwnedMessage;
 
 pub struct UpdateScore {
 	reader: Option<OnPlayerKilledReader>,

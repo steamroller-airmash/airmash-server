@@ -5,8 +5,6 @@ use types::*;
 use consts::timer::PING_DISPATCH;
 
 use protocol::server::Ping as ServerPing;
-use protocol::{to_bytes, ServerPacket};
-use OwnedMessage;
 
 use component::channel::{OnTimerEvent, OnTimerEventReader};
 

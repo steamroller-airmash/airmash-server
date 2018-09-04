@@ -3,9 +3,8 @@ use specs::*;
 use types::*;
 
 use protocol::client::Chat;
-use protocol::server::{ChatPublic, Error, ServerPacket};
-use protocol::{to_bytes, ErrorType};
-use websocket::OwnedMessage;
+use protocol::server::{ChatPublic, Error};
+use protocol::ErrorType;
 
 use component::flag::{IsChatMuted, IsChatThrottled};
 

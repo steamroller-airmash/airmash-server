@@ -7,8 +7,7 @@ use component::event::*;
 
 use protocol::client::Command;
 use protocol::server::{PlayerFlag, PlayerType};
-use protocol::{to_bytes, FlagCode, ServerPacket};
-use websocket::OwnedMessage;
+use protocol::{FlagCode, ServerPacket};
 
 pub struct CommandHandler {
 	reader: Option<OnCommandReader>,

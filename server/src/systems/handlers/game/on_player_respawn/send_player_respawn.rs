@@ -6,8 +6,6 @@ use SystemInfo;
 
 use protocol::server::PlayerRespawn;
 use protocol::Upgrades as ProtocolUpgrades;
-use protocol::{to_bytes, ServerPacket};
-use OwnedMessage;
 
 use systems::handlers::game::on_join::AllJoinHandlers;
 use systems::handlers::game::on_player_respawn::SetTraits;

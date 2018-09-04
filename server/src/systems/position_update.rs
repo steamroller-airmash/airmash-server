@@ -8,9 +8,8 @@ use std::f32::consts;
 use std::marker::PhantomData;
 use std::time::Duration;
 
-use airmash_protocol::server::{PlayerUpdate, ServerPacket};
-use airmash_protocol::{to_bytes, Upgrades as ServerUpgrades};
-use websocket::OwnedMessage;
+use airmash_protocol::server::PlayerUpdate;
+use airmash_protocol::Upgrades as ServerUpgrades;
 
 const PI: Rotation = Rotation {
 	value_unsafe: consts::PI,

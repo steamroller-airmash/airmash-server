@@ -4,12 +4,11 @@ use types::*;
 
 use GameMode;
 use GameModeWriter;
-use OwnedMessage;
 use SystemInfo;
 
 use component::channel::*;
 use protocol::server::{Login, LoginPlayer};
-use protocol::{to_bytes, ServerPacket, Upgrades as ProtocolUpgrades};
+use protocol::Upgrades as ProtocolUpgrades;
 
 pub struct SendLogin {
 	reader: Option<OnPlayerJoinReader>,

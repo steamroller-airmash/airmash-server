@@ -12,8 +12,6 @@ use component::event::TimerEvent;
 use component::time::ThisFrame;
 
 use protocol::server::PlayerKill;
-use protocol::{to_bytes, ServerPacket};
-use websocket::OwnedMessage;
 
 pub struct DisplayMessage {
 	reader: Option<OnPlayerKilledReader>,

@@ -10,8 +10,6 @@ use component::channel::*;
 use component::time::{LastUpdate, StartTime};
 
 use protocol::server::EventStealth;
-use protocol::{to_bytes, ServerPacket};
-use websocket::OwnedMessage;
 
 pub struct SendEventStealth {
 	pub reader: Option<OnPlayerStealthReader>,

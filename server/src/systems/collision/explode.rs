@@ -5,9 +5,7 @@ use types::*;
 
 use component::channel::*;
 
-use protocol::server::{MobDespawnCoords, ServerPacket};
-use protocol::to_bytes;
-use websocket::OwnedMessage;
+use protocol::server::MobDespawnCoords;
 
 pub struct MissileExplodeSystem {
 	reader: Option<OnMissileTerrainCollisionReader>,

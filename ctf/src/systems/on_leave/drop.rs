@@ -4,7 +4,7 @@ use specs::*;
 use server::component::channel::*;
 use server::component::time::ThisFrame;
 use server::protocol::server::GameFlag;
-use server::protocol::{to_bytes, FlagUpdateType, ServerPacket};
+use server::protocol::FlagUpdateType;
 
 use component::*;
 

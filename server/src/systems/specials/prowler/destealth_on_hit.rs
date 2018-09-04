@@ -8,8 +8,6 @@ use systems::collision::PlayerMissileCollisionSystem;
 use SystemInfo;
 
 use protocol::server::EventStealth;
-use protocol::{to_bytes, ServerPacket};
-use websocket::OwnedMessage;
 
 pub struct DestealthOnHit {
 	reader: Option<OnPlayerMissileCollisionReader>,

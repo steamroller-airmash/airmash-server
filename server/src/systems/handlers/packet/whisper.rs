@@ -4,8 +4,7 @@ use types::*;
 
 use protocol::client::Whisper;
 use protocol::server::{ChatWhisper, Error, ServerPacket};
-use protocol::{to_bytes, ErrorType};
-use OwnedMessage;
+use protocol::ErrorType;
 
 use component::flag::IsPlayer;
 

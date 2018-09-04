@@ -8,8 +8,6 @@ use component::flag::{IsDead, IsPlayer, IsSpectating};
 use component::time::JoinTime;
 
 use protocol::server::{ScoreBoard, ScoreBoardData, ScoreBoardRanking};
-use protocol::{to_bytes, ServerPacket};
-use OwnedMessage;
 
 use std::cmp::{Ordering, Reverse};
 
