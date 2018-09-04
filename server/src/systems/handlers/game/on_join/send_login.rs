@@ -60,7 +60,7 @@ impl SendLogin {
 					};
 
 					LoginPlayer {
-						id: ent,
+						id: ent.into(),
 						status: *status,
 						level: *level,
 						name: name.0.clone(),
@@ -92,7 +92,7 @@ impl<'a> System<'a> for SendLogin {
 
 			let packet = Login {
 				clock: data.clock.get(),
-				id: evt.id,
+				id: evt.id.into(),
 				room: data.gamemode.get().room(),
 				success: true,
 				token: "none".to_owned(),

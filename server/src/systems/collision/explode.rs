@@ -54,7 +54,7 @@ impl<'a> System<'a> for MissileExplodeSystem {
 			data.entities.delete(missile_ent).unwrap();
 
 			let packet = MobDespawnCoords {
-				id: missile_ent,
+				id: missile_ent.into(),
 				ty: *data.types.get(missile_ent).unwrap(),
 				pos: *data.pos.get(missile_ent).unwrap(),
 			};

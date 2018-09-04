@@ -60,7 +60,7 @@ impl<'a> System<'a> for SendEventStealth {
 			}
 
 			let packet = EventStealth {
-				id: evt.player,
+				id: evt.player.into(),
 				state: evt.stealthed,
 				energy: *energy.get(evt.player).unwrap(),
 				energy_regen: *energy_regen.get(evt.player).unwrap(),

@@ -53,12 +53,12 @@ impl<'a> System<'a> for SendPacket {
 			let ref planeconf = data.config.planes[*plane];
 
 			let packet = PlayerHit {
-				id: evt.missile,
-				owner: owner.0,
+				id: evt.missile.into(),
+				owner: owner.0.into(),
 				pos: *pos,
 				ty: *mob,
 				players: vec![PlayerHitPlayer {
-					id: evt.player,
+					id: evt.player.into(),
 					health: *health,
 					health_regen: planeconf.health_regen,
 				}],

@@ -202,7 +202,7 @@ impl PositionUpdate {
 
 					let packet = PlayerUpdate {
 						clock,
-						id: ent,
+						id: ent.into(),
 						keystate: state,
 						pos: *pos,
 						rot: *rot,
@@ -257,7 +257,7 @@ impl PositionUpdate {
 
 					let packet = PlayerUpdate {
 						clock,
-						id: ent,
+						id: ent.into(),
 						keystate: state,
 						pos: *pos,
 						rot: *rot,

@@ -59,7 +59,7 @@ impl SendEventBoost {
 		).join()
 			.for_each(|(ent, pos, rot, vel, energy, energy_regen, _, _, _)| {
 				let packet = EventBoost {
-					id: ent,
+					id: ent.into(),
 					clock: clock,
 					boost: boost,
 

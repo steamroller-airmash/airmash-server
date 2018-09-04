@@ -7,7 +7,8 @@ use types::*;
 
 use websocket::OwnedMessage;
 
-use protocol::to_bytes;
+use protocol::Protocol;
+use protocol_v5::ProtocolV5;
 
 use std::mem;
 use std::sync::mpsc::{channel, Receiver};
@@ -66,6 +67,7 @@ impl<'a> System<'a> for PollComplete {
 		let metrics = data.metrics;
 		let associated = data.associated;
 		let teams = data.teams;
+		let protocol = ProtocolV5 {};
 
 		let start = Instant::now();
 		let mut cnt = 0;
@@ -73,7 +75,9 @@ impl<'a> System<'a> for PollComplete {
 			cnt += 1;
 
 			let data = match msg.msg {
-				MessageBody::Packet(ref packet) => OwnedMessage::Binary(to_bytes(packet).unwrap()),
+				MessageBody::Packet(ref packet) => {
+					OwnedMessage::Binary(protocol.serialize_server(packet).unwrap().next().unwrap())
+				}
 				MessageBody::Binary(bin) => OwnedMessage::Binary(bin),
 				MessageBody::Close => OwnedMessage::Close(None),
 			};

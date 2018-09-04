@@ -125,7 +125,7 @@ impl<'a> System<'a> for SendEventRepel {
 					let ref info = data.config.planes[plane];
 
 					EventRepelPlayer {
-						id: player,
+						id: player.into(),
 						keystate,
 						health: *data.health.get(player).unwrap(),
 						health_regen: info.health_regen,
@@ -148,7 +148,7 @@ impl<'a> System<'a> for SendEventRepel {
 					let dir = (missile_pos - pos).normalized();
 
 					EventRepelMob {
-						id: missile,
+						id: missile.into(),
 						pos: missile_pos,
 						accel: dir * info.accel,
 						speed: *data.vel.get(missile).unwrap(),
@@ -160,7 +160,7 @@ impl<'a> System<'a> for SendEventRepel {
 
 			let packet = EventRepel {
 				clock: data.clock.get(),
-				id: evt.player,
+				id: evt.player.into(),
 				energy: *data.energy.get(evt.player).unwrap(),
 				energy_regen: *data.energy_regen.get(evt.player).unwrap(),
 				rot: *data.rot.get(evt.player).unwrap(),

@@ -40,7 +40,7 @@ impl<'a> System<'a> for DestealthOnFire {
 			data.keystate.get_mut(evt.player).unwrap().stealthed = false;
 
 			let packet = EventStealth {
-				id: evt.player,
+				id: evt.player.into(),
 				state: false,
 				energy: *data.energy.get(evt.player).unwrap(),
 				energy_regen: *data.energy_regen.get(evt.player).unwrap(),

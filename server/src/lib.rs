@@ -1,9 +1,8 @@
-#![feature(optin_builtin_traits)]
+#![feature(optin_builtin_traits, try_from)]
 
 // Crates with macros
 #[macro_use]
 extern crate log;
-#[macro_use]
 extern crate dimensioned;
 #[macro_use]
 extern crate specs_derive;
@@ -19,6 +18,8 @@ extern crate fnv;
 extern crate hibitset;
 extern crate htmlescape;
 extern crate hyper;
+pub extern crate protocol_common;
+extern crate protocol_v5;
 extern crate rand;
 extern crate rayon;
 extern crate shred;
@@ -44,9 +45,10 @@ mod timeloop;
 mod timers;
 mod utils;
 
+pub use protocol_common as protocol;
+
 pub mod component;
 pub mod consts;
-pub mod protocol;
 pub mod systems;
 pub mod types;
 

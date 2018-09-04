@@ -41,7 +41,7 @@ impl<'a> System<'a> for SendKillPacket {
 			// indicates to the client that this
 			// was a player going into spec.
 			let packet = PlayerKill {
-				id: evt.player,
+				id: evt.player.into(),
 				killer: None,
 				pos: Position::default(),
 			};

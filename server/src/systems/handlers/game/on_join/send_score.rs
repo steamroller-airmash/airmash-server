@@ -55,7 +55,7 @@ impl<'a> System<'a> for SendScoreUpdate {
 			let total_deaths = total_deaths.get(evt.id).unwrap();
 
 			let packet = ScoreUpdate {
-				id: evt.id,
+				id: evt.id.into(),
 				score: *score,
 				earnings: earnings.0,
 				upgrades: upgrades.unused,

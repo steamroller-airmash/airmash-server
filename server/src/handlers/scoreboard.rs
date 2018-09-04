@@ -66,7 +66,7 @@ impl<'a> System<'a> for ScoreBoardTimerHandler {
 				.map(|(ent, score, level, _, join_time)| {
 					(
 						ScoreBoardData {
-							id: ent,
+							id: ent.into(),
 							score: *score,
 							level: *level,
 						},
@@ -94,12 +94,15 @@ impl<'a> System<'a> for ScoreBoardTimerHandler {
 				.join()
 				.map(|(ent, pos, _)| {
 					if data.isspec.get(ent).is_some() || data.isdead.get(ent).is_some() {
-						(ent, *SPEC_POSITION)
+						(ent, None)
 					} else {
-						(ent, *pos)
+						(ent, Some(*pos))
 					}
 				})
-				.map(|(ent, pos)| ScoreBoardRanking { id: ent, pos: pos })
+				.map(|(ent, pos)| ScoreBoardRanking {
+					id: ent.into(),
+					pos: pos,
+				})
 				.collect::<Vec<ScoreBoardRanking>>();
 
 			let score_board = ScoreBoard {

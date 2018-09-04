@@ -62,7 +62,7 @@ impl<'a> System<'a> for SendPlayerNew {
 			};
 
 			let player_new = PlayerNew {
-				id: evt.id,
+				id: evt.id.into(),
 				status: *status.get(evt.id).unwrap(),
 				name: name.get(evt.id).unwrap().0.clone(),
 				ty: *plane.get(evt.id).unwrap(),

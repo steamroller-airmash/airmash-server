@@ -46,7 +46,7 @@ impl UpdateScore {
 		let total_deaths = data.total_deaths.get(player).unwrap().0;
 
 		data.conns.send_to_all(ScoreUpdate {
-			id: player,
+			id: player.into(),
 			score,
 			earnings,
 			upgrades: upgrades.unused,

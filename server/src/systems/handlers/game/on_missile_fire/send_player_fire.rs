@@ -57,7 +57,7 @@ impl<'a> System<'a> for SendPlayerFire {
 					let pos = *data.pos.get(ent).unwrap();
 
 					PlayerFireProjectile {
-						id: ent,
+						id: ent.into(),
 						pos: pos,
 						speed: vel,
 						ty: ty,
@@ -69,7 +69,7 @@ impl<'a> System<'a> for SendPlayerFire {
 
 			let packet = PlayerFire {
 				clock: data.clock.get(),
-				id: evt.player,
+				id: evt.player.into(),
 				energy: *data.energy.get(evt.player).unwrap(),
 				energy_regen: *data.energy_regen.get(evt.player).unwrap(),
 				projectiles,

@@ -63,7 +63,7 @@ impl<'a> System<'a> for ChatHandler {
 			}
 
 			data.conns.send_to_all(ChatPublic {
-				id: player,
+				id: player.into(),
 				text: evt.1.text.clone(),
 			});
 		}

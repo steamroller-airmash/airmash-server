@@ -3,8 +3,8 @@ use specs::*;
 use types::*;
 
 use protocol::client::Whisper;
-use protocol::server::{ChatWhisper, Error, ServerPacket};
-use protocol::ErrorType;
+use protocol::server::{ChatWhisper, Error};
+use protocol::{ErrorType, ServerPacket};
 
 use component::flag::IsPlayer;
 
@@ -66,7 +66,7 @@ impl<'a> System<'a> for WhisperHandler {
 				continue;
 			}
 
-			let to = data.entities.entity(evt.1.id as u32);
+			let to = data.entities.entity(evt.1.id.0 as u32);
 
 			if !data.entities.is_alive(to) {
 				// The player doesn't exist
@@ -78,8 +78,8 @@ impl<'a> System<'a> for WhisperHandler {
 			}
 
 			let chat = ChatWhisper {
-				from: player,
-				to: to,
+				from: player.into(),
+				to: to.into(),
 				text: evt.1.text.clone(),
 			};
 

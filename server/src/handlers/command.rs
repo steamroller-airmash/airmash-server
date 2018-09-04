@@ -9,6 +9,9 @@ use protocol::client::Command;
 use protocol::server::{PlayerFlag, PlayerType};
 use protocol::{FlagCode, ServerPacket};
 
+use std::convert::TryFrom;
+use std::str::FromStr;
+
 pub struct CommandHandler {
 	reader: Option<OnCommandReader>,
 }
@@ -54,19 +57,19 @@ impl<'a> System<'a> for CommandHandler {
 				let flag = Flag::from_str(&evt.1.data).unwrap_or(FlagCode::UnitedNations);
 
 				packet = ServerPacket::PlayerFlag(PlayerFlag {
-					id: player,
+					id: player.into(),
 					flag: flag,
 				});
 
 				*data.flags.get_mut(player).unwrap() = flag;
 			} else if evt.1.com == "respawn" {
-				let num = match evt.1.data.parse() {
+				let num: i32 = match evt.1.data.parse() {
 					Ok(n) => n,
 					Err(_) => continue,
 				};
 				let ty = match Plane::try_from(num) {
-					Some(n) => n,
-					None => continue,
+					Ok(n) => n,
+					_ => continue,
 				};
 
 				*data.planes.get_mut(player).unwrap() = ty;
@@ -74,7 +77,10 @@ impl<'a> System<'a> for CommandHandler {
 
 				data.respawn_channel.single_write(PlayerRespawn { player });
 
-				packet = ServerPacket::PlayerType(PlayerType { id: player, ty: ty });
+				packet = ServerPacket::PlayerType(PlayerType {
+					id: player.into(),
+					ty: ty,
+				});
 			} else {
 				continue;
 			}

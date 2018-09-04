@@ -61,7 +61,7 @@ impl<'a> System<'a> for SayHandler {
 			}
 
 			let chat = ChatSay {
-				id: player,
+				id: player.into(),
 				text: evt.1.text.clone(),
 			};
 

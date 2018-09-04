@@ -39,14 +39,13 @@ htmlescape = "*"
 hibitset = "*"
 bounded-queue = { path = "../bounded-queue" }
 special-map = { path = "../special-map" }
-protocol-common = { path = "../protocol-common" }
 protocol-v5 = { path = "../protocol-v5" }
 serde = { version = "*", features = ["derive"] }
 serde_json = "*"
 
-[dependencies.cadence]
-version = "0.14"
-#optional = true
+[dependencies.protocol-common]
+path = "../protocol-common"
+features = ["specs"]
 
 [dependencies.uuid]
 version = "*"

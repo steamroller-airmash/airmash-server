@@ -38,7 +38,10 @@ impl<'a> System<'a> for MissileCull {
 			.for_each(|(ent, mob)| {
 				data.ents.delete(ent).unwrap();
 
-				let packet = MobDespawn { id: ent, ty: mob };
+				let packet = MobDespawn {
+					id: ent.into(),
+					ty: mob,
+				};
 
 				data.conns.send_to_all(packet);
 			});

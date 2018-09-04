@@ -66,7 +66,7 @@ impl<'a> System<'a> for ChatEventHandler {
 			.read(self.whisper_reader.as_mut().unwrap())
 		{
 			data.channel.single_write(AnyChatEvent {
-				ty: ChatEventType::Whisper(evt.1.id),
+				ty: ChatEventType::Whisper(evt.1.id.0),
 				text: evt.1.text.clone(),
 				conn: evt.0,
 			});

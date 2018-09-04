@@ -38,7 +38,7 @@ impl<'a> System<'a> for SendPlayerLevel {
 
 		for evt in channel.read(self.reader.as_mut().unwrap()) {
 			let packet = PlayerLevel {
-				id: evt.id,
+				id: evt.id.into(),
 				ty: PlayerLevelType::Login,
 				level: *level.get(evt.id).unwrap(),
 			};

@@ -38,7 +38,7 @@ impl<'a> System<'a> for SendSpectatePacket {
 			}
 
 			let packet = GameSpectate {
-				id: evt.target.unwrap(),
+				id: evt.target.unwrap().into(),
 			};
 
 			data.conns.send_to_player(evt.player, packet);

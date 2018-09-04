@@ -56,7 +56,7 @@ impl<'a> System<'a> for DestealthOnHit {
 			data.keystate.get_mut(player).unwrap().stealthed = false;
 
 			let packet = EventStealth {
-				id: player,
+				id: player.into(),
 				state: false,
 				energy: *data.energy.get(player).unwrap(),
 				energy_regen: *data.energy_regen.get(player).unwrap(),

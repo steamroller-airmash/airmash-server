@@ -48,7 +48,7 @@ impl<'a> System<'a> for SendPlayerRespawn {
 			data.conns.send_to_visible(
 				player,
 				PlayerRespawn {
-					id: player,
+					id: player.into(),
 					pos: *data.pos.get(player).unwrap(),
 					rot: *data.rot.get(player).unwrap(),
 					upgrades: ProtocolUpgrades::default(),

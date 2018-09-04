@@ -89,7 +89,7 @@ impl<'a> System<'a> for BounceSystem {
 
 				let packet = EventBounce {
 					clock: (data.thisframe.0 - data.starttime.0).to_clock(),
-					id: ent,
+					id: ent.into(),
 					pos: *pos,
 					rot: *rot,
 					speed: vel,

@@ -62,7 +62,7 @@ impl<'a> System<'a> for OnCloseHandler {
 						players.0 -= 1;
 
 						// Send out PlayerLeave message
-						let player_leave = PlayerLeave { id: ent };
+						let player_leave = PlayerLeave { id: ent.into() };
 						connections.send_to_all(player_leave);
 
 						onleave.single_write(EvtPlayerLeave(ent));

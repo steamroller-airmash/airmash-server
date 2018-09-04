@@ -44,8 +44,8 @@ impl<'a> System<'a> for DisplayMessage {
 	fn run(&mut self, mut data: Self::SystemData) {
 		for evt in data.channel.read(self.reader.as_mut().unwrap()) {
 			let packet = PlayerKill {
-				id: evt.player,
-				killer: Some(evt.killer),
+				id: evt.player.into(),
+				killer: Some(evt.killer.into()),
 				pos: evt.pos,
 			};
 

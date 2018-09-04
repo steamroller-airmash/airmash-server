@@ -54,7 +54,7 @@ impl<'a> System<'a> for PlayerKilledCleanup {
 			data.isdead.insert(evt.player, IsDead).unwrap();
 
 			let despawn_packet = MobDespawnCoords {
-				id: evt.missile,
+				id: evt.missile.into(),
 				ty: *data.mob.get(evt.missile).unwrap(),
 				pos: evt.pos,
 			};
