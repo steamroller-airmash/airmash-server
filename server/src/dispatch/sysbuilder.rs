@@ -1,3 +1,4 @@
+use std::mem;
 use std::any::Any;
 use std::marker::PhantomData;
 
@@ -6,8 +7,10 @@ use specs::*;
 use dispatch::sysinfo::*;
 use dispatch::syswrapper::*;
 
-pub trait AbstractBuilder<'a> {
-	fn build<'b>(self, disp: DispatcherBuilder<'a, 'b>) -> DispatcherBuilder<'a, 'b>;
+pub trait AbstractBuilder {
+	fn build<'a, 'b>(&mut self, disp: DispatcherBuilder<'a, 'b>) -> DispatcherBuilder<'a, 'b>;
+	fn name(&self) -> &'static str;
+	fn deps(&self) -> Vec<&'static str>;
 }
 
 pub trait AbstractThreadLocalBuilder<'b> {
@@ -28,18 +31,25 @@ impl<T: SystemInfo> SystemBuilder<T> {
 	}
 }
 
-impl<'a, T> AbstractBuilder<'a> for SystemBuilder<T>
-where
-	T: for<'c> System<'c> + Send + SystemInfo + 'a,
-	T::Dependencies: SystemDeps,
-	for<'c> <T as System<'c>>::SystemData: SystemData<'c>,
+impl<T> AbstractBuilder for SystemBuilder<T>
+where 
+	T: for<'c> System<'c> + SystemInfo + Send + 'static
 {
-	fn build<'b>(self, disp: DispatcherBuilder<'a, 'b>) -> DispatcherBuilder<'a, 'b> {
+	fn build<'a, 'b>(&mut self, disp: DispatcherBuilder<'a, 'b>) -> DispatcherBuilder<'a, 'b> {
+		let args = mem::replace(&mut self.args, Box::new(()));
 		disp.with(
-			SystemWrapper(T::new_args(self.args)),
+			SystemWrapper(T::new_args(args)),
 			T::name(),
 			&T::Dependencies::dependencies(),
 		)
+	}
+
+	fn name(&self) -> &'static str {
+		T::name()
+	}
+
+	fn deps(&self) -> Vec<&'static str> {
+		T::Dependencies::dependencies()
 	}
 }
 
