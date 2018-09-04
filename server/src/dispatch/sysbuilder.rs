@@ -1,6 +1,6 @@
-use std::mem;
 use std::any::Any;
 use std::marker::PhantomData;
+use std::mem;
 
 use specs::*;
 
@@ -32,8 +32,8 @@ impl<T: SystemInfo> SystemBuilder<T> {
 }
 
 impl<T> AbstractBuilder for SystemBuilder<T>
-where 
-	T: for<'c> System<'c> + SystemInfo + Send + 'static
+where
+	T: for<'c> System<'c> + SystemInfo + Send + 'static,
 {
 	fn build<'a, 'b>(&mut self, disp: DispatcherBuilder<'a, 'b>) -> DispatcherBuilder<'a, 'b> {
 		let args = mem::replace(&mut self.args, Box::new(()));

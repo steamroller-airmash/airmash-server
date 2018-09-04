@@ -1,8 +1,8 @@
 use specs::*;
 
-use std::mem;
 use std::any::Any;
 use std::collections::{HashMap, HashSet};
+use std::mem;
 
 use dispatch::sysbuilder::*;
 use dispatch::sysinfo::*;
@@ -11,14 +11,14 @@ use utils::event_handler::{EventHandler, EventHandlerTypeProvider};
 
 pub struct Builder<'a, 'b> {
 	builder: DispatcherBuilder<'a, 'b>,
-	sysmap: HashMap<&'static str, Box<AbstractBuilder>>
+	sysmap: HashMap<&'static str, Box<AbstractBuilder>>,
 }
 
 impl<'a, 'b> Builder<'a, 'b> {
 	pub fn new() -> Self {
 		Self {
 			builder: DispatcherBuilder::new(),
-			sysmap: HashMap::default()
+			sysmap: HashMap::default(),
 		}
 	}
 
@@ -47,11 +47,9 @@ impl<'a, 'b> Builder<'a, 'b> {
 		T::Dependencies: SystemDeps,
 	{
 		debug!("{} {:?}", T::name(), T::Dependencies::dependencies());
-		self.sysmap.insert(
-			T::name(), 
-			Box::new(SystemBuilder::<T>::new(args))
-		);
-		
+		self.sysmap
+			.insert(T::name(), Box::new(SystemBuilder::<T>::new(args)));
+
 		self
 	}
 
@@ -149,7 +147,7 @@ impl<'a, 'b> Builder<'a, 'b> {
 	}
 
 	/// This runs a Kahn's algorithm for toposort.
-	/// 
+	///
 	/// It is probably horrendously inefficient but it is
 	/// only run once at startup so it most likely doesn't matter.
 	fn system_toposort(&mut self) -> Vec<Box<AbstractBuilder>> {
@@ -165,8 +163,7 @@ impl<'a, 'b> Builder<'a, 'b> {
 			for root in roots {
 				if let Some(sys) = self.sysmap.remove(root) {
 					result.push(sys);
-				}
-				else {
+				} else {
 					panic!("Cycle detected with system {} as part of it", root);
 				}
 			}
