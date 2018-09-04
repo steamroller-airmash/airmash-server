@@ -7,7 +7,7 @@ use enums::KeyCode;
 ///   with every key press.
 /// - `state`: `true` -> pressed, `false` -> released.
 #[derive(Copy, Clone, Debug)]
-#[cfg_attr(features = "serde", derive(Serialize, Deserialize))]
+#[cfg_attr(feature = "serde", derive(Serialize, Deserialize))]
 pub struct Key {
 	pub seq: u32,
 	pub key: KeyCode,

@@ -6,7 +6,7 @@ use types::{
 
 /// A player has been repelled by a goliath.
 #[derive(Copy, Clone, Debug)]
-#[cfg_attr(features = "serde", derive(Serialize, Deserialize))]
+#[cfg_attr(feature = "serde", derive(Serialize, Deserialize))]
 pub struct EventRepelPlayer {
 	pub id: Player,
 	pub keystate: ServerKeyState,
@@ -21,10 +21,10 @@ pub struct EventRepelPlayer {
 
 /// A projectile has been repelled by a goliath
 #[derive(Copy, Clone, Debug)]
-#[cfg_attr(features = "serde", derive(Serialize, Deserialize))]
+#[cfg_attr(feature = "serde", derive(Serialize, Deserialize))]
 pub struct EventRepelMob {
 	pub id: Mob,
-	#[cfg_attr(features = "serde", serde(rename = "type"))]
+	#[cfg_attr(feature = "serde", serde(rename = "type"))]
 	pub ty: MobType,
 	pub pos: Position,
 	pub speed: Velocity,
@@ -35,7 +35,7 @@ pub struct EventRepelMob {
 /// Event triggered when something (player or missile)
 /// is deflected by a goliath repel.
 #[derive(Clone, Debug)]
-#[cfg_attr(features = "serde", derive(Serialize, Deserialize))]
+#[cfg_attr(feature = "serde", derive(Serialize, Deserialize))]
 pub struct EventRepel {
 	pub clock: u32,
 	pub id: Player,

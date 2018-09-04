@@ -2,7 +2,7 @@ use types::{Energy, EnergyRegen, Player, Position, Rotation, Velocity};
 
 /// A predator has begun/stopped boosting
 #[derive(Copy, Clone, Debug)]
-#[cfg_attr(features = "serde", derive(Serialize, Deserialize))]
+#[cfg_attr(feature = "serde", derive(Serialize, Deserialize))]
 pub struct EventBoost {
 	pub clock: u32,
 	pub id: Player,

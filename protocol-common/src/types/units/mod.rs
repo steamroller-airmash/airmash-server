@@ -18,3 +18,11 @@ pub type RotationRate = self::base::RotationRate<BaseType>;
 pub type Position = Vector2<Distance>;
 pub type Velocity = Vector2<Speed>;
 pub type Accel = Vector2<AccelScalar>;
+
+impl Position {
+	pub fn rotate(self, angle: Rotation) -> Self {
+		let (sin, cos) = angle.sin_cos();
+
+		Position::new(self.x * cos - self.y * sin, self.x * sin + self.y * cos)
+	}
+}

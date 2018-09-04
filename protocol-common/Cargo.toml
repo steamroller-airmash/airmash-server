@@ -5,13 +5,13 @@ authors = ["STEAMROLLER"]
 publish = false
 
 [features]
+default = ["specs"]
 
 [dependencies]
 lazy_static = "*"
 fnv = "*"
 dimensioned = "*"
-#num_traits = "*"
-#enum_from_primitive = "*"
+specs-derive = "*"
 
 [dependencies.specs]
 version = "*"

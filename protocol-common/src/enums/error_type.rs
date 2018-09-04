@@ -1,3 +1,5 @@
+use specs::DenseVecStorage;
+
 impl_try_from_enum!{
 
 /// All error codes that can be sent to the client.
@@ -5,7 +7,8 @@ impl_try_from_enum!{
 /// These are all server errors that the vanilla AIRMASH
 /// client (and the current STARMASH client) understands.
 #[derive(Copy, Clone, Debug, Hash, Eq, PartialEq)]
-#[cfg_attr(features = "serde", derive(Serialize, Deserialize))]
+#[cfg_attr(feature = "specs", derive(Component))]
+#[cfg_attr(feature = "serde", derive(Serialize, Deserialize))]
 pub enum ErrorType {
 	DisconnectedForPacketFlooding = 1,
 	BannedForPacketFlooding = 2,

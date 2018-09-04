@@ -1,3 +1,5 @@
+use specs::DenseVecStorage;
+
 impl_try_from_enum! {
 	/// The key that's had it's state changed.
 	/// This is only used for client -> server
@@ -6,7 +8,8 @@ impl_try_from_enum! {
 	/// It is used in the following packets:
 	/// - TODO
 	#[derive(Copy, Clone, Debug, Hash, Eq, PartialEq)]
-	#[cfg_attr(features = "serde", derive(Serialize, Deserialize))]
+	#[cfg_attr(feature = "specs", derive(Component))]
+	#[cfg_attr(feature = "serde", derive(Serialize, Deserialize))]
 	pub enum KeyCode {
 		Up = 1,
 		Down = 2,

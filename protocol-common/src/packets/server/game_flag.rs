@@ -3,9 +3,9 @@ use types::{Flag, Player, Position};
 
 /// Update position of flag in CTF
 #[derive(Copy, Clone, Debug)]
-#[cfg_attr(features = "serde", derive(Serialize, Deserialize))]
+#[cfg_attr(feature = "serde", derive(Serialize, Deserialize))]
 pub struct GameFlag {
-	#[cfg_attr(features = "serde", serde(rename = "type"))]
+	#[cfg_attr(feature = "serde", serde(rename = "type"))]
 	pub ty: FlagUpdateType,
 	pub flag: Flag,
 	pub id: Option<Player>,

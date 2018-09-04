@@ -1,3 +1,5 @@
+use specs::DenseVecStorage;
+
 impl_try_from_enum! {
 	/// Types of all mobs present in the game.
 	///
@@ -8,7 +10,8 @@ impl_try_from_enum! {
 	/// Used by:
 	/// - TODO
 	#[derive(Copy, Clone, Debug, Hash, Eq, PartialEq)]
-	#[cfg_attr(features = "serde", derive(Serialize, Deserialize))]
+	#[cfg_attr(feature = "specs", derive(Component))]
+	#[cfg_attr(feature = "serde", derive(Serialize, Deserialize))]
 	pub enum MobType {
 		PredatorMissile = 1,
 		GoliathMissile = 2,

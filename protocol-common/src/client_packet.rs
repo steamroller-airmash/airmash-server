@@ -12,7 +12,7 @@ use client::*;
 /// and as such are just empty variants within
 /// this enum.
 #[derive(Clone, Debug)]
-#[cfg_attr(features = "serde", derive(Serialize, Deserialize))]
+#[cfg_attr(feature = "serde", derive(Serialize, Deserialize))]
 pub enum ClientPacket {
 	Login(Login),
 	Backup(Backup),

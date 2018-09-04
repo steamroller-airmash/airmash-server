@@ -1,3 +1,5 @@
+use specs::DenseVecStorage;
+
 impl_try_from_enum! {
 	/// Flag update type
 	///
@@ -13,7 +15,8 @@ impl_try_from_enum! {
 	/// any values. It might be worth doing some more
 	/// looking to see if anything turns up here.
 	#[derive(Copy, Clone, Debug, Hash, Eq, PartialEq)]
-	#[cfg_attr(features = "serde", derive(Serialize, Deserialize))]
+	#[cfg_attr(feature = "specs", derive(Component))]
+	#[cfg_attr(feature = "serde", derive(Serialize, Deserialize))]
 	pub enum FlagUpdateType {
 		Position = 1,
 		Carrier = 2,

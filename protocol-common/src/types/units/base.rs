@@ -1,7 +1,9 @@
-#[cfg(features = "serde")]
+#[cfg(feature = "serde")]
 use serde::{Deserialize, Deserializer, Serialize, Serializer};
-#[cfg(features = "specs")]
+#[cfg(feature = "specs")]
 use specs::{Component, VecStorage};
+
+use std::time::Duration;
 
 pub type BaseType = f32;
 
@@ -57,7 +59,7 @@ impl<U> AirmashUnits<BaseType, U> {
 	}
 }
 
-#[cfg(features = "specs")]
+#[cfg(feature = "specs")]
 impl<T: 'static, U: 'static> Component for AirmashUnits<T, U>
 where
 	T: Sync + Send,
@@ -78,7 +80,7 @@ impl<T, U> From<T> for AirmashUnits<T, U> {
 	}
 }
 
-#[cfg(features = "serde")]
+#[cfg(feature = "serde")]
 impl<T, U> Serialize for AirmashUnits<T, U>
 where
 	T: Serialize,
@@ -91,7 +93,7 @@ where
 	}
 }
 
-#[cfg(features = "serde")]
+#[cfg(feature = "serde")]
 impl<'de, T, U> Deserialize<'de> for AirmashUnits<T, U>
 where
 	T: Deserialize<'de>,
@@ -101,5 +103,23 @@ where
 		D: Deserializer<'de>,
 	{
 		Ok(T::deserialize(de)?.into())
+	}
+}
+
+impl From<Duration> for Time<BaseType> {
+	fn from(dt: Duration) -> Time<BaseType> {
+		Time::new(dt.as_secs() as BaseType + 1.0e-9 * (dt.subsec_nanos() as BaseType)) * 60.0
+	}
+}
+
+impl Rotation<BaseType> {
+	pub fn sin(&self) -> BaseType {
+		self.inner().sin()
+	}
+	pub fn cos(&self) -> BaseType {
+		self.inner().cos()
+	}
+	pub fn tan(&self) -> BaseType {
+		self.inner().tan()
 	}
 }

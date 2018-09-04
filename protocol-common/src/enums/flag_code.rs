@@ -1,10 +1,12 @@
+use specs::DenseVecStorage;
 use std::convert::TryFrom;
 
 impl_try_from_enum! {
 	/// All player flags currently available within
 	/// the game.
 	#[derive(Copy, Clone, Debug, Hash, Eq, PartialEq)]
-	#[cfg_attr(features = "serde", derive(Serialize, Deserialize))]
+	#[cfg_attr(feature = "specs", derive(Component))]
+	#[cfg_attr(feature = "serde", derive(Serialize, Deserialize))]
 	pub enum FlagCode {
 		SyrianArabRepublic = 1,
 		Thailand = 2,

@@ -1,3 +1,5 @@
+use specs::DenseVecStorage;
+
 impl_try_from_enum! {
 	/// Indicates the type of entity that just
 	/// went outside of the player's horizon.
@@ -7,7 +9,8 @@ impl_try_from_enum! {
 	/// certain and should be verified before
 	/// relying upon them.
 	#[derive(Copy, Clone, Debug, Hash, Eq, PartialEq)]
-	#[cfg_attr(features = "serde", derive(Serialize, Deserialize))]
+	#[cfg_attr(feature = "specs", derive(Component))]
+	#[cfg_attr(feature = "serde", derive(Serialize, Deserialize))]
 	pub enum LeaveHorizonType {
 		Player = 0,
 		Mob = 1,

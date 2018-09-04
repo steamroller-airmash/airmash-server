@@ -1,12 +1,16 @@
 use types::Team;
 
 /// A flag ID
+#[cfg(feature = "specs")]
+use specs::DenseVecStorage;
+
 #[derive(Copy, Clone, Debug, Eq, PartialEq, Hash)]
+#[cfg_attr(feature = "specs", derive(Component))]
 pub struct Flag(pub Team);
 
 wrapper_serde_decl!(Flag);
 
-#[cfg(features = "specs")]
+#[cfg(feature = "specs")]
 mod specs_convert {
 	use super::Flag;
 	use error::EntityIdOutOfRangeError;
@@ -17,7 +21,7 @@ mod specs_convert {
 		type Error = EntityIdOutOfRangeError;
 
 		fn try_from(ent: Entity) -> Result<Self, Self::Error> {
-			Ok(Flag(TryFrom::try_from(ent.id())?))
+			Ok(Flag(TryFrom::try_from(ent)?))
 		}
 	}
 }
