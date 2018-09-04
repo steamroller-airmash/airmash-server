@@ -1,5 +1,6 @@
 use specs::DenseVecStorage;
 use std::convert::TryFrom;
+use std::str::FromStr;
 
 impl_try_from_enum! {
 	/// All player flags currently available within
@@ -155,5 +156,13 @@ impl TryFrom<String> for FlagCode {
 			Some(&f) => Ok(f),
 			None => Err(()),
 		}
+	}
+}
+
+impl FromStr for FlagCode {
+	type Err = ();
+
+	fn from_str(s: &str) -> Result<Self, ()> {
+		Self::try_from(s)
 	}
 }

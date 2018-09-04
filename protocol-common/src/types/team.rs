@@ -7,19 +7,3 @@ use specs::DenseVecStorage;
 pub struct Team(pub u16);
 
 wrapper_serde_decl!(Team);
-
-#[cfg(feature = "specs")]
-mod specs_convert {
-	use super::Team;
-	use error::EntityIdOutOfRangeError;
-	use specs::Entity;
-	use std::convert::TryFrom;
-
-	impl TryFrom<Entity> for Team {
-		type Error = EntityIdOutOfRangeError;
-
-		fn try_from(ent: Entity) -> Result<Self, Self::Error> {
-			Ok(Team(TryFrom::try_from(ent.id())?))
-		}
-	}
-}

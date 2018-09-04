@@ -11,15 +11,12 @@ wrapper_serde_decl!(Player);
 #[cfg(feature = "specs")]
 mod specs_convert {
 	use super::Player;
-	use error::EntityIdOutOfRangeError;
 	use specs::Entity;
-	use std::convert::TryFrom;
+	use std::convert::TryInto;
 
-	impl TryFrom<Entity> for Player {
-		type Error = EntityIdOutOfRangeError;
-
-		fn try_from(ent: Entity) -> Result<Self, Self::Error> {
-			Ok(Player(TryFrom::try_from(ent.id())?))
+	impl From<Entity> for Player {
+		fn from(ent: Entity) -> Self {
+			Player(ent.id().try_into().expect("Entity id out of range"))
 		}
 	}
 }

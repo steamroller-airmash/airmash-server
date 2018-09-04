@@ -10,16 +10,13 @@ wrapper_serde_decl!(Mob);
 
 #[cfg(feature = "specs")]
 mod specs_convert {
-	use super::Mob;
-	use error::EntityIdOutOfRangeError;
+	use super::*;
 	use specs::Entity;
-	use std::convert::TryFrom;
+	use std::convert::TryInto;
 
-	impl TryFrom<Entity> for Mob {
-		type Error = EntityIdOutOfRangeError;
-
-		fn try_from(ent: Entity) -> Result<Self, Self::Error> {
-			Ok(Mob(TryFrom::try_from(ent.id())?))
+	impl From<Entity> for Mob {
+		fn from(ent: Entity) -> Self {
+			Mob(ent.id().try_into().expect("Entity id out of range"))
 		}
 	}
 }
