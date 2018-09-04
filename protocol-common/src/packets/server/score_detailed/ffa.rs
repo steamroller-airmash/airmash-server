@@ -17,5 +17,5 @@ pub struct ScoreDetailedFFAEntry {
 #[derive(Clone, Debug)]
 #[cfg_attr(feature = "serde", derive(Serialize, Deserialize))]
 pub struct ScoreDetailedFFA {
-	pub scores: Vec<ScoreDetailedFFA>,
+	pub scores: Vec<ScoreDetailedFFAEntry>,
 }

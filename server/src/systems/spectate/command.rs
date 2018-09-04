@@ -6,7 +6,7 @@ use dispatch::SystemInfo;
 
 use component::channel::*;
 use component::event::PlayerSpectate;
-use component::flag::{IsPlayer, IsSpectating};
+use component::flag::{IsDead, IsPlayer, IsSpectating};
 use component::reference::PlayerRef;
 
 use systems::PacketHandler;

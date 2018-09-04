@@ -4,6 +4,7 @@ use types::*;
 
 use component::channel::*;
 use component::event::*;
+use component::flag::*;
 
 use protocol::client::Command;
 use protocol::server::{PlayerFlag, PlayerType};
@@ -22,7 +23,7 @@ pub struct CommandHandlerData<'a> {
 	respawn_channel: Write<'a, OnPlayerRespawn>,
 	conns: Read<'a, Connections>,
 	planes: WriteStorage<'a, Plane>,
-	flags: WriteStorage<'a, Flag>,
+	flags: WriteStorage<'a, FlagCode>,
 	isspec: WriteStorage<'a, IsSpectating>,
 }
 
@@ -54,7 +55,7 @@ impl<'a> System<'a> for CommandHandler {
 			let packet;
 
 			if evt.1.com == "flag" {
-				let flag = Flag::from_str(&evt.1.data).unwrap_or(FlagCode::UnitedNations);
+				let flag = FlagCode::from_str(&evt.1.data).unwrap_or(FlagCode::UnitedNations);
 
 				packet = ServerPacket::PlayerFlag(PlayerFlag {
 					id: player.into(),

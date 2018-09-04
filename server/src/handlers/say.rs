@@ -2,6 +2,8 @@ use shrev::*;
 use specs::*;
 use types::*;
 
+use component::flag::*;
+
 use protocol::client::Say;
 use protocol::server::{ChatSay, Error};
 use protocol::ErrorType;

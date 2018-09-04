@@ -11,7 +11,6 @@ name = "airmash-server"
 version = "0.0.1"
 dependencies = [
  "bounded-queue 0.0.1",
- "cadence 0.14.0 (registry+https://github.com/rust-lang/crates.io-index)",
  "dimensioned 0.6.0 (registry+https://github.com/rust-lang/crates.io-index)",
  "fnv 1.0.6 (registry+https://github.com/rust-lang/crates.io-index)",
  "hibitset 0.5.1 (registry+https://github.com/rust-lang/crates.io-index)",
@@ -154,14 +153,6 @@ dependencies = [
 ]
 
 [[package]]
-name = "cadence"
-version = "0.14.0"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-dependencies = [
- "crossbeam 0.2.12 (registry+https://github.com/rust-lang/crates.io-index)",
-]
-
-[[package]]
 name = "cc"
 version = "1.0.18"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -187,11 +178,6 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 dependencies = [
  "libc 0.2.42 (registry+https://github.com/rust-lang/crates.io-index)",
 ]
-
-[[package]]
-name = "crossbeam"
-version = "0.2.12"
-source = "registry+https://github.com/rust-lang/crates.io-index"
 
 [[package]]
 name = "crossbeam"
@@ -680,6 +666,7 @@ dependencies = [
  "lazy_static 1.0.2 (registry+https://github.com/rust-lang/crates.io-index)",
  "serde 1.0.70 (registry+https://github.com/rust-lang/crates.io-index)",
  "specs 0.12.0 (registry+https://github.com/rust-lang/crates.io-index)",
+ "specs-derive 0.2.0 (registry+https://github.com/rust-lang/crates.io-index)",
 ]
 
 [[package]]
@@ -1410,12 +1397,10 @@ dependencies = [
 "checksum bitflags 1.0.3 (registry+https://github.com/rust-lang/crates.io-index)" = "d0c54bb8f454c567f21197eefcdbf5679d0bd99f2ddbe52e84c77061952e6789"
 "checksum byteorder 1.2.4 (registry+https://github.com/rust-lang/crates.io-index)" = "8389c509ec62b9fe8eca58c502a0acaf017737355615243496cde4994f8fa4f9"
 "checksum bytes 0.4.9 (registry+https://github.com/rust-lang/crates.io-index)" = "e178b8e0e239e844b083d5a0d4a156b2654e67f9f80144d48398fcd736a24fb8"
-"checksum cadence 0.14.0 (registry+https://github.com/rust-lang/crates.io-index)" = "f844988bbe2f2a0c67b9982d1788ba800bb1b2910a69141247c94e5667a4a0a0"
 "checksum cc 1.0.18 (registry+https://github.com/rust-lang/crates.io-index)" = "2119ea4867bd2b8ed3aecab467709720b2d55b1bcfe09f772fd68066eaf15275"
 "checksum cfg-if 0.1.4 (registry+https://github.com/rust-lang/crates.io-index)" = "efe5c877e17a9c717a0bf3613b2709f723202c4e4675cc8f12926ded29bcb17e"
 "checksum core-foundation 0.2.3 (registry+https://github.com/rust-lang/crates.io-index)" = "25bfd746d203017f7d5cbd31ee5d8e17f94b6521c7af77ece6c9e4b2d4b16c67"
 "checksum core-foundation-sys 0.2.3 (registry+https://github.com/rust-lang/crates.io-index)" = "065a5d7ffdcbc8fa145d6f0746f3555025b9097a9e9cda59f7467abae670c78d"
-"checksum crossbeam 0.2.12 (registry+https://github.com/rust-lang/crates.io-index)" = "bd66663db5a988098a89599d4857919b3acf7f61402e61365acfd3919857b9be"
 "checksum crossbeam 0.3.2 (registry+https://github.com/rust-lang/crates.io-index)" = "24ce9782d4d5c53674646a6a4c1863a21a8fc0cb649b3c94dfc16e45071dea19"
 "checksum crossbeam-deque 0.2.0 (registry+https://github.com/rust-lang/crates.io-index)" = "f739f8c5363aca78cfb059edf753d8f0d36908c348f3d8d1503f03d8b75d9cf3"
 "checksum crossbeam-deque 0.3.1 (registry+https://github.com/rust-lang/crates.io-index)" = "fe8153ef04a7594ded05b427ffad46ddeaf22e63fd48d42b3e1e3bb4db07cae7"

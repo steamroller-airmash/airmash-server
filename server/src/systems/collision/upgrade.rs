@@ -9,6 +9,7 @@ use types::*;
 
 use component::channel::*;
 use component::event::PlayerUpgradeCollision;
+use component::flag::*;
 
 use consts::config::PLANE_HIT_CIRCLES;
 

@@ -51,7 +51,7 @@ impl<'a> System<'a> for ScoreDetailed {
 			).join()
 				.map(|(ent, level, captures, score, kills, deaths, ping, ..)| {
 					ScoreDetailedCTFEntry {
-						id: ent,
+						id: ent.into(),
 						level: *level,
 						captures: captures.0 as u16,
 						score: *score,

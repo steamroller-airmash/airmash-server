@@ -7,6 +7,7 @@ use types::*;
 
 use component::channel::*;
 use component::event::PlayerMissileCollision;
+use component::flag::*;
 
 use consts::config::PLANE_HIT_CIRCLES;
 

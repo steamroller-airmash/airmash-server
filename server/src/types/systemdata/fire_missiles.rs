@@ -5,6 +5,7 @@ use std::iter::Iterator;
 
 use component::channel::OnMissileFire;
 use component::event::MissileFire;
+use component::flag::*;
 use component::reference::PlayerRef;
 use component::time::*;
 

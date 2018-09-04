@@ -2,6 +2,7 @@ use shrev::*;
 use specs::*;
 use types::*;
 
+use component::flag::*;
 use protocol::client::Whisper;
 use protocol::server::{ChatWhisper, Error};
 use protocol::{ErrorType, ServerPacket};

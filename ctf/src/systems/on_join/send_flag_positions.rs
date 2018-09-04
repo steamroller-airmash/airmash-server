@@ -54,9 +54,9 @@ impl<'a> System<'a> for SendFlagPosition {
 
 					let packet = GameFlag {
 						ty,
-						flag: *team,
+						flag: Flag(*team),
 						pos: *pos,
-						id: carrier.0,
+						id: carrier.0.map(Into::into),
 						blueteam: data.scores.blueteam,
 						redteam: data.scores.redteam,
 					};

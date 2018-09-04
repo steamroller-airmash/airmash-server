@@ -76,7 +76,7 @@ impl<'a> System<'a> for Shuffle {
 			let swaps = swaps
 				.into_iter()
 				.map(|swap| PlayerReteamPlayer {
-					id: swap.player,
+					id: swap.player.into(),
 					team: swap.new_team,
 				})
 				.collect::<Vec<_>>();

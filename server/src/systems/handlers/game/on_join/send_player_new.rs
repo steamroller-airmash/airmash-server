@@ -21,7 +21,7 @@ pub struct SendPlayerNewData<'a> {
 	pub plane: ReadStorage<'a, Plane>,
 	pub team: ReadStorage<'a, Team>,
 	pub status: ReadStorage<'a, Status>,
-	pub flag: ReadStorage<'a, Flag>,
+	pub flag: ReadStorage<'a, FlagCode>,
 	pub upgrades: ReadStorage<'a, Upgrades>,
 	pub powerups: ReadStorage<'a, Powerups>,
 	pub name: ReadStorage<'a, Name>,

@@ -62,7 +62,7 @@ impl<'a> System<'a> for CaptureFlag {
 
 				let packet = GameFlag {
 					ty: FlagUpdateType::Position,
-					flag: *team,
+					flag: Flag(*team),
 					id: None,
 					pos: *pos,
 					// If both flags are captured at the same time

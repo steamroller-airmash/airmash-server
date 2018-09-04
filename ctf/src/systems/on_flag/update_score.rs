@@ -58,7 +58,7 @@ impl<'a> System<'a> for UpdateScore {
 			earnings.0 += score_increase;
 
 			let packet = ScoreUpdate {
-				id: player,
+				id: player.into(),
 				score: *score,
 				earnings: *earnings,
 

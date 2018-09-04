@@ -2,6 +2,7 @@ use specs::*;
 use types::*;
 
 use component::channel::*;
+use component::flag::*;
 use component::reference::PlayerRef;
 
 use protocol::server::{PlayerHit, PlayerHitPlayer};

@@ -62,7 +62,7 @@ pub use metrics::MetricsHandler;
 pub use dispatch::{Builder, SystemDeps, SystemInfo};
 
 pub use types::{
-	Accel, AccelScalar, Config, Connections, Distance, Energy, EnergyRegen, FutureDispatcher,
+	Accel, AccelScalar, Config, Connections, Distance, Energy, EnergyRegen, Flag, FutureDispatcher,
 	GameMode, GameModeWriter, Health, HealthRegen, KeyState, Level, Mob, Name, Plane, Position,
 	Score, Speed, Team, Time, Vector2, Velocity,
 };

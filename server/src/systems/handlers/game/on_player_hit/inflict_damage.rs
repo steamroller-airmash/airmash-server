@@ -5,6 +5,7 @@ use dispatch::SystemInfo;
 
 use component::channel::*;
 use component::event::PlayerKilled;
+use component::flag::*;
 use component::reference::PlayerRef;
 
 use systems::missile::MissileHit;

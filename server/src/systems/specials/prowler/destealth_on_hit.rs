@@ -4,6 +4,7 @@ use types::*;
 
 use component::channel::*;
 use component::event::*;
+use component::flag::*;
 use systems::collision::PlayerMissileCollisionSystem;
 use SystemInfo;
 

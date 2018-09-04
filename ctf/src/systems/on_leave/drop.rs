@@ -64,7 +64,7 @@ impl<'a> System<'a> for Drop {
 
 					let packet = GameFlag {
 						ty: FlagUpdateType::Position,
-						flag: *team,
+						flag: Flag(*team),
 						id: None,
 						pos: player_pos,
 						blueteam: 0,

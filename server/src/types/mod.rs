@@ -20,7 +20,6 @@ pub(crate) mod gamemode;
 
 pub use self::components::*;
 pub use self::config::Config;
-pub use self::flags::*;
 pub use self::future::FutureDispatcher;
 pub use self::keystate::*;
 pub use self::pingdata::*;

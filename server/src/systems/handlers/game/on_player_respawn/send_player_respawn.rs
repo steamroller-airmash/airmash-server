@@ -1,6 +1,7 @@
 use specs::*;
 
 use component::channel::*;
+use component::flag::*;
 use types::*;
 use SystemInfo;
 

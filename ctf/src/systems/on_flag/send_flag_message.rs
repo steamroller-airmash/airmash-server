@@ -69,7 +69,7 @@ impl<'a> System<'a> for SendFlagMessageSystem {
 
 				data.conns.send_to_all(GameFlag {
 					ty,
-					flag: *data.team.get(other).unwrap(),
+					flag: Flag(*data.team.get(other).unwrap()),
 					pos: pos,
 					id: None,
 					blueteam: data.scores.blueteam,
@@ -79,9 +79,9 @@ impl<'a> System<'a> for SendFlagMessageSystem {
 
 			data.conns.send_to_all(GameFlag {
 				ty,
-				flag: *team,
+				flag: Flag(*team),
 				pos: *data.pos.get(evt.flag).unwrap(),
-				id: evt.player,
+				id: evt.player.map(Into::into),
 				blueteam: data.scores.blueteam,
 				redteam: data.scores.redteam,
 			});

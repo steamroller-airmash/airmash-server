@@ -103,7 +103,7 @@ impl<'a> System<'a> for ReturnFlag {
 
 			let packet = GameFlag {
 				ty: FlagUpdateType::Position,
-				flag: team,
+				flag: Flag(team),
 				id: None,
 				pos: *flag_pos,
 				blueteam: scores.blueteam,
