@@ -6,9 +6,9 @@ use std::iter::Iterator;
 use component::channel::OnMissileFire;
 use component::event::MissileFire;
 use component::flag::*;
+use component::missile::MissileTrajectory;
 use component::reference::PlayerRef;
 use component::time::*;
-use component::missile::{MissileTrajectory};
 
 use super::IsAlive;
 
@@ -84,10 +84,8 @@ impl<'a> FireMissiles<'a> {
 
 				let vel = dir * (missile.base_speed + speed * missile.speed_factor) * upg_factor;
 
-				let missile_trajectory = MissileTrajectory(
-					*self.pos.get(owner).unwrap(),
-					missile.distance
-				);
+				let missile_trajectory =
+					MissileTrajectory(*self.pos.get(owner).unwrap(), missile.distance);
 
 				let missile = self
 					.entities

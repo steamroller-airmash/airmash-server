@@ -1,7 +1,7 @@
 use specs::*;
 use types::*;
 
-use component::missile::{MissileTrajectory};
+use component::missile::MissileTrajectory;
 use dispatch::SystemInfo;
 
 use airmash_protocol::server::MobDespawn;
