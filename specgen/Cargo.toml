@@ -1,6 +1,0 @@
-[package]
-name = "specgen"
-version = "0.1.0"
-authors = ["Phantomical <phantom@lynches.ca>"]
-
-[dependencies]

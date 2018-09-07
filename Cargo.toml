@@ -10,7 +10,6 @@ members = [
 	"base",
 	"ctf",
 	"ffa",
-	"specgen",
 	"bounded-queue",
 	"special-map",
 	"protocol-v5",

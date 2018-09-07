@@ -16,9 +16,6 @@ proxied = []
 # Turn on bot blocking settings
 block-bots = []
 
-[build-dependencies]
-specgen = { path = "../specgen" }
-
 [dependencies]
 ws = "*"
 simple_logger = "*"
