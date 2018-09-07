@@ -7,4 +7,5 @@ pub mod event;
 pub mod flag;
 pub mod ratelimit;
 pub mod reference;
+pub mod missile;
 pub mod time;

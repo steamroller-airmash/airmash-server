@@ -45,11 +45,12 @@ pub struct MissileInfo {
 	pub base_speed: Speed,
 	pub speed_factor: f32,
 	pub damage: Health,
+	pub distance: Distance,
 }
 
 #[derive(Clone, Debug, Default)]
 pub struct MobInfo {
-	pub lifetime: Duration,
+	pub lifetime: Option<Duration>,
 	pub missile: Option<MissileInfo>,
 }
 
@@ -246,7 +247,7 @@ impl Default for MobInfos {
 
 		/*
 		Notes:
-			- Damage is normalized to the amount of 
+			- Damage is normalized to the amount of
 			  damage that would be done to a goliath.
 			- This will then be multiplied by a factor
 			  specific to each plane type
@@ -257,14 +258,14 @@ impl Default for MobInfos {
 		map.insert(
 			MobType::PredatorMissile,
 			MobInfo {
-				// TODO: Figure out missile lifetime
-				lifetime: Duration::from_millis(2300),
+				lifetime: None,
 				missile: Some(MissileInfo {
 					max_speed: Speed::new(9.0),
 					accel: AccelScalar::new(0.105),
 					base_speed: Speed::new(4.05),
 					speed_factor: 0.3,
 					damage: Health::new(0.4),
+					distance: Distance::new(1000.0),
 				}),
 			},
 		);
@@ -272,13 +273,14 @@ impl Default for MobInfos {
 		map.insert(
 			MobType::GoliathMissile,
 			MobInfo {
-				lifetime: Duration::from_millis(3550),
+				lifetime: None,
 				missile: Some(MissileInfo {
 					max_speed: Speed::new(6.0),
 					accel: AccelScalar::new(0.0375),
 					base_speed: Speed::new(2.1),
 					speed_factor: 0.3,
 					damage: Health::new(1.2),
+					distance: Distance::new(1000.0),
 				}),
 			},
 		);
@@ -286,13 +288,14 @@ impl Default for MobInfos {
 		map.insert(
 			MobType::MohawkMissile,
 			MobInfo {
-				lifetime: Duration::from_millis(2250),
+				lifetime: None,
 				missile: Some(MissileInfo {
 					max_speed: Speed::new(9.0),
 					accel: AccelScalar::new(0.14),
 					base_speed: Speed::new(5.7),
 					speed_factor: 0.3,
 					damage: Health::new(0.2),
+					distance: Distance::new(1000.0),
 				}),
 			},
 		);
@@ -300,13 +303,14 @@ impl Default for MobInfos {
 		map.insert(
 			MobType::TornadoSingleMissile,
 			MobInfo {
-				lifetime: Duration::from_millis(2500),
+				lifetime: None,
 				missile: Some(MissileInfo {
 					max_speed: Speed::new(7.0),
 					accel: AccelScalar::new(0.0875),
 					base_speed: Speed::new(3.5),
 					speed_factor: 0.3,
 					damage: Health::new(0.4),
+					distance: Distance::new(1000.0),
 				}),
 			},
 		);
@@ -314,13 +318,14 @@ impl Default for MobInfos {
 		map.insert(
 			MobType::TornadoTripleMissile,
 			MobInfo {
-				lifetime: Duration::from_millis(1500),
+				lifetime: None,
 				missile: Some(MissileInfo {
 					max_speed: Speed::new(7.0),
 					accel: AccelScalar::new(0.0875),
 					base_speed: Speed::new(3.5),
 					speed_factor: 0.3,
 					damage: Health::new(0.3),
+					distance: Distance::new(500.0),
 				}),
 			},
 		);
@@ -328,13 +333,14 @@ impl Default for MobInfos {
 		map.insert(
 			MobType::ProwlerMissile,
 			MobInfo {
-				lifetime: Duration::from_millis(2270),
+				lifetime: None,
 				missile: Some(MissileInfo {
 					max_speed: Speed::new(7.0),
 					accel: AccelScalar::new(0.07),
 					base_speed: Speed::new(2.8),
 					speed_factor: 0.3,
 					damage: Health::new(0.45),
+					distance: Distance::new(1000.0),
 				}),
 			},
 		);
@@ -343,7 +349,7 @@ impl Default for MobInfos {
 		map.insert(
 			MobType::Inferno,
 			MobInfo {
-				lifetime: Duration::from_secs(60),
+				lifetime: Some(Duration::from_secs(60)),
 				missile: None,
 			},
 		);
@@ -351,7 +357,7 @@ impl Default for MobInfos {
 		map.insert(
 			MobType::Shield,
 			MobInfo {
-				lifetime: Duration::from_secs(60),
+				lifetime: Some(Duration::from_secs(60)),
 				missile: None,
 			},
 		);
