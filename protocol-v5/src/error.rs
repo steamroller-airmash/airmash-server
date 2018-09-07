@@ -25,7 +25,7 @@ pub enum SerializeErrorType {
 pub enum DeserializeErrorType {
 	UnexpectedEndOfMessage,
 	Utf8Error(FromUtf8Error),
-	InvalidEnumValue(u8),
+	InvalidEnumValue(usize),
 }
 
 #[derive(Debug)]
@@ -136,7 +136,16 @@ impl From<FromUtf8Error> for DeserializeError {
 impl From<EnumValueOutOfRangeError<u8>> for DeserializeError {
 	fn from(e: EnumValueOutOfRangeError<u8>) -> Self {
 		Self {
-			ty: DeserializeErrorType::InvalidEnumValue(e.0),
+			ty: DeserializeErrorType::InvalidEnumValue(e.0 as usize),
+			trace: vec![],
+		}
+	}
+}
+
+impl From<EnumValueOutOfRangeError<u16>> for DeserializeError {
+	fn from(e: EnumValueOutOfRangeError<u16>) -> Self {
+		Self {
+			ty: DeserializeErrorType::InvalidEnumValue(e.0 as usize),
 			trace: vec![],
 		}
 	}

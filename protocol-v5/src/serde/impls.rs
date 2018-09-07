@@ -21,13 +21,13 @@ macro_rules! newtype_serde_decl {
 macro_rules! enum_serde_decl {
 	{
 		$(
-			$name:ident
+			$name:ident: $base:ident
 		),*
 	} => {
 		$(
 			impl Serialize for $name {
 				fn serialize(&self, ser: &mut Serializer) -> Result<(), SerializeError> {
-					ser.serialize_u8((*self).into())
+					$base::serialize(&(*self).into(), ser)
 				}
 			}
 
@@ -35,7 +35,7 @@ macro_rules! enum_serde_decl {
 				fn deserialize<'de>(de: &mut Deserializer<'de>) -> Result<Self, DeserializeError> {
 					use std::convert::TryInto;
 
-					Ok(u8::deserialize(de)?.try_into()?)
+					Ok($base::deserialize(de)?.try_into()?)
 				}
 			}
 		)*
@@ -43,23 +43,23 @@ macro_rules! enum_serde_decl {
 }
 
 enum_serde_decl! {
-	CommandReplyType,
-	ErrorType,
-	FirewallStatus,
-	FirewallUpdateType,
-	FlagCode,
-	FlagUpdateType,
-	GameType,
-	KeyCode,
-	LeaveHorizonType,
-	MobType,
-	PlaneType,
-	PlayerLevelType,
-	PlayerStatus,
-	PowerupType,
-	ServerCustomType,
-	ServerMessageType,
-	UpgradeType
+	CommandReplyType: u8,
+	ErrorType: u8,
+	FirewallStatus: u8,
+	FirewallUpdateType: u8,
+	FlagCode: u16,
+	FlagUpdateType: u8,
+	GameType: u8,
+	KeyCode: u8,
+	LeaveHorizonType: u8,
+	MobType: u8,
+	PlaneType: u8,
+	PlayerLevelType: u8,
+	PlayerStatus: u8,
+	PowerupType: u8,
+	ServerCustomType: u8,
+	ServerMessageType: u8,
+	UpgradeType: u8
 }
 
 newtype_serde_decl!(Player);

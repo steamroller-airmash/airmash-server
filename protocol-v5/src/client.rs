@@ -145,7 +145,7 @@ impl Deserialize for ClientPacket {
 			LOCALPING => match_case!(LocalPing, de),
 			x => {
 				return Err(DeserializeError {
-					ty: DeserializeErrorType::InvalidEnumValue(x),
+					ty: DeserializeErrorType::InvalidEnumValue(x as usize),
 					trace: vec![FieldSpec {
 						field: FieldName::Name("<variant-number>"),
 						ty: "ClientPacket".into(),

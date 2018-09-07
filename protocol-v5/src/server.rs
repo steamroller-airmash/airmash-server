@@ -557,7 +557,7 @@ impl Deserialize for ServerPacket {
 			SERVER_CUSTOM => match_case!(ServerCustom, de),
 			x => {
 				return Err(DeserializeError {
-					ty: DeserializeErrorType::InvalidEnumValue(x),
+					ty: DeserializeErrorType::InvalidEnumValue(x as usize),
 					trace: vec![FieldSpec {
 						field: FieldName::Name("<variant-number>"),
 						ty: "ServerPacket".into(),
