@@ -11,11 +11,6 @@ use protocol::server::{ScoreBoard, ScoreBoardData, ScoreBoardRanking};
 
 use std::cmp::{Ordering, Reverse};
 
-lazy_static! {
-	static ref SPEC_POSITION: Position =
-		Position::new(Distance::new(-16384.0), Distance::new(-8192.0));
-}
-
 pub struct ScoreBoardTimerHandler {
 	reader: Option<OnTimerEventReader>,
 }
