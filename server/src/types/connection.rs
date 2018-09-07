@@ -41,12 +41,14 @@ pub enum ConnectionType {
 	Inactive,
 }
 
+#[derive(Debug)]
 pub enum MessageInfo {
 	ToConnection(ConnectionId),
 	ToTeam(Entity),
 	ToVisible(Entity),
 }
 
+#[derive(Debug)]
 pub enum MessageBody {
 	Packet(ServerPacket),
 	Binary(Vec<u8>),

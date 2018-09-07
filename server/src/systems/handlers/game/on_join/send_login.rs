@@ -107,7 +107,7 @@ impl<'a> System<'a> for SendLogin {
 }
 
 impl SystemInfo for SendLogin {
-	type Dependencies = (super::InitTraits, super::InitConnection);
+	type Dependencies = (super::InitTraits, super::InitConnection, super::InitState);
 
 	fn name() -> &'static str {
 		concat!(module_path!(), "::", line!())

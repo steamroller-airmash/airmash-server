@@ -75,6 +75,7 @@ impl SystemInfo for SendScoreUpdate {
 		InitKillCounters,
 		SendLogin,
 		InitConnection,
+		InitState,
 	);
 
 	fn name() -> &'static str {

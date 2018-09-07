@@ -19,7 +19,6 @@ pub struct InitTransformData<'a> {
 	pub pos: WriteStorage<'a, Position>,
 	pub rot: WriteStorage<'a, Rotation>,
 	pub vel: WriteStorage<'a, Velocity>,
-	pub team: ReadStorage<'a, Team>,
 }
 
 impl<'a> System<'a> for InitTransform {
@@ -39,13 +38,10 @@ impl<'a> System<'a> for InitTransform {
 			mut pos,
 			mut rot,
 			mut vel,
-			team,
 		} = data;
 
 		for evt in channel.read(self.reader.as_mut().unwrap()) {
-			let player_pos = gamemode
-				.get_mut()
-				.spawn_pos(evt.id, *team.get(evt.id).unwrap());
+			let player_pos = gamemode.get_mut().spawn_pos(evt.id, evt.team);
 
 			pos.insert(evt.id, player_pos).unwrap();
 			rot.insert(evt.id, Rotation::default()).unwrap();
@@ -55,7 +51,7 @@ impl<'a> System<'a> for InitTransform {
 }
 
 impl SystemInfo for InitTransform {
-	type Dependencies = super::InitTraits;
+	type Dependencies = (super::InitTraits);
 
 	fn name() -> &'static str {
 		concat!(module_path!(), "::", line!())

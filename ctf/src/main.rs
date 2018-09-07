@@ -32,7 +32,10 @@ use server::AirmashServer;
 
 fn main() {
 	env::set_var("RUST_BACKTRACE", "1");
-	env::set_var("RUST_LOG", "airmash:packet-dump=trace");
+	env::set_var(
+		"RUST_LOG",
+		"airmash:packet-dump=trace,airmash_server=info,airmash:protocol-v5=trace",
+	);
 
 	env_logger::init();
 

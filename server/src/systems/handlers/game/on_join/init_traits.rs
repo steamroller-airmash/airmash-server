@@ -4,7 +4,7 @@ use std::time::Instant;
 
 use types::*;
 
-use systems::handlers::packet::LoginHandler;
+use systems::handlers::game::timer::LoginHandler;
 use SystemInfo;
 
 use component::channel::*;

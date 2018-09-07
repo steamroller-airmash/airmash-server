@@ -38,14 +38,10 @@ impl PollComplete {
 		id: ConnectionId,
 		msg: OwnedMessage,
 	) {
+		trace!(target: "airmash:packet-dump", "{:?}", msg);
+
 		match conns.0.get_mut(&id) {
 			Some(ref mut conn) => {
-				trace!(
-					target: "airmash:packet-dump",
-					"Sent packet to {:?} with data {:?}",
-					id, msg
-				);
-
 				Connections::send_sink(&mut conn.sink, msg);
 			}
 			// The connection probably closed,
@@ -73,6 +69,13 @@ impl<'a> System<'a> for PollComplete {
 		let mut cnt = 0;
 		while let Ok(msg) = self.channel.try_recv() {
 			cnt += 1;
+
+			trace!(
+				target: "airmash:packet-dump",
+				"Sending packet {:#?} to {:?}",
+				msg.msg,
+				msg.info
+			);
 
 			let data = match msg.msg {
 				MessageBody::Packet(ref packet) => {
