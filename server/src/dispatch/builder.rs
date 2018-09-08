@@ -4,6 +4,8 @@ use std::any::Any;
 use std::collections::{HashMap, HashSet};
 use std::mem;
 
+use log::Level::Debug;
+
 use dispatch::sysbuilder::*;
 use dispatch::sysinfo::*;
 
@@ -46,7 +48,13 @@ impl<'a, 'b> Builder<'a, 'b> {
 		T: for<'c> System<'c> + Send + SystemInfo + 'static,
 		T::Dependencies: SystemDeps,
 	{
-		debug!("{} {:?}", T::name(), T::Dependencies::dependencies());
+		trace!(
+			target: "airmash:builder", 
+			"{} {:?}", 
+			T::name(),
+			T::Dependencies::dependencies()
+		);
+
 		self.sysmap
 			.insert(T::name(), Box::new(SystemBuilder::<T>::new(args)));
 
@@ -105,6 +113,16 @@ impl<'a, 'b> Builder<'a, 'b> {
 	fn build_with_all(&mut self) {
 		let systems = self.system_toposort();
 		let builder = mem::replace(&mut self.builder, DispatcherBuilder::new());
+
+		if log_enabled!(Debug) {
+			for sys in &systems {
+				debug!(
+					target: "airmash:builder",
+					"Added system to builder: {name}",
+					name = sys.name(),
+				);
+			}
+		}
 
 		self.builder = systems
 			.into_iter()
