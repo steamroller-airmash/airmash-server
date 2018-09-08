@@ -48,6 +48,7 @@ enum Message {
 }
 
 #[derive(Clone)]
+#[deprecated]
 pub struct MetricsHandler {
 	send: Arc<Mutex<Sender<Message>>>,
 	thread: Arc<thread::JoinHandle<()>>,

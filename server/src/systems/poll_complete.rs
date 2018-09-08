@@ -1,4 +1,3 @@
-use metrics::*;
 use specs::prelude::*;
 use std::time::Instant;
 use tokio::prelude::Sink;
@@ -20,7 +19,6 @@ pub struct PollComplete {
 #[derive(SystemData)]
 pub struct PollCompleteData<'a> {
 	conns: Write<'a, Connections>,
-	metrics: ReadExpect<'a, MetricsHandler>,
 
 	associated: ReadStorage<'a, AssociatedConnection>,
 	teams: ReadStorage<'a, Team>,
@@ -60,7 +58,6 @@ impl<'a> System<'a> for PollComplete {
 
 	fn run(&mut self, data: Self::SystemData) {
 		let mut conns = data.conns;
-		let metrics = data.metrics;
 		let associated = data.associated;
 		let teams = data.teams;
 		let protocol = ProtocolV5 {};
@@ -106,7 +103,11 @@ impl<'a> System<'a> for PollComplete {
 			}
 		}
 
-		metrics.count("packets-sent", cnt).unwrap();
+		trace!(
+			target: "airmash:packets-sent",
+			"Sent {} packets this frame",
+			cnt
+		);
 
 		for conn in conns.iter_mut() {
 			conn.sink
@@ -117,9 +118,13 @@ impl<'a> System<'a> for PollComplete {
 				.err();
 		}
 
-		metrics
-			.time_duration("poll-complete", Instant::now() - start)
-			.err();
+		let time = Instant::now() - start;
+		trace!(
+			"System {} took {}.{:3} ms",
+			Self::name(),
+			time.as_secs() * 1000 + time.subsec_millis() as u64,
+			time.subsec_nanos() % 1000
+		);
 	}
 }
 

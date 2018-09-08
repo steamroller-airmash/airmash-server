@@ -38,7 +38,6 @@ use websocket::futures;
 mod builder;
 mod dispatch;
 mod handlers;
-mod metrics;
 mod server;
 mod status;
 mod timeloop;
@@ -54,10 +53,7 @@ pub mod types;
 
 use protocol as airmash_protocol;
 
-pub use websocket::OwnedMessage;
-
 pub use builder::AirmashServer;
-pub use metrics::MetricsHandler;
 
 pub use dispatch::{Builder, SystemDeps, SystemInfo};
 

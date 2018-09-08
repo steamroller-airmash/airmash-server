@@ -10,7 +10,6 @@ use specs::*;
 use futures;
 
 use dispatch::Builder;
-use metrics;
 use server;
 use systems;
 use timeloop::timeloop;
@@ -141,7 +140,6 @@ where
 			..
 		} = self;
 
-		world.add_resource(metrics::handler());
 		world.add_resource(Connections::new(msg.send.unwrap()));
 		world.add_resource(FutureDispatcher::new(timer.send.as_ref().unwrap().clone()));
 
@@ -251,13 +249,6 @@ where
 				} else {
 					trace!("Frame time: {} ms", duration.subsec_millis());
 				}
-
-				// Don't crash server if metric recording fails
-				world
-					.res
-					.fetch::<metrics::MetricsHandler>()
-					.time_duration("frame-time", duration)
-					.unwrap();
 			},
 			Duration::from_nanos(16666667),
 		));
