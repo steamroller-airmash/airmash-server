@@ -27,6 +27,7 @@ pub struct InflictDamageData<'a> {
 	pub upgrades: ReadStorage<'a, Upgrades>,
 	pub owner: ReadStorage<'a, PlayerRef>,
 	pub player_flag: ReadStorage<'a, IsPlayer>,
+	pub powerups: ReadStorage<'a, Powerups>,
 
 	pub mob: ReadStorage<'a, Mob>,
 	pub pos: ReadStorage<'a, Position>,
@@ -52,6 +53,7 @@ impl<'a> System<'a> for InflictDamage {
 			let plane = data.plane.get(evt.player).unwrap();
 			let health = data.health.get_mut(evt.player).unwrap();
 			let upgrades = data.upgrades.get(evt.player).unwrap();
+			let powerups = data.powerups.get(evt.player).unwrap();
 
 			let mob = data.mob.get(evt.missile).unwrap();
 			let pos = data.pos.get(evt.missile).unwrap();
@@ -60,6 +62,11 @@ impl<'a> System<'a> for InflictDamage {
 			let ref planeconf = data.config.planes[*plane];
 			let ref mobconf = data.config.mobs[*mob].missile.unwrap();
 			let ref upgconf = data.config.upgrades;
+
+			// No damage can be done if the player is shielded
+			if powerups.shield {
+				continue;
+			}
 
 			*health -= mobconf.damage * planeconf.damage_factor
 				/ upgconf.defense.factor[upgrades.defense as usize];
