@@ -3,7 +3,7 @@ use protocol_common::{BaseType, Distance};
 use serde::*;
 
 const SHIFT: i32 = 32768;
-const MULT: BaseType = 4.0;
+const MULT: BaseType = 2.0;
 
 pub fn serialize(val: &Distance, ser: &mut Serializer) -> Result<(), SerializeError> {
 	ser.serialize_u16(((val.inner() * MULT) as i32 + SHIFT) as u16)

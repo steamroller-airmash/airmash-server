@@ -19,6 +19,7 @@ pub struct FieldSpec {
 #[derive(Debug)]
 pub enum SerializeErrorType {
 	ArrayTooLarge(usize),
+	InvalidFlagId(u16),
 }
 
 #[derive(Debug)]
@@ -48,6 +49,11 @@ impl Display for SerializeErrorType {
 				fmt,
 				"Array too large. This type of array can have at most {size} elements.",
 				size = size
+			),
+			InvalidFlagId(id) => write!(
+				fmt,
+				"Flags may only take on ids less than 255. Flag had an id of {id}.",
+				id = id
 			),
 		}
 	}

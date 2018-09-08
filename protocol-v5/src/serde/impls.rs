@@ -67,7 +67,25 @@ newtype_serde_decl!(Team);
 newtype_serde_decl!(Mob);
 newtype_serde_decl!(Level);
 newtype_serde_decl!(Score);
-newtype_serde_decl!(Flag);
+
+impl Serialize for Flag {
+	fn serialize(&self, ser: &mut Serializer) -> Result<(), SerializeError> {
+		if (self.0).0 > 0xFF {
+			return Err(SerializeError {
+				ty: SerializeErrorType::InvalidFlagId((self.0).0),
+				trace: vec![],
+			});
+		}
+
+		((self.0).0 as u8).serialize(ser)
+	}
+}
+
+impl Deserialize for Flag {
+	fn deserialize<'de>(de: &mut Deserializer<'de>) -> Result<Self, DeserializeError> {
+		Ok(Flag(Team(u8::deserialize(de)? as u16)))
+	}
+}
 
 impl Serialize for Upgrades {
 	fn serialize(&self, ser: &mut Serializer) -> Result<(), SerializeError> {
