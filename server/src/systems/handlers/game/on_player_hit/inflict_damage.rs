@@ -4,15 +4,16 @@ use types::*;
 use dispatch::SystemInfo;
 
 use component::channel::*;
-use component::event::PlayerKilled;
+use component::event::{PlayerHit, PlayerKilled};
 use component::flag::*;
 use component::reference::PlayerRef;
 
+use utils::event_handler::{EventHandler, EventHandlerTypeProvider};
+
 use systems::missile::MissileHit;
 
-pub struct InflictDamage {
-	reader: Option<OnPlayerHitReader>,
-}
+#[derive(Default)]
+pub struct InflictDamage;
 
 #[derive(SystemData)]
 pub struct InflictDamageData<'a> {
@@ -33,52 +34,42 @@ pub struct InflictDamageData<'a> {
 	pub pos: ReadStorage<'a, Position>,
 }
 
-impl InflictDamage {
-	pub fn new() -> Self {
-		Self { reader: None }
-	}
+impl EventHandlerTypeProvider for InflictDamage {
+	type Event = PlayerHit;
 }
 
-impl<'a> System<'a> for InflictDamage {
+impl<'a> EventHandler<'a> for InflictDamage {
 	type SystemData = InflictDamageData<'a>;
 
-	fn setup(&mut self, res: &mut Resources) {
-		Self::SystemData::setup(res);
+	fn on_event(&mut self, evt: &PlayerHit, data: &mut Self::SystemData) {
+		let plane = data.plane.get(evt.player).unwrap();
+		let health = data.health.get_mut(evt.player).unwrap();
+		let upgrades = data.upgrades.get(evt.player).unwrap();
+		let powerups = data.powerups.get(evt.player).unwrap();
 
-		self.reader = Some(res.fetch_mut::<OnPlayerHit>().register_reader());
-	}
+		let mob = data.mob.get(evt.missile).unwrap();
+		let pos = data.pos.get(evt.missile).unwrap();
+		let owner = data.owner.get(evt.missile).unwrap();
 
-	fn run(&mut self, mut data: Self::SystemData) {
-		for evt in data.channel.read(self.reader.as_mut().unwrap()) {
-			let plane = data.plane.get(evt.player).unwrap();
-			let health = data.health.get_mut(evt.player).unwrap();
-			let upgrades = data.upgrades.get(evt.player).unwrap();
-			let powerups = data.powerups.get(evt.player).unwrap();
+		let ref planeconf = data.config.planes[*plane];
+		let ref mobconf = data.config.mobs[*mob].missile.unwrap();
+		let ref upgconf = data.config.upgrades;
 
-			let mob = data.mob.get(evt.missile).unwrap();
-			let pos = data.pos.get(evt.missile).unwrap();
-			let owner = data.owner.get(evt.missile).unwrap();
+		// No damage can be done if the player is shielded
+		if powerups.shield {
+			return;
+		}
 
-			let ref planeconf = data.config.planes[*plane];
-			let ref mobconf = data.config.mobs[*mob].missile.unwrap();
-			let ref upgconf = data.config.upgrades;
+		*health -= mobconf.damage * planeconf.damage_factor
+			/ upgconf.defense.factor[upgrades.defense as usize];
 
-			// No damage can be done if the player is shielded
-			if powerups.shield {
-				continue;
-			}
-
-			*health -= mobconf.damage * planeconf.damage_factor
-				/ upgconf.defense.factor[upgrades.defense as usize];
-
-			if health.inner() <= 0.0 {
-				data.kill_channel.single_write(PlayerKilled {
-					missile: evt.missile,
-					player: evt.player,
-					killer: owner.0,
-					pos: *pos,
-				});
-			}
+		if health.inner() <= 0.0 {
+			data.kill_channel.single_write(PlayerKilled {
+				missile: evt.missile,
+				player: evt.player,
+				killer: owner.0,
+				pos: *pos,
+			});
 		}
 	}
 }
@@ -91,6 +82,6 @@ impl SystemInfo for InflictDamage {
 	}
 
 	fn new() -> Self {
-		Self::new()
+		Self::default()
 	}
 }

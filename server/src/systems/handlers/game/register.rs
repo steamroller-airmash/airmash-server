@@ -37,7 +37,7 @@ pub fn register<'a, 'b>(builder: Builder<'a, 'b>) -> Builder<'a, 'b> {
 		.with::<on_missile_fire::SendPlayerFire>()
 		.with::<on_missile_fire::SetLastShot>()
 		// On player hit
-		.with::<on_player_hit::InflictDamage>()
+		.with_handler::<on_player_hit::InflictDamage>()
 		.with::<on_player_hit::SendPacket>()
 		// On player respawn
 		.with::<on_player_respawn::ResetKeyState>()
