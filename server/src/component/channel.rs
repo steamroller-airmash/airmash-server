@@ -40,6 +40,7 @@ pub type OnPlayerRepel = EventChannel<PlayerRepel>;
 pub type OnPlayerMuted = EventChannel<PlayerMute>;
 pub type OnPlayerThrottled = EventChannel<PlayerThrottle>;
 pub type OnPlayerHit = EventChannel<PlayerHit>;
+pub type OnPowerupExpired = EventChannel<PowerupExpired>;
 
 // Upgrade Events
 pub type OnUpgradeSpawn = EventChannel<UpgradeSpawnEvent>;
@@ -88,6 +89,7 @@ pub type OnPlayerRepelReader = ReaderId<PlayerRepel>;
 pub type OnPlayerMutedReader = ReaderId<PlayerMute>;
 pub type OnPlayerThrottledReader = ReaderId<PlayerThrottle>;
 pub type OnPlayerHitReader = ReaderId<PlayerHit>;
+pub type OnPowerupExpiredReader = ReaderId<PowerupExpired>;
 
 // Upgrade Events
 pub type OnUpgradePickupReader = ReaderId<UpgradePickupEvent>;

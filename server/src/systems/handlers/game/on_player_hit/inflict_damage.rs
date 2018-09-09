@@ -56,7 +56,7 @@ impl<'a> EventHandler<'a> for InflictDamage {
 		let ref upgconf = data.config.upgrades;
 
 		// No damage can be done if the player is shielded
-		if powerups.shield {
+		if powerups.shield() {
 			return;
 		}
 

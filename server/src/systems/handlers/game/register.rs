@@ -30,6 +30,7 @@ pub fn register<'a, 'b>(builder: Builder<'a, 'b>) -> Builder<'a, 'b> {
 		.with::<on_join::SendPlayerLevel>()
 		.with::<on_join::SendScoreUpdate>()
 		.with::<on_join::UpdatePlayersGame>()
+		.with_handler::<on_join::SendPlayerPowerup>()
 		// On player leave
 		.with::<on_leave::FreeName>()
 		.with::<on_leave::UpdatePlayersGame>()
@@ -43,8 +44,12 @@ pub fn register<'a, 'b>(builder: Builder<'a, 'b>) -> Builder<'a, 'b> {
 		.with::<on_player_respawn::ResetKeyState>()
 		.with::<on_player_respawn::SetTraits>()
 		.with::<on_player_respawn::SendPlayerRespawn>()
-		// Needs to be after InflictDamage
+		// Misc
 		.with::<PlayerKilledCleanup>()
+		// Chat throttling
 		.with_registrar(on_chat_throttled::register)
+		// Timer events
 		.with_registrar(timer::register)
+		// Powerup expiry
+		.with_handler::<on_powerup_expire::ForceUpdate>()
 }

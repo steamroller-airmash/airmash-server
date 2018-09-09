@@ -134,7 +134,7 @@ impl PositionUpdate {
 					unimplemented!();
 				}
 
-				if powerups.inferno {
+				if powerups.inferno() {
 					max_speed *= info.inferno_factor;
 				}
 
@@ -196,8 +196,8 @@ impl PositionUpdate {
 
 					let ups = ServerUpgrades {
 						speed: upgrades.speed,
-						shield: powerups.shield,
-						inferno: powerups.inferno,
+						shield: powerups.shield(),
+						inferno: powerups.inferno(),
 					};
 
 					let packet = PlayerUpdate {
@@ -251,8 +251,8 @@ impl PositionUpdate {
 
 					let ups = ServerUpgrades {
 						speed: upgrades.speed,
-						shield: powerups.shield,
-						inferno: powerups.inferno,
+						shield: powerups.shield(),
+						inferno: powerups.inferno(),
 					};
 
 					let packet = PlayerUpdate {

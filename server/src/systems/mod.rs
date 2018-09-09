@@ -13,6 +13,7 @@ pub mod handlers;
 pub mod limiting;
 pub mod missile;
 pub mod notify;
+pub mod powerups;
 pub mod specials;
 pub mod spectate;
 pub mod upgrades;

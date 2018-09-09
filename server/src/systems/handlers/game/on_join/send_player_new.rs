@@ -57,8 +57,8 @@ impl<'a> System<'a> for SendPlayerNew {
 
 			let upgrades = ProtocolUpgrades {
 				speed: upgrades.get(evt.id).unwrap().speed,
-				inferno: powerups.inferno,
-				shield: powerups.shield,
+				inferno: powerups.inferno(),
+				shield: powerups.shield(),
 			};
 
 			let player_new = PlayerNew {
