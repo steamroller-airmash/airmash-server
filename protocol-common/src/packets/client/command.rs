@@ -4,8 +4,8 @@
 ///
 /// # Changing a flag
 /// ```
-/// # extern crate airmash_protocol;
-/// # use airmash_protocol::client::Command;
+/// # extern crate protocol_common;
+/// # use protocol_common::client::Command;
 /// # fn main() {
 /// let cmd = Command {
 ///     com: "flag".to_string(),
@@ -21,8 +21,8 @@
 ///
 /// # Respawning as a plane
 /// ```
-/// # extern crate airmash_protocol;
-/// # use airmash_protocol::client::Command;
+/// # extern crate protocol_common;
+/// # use protocol_common::client::Command;
 /// # fn main() {
 /// let cmd = Command {
 ///     com: "respawn".to_string(),
@@ -39,8 +39,8 @@
 ///
 /// # Selecting Upgrades
 /// ```
-/// # extern crate airmash_protocol;
-/// # use airmash_protocol::client::Command;
+/// # extern crate protocol_common;
+/// # use protocol_common::client::Command;
 /// # fn main() {
 /// let cmd = Command {
 ///     com: "upgrade".to_string(),
@@ -55,8 +55,8 @@
 ///
 /// # Going into spectate or spectating a different player
 /// ```
-/// # extern crate airmash_protocol;
-/// # use airmash_protocol::client::Command;
+/// # extern crate protocol_common;
+/// # use protocol_common::client::Command;
 /// # fn main() {
 /// let cmd = Command {
 ///     com: "spectate".to_string(),
