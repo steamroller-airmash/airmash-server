@@ -7,7 +7,7 @@ pub fn serialize(pos: &Option<Position>, ser: &mut Serializer) -> Result<(), Ser
 		.map(|v| ((v.x.inner() / 128.0) as i32 + 128) as u8)
 		.unwrap_or(0);
 	let y = pos
-		.map(|v| ((v.y.inner() / 64.0) as i32 + 120) as u8)
+		.map(|v| ((v.y.inner() / 64.0) as i32 + 128) as u8)
 		.unwrap_or(0);
 
 	(x, y).serialize(ser)
