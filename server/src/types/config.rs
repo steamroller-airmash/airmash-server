@@ -401,7 +401,7 @@ impl Default for Config {
 			planes: Default::default(),
 			mobs: Default::default(),
 			upgrades: Default::default(),
-			admin_enabled: false,
+			admin_enabled: true,
 			spawn_shield_duration: Duration::from_secs(2),
 			shield_duration: Duration::from_secs(10),
 			inferno_duration: Duration::from_secs(10),
