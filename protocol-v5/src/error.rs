@@ -157,6 +157,18 @@ impl From<EnumValueOutOfRangeError<u16>> for DeserializeError {
 	}
 }
 
+impl From<!> for DeserializeError {
+	fn from(never: !) -> Self {
+		never
+	}
+}
+
+impl From<!> for SerializeError {
+	fn from(never: !) -> Self {
+		never
+	}
+}
+
 fn append_to<T>(mut v: Vec<T>, elem: T) -> Vec<T> {
 	v.push(elem);
 	v

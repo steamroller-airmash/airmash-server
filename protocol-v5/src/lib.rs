@@ -1,4 +1,4 @@
-#![feature(try_from)]
+#![feature(try_from, never_type)]
 
 extern crate protocol_common;
 

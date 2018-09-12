@@ -1,10 +1,10 @@
 use specs::*;
 
 use std::any::Any;
-use std::time::Instant;
+use std::time::{Duration, Instant};
 
 use protocol::client::*;
-use protocol::FlagCode;
+use protocol::{FlagCode, PowerupType};
 use types::collision::Collision;
 pub use types::event::{ConnectionClose, ConnectionOpen, Message};
 use types::*;
@@ -144,6 +144,19 @@ pub struct UpgradeSpawnEvent {
 #[derive(Copy, Clone, Debug)]
 pub struct UpgradeDespawnEvent {
 	pub upgrade: Entity,
+}
+
+#[derive(Copy, Clone, Debug)]
+pub struct PowerupExpired {
+	pub player: Entity,
+	pub ty: PowerupType,
+}
+
+#[derive(Copy, Clone, Debug)]
+pub struct PlayerPowerup {
+	pub player: Entity,
+	pub duration: Duration,
+	pub ty: PowerupType,
 }
 
 impl Default for TimerEvent {

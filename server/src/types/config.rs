@@ -73,12 +73,15 @@ pub struct UpgradeInfos {
 	pub defense: UpgradeInfo,
 }
 
-#[derive(Clone, Default)]
+#[derive(Clone)]
 pub struct Config {
 	pub planes: PlaneInfos,
 	pub mobs: MobInfos,
 	pub upgrades: UpgradeInfos,
 	pub admin_enabled: bool,
+	pub spawn_shield_duration: Duration,
+	pub shield_duration: Duration,
+	pub inferno_duration: Duration,
 }
 
 impl Index<Plane> for PlaneInfos {
@@ -388,6 +391,20 @@ impl Default for UpgradeInfos {
 				cost: [N0, N1, N1, N1, N1, N1],
 				factor: [1.0, 1.05, 1.1, 1.15, 1.2, 1.25],
 			},
+		}
+	}
+}
+
+impl Default for Config {
+	fn default() -> Self {
+		Self {
+			planes: Default::default(),
+			mobs: Default::default(),
+			upgrades: Default::default(),
+			admin_enabled: true,
+			spawn_shield_duration: Duration::from_secs(2),
+			shield_duration: Duration::from_secs(10),
+			inferno_duration: Duration::from_secs(10),
 		}
 	}
 }

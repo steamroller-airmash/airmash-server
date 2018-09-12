@@ -1,5 +1,6 @@
 mod register;
 
+mod give_powerup;
 mod spawn_upgrade;
 
 pub use self::register::register;

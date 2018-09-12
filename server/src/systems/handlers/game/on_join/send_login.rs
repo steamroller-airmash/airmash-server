@@ -55,8 +55,8 @@ impl SendLogin {
 				|(ent, pos, rot, plane, name, flag, upgrades, level, status, team, powerups)| {
 					let upgrade_field = ProtocolUpgrades {
 						speed: upgrades.speed,
-						shield: powerups.shield,
-						inferno: powerups.inferno,
+						shield: powerups.shield(),
+						inferno: powerups.inferno(),
 					};
 
 					LoginPlayer {
