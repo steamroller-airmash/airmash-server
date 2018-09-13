@@ -8,6 +8,7 @@ use std::time::Duration;
 use component::channel::*;
 use component::event::*;
 use consts::timer::RESPAWN_TIME;
+use systems::handlers::game::on_player_hit::AllPlayerHitSystems;
 use systems::missile::MissileHit;
 
 pub struct SetRespawnTimer {
@@ -46,7 +47,7 @@ impl<'a> System<'a> for SetRespawnTimer {
 }
 
 impl SystemInfo for SetRespawnTimer {
-	type Dependencies = MissileHit;
+	type Dependencies = (MissileHit, AllPlayerHitSystems);
 
 	fn name() -> &'static str {
 		concat!(module_path!(), "::", line!())

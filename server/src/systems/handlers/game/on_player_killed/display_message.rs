@@ -5,7 +5,7 @@ use types::*;
 
 use consts::timer::SCORE_BOARD;
 use dispatch::SystemInfo;
-use systems;
+use systems::handlers::game::on_player_hit::AllPlayerHitSystems;
 
 use component::channel::*;
 use component::event::TimerEvent;
@@ -65,7 +65,7 @@ impl<'a> System<'a> for DisplayMessage {
 }
 
 impl SystemInfo for DisplayMessage {
-	type Dependencies = (systems::missile::MissileHit);
+	type Dependencies = (AllPlayerHitSystems);
 
 	fn name() -> &'static str {
 		concat!(module_path!(), "::", line!())
