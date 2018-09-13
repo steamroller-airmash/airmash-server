@@ -42,6 +42,7 @@ pub fn register<'a, 'b>(world: &mut World, disp: Builder<'a, 'b>) -> Builder<'a,
 
 	disp
 		.with::<DropOnSpec>()
+		.with::<DropOnRespawn>()
 		.with::<DropOnDeath>()
 		.with::<ScoreDetailed>()
 		// On Leave Events
