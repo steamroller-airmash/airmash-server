@@ -7,9 +7,7 @@ use component::channel::*;
 use systems::spectate::CommandHandler;
 
 use protocol::server::PlayerKill;
-use protocol::{to_bytes, ServerPacket};
 
-use OwnedMessage;
 use SystemInfo;
 
 pub struct SendKillPacket {
@@ -43,15 +41,12 @@ impl<'a> System<'a> for SendKillPacket {
 			// indicates to the client that this
 			// was a player going into spec.
 			let packet = PlayerKill {
-				id: evt.player,
+				id: evt.player.into(),
 				killer: None,
 				pos: Position::default(),
 			};
 
-			data.conns.send_to_player(
-				evt.player,
-				OwnedMessage::Binary(to_bytes(&ServerPacket::PlayerKill(packet)).unwrap()),
-			);
+			data.conns.send_to_player(evt.player, packet);
 		}
 	}
 }

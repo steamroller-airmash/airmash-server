@@ -6,8 +6,6 @@ use systems::missile::MissileFireHandler;
 use SystemInfo;
 
 use protocol::server::EventStealth;
-use protocol::{to_bytes, ServerPacket};
-use websocket::OwnedMessage;
 
 pub struct DestealthOnFire {
 	reader: Option<OnMissileFireReader>,
@@ -42,16 +40,13 @@ impl<'a> System<'a> for DestealthOnFire {
 			data.keystate.get_mut(evt.player).unwrap().stealthed = false;
 
 			let packet = EventStealth {
-				id: evt.player,
+				id: evt.player.into(),
 				state: false,
 				energy: *data.energy.get(evt.player).unwrap(),
 				energy_regen: *data.energy_regen.get(evt.player).unwrap(),
 			};
 
-			let message =
-				OwnedMessage::Binary(to_bytes(&ServerPacket::EventStealth(packet)).unwrap());
-
-			data.conns.send_to_player(evt.player, message);
+			data.conns.send_to_player(evt.player, packet);
 		}
 	}
 }

@@ -3,11 +3,13 @@ name = "airmash-server-ctf"
 version = "0.0.1"
 authors = ["STEAMROLLER"]
 license = "Apache-2.0 OR MIT"
+publish = false
+repository = 'https://github.com/steamroller-airmash/airmash-server'
 
 [dependencies]
 specs = "*"
 shrev = "*"
-shred = "*"
+shred = { version = "*", features= ["nightly"] }
 fnv = "*"
 log = "0.4"
 rand = "0.4"
@@ -15,12 +17,11 @@ specs-derive = "*"
 shred-derive = "*"
 lazy_static = "*"
 htmlescape = "*"
-simple_logger = "*"
+env_logger = "*"
 serde = { version = "*", features = [ "derive" ]}
 serde_json = "*"
 
 [dependencies.airmash-server]
 path = '../server'
-# Enable GeoIP based default flags
 # Enable looking for X-Forwarded-For within the request
-features = [ "geoip", "proxied" ]
+features = [ "proxied" ]

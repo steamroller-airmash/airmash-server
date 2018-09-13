@@ -6,7 +6,7 @@ use types::ConnectionId;
 
 use std::time::Duration;
 
-pub use protocol::FlagCode as Flag;
+pub use protocol::FlagCode;
 pub use protocol::MobType as Mob;
 pub use protocol::PlaneType as Plane;
 pub use protocol::PlayerStatus as Status;

@@ -4,11 +4,14 @@ use types::*;
 
 use component::channel::*;
 use component::event::*;
+use component::flag::*;
 
 use protocol::client::Command;
 use protocol::server::{PlayerFlag, PlayerType};
-use protocol::{to_bytes, FlagCode, ServerPacket};
-use websocket::OwnedMessage;
+use protocol::{FlagCode, ServerPacket};
+
+use std::convert::TryFrom;
+use std::str::FromStr;
 
 pub struct CommandHandler {
 	reader: Option<OnCommandReader>,
@@ -20,7 +23,7 @@ pub struct CommandHandlerData<'a> {
 	respawn_channel: Write<'a, OnPlayerRespawn>,
 	conns: Read<'a, Connections>,
 	planes: WriteStorage<'a, Plane>,
-	flags: WriteStorage<'a, Flag>,
+	flags: WriteStorage<'a, FlagCode>,
 	isspec: WriteStorage<'a, IsSpectating>,
 }
 
@@ -52,22 +55,22 @@ impl<'a> System<'a> for CommandHandler {
 			let packet;
 
 			if evt.1.com == "flag" {
-				let flag = Flag::from_str(&evt.1.data).unwrap_or(FlagCode::UnitedNations);
+				let flag = FlagCode::from_str(&evt.1.data).unwrap_or(FlagCode::UnitedNations);
 
 				packet = ServerPacket::PlayerFlag(PlayerFlag {
-					id: player,
+					id: player.into(),
 					flag: flag,
 				});
 
 				*data.flags.get_mut(player).unwrap() = flag;
 			} else if evt.1.com == "respawn" {
-				let num = match evt.1.data.parse() {
+				let num: i32 = match evt.1.data.parse() {
 					Ok(n) => n,
 					Err(_) => continue,
 				};
 				let ty = match Plane::try_from(num) {
-					Some(n) => n,
-					None => continue,
+					Ok(n) => n,
+					_ => continue,
 				};
 
 				*data.planes.get_mut(player).unwrap() = ty;
@@ -75,13 +78,15 @@ impl<'a> System<'a> for CommandHandler {
 
 				data.respawn_channel.single_write(PlayerRespawn { player });
 
-				packet = ServerPacket::PlayerType(PlayerType { id: player, ty: ty });
+				packet = ServerPacket::PlayerType(PlayerType {
+					id: player.into(),
+					ty: ty,
+				});
 			} else {
 				continue;
 			}
 
-			data.conns
-				.send_to_all(OwnedMessage::Binary(to_bytes(&packet).unwrap()));
+			data.conns.send_to_all(packet);
 		}
 	}
 }

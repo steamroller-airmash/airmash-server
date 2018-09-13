@@ -3,6 +3,7 @@ use airmash_protocol::FlagCode;
 use specs::*;
 use uuid::Uuid;
 
+use std::convert::TryFrom;
 use std::str::FromStr;
 
 use component::channel::*;
@@ -11,7 +12,6 @@ use component::event::PlayerJoin;
 use component::time::*;
 use consts::timer::*;
 use types::*;
-use utils::geoip;
 
 use GameMode;
 
@@ -56,11 +56,9 @@ impl LoginHandler {
 			conn, login.name, entity.id()
 		);
 
-		let flag = match FlagCode::from_str(&login.flag) {
-			Some(v) => v,
-			None => {
-				geoip::locate(&data.conns.0[&conn].info.addr).unwrap_or(FlagCode::UnitedNations)
-			}
+		let flag = {
+			let flag_str: &str = &login.flag;
+			FlagCode::try_from(flag_str).unwrap_or(FlagCode::UnitedNations)
 		};
 
 		let session = match Uuid::from_str(&login.session) {

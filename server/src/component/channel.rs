@@ -1,9 +1,7 @@
 use shrev::*;
 
 use component::event::*;
-use protocol::client::*;
-use types::event::{ConnectionClose, ConnectionOpen, Message};
-use types::ConnectionId;
+use types::event::{ConnectionClose, ConnectionOpen};
 
 // Connection Events
 pub type OnOpen = EventChannel<ConnectionOpen>;
@@ -13,22 +11,22 @@ pub type OnClose = EventChannel<ConnectionClose>;
 pub type OnTimerEvent = EventChannel<TimerEvent>;
 
 // Packet Received Events
-pub type OnBinary = EventChannel<Message>;
-pub type OnLogin = EventChannel<(ConnectionId, Login)>;
-pub type OnBackup = EventChannel<(ConnectionId, Backup)>;
-pub type OnCommand = EventChannel<(ConnectionId, Command)>;
-pub type OnHorizon = EventChannel<(ConnectionId, Horizon)>;
-pub type OnKey = EventChannel<(ConnectionId, Key)>;
-pub type OnPong = EventChannel<(ConnectionId, Pong)>;
-pub type OnChat = EventChannel<(ConnectionId, Chat)>;
-pub type OnSay = EventChannel<(ConnectionId, Say)>;
-pub type OnTeamChat = EventChannel<(ConnectionId, TeamChat)>;
-pub type OnWhisper = EventChannel<(ConnectionId, Whisper)>;
-pub type OnVotemute = EventChannel<(ConnectionId, VoteMute)>;
-pub type OnLocalPing = EventChannel<(ConnectionId, LocalPing)>;
+pub type OnBinary = EventChannel<BinaryEvent>;
+pub type OnLogin = EventChannel<LoginEvent>;
+pub type OnBackup = EventChannel<BackupEvent>;
+pub type OnCommand = EventChannel<CommandEvent>;
+pub type OnHorizon = EventChannel<HorizonEvent>;
+pub type OnKey = EventChannel<KeyEvent>;
+pub type OnPong = EventChannel<PongEvent>;
+pub type OnChat = EventChannel<ChatEvent>;
+pub type OnSay = EventChannel<SayEvent>;
+pub type OnTeamChat = EventChannel<TeamChatEvent>;
+pub type OnWhisper = EventChannel<WhisperEvent>;
+pub type OnVotemute = EventChannel<VotemuteEvent>;
+pub type OnLocalPing = EventChannel<LocalPingEvent>;
 pub type OnScoreDetailed = EventChannel<ScoreDetailedEvent>;
 pub type OnAck = EventChannel<AckEvent>;
-pub type OnChatEvent = EventChannel<ChatEvent>;
+pub type OnAnyChatEvent = EventChannel<AnyChatEvent>;
 
 // In-game events
 pub type OnPlayerJoin = EventChannel<PlayerJoin>;
@@ -42,12 +40,20 @@ pub type OnPlayerRepel = EventChannel<PlayerRepel>;
 pub type OnPlayerMuted = EventChannel<PlayerMute>;
 pub type OnPlayerThrottled = EventChannel<PlayerThrottle>;
 pub type OnPlayerHit = EventChannel<PlayerHit>;
+pub type OnPowerupExpired = EventChannel<PowerupExpired>;
+pub type OnPlayerPowerup = EventChannel<PlayerPowerup>;
+
+// Upgrade Events
+pub type OnUpgradeSpawn = EventChannel<UpgradeSpawnEvent>;
+pub type OnUpgradePickup = EventChannel<UpgradePickupEvent>;
+pub type OnUpgradeDespawn = EventChannel<UpgradeDespawnEvent>;
 
 // Collision events
 pub type OnPlayerTerrainCollision = EventChannel<PlayerTerrainCollision>;
 pub type OnPlayerMissileCollision = EventChannel<PlayerMissileCollision>;
 pub type OnPlayerPowerupCollision = EventChannel<PlayerPowerupCollision>;
 pub type OnMissileTerrainCollision = EventChannel<MissileTerrainCollision>;
+pub type OnPlayerUpgradeCollision = EventChannel<PlayerUpgradeCollision>;
 
 // Readers
 pub type OnOpenReader = ReaderId<ConnectionOpen>;
@@ -55,22 +61,22 @@ pub type OnCloseReader = ReaderId<ConnectionClose>;
 
 pub type OnTimerEventReader = ReaderId<TimerEvent>;
 
-pub type OnBinaryReader = ReaderId<Message>;
-pub type OnLoginReader = ReaderId<(ConnectionId, Login)>;
-pub type OnBackupReader = ReaderId<(ConnectionId, Backup)>;
-pub type OnCommandReader = ReaderId<(ConnectionId, Command)>;
-pub type OnHorizonReader = ReaderId<(ConnectionId, Horizon)>;
-pub type OnKeyReader = ReaderId<(ConnectionId, Key)>;
-pub type OnPongReader = ReaderId<(ConnectionId, Pong)>;
-pub type OnChatReader = ReaderId<(ConnectionId, Chat)>;
-pub type OnSayReader = ReaderId<(ConnectionId, Say)>;
-pub type OnTeamChatReader = ReaderId<(ConnectionId, TeamChat)>;
-pub type OnWhisperReader = ReaderId<(ConnectionId, Whisper)>;
-pub type OnVotemuteReader = ReaderId<(ConnectionId, VoteMute)>;
-pub type OnLocalPingReader = ReaderId<(ConnectionId, LocalPing)>;
+pub type OnBinaryReader = ReaderId<BinaryEvent>;
+pub type OnLoginReader = ReaderId<LoginEvent>;
+pub type OnBackupReader = ReaderId<BackupEvent>;
+pub type OnCommandReader = ReaderId<CommandEvent>;
+pub type OnHorizonReader = ReaderId<HorizonEvent>;
+pub type OnKeyReader = ReaderId<KeyEvent>;
+pub type OnPongReader = ReaderId<PongEvent>;
+pub type OnChatReader = ReaderId<ChatEvent>;
+pub type OnSayReader = ReaderId<SayEvent>;
+pub type OnTeamChatReader = ReaderId<TeamChatEvent>;
+pub type OnWhisperReader = ReaderId<WhisperEvent>;
+pub type OnVotemuteReader = ReaderId<VotemuteEvent>;
+pub type OnLocalPingReader = ReaderId<LocalPingEvent>;
 pub type OnScoreDetailedReader = ReaderId<ScoreDetailedEvent>;
 pub type OnAckReader = ReaderId<AckEvent>;
-pub type OnChatEventReader = ReaderId<ChatEvent>;
+pub type OnChatEventReader = ReaderId<AnyChatEvent>;
 
 // In-game events
 pub type OnPlayerJoinReader = ReaderId<PlayerJoin>;
@@ -84,9 +90,15 @@ pub type OnPlayerRepelReader = ReaderId<PlayerRepel>;
 pub type OnPlayerMutedReader = ReaderId<PlayerMute>;
 pub type OnPlayerThrottledReader = ReaderId<PlayerThrottle>;
 pub type OnPlayerHitReader = ReaderId<PlayerHit>;
+pub type OnPowerupExpiredReader = ReaderId<PowerupExpired>;
+pub type OnPlayerPowerupReader = ReaderId<PlayerPowerup>;
+
+// Upgrade Events
+pub type OnUpgradePickupReader = ReaderId<UpgradePickupEvent>;
 
 // Collision events
 pub type OnPlayerMissileCollisionReader = ReaderId<PlayerMissileCollision>;
 pub type OnPlayerTerrainCollisionReader = ReaderId<PlayerTerrainCollision>;
 pub type OnPlayerPowerupCollisionReader = ReaderId<PlayerPowerupCollision>;
 pub type OnMissileTerrainCollisionReader = ReaderId<MissileTerrainCollision>;
+pub type OnPlayerUpgradeCollisionReader = ReaderId<PlayerUpgradeCollision>;

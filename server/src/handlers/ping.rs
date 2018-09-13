@@ -5,8 +5,6 @@ use types::*;
 use consts::timer::PING_DISPATCH;
 
 use protocol::server::Ping as ServerPing;
-use protocol::{to_bytes, ServerPacket};
-use OwnedMessage;
 
 use component::channel::{OnTimerEvent, OnTimerEventReader};
 
@@ -52,13 +50,11 @@ impl<'a> System<'a> for PingTimerHandler {
 
 					data.conns.send_to_player(
 						ent,
-						OwnedMessage::Binary(
-							to_bytes(&ServerPacket::Ping(ServerPing {
-								clock,
-								num: ping.idx,
-							})).unwrap(),
-						),
-					)
+						ServerPing {
+							clock,
+							num: ping.idx,
+						},
+					);
 				});
 		}
 	}

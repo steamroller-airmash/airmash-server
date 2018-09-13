@@ -6,8 +6,6 @@ use component::channel::OnPlayerTerrainCollisionReader;
 use component::time::{StartTime, ThisFrame};
 
 use airmash_protocol::server::EventBounce;
-use airmash_protocol::{to_bytes, ServerPacket};
-use websocket::OwnedMessage;
 
 pub struct BounceSystem {
 	reader: Option<OnPlayerTerrainCollisionReader>,
@@ -91,16 +89,14 @@ impl<'a> System<'a> for BounceSystem {
 
 				let packet = EventBounce {
 					clock: (data.thisframe.0 - data.starttime.0).to_clock(),
-					id: ent,
+					id: ent.into(),
 					pos: *pos,
 					rot: *rot,
 					speed: vel,
 					keystate: state,
 				};
 
-				data.conns.send_to_all(OwnedMessage::Binary(
-					to_bytes(&ServerPacket::EventBounce(packet)).unwrap(),
-				));
+				data.conns.send_to_all(packet);
 			}
 		}
 	}

@@ -5,6 +5,8 @@ use std::iter::Iterator;
 
 use component::channel::OnMissileFire;
 use component::event::MissileFire;
+use component::flag::*;
+use component::missile::MissileTrajectory;
 use component::reference::PlayerRef;
 use component::time::*;
 
@@ -42,6 +44,7 @@ pub struct FireMissiles<'a> {
 	pub mob: WriteStorage<'a, Mob>,
 	pub is_missile: WriteStorage<'a, IsMissile>,
 	pub spawn_time: WriteStorage<'a, MobSpawnTime>,
+	pub missile_trajectory: WriteStorage<'a, MissileTrajectory>,
 }
 
 impl<'a> FireMissiles<'a> {
@@ -77,9 +80,12 @@ impl<'a> FireMissiles<'a> {
 				// Rotate starting angle 90 degrees so that
 				// it's inline with the plane. Change this
 				// and missiles will shoot sideways
-				let dir = Vector2::new(rot.sin(), -rot.cos());
+				let dir = Vector2::<f32>::new(rot.sin(), -rot.cos());
 
 				let vel = dir * (missile.base_speed + speed * missile.speed_factor) * upg_factor;
+
+				let missile_trajectory =
+					MissileTrajectory(*self.pos.get(owner).unwrap(), missile.distance);
 
 				let missile = self
 					.entities
@@ -91,6 +97,7 @@ impl<'a> FireMissiles<'a> {
 					.with(PlayerRef(owner), &mut self.owner)
 					.with(team, &mut self.team)
 					.with(spawn_time, &mut self.spawn_time)
+					.with(missile_trajectory, &mut self.missile_trajectory)
 					.build();
 
 				trace!(

@@ -1,12 +1,28 @@
 use specs::*;
 
 use std::any::Any;
-use std::time::Instant;
+use std::time::{Duration, Instant};
 
-use protocol::FlagCode;
+use protocol::client::*;
+use protocol::{FlagCode, PowerupType};
 use types::collision::Collision;
+pub use types::event::{ConnectionClose, ConnectionOpen, Message};
 use types::*;
 pub use utils::timer::TimerEventType;
+
+pub type BinaryEvent = Message;
+pub type LoginEvent = (ConnectionId, Login);
+pub type BackupEvent = (ConnectionId, Backup);
+pub type CommandEvent = (ConnectionId, Command);
+pub type HorizonEvent = (ConnectionId, Horizon);
+pub type KeyEvent = (ConnectionId, Key);
+pub type PongEvent = (ConnectionId, Pong);
+pub type ChatEvent = (ConnectionId, Chat);
+pub type SayEvent = (ConnectionId, Say);
+pub type TeamChatEvent = (ConnectionId, TeamChat);
+pub type WhisperEvent = (ConnectionId, Whisper);
+pub type VotemuteEvent = (ConnectionId, VoteMute);
+pub type LocalPingEvent = (ConnectionId, LocalPing);
 
 #[derive(Copy, Clone, Debug, Default, Component)]
 pub struct ScoreDetailedEvent(pub ConnectionId);
@@ -62,6 +78,8 @@ pub struct PlayerMissileCollision(pub Collision);
 pub struct MissileTerrainCollision(pub Collision);
 #[derive(Copy, Clone, Debug, Hash, PartialEq, Eq)]
 pub struct PlayerPowerupCollision(pub Collision);
+#[derive(Copy, Clone, Debug, Hash, PartialEq, Eq)]
+pub struct PlayerUpgradeCollision(pub Collision);
 
 pub struct TimerEvent {
 	pub ty: TimerEventType,
@@ -104,10 +122,41 @@ pub enum ChatEventType {
 }
 
 #[derive(Clone, Debug)]
-pub struct ChatEvent {
+pub struct AnyChatEvent {
 	pub ty: ChatEventType,
 	pub text: String,
 	pub conn: ConnectionId,
+}
+
+#[derive(Copy, Clone, Debug)]
+pub struct UpgradePickupEvent {
+	pub pos: Position,
+	pub upgrade: Entity,
+	pub player: Entity,
+}
+
+#[derive(Copy, Clone, Debug)]
+pub struct UpgradeSpawnEvent {
+	pub upgrade: Entity,
+	pub pos: Position,
+}
+
+#[derive(Copy, Clone, Debug)]
+pub struct UpgradeDespawnEvent {
+	pub upgrade: Entity,
+}
+
+#[derive(Copy, Clone, Debug)]
+pub struct PowerupExpired {
+	pub player: Entity,
+	pub ty: PowerupType,
+}
+
+#[derive(Copy, Clone, Debug)]
+pub struct PlayerPowerup {
+	pub player: Entity,
+	pub duration: Duration,
+	pub ty: PowerupType,
 }
 
 impl Default for TimerEvent {

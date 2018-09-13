@@ -10,8 +10,6 @@ use SystemInfo;
 use component::flag::{IsBoosting, IsPlayer};
 
 use protocol::server::EventBoost;
-use protocol::{to_bytes, ServerPacket};
-use websocket::OwnedMessage;
 
 pub struct SendEventBoost {
 	pub dirty: BitSet,
@@ -61,7 +59,7 @@ impl SendEventBoost {
 		).join()
 			.for_each(|(ent, pos, rot, vel, energy, energy_regen, _, _, _)| {
 				let packet = EventBoost {
-					id: ent,
+					id: ent.into(),
 					clock: clock,
 					boost: boost,
 
@@ -73,9 +71,7 @@ impl SendEventBoost {
 					energy_regen: *energy_regen,
 				};
 
-				data.conns.send_to_all(OwnedMessage::Binary(
-					to_bytes(&ServerPacket::EventBoost(packet)).unwrap(),
-				));
+				data.conns.send_to_all(packet);
 			});
 	}
 }

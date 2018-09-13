@@ -2,15 +2,8 @@ use airmash_protocol::{MobType, PlaneType};
 use fnv::FnvHashMap;
 use std::ops::Index;
 use std::time::Duration;
-use std::vec::Vec;
 
 use types::*;
-
-#[derive(Copy, Clone, Debug, Default)]
-pub struct HitCircle {
-	pub radius: Distance,
-	pub offset: Position,
-}
 
 #[derive(Debug, Clone)]
 pub struct PlaneInfo {
@@ -43,9 +36,6 @@ pub struct PlaneInfo {
 	pub missile_type: Mob,
 	// Offset of missile (in the Y dir) when fired
 	pub missile_offset: Distance,
-
-	// Collisions
-	pub hit_circles: Vec<HitCircle>,
 }
 
 #[derive(Copy, Clone, Debug, Default)]
@@ -55,11 +45,12 @@ pub struct MissileInfo {
 	pub base_speed: Speed,
 	pub speed_factor: f32,
 	pub damage: Health,
+	pub distance: Distance,
 }
 
 #[derive(Clone, Debug, Default)]
 pub struct MobInfo {
-	pub lifetime: Duration,
+	pub lifetime: Option<Duration>,
 	pub missile: Option<MissileInfo>,
 }
 
@@ -82,11 +73,15 @@ pub struct UpgradeInfos {
 	pub defense: UpgradeInfo,
 }
 
-#[derive(Clone, Default)]
+#[derive(Clone)]
 pub struct Config {
 	pub planes: PlaneInfos,
 	pub mobs: MobInfos,
 	pub upgrades: UpgradeInfos,
+	pub admin_enabled: bool,
+	pub spawn_shield_duration: Duration,
+	pub shield_duration: Duration,
+	pub inferno_duration: Duration,
 }
 
 impl Index<Plane> for PlaneInfos {
@@ -102,13 +97,6 @@ impl Index<Mob> for MobInfos {
 
 	fn index(&self, idx: Mob) -> &MobInfo {
 		&self.0[&idx]
-	}
-}
-
-fn hit_circle(x: i16, y: i16, r: i16) -> HitCircle {
-	HitCircle {
-		offset: Position::new(Distance::new(x as f32), Distance::new(y as f32)),
-		radius: Distance::new(r as f32),
 	}
 }
 
@@ -140,12 +128,6 @@ impl Default for PlaneInfos {
 
 				missile_type: MobType::PredatorMissile,
 				missile_offset: Distance::new(35.0),
-
-				hit_circles: vec![
-					hit_circle(0, 5, 23),
-					hit_circle(0, -15, 15),
-					hit_circle(0, -25, 12),
-				],
 			},
 		);
 
@@ -165,26 +147,14 @@ impl Default for PlaneInfos {
 
 				health_regen: HealthRegen::new(0.0005),
 				energy_regen: EnergyRegen::new(0.005),
-				fire_delay: Duration::from_millis(300),
+				fire_delay: Duration::from_millis(0),
 
 				damage_factor: 1.0,
 
-				fire_energy: Energy::new(0.9),
+				fire_energy: Energy::new(0.0),
 
 				missile_type: MobType::GoliathMissile,
 				missile_offset: Distance::new(35.0),
-
-				hit_circles: vec![
-					hit_circle(0, 0, 35),
-					hit_circle(50, 14, 16),
-					hit_circle(74, 26, 14),
-					hit_circle(30, 8, 23),
-					hit_circle(63, 22, 15),
-					hit_circle(-50, 14, 16),
-					hit_circle(-74, 26, 14),
-					hit_circle(-30, 8, 23),
-					hit_circle(-63, 22, 15),
-				],
 			},
 		);
 
@@ -204,22 +174,15 @@ impl Default for PlaneInfos {
 
 				health_regen: HealthRegen::new(0.001),
 				energy_regen: EnergyRegen::new(0.01),
-				fire_delay: Duration::from_millis(300),
+				fire_delay: Duration::from_millis(0),
 
 				damage_factor: 2.6375,
 
-				fire_energy: Energy::new(0.3),
+				fire_energy: Energy::new(0.0),
 
 				missile_type: MobType::MohawkMissile,
 				// This will have to be a special case
 				missile_offset: Distance::new(10.0),
-
-				hit_circles: vec![
-					hit_circle(0, -12, 15),
-					hit_circle(0, 0, 17),
-					hit_circle(0, 13, 15),
-					hit_circle(0, 26, 15),
-				],
 			},
 		);
 
@@ -239,23 +202,14 @@ impl Default for PlaneInfos {
 
 				health_regen: HealthRegen::new(0.001),
 				energy_regen: EnergyRegen::new(0.006),
-				fire_delay: Duration::from_millis(500),
+				fire_delay: Duration::from_millis(0),
 
 				damage_factor: 5.0 / 3.0,
 
-				fire_energy: Energy::new(0.5),
+				fire_energy: Energy::new(0.0),
 
 				missile_type: MobType::TornadoSingleMissile,
 				missile_offset: Distance::new(40.0),
-
-				hit_circles: vec![
-					hit_circle(0, 8, 18),
-					hit_circle(14, 12, 13),
-					hit_circle(-14, 12, 13),
-					hit_circle(0, -12, 16),
-					hit_circle(0, -26, 14),
-					hit_circle(0, -35, 12),
-				],
 			},
 		);
 
@@ -275,22 +229,14 @@ impl Default for PlaneInfos {
 
 				health_regen: HealthRegen::new(0.001),
 				energy_regen: EnergyRegen::new(0.006),
-				fire_delay: Duration::from_millis(300),
+				fire_delay: Duration::from_millis(0),
 
 				damage_factor: 5.0 / 3.0,
 
-				fire_energy: Energy::new(0.75),
+				fire_energy: Energy::new(0.0),
 
 				missile_type: MobType::ProwlerMissile,
 				missile_offset: Distance::new(35.0),
-
-				hit_circles: vec![
-					hit_circle(0, 11, 25),
-					hit_circle(0, -8, 18),
-					hit_circle(19, 20, 10),
-					hit_circle(-19, 20, 10),
-					hit_circle(0, -20, 14),
-				],
 			},
 		);
 
@@ -304,7 +250,7 @@ impl Default for MobInfos {
 
 		/*
 		Notes:
-			- Damage is normalized to the amount of 
+			- Damage is normalized to the amount of
 			  damage that would be done to a goliath.
 			- This will then be multiplied by a factor
 			  specific to each plane type
@@ -315,14 +261,14 @@ impl Default for MobInfos {
 		map.insert(
 			MobType::PredatorMissile,
 			MobInfo {
-				// TODO: Figure out missile lifetime
-				lifetime: Duration::from_millis(2300),
+				lifetime: None,
 				missile: Some(MissileInfo {
 					max_speed: Speed::new(9.0),
 					accel: AccelScalar::new(0.105),
 					base_speed: Speed::new(4.05),
 					speed_factor: 0.3,
 					damage: Health::new(0.4),
+					distance: Distance::new(1000.0),
 				}),
 			},
 		);
@@ -330,13 +276,14 @@ impl Default for MobInfos {
 		map.insert(
 			MobType::GoliathMissile,
 			MobInfo {
-				lifetime: Duration::from_millis(3550),
+				lifetime: None,
 				missile: Some(MissileInfo {
 					max_speed: Speed::new(6.0),
 					accel: AccelScalar::new(0.0375),
 					base_speed: Speed::new(2.1),
 					speed_factor: 0.3,
 					damage: Health::new(1.2),
+					distance: Distance::new(1000.0),
 				}),
 			},
 		);
@@ -344,13 +291,14 @@ impl Default for MobInfos {
 		map.insert(
 			MobType::MohawkMissile,
 			MobInfo {
-				lifetime: Duration::from_millis(2250),
+				lifetime: None,
 				missile: Some(MissileInfo {
 					max_speed: Speed::new(9.0),
 					accel: AccelScalar::new(0.14),
 					base_speed: Speed::new(5.7),
 					speed_factor: 0.3,
 					damage: Health::new(0.2),
+					distance: Distance::new(1000.0),
 				}),
 			},
 		);
@@ -358,13 +306,14 @@ impl Default for MobInfos {
 		map.insert(
 			MobType::TornadoSingleMissile,
 			MobInfo {
-				lifetime: Duration::from_millis(2500),
+				lifetime: None,
 				missile: Some(MissileInfo {
 					max_speed: Speed::new(7.0),
 					accel: AccelScalar::new(0.0875),
 					base_speed: Speed::new(3.5),
 					speed_factor: 0.3,
 					damage: Health::new(0.4),
+					distance: Distance::new(1000.0),
 				}),
 			},
 		);
@@ -372,13 +321,14 @@ impl Default for MobInfos {
 		map.insert(
 			MobType::TornadoTripleMissile,
 			MobInfo {
-				lifetime: Duration::from_millis(1500),
+				lifetime: None,
 				missile: Some(MissileInfo {
 					max_speed: Speed::new(7.0),
 					accel: AccelScalar::new(0.0875),
 					base_speed: Speed::new(3.5),
 					speed_factor: 0.3,
 					damage: Health::new(0.3),
+					distance: Distance::new(500.0),
 				}),
 			},
 		);
@@ -386,13 +336,14 @@ impl Default for MobInfos {
 		map.insert(
 			MobType::ProwlerMissile,
 			MobInfo {
-				lifetime: Duration::from_millis(2270),
+				lifetime: None,
 				missile: Some(MissileInfo {
 					max_speed: Speed::new(7.0),
 					accel: AccelScalar::new(0.07),
 					base_speed: Speed::new(2.8),
 					speed_factor: 0.3,
 					damage: Health::new(0.45),
+					distance: Distance::new(1000.0),
 				}),
 			},
 		);
@@ -401,7 +352,7 @@ impl Default for MobInfos {
 		map.insert(
 			MobType::Inferno,
 			MobInfo {
-				lifetime: Duration::from_secs(60),
+				lifetime: Some(Duration::from_secs(60)),
 				missile: None,
 			},
 		);
@@ -409,7 +360,7 @@ impl Default for MobInfos {
 		map.insert(
 			MobType::Shield,
 			MobInfo {
-				lifetime: Duration::from_secs(60),
+				lifetime: Some(Duration::from_secs(60)),
 				missile: None,
 			},
 		);
@@ -440,6 +391,20 @@ impl Default for UpgradeInfos {
 				cost: [N0, N1, N1, N1, N1, N1],
 				factor: [1.0, 1.05, 1.1, 1.15, 1.2, 1.25],
 			},
+		}
+	}
+}
+
+impl Default for Config {
+	fn default() -> Self {
+		Self {
+			planes: Default::default(),
+			mobs: Default::default(),
+			upgrades: Default::default(),
+			admin_enabled: true,
+			spawn_shield_duration: Duration::from_secs(2),
+			shield_duration: Duration::from_secs(10),
+			inferno_duration: Duration::from_secs(10),
 		}
 	}
 }

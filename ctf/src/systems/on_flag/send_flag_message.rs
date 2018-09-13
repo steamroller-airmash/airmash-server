@@ -4,7 +4,6 @@ use specs::*;
 use component::*;
 use server::protocol::server::GameFlag;
 use server::protocol::FlagUpdateType;
-use server::protocol::{to_bytes, ServerPacket};
 
 use BLUE_TEAM;
 use RED_TEAM;
@@ -68,28 +67,24 @@ impl<'a> System<'a> for SendFlagMessageSystem {
 					pos = Position::default();
 				}
 
-				data.conns.send_to_all(OwnedMessage::Binary(
-					to_bytes(&ServerPacket::GameFlag(GameFlag {
-						ty,
-						flag: *data.team.get(other).unwrap(),
-						pos: pos,
-						id: None,
-						blueteam: data.scores.blueteam,
-						redteam: data.scores.redteam,
-					})).unwrap(),
-				));
-			}
-
-			data.conns.send_to_all(OwnedMessage::Binary(
-				to_bytes(&ServerPacket::GameFlag(GameFlag {
+				data.conns.send_to_all(GameFlag {
 					ty,
-					flag: *team,
-					pos: *data.pos.get(evt.flag).unwrap(),
-					id: evt.player,
+					flag: Flag(*data.team.get(other).unwrap()),
+					pos: pos,
+					id: None,
 					blueteam: data.scores.blueteam,
 					redteam: data.scores.redteam,
-				})).unwrap(),
-			));
+				});
+			}
+
+			data.conns.send_to_all(GameFlag {
+				ty,
+				flag: Flag(*team),
+				pos: *data.pos.get(evt.flag).unwrap(),
+				id: evt.player.map(Into::into),
+				blueteam: data.scores.blueteam,
+				redteam: data.scores.redteam,
+			});
 		}
 	}
 }

@@ -2,18 +2,20 @@ use fnv::FnvHashSet;
 use specs::prelude::*;
 
 use types::collision::*;
+use types::systemdata::IsAlive;
 use types::*;
 
 use component::channel::*;
 use component::event::PlayerMissileCollision;
-use component::flag::IsSpectating;
+use component::flag::*;
+
+use consts::config::PLANE_HIT_CIRCLES;
 
 pub struct PlayerMissileCollisionSystem;
 
 #[derive(SystemData)]
 pub struct PlayerMissileCollisionSystemData<'a> {
 	pub channel: Write<'a, OnPlayerMissileCollision>,
-	pub config: Read<'a, Config>,
 	pub ent: Entities<'a>,
 
 	pub pos: ReadStorage<'a, Position>,
@@ -21,8 +23,7 @@ pub struct PlayerMissileCollisionSystemData<'a> {
 	pub team: ReadStorage<'a, Team>,
 	pub plane: ReadStorage<'a, Plane>,
 	pub player_flag: ReadStorage<'a, IsPlayer>,
-	pub isspec: ReadStorage<'a, IsSpectating>,
-	pub isdead: ReadStorage<'a, IsDead>,
+	pub isalive: IsAlive<'a>,
 
 	pub mob: ReadStorage<'a, Mob>,
 	pub missile_flag: ReadStorage<'a, IsMissile>,
@@ -40,7 +41,6 @@ impl<'a> System<'a> for PlayerMissileCollisionSystem {
 	fn run(&mut self, data: Self::SystemData) {
 		let Self::SystemData {
 			mut channel,
-			config,
 			ent,
 
 			pos,
@@ -48,8 +48,7 @@ impl<'a> System<'a> for PlayerMissileCollisionSystem {
 			team,
 			plane,
 			player_flag,
-			isspec,
-			isdead,
+			isalive,
 
 			mob,
 			missile_flag,
@@ -57,13 +56,17 @@ impl<'a> System<'a> for PlayerMissileCollisionSystem {
 
 		let mut buckets = Array2D::<Bucket>::new(BUCKETS_X, BUCKETS_Y);
 
-		(&*ent, &pos, &rot, &team, &plane, &player_flag)
-			.join()
-			.filter(|(ent, _, _, _, _, _)| isspec.get(*ent).is_none() && isdead.get(*ent).is_none())
-			.for_each(|(ent, pos, rot, team, plane, _)| {
-				let ref cfg = config.planes[*plane];
-
-				cfg.hit_circles.iter().for_each(|hc| {
+		(
+			&*ent,
+			&pos,
+			&rot,
+			&team,
+			&plane,
+			&player_flag,
+			isalive.mask(),
+		).join()
+			.for_each(|(ent, pos, rot, team, plane, ..)| {
+				PLANE_HIT_CIRCLES[plane].iter().for_each(|hc| {
 					let offset = hc.offset.rotate(*rot);
 
 					let circle = HitCircle {

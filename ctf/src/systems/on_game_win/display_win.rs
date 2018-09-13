@@ -6,9 +6,8 @@ use config::*;
 use systems::on_flag::CheckWin;
 
 use server::component::counter::PlayersGame;
-use server::protocol::server::{ServerCustom, ServerPacket};
-use server::protocol::{to_bytes, ServerCustomType};
-use server::OwnedMessage;
+use server::protocol::server::ServerCustom;
+use server::protocol::ServerCustomType;
 
 #[derive(Default)]
 pub struct DisplayWin {
@@ -38,7 +37,7 @@ impl<'a> System<'a> for DisplayWin {
 			let text = format!(
 				"{{\"w\":{},\"b\":{},\"t\":{}}}",
 				evt.winning_team.0,
-				data.players_game.0 * GAME_WIN_BOUNTY_BASE.0,
+				data.players_game.0.min(10) * GAME_WIN_BOUNTY_BASE.0,
 				13, // seconds
 			);
 
@@ -47,9 +46,7 @@ impl<'a> System<'a> for DisplayWin {
 				data: text,
 			};
 
-			data.conns.send_to_all(OwnedMessage::Binary(
-				to_bytes(&ServerPacket::ServerCustom(packet)).unwrap(),
-			))
+			data.conns.send_to_all(packet)
 		}
 	}
 }

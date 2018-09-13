@@ -183,7 +183,8 @@ where
 						let channel = channel.clone();
 						move |m| {
 							if m != OwnedMessage::Binary(vec![5]) {
-								debug!(
+								trace!(
+										target: "airmash:packet-dump",
 										"{:?} sent {:?}",
 										id, m
 								);

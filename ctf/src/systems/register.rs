@@ -43,6 +43,7 @@ pub fn register<'a, 'b>(world: &mut World, disp: Builder<'a, 'b>) -> Builder<'a,
 	disp
 		.with::<DropOnSpec>()
 		.with::<DropOnDeath>()
+		.with::<ScoreDetailed>()
 		// On Leave Events
 		.with::<on_leave::UpdateGameMode>()
 		.with::<on_leave::Drop>()
@@ -71,10 +72,12 @@ pub fn register<'a, 'b>(world: &mut World, disp: Builder<'a, 'b>) -> Builder<'a,
 		.with::<on_game_win::ChangeConfig>()
 		.with::<on_game_win::DisplayWin>()
 		.with::<on_game_win::SetGameActive>()
+		.with::<on_game_win::AwardBounty>()
 		// Timer events
 		.with::<timer::RestoreConfig>()
 		.with::<timer::GameStart>()
 		.with::<timer::SetGameActive>()
+		.with::<timer::Shuffle>()
 		// Game Start events
 		.with::<on_game_start::RespawnAllUnspec>()
 		.with::<on_game_start::RespawnAll>()

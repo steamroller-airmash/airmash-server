@@ -4,12 +4,11 @@ use types::*;
 
 use GameMode;
 use GameModeWriter;
-use OwnedMessage;
 use SystemInfo;
 
 use component::channel::*;
 use protocol::server::{Login, LoginPlayer};
-use protocol::{to_bytes, ServerPacket, Upgrades as ProtocolUpgrades};
+use protocol::Upgrades as ProtocolUpgrades;
 
 pub struct SendLogin {
 	reader: Option<OnPlayerJoinReader>,
@@ -29,7 +28,7 @@ pub struct SendLoginData<'a> {
 	pub plane: ReadStorage<'a, Plane>,
 	pub team: ReadStorage<'a, Team>,
 	pub status: ReadStorage<'a, Status>,
-	pub flag: ReadStorage<'a, Flag>,
+	pub flag: ReadStorage<'a, FlagCode>,
 	pub upgrades: ReadStorage<'a, Upgrades>,
 	pub powerups: ReadStorage<'a, Powerups>,
 	pub name: ReadStorage<'a, Name>,
@@ -56,12 +55,12 @@ impl SendLogin {
 				|(ent, pos, rot, plane, name, flag, upgrades, level, status, team, powerups)| {
 					let upgrade_field = ProtocolUpgrades {
 						speed: upgrades.speed,
-						shield: powerups.shield,
-						inferno: powerups.inferno,
+						shield: powerups.shield(),
+						inferno: powerups.inferno(),
 					};
 
 					LoginPlayer {
-						id: ent,
+						id: ent.into(),
 						status: *status,
 						level: *level,
 						name: name.0.clone(),
@@ -93,7 +92,7 @@ impl<'a> System<'a> for SendLogin {
 
 			let packet = Login {
 				clock: data.clock.get(),
-				id: evt.id,
+				id: evt.id.into(),
 				room: data.gamemode.get().room(),
 				success: true,
 				token: "none".to_owned(),
@@ -102,16 +101,13 @@ impl<'a> System<'a> for SendLogin {
 				players: player_data,
 			};
 
-			data.conns.send_to_player(
-				evt.id,
-				OwnedMessage::Binary(to_bytes(&ServerPacket::Login(packet)).unwrap()),
-			);
+			data.conns.send_to_player(evt.id, packet);
 		}
 	}
 }
 
 impl SystemInfo for SendLogin {
-	type Dependencies = (super::InitTraits, super::InitConnection);
+	type Dependencies = (super::InitTraits, super::InitConnection, super::InitState);
 
 	fn name() -> &'static str {
 		concat!(module_path!(), "::", line!())

@@ -4,6 +4,9 @@ version = "0.0.1"
 authors = ["STEAMROLLER"]
 license = "Apache-2.0 OR MIT"
 description = "Airmash CTF game mode"
+publish = false
+repository = 'https://github.com/steamroller-airmash/airmash-server'
+
 
 [dependencies]
 specs = "*"
@@ -12,6 +15,6 @@ specs-derive = "*"
 shred-derive = "*"
 airmash-server = { path='../server' }
 log = "0.4"
-simple_logger = "*"
+env_logger = "*"
 rand = "0.4"
 lazy_static = "*"

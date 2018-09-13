@@ -7,6 +7,7 @@ use systems::specials::config::*;
 
 use component::channel::OnPlayerStealth;
 use component::event::PlayerStealth;
+use component::flag::*;
 use component::time::{LastStealthTime, ThisFrame};
 
 use protocol::PlaneType;

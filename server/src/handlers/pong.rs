@@ -6,9 +6,7 @@ use std::time::Instant;
 use component::channel::{OnPong, OnPongReader};
 use component::counter::{PlayerPing, PlayersGame};
 
-use protocol::server::{PingResult, ServerPacket};
-use protocol::to_bytes;
-use websocket::OwnedMessage;
+use protocol::server::PingResult;
 
 pub struct PongHandler {
 	reader: Option<OnPongReader>,
@@ -65,10 +63,7 @@ impl<'a> System<'a> for PongHandler {
 				.insert(player, PlayerPing(ping.as_millis() as u32))
 				.unwrap();
 
-			data.conns.send_to(
-				evt.0,
-				OwnedMessage::Binary(to_bytes(&ServerPacket::PingResult(result)).unwrap()),
-			);
+			data.conns.send_to(evt.0, result);
 		}
 	}
 }

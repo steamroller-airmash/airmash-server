@@ -10,8 +10,6 @@ use component::channel::*;
 use component::time::{LastUpdate, StartTime};
 
 use protocol::server::EventStealth;
-use protocol::{to_bytes, ServerPacket};
-use websocket::OwnedMessage;
 
 pub struct SendEventStealth {
 	pub reader: Option<OnPlayerStealthReader>,
@@ -62,19 +60,16 @@ impl<'a> System<'a> for SendEventStealth {
 			}
 
 			let packet = EventStealth {
-				id: evt.player,
+				id: evt.player.into(),
 				state: evt.stealthed,
 				energy: *energy.get(evt.player).unwrap(),
 				energy_regen: *energy_regen.get(evt.player).unwrap(),
 			};
 
-			let message =
-				OwnedMessage::Binary(to_bytes(&ServerPacket::EventStealth(packet)).unwrap());
-
 			if evt.stealthed {
-				conns.send_to_visible(evt.player, message);
+				conns.send_to_visible(evt.player, packet);
 			} else {
-				conns.send_to_player(evt.player, message);
+				conns.send_to_player(evt.player, packet);
 
 				// Force position update system to send an update packet
 				// by changing the time of the last update to the server

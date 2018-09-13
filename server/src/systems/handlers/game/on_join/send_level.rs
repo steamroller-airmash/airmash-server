@@ -1,12 +1,11 @@
 use specs::*;
 use types::*;
 
-use OwnedMessage;
 use SystemInfo;
 
 use component::channel::*;
 use protocol::server::PlayerLevel;
-use protocol::{to_bytes, PlayerLevelType, ServerPacket};
+use protocol::PlayerLevelType;
 
 pub struct SendPlayerLevel {
 	reader: Option<OnPlayerJoinReader>,
@@ -39,15 +38,12 @@ impl<'a> System<'a> for SendPlayerLevel {
 
 		for evt in channel.read(self.reader.as_mut().unwrap()) {
 			let packet = PlayerLevel {
-				id: evt.id,
+				id: evt.id.into(),
 				ty: PlayerLevelType::Login,
 				level: *level.get(evt.id).unwrap(),
 			};
 
-			conns.send_to_others(
-				evt.id,
-				OwnedMessage::Binary(to_bytes(&ServerPacket::PlayerLevel(packet)).unwrap()),
-			);
+			conns.send_to_others(evt.id, packet);
 		}
 	}
 }

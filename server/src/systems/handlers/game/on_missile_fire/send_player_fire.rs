@@ -9,8 +9,6 @@ use systems::missile::MissileFireHandler;
 use component::channel::*;
 
 use airmash_protocol::server::{PlayerFire, PlayerFireProjectile};
-use airmash_protocol::{to_bytes, ServerPacket};
-use websocket::OwnedMessage;
 
 pub struct SendPlayerFire {
 	reader: Option<OnMissileFireReader>,
@@ -59,7 +57,7 @@ impl<'a> System<'a> for SendPlayerFire {
 					let pos = *data.pos.get(ent).unwrap();
 
 					PlayerFireProjectile {
-						id: ent,
+						id: ent.into(),
 						pos: pos,
 						speed: vel,
 						ty: ty,
@@ -71,16 +69,13 @@ impl<'a> System<'a> for SendPlayerFire {
 
 			let packet = PlayerFire {
 				clock: data.clock.get(),
-				id: evt.player,
+				id: evt.player.into(),
 				energy: *data.energy.get(evt.player).unwrap(),
 				energy_regen: *data.energy_regen.get(evt.player).unwrap(),
 				projectiles,
 			};
 
-			data.conns.send_to_visible(
-				evt.player,
-				OwnedMessage::Binary(to_bytes(&ServerPacket::PlayerFire(packet)).unwrap()),
-			);
+			data.conns.send_to_visible(evt.player, packet);
 		}
 	}
 }

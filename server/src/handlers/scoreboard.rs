@@ -8,15 +8,8 @@ use component::flag::{IsDead, IsPlayer, IsSpectating};
 use component::time::JoinTime;
 
 use protocol::server::{ScoreBoard, ScoreBoardData, ScoreBoardRanking};
-use protocol::{to_bytes, ServerPacket};
-use OwnedMessage;
 
 use std::cmp::{Ordering, Reverse};
-
-lazy_static! {
-	static ref SPEC_POSITION: Position =
-		Position::new(Distance::new(-16384.0), Distance::new(-8192.0));
-}
 
 pub struct ScoreBoardTimerHandler {
 	reader: Option<OnTimerEventReader>,
@@ -68,7 +61,7 @@ impl<'a> System<'a> for ScoreBoardTimerHandler {
 				.map(|(ent, score, level, _, join_time)| {
 					(
 						ScoreBoardData {
-							id: ent,
+							id: ent.into(),
 							score: *score,
 							level: *level,
 						},
@@ -96,12 +89,15 @@ impl<'a> System<'a> for ScoreBoardTimerHandler {
 				.join()
 				.map(|(ent, pos, _)| {
 					if data.isspec.get(ent).is_some() || data.isdead.get(ent).is_some() {
-						(ent, *SPEC_POSITION)
+						(ent, None)
 					} else {
-						(ent, *pos)
+						(ent, Some(*pos))
 					}
 				})
-				.map(|(ent, pos)| ScoreBoardRanking { id: ent, pos: pos })
+				.map(|(ent, pos)| ScoreBoardRanking {
+					id: ent.into(),
+					pos: pos,
+				})
 				.collect::<Vec<ScoreBoardRanking>>();
 
 			let score_board = ScoreBoard {
@@ -109,9 +105,7 @@ impl<'a> System<'a> for ScoreBoardTimerHandler {
 				rankings: rankings,
 			};
 
-			data.conns.send_to_all(OwnedMessage::Binary(
-				to_bytes(&ServerPacket::ScoreBoard(score_board)).unwrap(),
-			));
+			data.conns.send_to_all(score_board);
 		}
 	}
 }

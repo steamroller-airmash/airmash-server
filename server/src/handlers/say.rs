@@ -2,10 +2,11 @@ use shrev::*;
 use specs::*;
 use types::*;
 
+use component::flag::*;
+
 use protocol::client::Say;
-use protocol::server::{ChatSay, Error, ServerPacket};
-use protocol::{to_bytes, ErrorType};
-use websocket::OwnedMessage;
+use protocol::server::{ChatSay, Error};
+use protocol::ErrorType;
 
 pub struct SayHandler {
 	reader: Option<ReaderId<(ConnectionId, Say)>>,
@@ -54,23 +55,19 @@ impl<'a> System<'a> for SayHandler {
 			if data.throttled.get(player).is_some() {
 				data.conns.send_to(
 					evt.0,
-					OwnedMessage::Binary(
-						to_bytes(&ServerPacket::Error(Error {
-							error: ErrorType::ChatThrottled,
-						})).unwrap(),
-					),
+					Error {
+						error: ErrorType::ChatThrottled,
+					},
 				);
 				continue;
 			}
 
 			let chat = ChatSay {
-				id: player,
+				id: player.into(),
 				text: evt.1.text.clone(),
 			};
 
-			data.conns.send_to_all(OwnedMessage::Binary(
-				to_bytes(&ServerPacket::ChatSay(chat)).unwrap(),
-			));
+			data.conns.send_to_all(chat);
 		}
 	}
 }

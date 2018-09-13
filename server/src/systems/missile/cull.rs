@@ -1,22 +1,19 @@
 use specs::*;
 use types::*;
 
-use component::time::{MobSpawnTime, ThisFrame};
+use component::missile::MissileTrajectory;
 use dispatch::SystemInfo;
 
 use airmash_protocol::server::MobDespawn;
-use airmash_protocol::{to_bytes, ServerPacket};
-use websocket::OwnedMessage;
 
 pub struct MissileCull;
 
 #[derive(SystemData)]
 pub struct MissileCullData<'a> {
 	pub ents: Entities<'a>,
-	pub spawntime: ReadStorage<'a, MobSpawnTime>,
+	pub missile_trajectory: ReadStorage<'a, MissileTrajectory>,
+	pub pos: ReadStorage<'a, Position>,
 	pub mob: ReadStorage<'a, Mob>,
-	pub config: Read<'a, Config>,
-	pub thisframe: Read<'a, ThisFrame>,
 	pub conns: Read<'a, Connections>,
 }
 
@@ -24,14 +21,12 @@ impl<'a> System<'a> for MissileCull {
 	type SystemData = MissileCullData<'a>;
 
 	fn run(&mut self, data: MissileCullData<'a>) {
-		(&*data.ents, &data.mob, &data.spawntime)
+		(&*data.ents, &data.mob, &data.pos, &data.missile_trajectory)
 			.join()
-			.filter_map(|(ent, mob, spawntime)| {
-				let ref info = data.config.mobs[*mob];
-
-				let dt = data.thisframe.0 - spawntime.0;
-
-				if dt > info.lifetime {
+			.filter_map(|(ent, mob, pos, missile_trajectory)| {
+				let distance_traveled = (*pos - missile_trajectory.0).length();
+				let end_distance = missile_trajectory.1;
+				if distance_traveled > end_distance {
 					Some((ent, *mob))
 				} else {
 					None
@@ -40,11 +35,12 @@ impl<'a> System<'a> for MissileCull {
 			.for_each(|(ent, mob)| {
 				data.ents.delete(ent).unwrap();
 
-				let packet = MobDespawn { id: ent, ty: mob };
+				let packet = MobDespawn {
+					id: ent.into(),
+					ty: mob,
+				};
 
-				data.conns.send_to_all(OwnedMessage::Binary(
-					to_bytes(&ServerPacket::MobDespawn(packet)).unwrap(),
-				));
+				data.conns.send_to_all(packet);
 			});
 	}
 }

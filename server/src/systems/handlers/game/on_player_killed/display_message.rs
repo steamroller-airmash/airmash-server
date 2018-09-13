@@ -12,8 +12,6 @@ use component::event::TimerEvent;
 use component::time::ThisFrame;
 
 use protocol::server::PlayerKill;
-use protocol::{to_bytes, ServerPacket};
-use websocket::OwnedMessage;
 
 pub struct DisplayMessage {
 	reader: Option<OnPlayerKilledReader>,
@@ -46,8 +44,8 @@ impl<'a> System<'a> for DisplayMessage {
 	fn run(&mut self, mut data: Self::SystemData) {
 		for evt in data.channel.read(self.reader.as_mut().unwrap()) {
 			let packet = PlayerKill {
-				id: evt.player,
-				killer: Some(evt.killer),
+				id: evt.player.into(),
+				killer: Some(evt.killer.into()),
 				pos: evt.pos,
 			};
 
@@ -55,9 +53,7 @@ impl<'a> System<'a> for DisplayMessage {
 				warn!("Player {:?} killed themselves!", evt.player);
 			}
 
-			data.conns.send_to_all(OwnedMessage::Binary(
-				to_bytes(&ServerPacket::PlayerKill(packet)).unwrap(),
-			));
+			data.conns.send_to_all(packet);
 
 			data.timerevent.single_write(TimerEvent {
 				ty: *SCORE_BOARD,

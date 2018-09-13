@@ -8,8 +8,8 @@ use component::*;
 use std::cmp::Ordering;
 
 use server::component::flag::IsPlayer;
-use server::protocol::server::{GameFlag, ServerPacket};
-use server::protocol::{to_bytes, FlagUpdateType};
+use server::protocol::server::GameFlag;
+use server::protocol::FlagUpdateType;
 use server::types::systemdata::*;
 
 pub struct ReturnFlag;
@@ -103,16 +103,14 @@ impl<'a> System<'a> for ReturnFlag {
 
 			let packet = GameFlag {
 				ty: FlagUpdateType::Position,
-				flag: team,
+				flag: Flag(team),
 				id: None,
 				pos: *flag_pos,
 				blueteam: scores.blueteam,
 				redteam: scores.redteam,
 			};
 
-			conns.send_to_all(OwnedMessage::Binary(
-				to_bytes(&ServerPacket::GameFlag(packet)).unwrap(),
-			));
+			conns.send_to_all(packet);
 
 			channel.single_write(FlagEvent {
 				ty: FlagEventType::Return,

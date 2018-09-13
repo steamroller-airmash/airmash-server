@@ -3,8 +3,8 @@ use specs::*;
 
 use server::component::channel::{OnCommand, OnCommandReader};
 use server::component::time::ThisFrame;
-use server::protocol::server::{GameFlag, ServerPacket};
-use server::protocol::{to_bytes, FlagUpdateType};
+use server::protocol::server::GameFlag;
+use server::protocol::FlagUpdateType;
 
 use component::*;
 
@@ -85,7 +85,7 @@ impl<'a> System<'a> for DropSystem {
 				.for_each(|(fpos, team, _, carrier, lastdrop, ent)| {
 					let packet = GameFlag {
 						ty: FlagUpdateType::Position,
-						flag: *team,
+						flag: Flag(*team),
 						id: None,
 						pos: p_pos,
 						blueteam: 0,
@@ -105,9 +105,7 @@ impl<'a> System<'a> for DropSystem {
 						time: thisframe.0,
 					};
 
-					conns.send_to_all(OwnedMessage::Binary(
-						to_bytes(&ServerPacket::GameFlag(packet)).unwrap(),
-					));
+					conns.send_to_all(packet);
 				});
 		}
 	}

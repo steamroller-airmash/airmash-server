@@ -8,9 +8,8 @@ use std::f32::consts;
 use std::marker::PhantomData;
 use std::time::Duration;
 
-use airmash_protocol::server::{PlayerUpdate, ServerPacket};
-use airmash_protocol::{to_bytes, Upgrades as ServerUpgrades};
-use websocket::OwnedMessage;
+use airmash_protocol::server::PlayerUpdate;
+use airmash_protocol::Upgrades as ServerUpgrades;
 
 const PI: Rotation = Rotation {
 	value_unsafe: consts::PI,
@@ -122,7 +121,7 @@ impl PositionUpdate {
 
 				if let Some(angle) = movement_angle {
 					let mult = info.accel_factor * delta * boost_factor;
-					*vel += Vector2::new(mult * angle.sin(), mult * -angle.cos());
+					*vel += Velocity::new(mult * angle.sin(), mult * -angle.cos());
 				}
 
 				let oldspeed = *vel;
@@ -135,7 +134,7 @@ impl PositionUpdate {
 					unimplemented!();
 				}
 
-				if powerups.inferno {
+				if powerups.inferno() {
 					max_speed *= info.inferno_factor;
 				}
 
@@ -197,13 +196,13 @@ impl PositionUpdate {
 
 					let ups = ServerUpgrades {
 						speed: upgrades.speed,
-						shield: powerups.shield,
-						inferno: powerups.inferno,
+						shield: powerups.shield(),
+						inferno: powerups.inferno(),
 					};
 
 					let packet = PlayerUpdate {
 						clock,
-						id: ent,
+						id: ent.into(),
 						keystate: state,
 						pos: *pos,
 						rot: *rot,
@@ -213,14 +212,10 @@ impl PositionUpdate {
 
 					trace!(target: "server", "Update: {:?}", packet);
 
-					let message = OwnedMessage::Binary(
-						to_bytes(&ServerPacket::PlayerUpdate(packet)).unwrap(),
-					);
-
 					if !keystate.stealthed {
-						data.conns.send_to_all(message);
+						data.conns.send_to_all(packet);
 					} else {
-						data.conns.send_to_team(ent, message);
+						data.conns.send_to_team(ent, packet);
 					}
 				},
 			)
@@ -256,13 +251,13 @@ impl PositionUpdate {
 
 					let ups = ServerUpgrades {
 						speed: upgrades.speed,
-						shield: powerups.shield,
-						inferno: powerups.inferno,
+						shield: powerups.shield(),
+						inferno: powerups.inferno(),
 					};
 
 					let packet = PlayerUpdate {
 						clock,
-						id: ent,
+						id: ent.into(),
 						keystate: state,
 						pos: *pos,
 						rot: *rot,
@@ -272,14 +267,10 @@ impl PositionUpdate {
 
 					trace!(target: "server", "Update: {:?}", packet);
 
-					let message = OwnedMessage::Binary(
-						to_bytes(&ServerPacket::PlayerUpdate(packet)).unwrap(),
-					);
-
 					if !keystate.stealthed {
-						data.conns.send_to_all(message);
+						data.conns.send_to_all(packet);
 					} else {
-						data.conns.send_to_team(ent, message);
+						data.conns.send_to_team(ent, packet);
 					}
 				},
 			)

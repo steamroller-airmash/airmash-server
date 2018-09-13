@@ -1,11 +1,13 @@
-use metrics::*;
 use specs::prelude::*;
 use std::time::Instant;
 use tokio::prelude::Sink;
-use types::connection::{Message, MessageInfo};
+use types::connection::{Message, MessageBody, MessageInfo};
 use types::*;
 
 use websocket::OwnedMessage;
+
+use protocol::Protocol;
+use protocol_v5::ProtocolV5;
 
 use std::mem;
 use std::sync::mpsc::{channel, Receiver};
@@ -17,7 +19,6 @@ pub struct PollComplete {
 #[derive(SystemData)]
 pub struct PollCompleteData<'a> {
 	conns: Write<'a, Connections>,
-	metrics: ReadExpect<'a, MetricsHandler>,
 
 	associated: ReadStorage<'a, AssociatedConnection>,
 	teams: ReadStorage<'a, Team>,
@@ -35,6 +36,8 @@ impl PollComplete {
 		id: ConnectionId,
 		msg: OwnedMessage,
 	) {
+		trace!(target: "airmash:packet-dump", "{:?}", msg);
+
 		match conns.0.get_mut(&id) {
 			Some(ref mut conn) => {
 				Connections::send_sink(&mut conn.sink, msg);
@@ -55,17 +58,32 @@ impl<'a> System<'a> for PollComplete {
 
 	fn run(&mut self, data: Self::SystemData) {
 		let mut conns = data.conns;
-		let metrics = data.metrics;
 		let associated = data.associated;
 		let teams = data.teams;
+		let protocol = ProtocolV5 {};
 
 		let start = Instant::now();
 		let mut cnt = 0;
 		while let Ok(msg) = self.channel.try_recv() {
 			cnt += 1;
 
+			trace!(
+				target: "airmash:packet-dump",
+				"Sending packet {:#?} to {:?}",
+				msg.msg,
+				msg.info
+			);
+
+			let data = match msg.msg {
+				MessageBody::Packet(ref packet) => {
+					OwnedMessage::Binary(protocol.serialize_server(packet).unwrap().next().unwrap())
+				}
+				MessageBody::Binary(bin) => OwnedMessage::Binary(bin),
+				MessageBody::Close => OwnedMessage::Close(None),
+			};
+
 			match msg.info {
-				MessageInfo::ToConnection(id) => Self::send_to_connection(&mut conns, id, msg.msg),
+				MessageInfo::ToConnection(id) => Self::send_to_connection(&mut conns, id, data),
 				MessageInfo::ToTeam(player) => {
 					let player_team = *teams.get(player).unwrap();
 
@@ -73,19 +91,23 @@ impl<'a> System<'a> for PollComplete {
 						.join()
 						.filter(|(_, team)| **team == player_team)
 						.for_each(|(associated, _)| {
-							Self::send_to_connection(&mut conns, associated.0, msg.msg.clone());
+							Self::send_to_connection(&mut conns, associated.0, data.clone());
 						});
 				}
 				MessageInfo::ToVisible(_player) => {
 					// TODO: Implement this properly
 					(&associated).join().for_each(|associated| {
-						Self::send_to_connection(&mut conns, associated.0, msg.msg.clone());
+						Self::send_to_connection(&mut conns, associated.0, data.clone());
 					});
 				}
 			}
 		}
 
-		metrics.count("packets-sent", cnt).unwrap();
+		trace!(
+			target: "airmash:packets-sent",
+			"Sent {} packets this frame",
+			cnt
+		);
 
 		for conn in conns.iter_mut() {
 			conn.sink
@@ -96,9 +118,13 @@ impl<'a> System<'a> for PollComplete {
 				.err();
 		}
 
-		metrics
-			.time_duration("poll-complete", Instant::now() - start)
-			.err();
+		let time = Instant::now() - start;
+		trace!(
+			"System {} took {}.{:3} ms",
+			Self::name(),
+			time.as_secs() * 1000 + time.subsec_millis() as u64,
+			time.subsec_nanos() % 1000
+		);
 	}
 }
 

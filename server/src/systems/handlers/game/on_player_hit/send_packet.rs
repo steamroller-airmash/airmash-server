@@ -2,11 +2,10 @@ use specs::*;
 use types::*;
 
 use component::channel::*;
+use component::flag::*;
 use component::reference::PlayerRef;
 
 use protocol::server::{PlayerHit, PlayerHitPlayer};
-use protocol::{to_bytes, ServerPacket};
-use OwnedMessage;
 
 pub struct SendPacket {
 	reader: Option<OnPlayerHitReader>,
@@ -55,20 +54,18 @@ impl<'a> System<'a> for SendPacket {
 			let ref planeconf = data.config.planes[*plane];
 
 			let packet = PlayerHit {
-				id: evt.missile,
-				owner: owner.0,
+				id: evt.missile.into(),
+				owner: owner.0.into(),
 				pos: *pos,
 				ty: *mob,
 				players: vec![PlayerHitPlayer {
-					id: evt.player,
+					id: evt.player.into(),
 					health: *health,
 					health_regen: planeconf.health_regen,
 				}],
 			};
 
-			data.conns.send_to_all(OwnedMessage::Binary(
-				to_bytes(&ServerPacket::PlayerHit(packet)).unwrap(),
-			));
+			data.conns.send_to_all(packet);
 		}
 	}
 }

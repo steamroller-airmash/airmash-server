@@ -4,12 +4,11 @@ use types::*;
 
 use component::channel::*;
 use component::event::*;
+use component::flag::*;
 use systems::collision::PlayerMissileCollisionSystem;
 use SystemInfo;
 
 use protocol::server::EventStealth;
-use protocol::{to_bytes, ServerPacket};
-use websocket::OwnedMessage;
 
 pub struct DestealthOnHit {
 	reader: Option<OnPlayerMissileCollisionReader>,
@@ -58,16 +57,13 @@ impl<'a> System<'a> for DestealthOnHit {
 			data.keystate.get_mut(player).unwrap().stealthed = false;
 
 			let packet = EventStealth {
-				id: player,
+				id: player.into(),
 				state: false,
 				energy: *data.energy.get(player).unwrap(),
 				energy_regen: *data.energy_regen.get(player).unwrap(),
 			};
 
-			let message =
-				OwnedMessage::Binary(to_bytes(&ServerPacket::EventStealth(packet)).unwrap());
-
-			data.conns.send_to_player(player, message);
+			data.conns.send_to_player(player, packet);
 		}
 	}
 }

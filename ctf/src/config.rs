@@ -45,52 +45,24 @@ lazy_static! {
 		let mut map = FnvHashMap::default();
 
 		// Blue team
-		map.insert(Team(2), Position::new(
+		map.insert(Team(1), Position::new(
 			Distance::new(-9670.0),
 			Distance::new(-1470.0))
 		);
 		// Red team
-		map.insert(Team(1), Position::new(
+		map.insert(Team(2), Position::new(
 			Distance::new(8600.0),
 			Distance::new(-940.0))
 		);
-
-
-		/*
-		// Blue team
-		map.insert(Team(2), Position::new(
-			Distance::new(-9370.0),
-			Distance::new(-1470.0))
-		);
-		// Red team
-		map.insert(Team(1), Position::new(
-			Distance::new(8300.0),
-			Distance::new(-940.0))
-		);
-		*/
 
 		map
 	};
 	pub static ref FLAG_RETURN_POS: FnvHashMap<Team, Position> = {
 		let mut map = FnvHashMap::default();
 
-		/*
 		// Flags get returned at the opposite base
 		map.insert(Team(2), FLAG_HOME_POS[&Team(1)]);
 		map.insert(Team(1), FLAG_HOME_POS[&Team(2)]);
-		*/
-
-
-		// Blue team
-		map.insert(Team(2), Position::new(
-			Distance::new(-9670.0),
-			Distance::new(-1470.0))
-		);
-		// Red team
-		map.insert(Team(1), Position::new(
-			Distance::new(8600.0),
-			Distance::new(-940.0))
-		);
 
 		map
 	};
@@ -107,7 +79,7 @@ lazy_static! {
 	};
 
 	/// Time between winning a game and a new game starting
-	pub static ref GAME_RESET_TIME: Duration = Duration::from_secs(85);
+	pub static ref GAME_RESET_TIME: Duration = Duration::from_secs(60);
 }
 
 pub const BLUE_TEAM: Team = Team(1);

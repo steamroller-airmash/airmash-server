@@ -1,0 +1,23 @@
+[package]
+name = "protocol-common"
+version = "0.0.1"
+authors = ["STEAMROLLER"]
+publish = false
+
+[features]
+default = ["specs"]
+
+[dependencies]
+lazy_static = "*"
+fnv = "*"
+dimensioned = "*"
+specs-derive = "*"
+
+[dependencies.specs]
+version = "*"
+optional = true
+
+[dependencies.serde]
+version = "*"
+features = ["derive"]
+optional = true

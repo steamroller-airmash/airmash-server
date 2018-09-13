@@ -3,26 +3,24 @@ name = "airmash-server"
 version = "0.0.1"
 authors = ["STEAMROLLER"]
 license = "Apache-2.0 OR MIT"
+publish = false
+repository = 'https://github.com/steamroller-airmash/airmash-server'
+
 
 [features]
 # If enabled, set TCP_NODELAY on incoming connections
 nodelay = []
-# Enable using the client's IP to determine
-# a default flag if they don't provide one.
-geoip = [ "geolocate-ip" ]
 # Enable looking for the X-Forwarded-For header
 # when determining client IP address
 proxied = []
 # Turn on bot blocking settings
 block-bots = []
 
-[build-dependencies]
-specgen = { path = "../specgen" }
-
 [dependencies]
+ws = "*"
 simple_logger = "*"
 log = "0.4.1"
-specs = "*"
+specs = { version = "*", features = ["nightly"] }
 specs-derive = "*"
 dimensioned = "*"
 lazy_static = "*"
@@ -38,10 +36,13 @@ htmlescape = "*"
 hibitset = "*"
 bounded-queue = { path = "../bounded-queue" }
 special-map = { path = "../special-map" }
+protocol-v5 = { path = "../protocol-v5" }
+serde = { version = "*", features = ["derive"] }
+serde_json = "*"
 
-[dependencies.cadence]
-version = "0.14"
-#optional = true
+[dependencies.protocol-common]
+path = "../protocol-common"
+features = ["specs"]
 
 [dependencies.uuid]
 version = "*"
@@ -55,7 +56,3 @@ version = "0.10"
 version = "0.20"
 default-features = false
 features = [ "async", "async-ssl" ]
-
-[dependencies.geolocate-ip]
-git = "https://github.com/phantomical/rust-geolocate-ip"
-optional = true
