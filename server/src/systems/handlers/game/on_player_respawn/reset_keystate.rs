@@ -5,6 +5,7 @@ use types::*;
 use SystemInfo;
 
 use systems::handlers::game::on_join::AllJoinHandlers;
+use systems::handlers::packet::CommandHandler;
 
 /// Reset the keystate of a player when they
 /// respawn.
@@ -36,7 +37,7 @@ impl<'a> System<'a> for ResetKeyState {
 }
 
 impl SystemInfo for ResetKeyState {
-	type Dependencies = AllJoinHandlers;
+	type Dependencies = (AllJoinHandlers, CommandHandler);
 
 	fn name() -> &'static str {
 		concat!(module_path!(), "::", line!())

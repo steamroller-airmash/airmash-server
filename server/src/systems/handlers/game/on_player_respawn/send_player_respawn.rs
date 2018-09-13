@@ -10,6 +10,7 @@ use protocol::Upgrades as ProtocolUpgrades;
 
 use systems::handlers::game::on_join::AllJoinHandlers;
 use systems::handlers::game::on_player_respawn::SetTraits;
+use systems::handlers::packet::CommandHandler;
 
 /// Send a [`PlayerRespawn`] packet to
 /// all visible players if the target
@@ -60,7 +61,7 @@ impl<'a> System<'a> for SendPlayerRespawn {
 }
 
 impl SystemInfo for SendPlayerRespawn {
-	type Dependencies = (AllJoinHandlers, SetTraits);
+	type Dependencies = (AllJoinHandlers, SetTraits, CommandHandler);
 
 	fn name() -> &'static str {
 		concat!(module_path!(), "::", line!())

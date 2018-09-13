@@ -6,6 +6,7 @@ use types::*;
 use SystemInfo;
 
 use systems::handlers::game::on_join::AllJoinHandlers;
+use systems::handlers::packet::CommandHandler;
 
 /// Set transform, health, energy and flags
 /// for a player when they respawn.
@@ -68,7 +69,7 @@ impl<'a> System<'a> for SetTraits {
 }
 
 impl SystemInfo for SetTraits {
-	type Dependencies = AllJoinHandlers;
+	type Dependencies = (AllJoinHandlers, CommandHandler);
 
 	fn name() -> &'static str {
 		concat!(module_path!(), "::", line!())
