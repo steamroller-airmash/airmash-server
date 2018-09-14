@@ -1,5 +1,4 @@
 mod chat;
-mod command;
 mod key;
 mod login;
 mod onclose;
@@ -20,11 +19,3 @@ pub use self::pong::PongHandler;
 pub use self::say::SayHandler;
 pub use self::scoreboard::ScoreBoardTimerHandler;
 pub use self::signal::SignalHandler;
-
-use systems;
-
-#[deprecated]
-pub type CommandHandler = (
-	systems::handlers::command::Respawn,
-	systems::handlers::command::Spectate,
-);
