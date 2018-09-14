@@ -1,5 +1,4 @@
 mod chat;
-mod command;
 mod key;
 mod login;
 mod onclose;
@@ -11,7 +10,6 @@ mod scoreboard;
 mod signal;
 
 pub use self::chat::ChatHandler;
-pub use self::command::CommandHandler;
 pub use self::key::KeyHandler;
 pub use self::login::LoginHandler;
 pub use self::onclose::OnCloseHandler;

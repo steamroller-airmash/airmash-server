@@ -7,8 +7,6 @@ use component::event::TimerEvent;
 use component::time::*;
 use consts::timer::SCORE_BOARD;
 
-use systems::spectate::CommandHandler;
-
 use SystemInfo;
 
 pub struct SendTimerEvent {
@@ -60,7 +58,7 @@ impl<'a> System<'a> for SendTimerEvent {
 }
 
 impl SystemInfo for SendTimerEvent {
-	type Dependencies = CommandHandler;
+	type Dependencies = super::KnownEventSources;
 
 	fn name() -> &'static str {
 		concat!(module_path!(), "::", line!())

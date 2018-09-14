@@ -5,3 +5,5 @@
 pub mod event_handler;
 pub mod maybe_init;
 pub mod timer;
+
+pub use self::event_handler::{EventHandler, EventHandlerTypeProvider};

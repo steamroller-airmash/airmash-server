@@ -2,6 +2,7 @@
 
 mod register;
 
+pub mod command;
 pub mod game;
 pub mod packet;
 

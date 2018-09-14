@@ -1,11 +1,7 @@
 use specs::*;
-
 use types::*;
 
 use component::channel::*;
-
-use systems::spectate::CommandHandler;
-
 use protocol::server::PlayerKill;
 
 use SystemInfo;
@@ -52,7 +48,7 @@ impl<'a> System<'a> for SendKillPacket {
 }
 
 impl SystemInfo for SendKillPacket {
-	type Dependencies = CommandHandler;
+	type Dependencies = super::KnownEventSources;
 
 	fn name() -> &'static str {
 		concat!(module_path!(), "::", line!())
