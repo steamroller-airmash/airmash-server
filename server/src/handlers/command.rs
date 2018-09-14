@@ -25,6 +25,7 @@ pub struct CommandHandlerData<'a> {
 	planes: WriteStorage<'a, Plane>,
 	flags: WriteStorage<'a, FlagCode>,
 	isspec: WriteStorage<'a, IsSpectating>,
+	health: ReadStorage<'a, Health>,
 }
 
 impl CommandHandler {
@@ -72,6 +73,16 @@ impl<'a> System<'a> for CommandHandler {
 					Ok(n) => n,
 					_ => continue,
 				};
+
+				// Make sure player health is full before allowing respawn
+				match data.health.get(player) {
+					Some(&health) => {
+						if health < Health::new(1.0) { // TODO: Actual number is slightly lower than 1.0?
+							continue;
+						}
+					},
+					_ => continue,
+				}
 
 				*data.planes.get_mut(player).unwrap() = ty;
 				data.isspec.remove(player);
