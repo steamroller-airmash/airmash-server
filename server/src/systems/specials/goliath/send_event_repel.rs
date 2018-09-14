@@ -67,10 +67,12 @@ impl<'a> System<'a> for SendEventRepel {
 			let hit_players = (
 				&*data.entities,
 				&data.pos,
+				&data.team,
 				&data.is_player,
 				data.is_alive.mask(),
 			).join()
 				.filter(|(ent, ..)| *ent != evt.player)
+				.filter(|(_, _, &target_team, ..)| target_team != team)
 				.filter_map(|(ent, player_pos, ..)| {
 					let dist2 = (*player_pos - pos).length2();
 
