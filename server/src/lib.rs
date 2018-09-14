@@ -42,7 +42,6 @@ mod server;
 mod status;
 mod timeloop;
 mod timers;
-mod utils;
 
 pub use protocol_common as protocol;
 
@@ -50,6 +49,7 @@ pub mod component;
 pub mod consts;
 pub mod systems;
 pub mod types;
+pub mod utils;
 
 use protocol as airmash_protocol;
 
