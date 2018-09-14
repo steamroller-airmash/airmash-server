@@ -44,6 +44,7 @@ pub fn register<'a, 'b>(world: &mut World, disp: Builder<'a, 'b>) -> Builder<'a,
 		.with::<DropOnSpec>()
 		.with::<DropOnRespawn>()
 		.with::<DropOnDeath>()
+		.with_handler::<DropOnStealth>()
 		.with::<ScoreDetailed>()
 		// On Leave Events
 		.with::<on_leave::UpdateGameMode>()
