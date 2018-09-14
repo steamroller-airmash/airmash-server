@@ -9,7 +9,10 @@ use component::flag::*;
 
 use protocol::server::PlayerType;
 
-use utils::EventHandler;
+use utils::{EventHandler, EventHandlerTypeProvider};
+
+use systems::PacketHandler;
+use SystemInfo;
 
 #[derive(Default)]
 pub struct Respawn;
@@ -24,9 +27,12 @@ pub struct RespawnData<'a> {
 	channel: Write<'a, OnPlayerRespawn>,
 }
 
+impl EventHandlerTypeProvider for Respawn {
+	type Event = CommandEvent;
+}
+
 impl<'a> EventHandler<'a> for Respawn {
 	type SystemData = RespawnData<'a>;
-	type Event = CommandEvent;
 
 	fn on_event(&mut self, evt: &CommandEvent, data: &mut Self::SystemData) {
 		let &(conn, ref packet) = evt;
@@ -59,6 +65,18 @@ impl<'a> EventHandler<'a> for Respawn {
 			id: player.into(),
 			ty: plane,
 		});
+	}
+}
+
+impl SystemInfo for Respawn {
+	type Dependencies = PacketHandler;
+
+	fn name() -> &'static str {
+		concat!(module_path!(), "::", line!())
+	}
+
+	fn new() -> Self {
+		Self::default()
 	}
 }
 

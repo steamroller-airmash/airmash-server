@@ -1,5 +1,6 @@
 mod register;
 
+#[deprecated]
 mod command;
 mod respawn;
 

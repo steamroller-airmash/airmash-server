@@ -1,11 +1,7 @@
 use specs::*;
-
 use types::*;
 
 use component::channel::*;
-
-use systems::spectate::CommandHandler;
-
 use protocol::server::GameSpectate;
 
 use SystemInfo;
@@ -47,7 +43,7 @@ impl<'a> System<'a> for SendSpectatePacket {
 }
 
 impl SystemInfo for SendSpectatePacket {
-	type Dependencies = CommandHandler;
+	type Dependencies = super::KnownEventSources;
 
 	fn name() -> &'static str {
 		concat!(module_path!(), "::", line!())

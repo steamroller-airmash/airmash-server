@@ -77,10 +77,11 @@ impl<'a> System<'a> for CommandHandler {
 				// Make sure player health is full before allowing respawn
 				match data.health.get(player) {
 					Some(&health) => {
-						if health < Health::new(1.0) { // TODO: Actual number is slightly lower than 1.0?
+						if health < Health::new(1.0) {
+							// TODO: Actual number is slightly lower than 1.0?
 							continue;
 						}
-					},
+					}
 					_ => continue,
 				}
 
