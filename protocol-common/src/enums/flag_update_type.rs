@@ -12,8 +12,7 @@ impl_try_from_enum! {
 	///
 	/// Implementors Note: This had a `TODO: rev-eng`
 	/// comment on it but it doesn't seem to be missing
-	/// any values. It might be worth doing some more
-	/// looking to see if anything turns up here.
+	/// any values.
 	#[derive(Copy, Clone, Debug, Hash, Eq, PartialEq)]
 	#[cfg_attr(feature = "specs", derive(Component))]
 	#[cfg_attr(feature = "serde", derive(Serialize, Deserialize))]

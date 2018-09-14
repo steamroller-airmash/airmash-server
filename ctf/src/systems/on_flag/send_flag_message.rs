@@ -64,16 +64,29 @@ impl<'a> System<'a> for SendFlagMessageSystem {
 					unimplemented!();
 				}
 
+				let flag = Flag(*data.team.get(other).unwrap());
+
 				if data.carrier.get(other).unwrap().0.is_none() {
 					let pos = *data.pos.get(other).unwrap();
 					data.conns.send_to_all(GameFlag {
 						ty,
-						flag: Flag(*data.team.get(other).unwrap()),
+						flag,
 						pos: pos,
 						id: None,
 						blueteam: data.scores.blueteam,
 						redteam: data.scores.redteam,
 					});
+				} else {
+					let carrier = data.carrier.get(other).unwrap().0.map(|x| x.into());
+
+					data.conns.send_to_all(GameFlag {
+						ty: FlagUpdateType::Carrier,
+						flag,
+						pos: Position::default(),
+						id: carrier,
+						blueteam: data.scores.blueteam,
+						redteam: data.scores.redteam,
+					})
 				}
 			}
 

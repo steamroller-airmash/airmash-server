@@ -1,6 +1,7 @@
 use specs::*;
 
 use component::*;
+use systems::on_flag::AllFlagSystems;
 
 use server::utils::event_handler::{EventHandler, EventHandlerTypeProvider};
 use server::SystemInfo;
@@ -42,7 +43,7 @@ impl<'a> EventHandler<'a> for ResetFlags {
 }
 
 impl SystemInfo for ResetFlags {
-	type Dependencies = super::SetGameActive;
+	type Dependencies = (super::SetGameActive, AllFlagSystems);
 
 	fn name() -> &'static str {
 		concat!(module_path!(), "::", line!())
