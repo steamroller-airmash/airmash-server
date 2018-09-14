@@ -1,12 +1,11 @@
-
 use specs::*;
 
 use component::*;
 
-use server::SystemInfo;
 use server::utils::event_handler::{EventHandler, EventHandlerTypeProvider};
+use server::SystemInfo;
 
-use {RED_TEAM, BLUE_TEAM};
+use {BLUE_TEAM, RED_TEAM};
 
 #[derive(Default)]
 pub struct ResetFlags;
@@ -26,18 +25,18 @@ impl<'a> EventHandler<'a> for ResetFlags {
 
 	fn on_event(&mut self, evt: &GameWinEvent, data: &mut Self::SystemData) {
 		let winner = evt.winning_team;
-		let flag = if winner == RED_TEAM { 
+		let flag = if winner == RED_TEAM {
 			data.flags.blue
-		} else if winner == BLUE_TEAM { 
+		} else if winner == BLUE_TEAM {
 			data.flags.red
-		 } else { 
-			 unimplemented!() 
-			 };
+		} else {
+			unimplemented!()
+		};
 
 		data.channel.single_write(FlagEvent {
 			flag,
 			player: None,
-			ty: FlagEventType::Return
+			ty: FlagEventType::Return,
 		});
 	}
 }
