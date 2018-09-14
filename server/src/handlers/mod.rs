@@ -11,7 +11,6 @@ mod scoreboard;
 mod signal;
 
 pub use self::chat::ChatHandler;
-pub use self::command::CommandHandler;
 pub use self::key::KeyHandler;
 pub use self::login::LoginHandler;
 pub use self::onclose::OnCloseHandler;
@@ -21,3 +20,11 @@ pub use self::pong::PongHandler;
 pub use self::say::SayHandler;
 pub use self::scoreboard::ScoreBoardTimerHandler;
 pub use self::signal::SignalHandler;
+
+use systems;
+
+#[deprecated]
+pub type CommandHandler = (
+	systems::handlers::command::Respawn,
+	systems::handlers::command::Spectate,
+);

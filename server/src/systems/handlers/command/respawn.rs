@@ -22,6 +22,7 @@ pub struct RespawnData<'a> {
 	health: WriteStorage<'a, Health>,
 	planes: WriteStorage<'a, Plane>,
 	is_spec: WriteStorage<'a, IsSpectating>,
+	is_dead: WriteStorage<'a, IsDead>,
 
 	conns: Read<'a, Connections>,
 	channel: Write<'a, OnPlayerRespawn>,
@@ -58,6 +59,9 @@ impl<'a> EventHandler<'a> for Respawn {
 
 		data.planes.insert(player, plane).unwrap();
 		data.is_spec.remove(player);
+		// Prevent updates from happening until the actual respawn
+		// process is finished.
+		data.is_dead.insert(player, IsDead).unwrap();
 
 		data.channel.single_write(PlayerRespawn { player });
 

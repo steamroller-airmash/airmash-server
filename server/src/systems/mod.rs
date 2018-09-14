@@ -15,7 +15,6 @@ pub mod missile;
 pub mod notify;
 pub mod powerups;
 pub mod specials;
-pub mod spectate;
 pub mod upgrades;
 
 pub use self::energy_regen::EnergyRegenSystem;
