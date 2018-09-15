@@ -7,13 +7,13 @@ jobs:
     steps:
       - checkout
       - restore_cache:
-        key: fetch-cache-{{ checksum "Cargo.lock" }}
+          key: fetch-cache-{{ checksum "Cargo.lock" }}
       - run: Fetch dependencies
-        name: cargo fetch
+          name: cargo fetch
       - save_cache:
-        key: fetch-cache-{{ checksum "Cargo.lock" }}
-        paths:
-          - ~/cargo
+          key: fetch-cache-{{ checksum "Cargo.lock" }}
+          paths:
+            - ~/cargo
 
   build:
     working_directory: ~/build
@@ -22,19 +22,19 @@ jobs:
     steps:
       - checkout
       - run:
-        name: Save rustc version
-        run: rustc -V > ~/rustc.version
+          name: Save rustc version
+          run: rustc -V > ~/rustc.version
       - restore_cache:
-        key: fetch-cache-{{ checksum "Cargo.lock" }}
+          key: fetch-cache-{{ checksum "Cargo.lock" }}
       - restore_cache:
-        key: build-cache-{{ checksum "Cargo.lock" }}-{{ checksum "~/rustc.version" }}
+          key: build-cache-{{ checksum "Cargo.lock" }}-{{ checksum "~/rustc.version" }}
       - run:
-        name: Build Package
-        command: cargo +nightly build
+          name: Build Package
+          command: cargo +nightly build
       - save_cache:
-        key: build-cache-{{ checksum "Cargo.lock" }}-{{ checksum "~/rustc.version" }}
-        paths:
-          - target
+          key: build-cache-{{ checksum "Cargo.lock" }}-{{ checksum "~/rustc.version" }}
+          paths:
+            - target
   test:
     working_directory: ~/build
     docker:
