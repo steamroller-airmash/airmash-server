@@ -64,8 +64,6 @@ impl<'a> System<'a> for PickupFlagSystem {
 				continue;
 			}
 
-
-
 			let nearest = (
 				&*data.entities,
 				&data.pos,
@@ -73,7 +71,7 @@ impl<'a> System<'a> for PickupFlagSystem {
 				&data.is_player,
 				&data.plane,
 				data.is_alive.mask(),
-				&data.keystate
+				&data.keystate,
 			).join()
 				.filter(|(_, _, p_team, ..)| f_team != **p_team)
 				.filter(|(ent, ..)| {
