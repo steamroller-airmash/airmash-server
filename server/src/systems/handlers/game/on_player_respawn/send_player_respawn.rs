@@ -8,6 +8,7 @@ use SystemInfo;
 use protocol::server::PlayerRespawn;
 use protocol::Upgrades as ProtocolUpgrades;
 
+use systems::handlers::command::AllCommandHandlers;
 use systems::handlers::game::on_join::AllJoinHandlers;
 use systems::handlers::game::on_player_respawn::SetTraits;
 
@@ -60,7 +61,7 @@ impl<'a> System<'a> for SendPlayerRespawn {
 }
 
 impl SystemInfo for SendPlayerRespawn {
-	type Dependencies = (AllJoinHandlers, SetTraits);
+	type Dependencies = (AllJoinHandlers, SetTraits, AllCommandHandlers);
 
 	fn name() -> &'static str {
 		concat!(module_path!(), "::", line!())
