@@ -11,3 +11,12 @@ pub use self::send_flag_message::SendFlagMessageSystem as SendFlagMessage;
 pub use self::update_captures::UpdateCaptures;
 pub use self::update_lastdrop::UpdateLastDrop;
 pub use self::update_score::UpdateScore;
+
+pub type AllFlagSystems = (
+	CheckWin,
+	PickupMessage,
+	SendFlagMessage,
+	UpdateCaptures,
+	UpdateLastDrop,
+	UpdateScore,
+);

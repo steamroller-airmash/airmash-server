@@ -57,24 +57,37 @@ impl<'a> System<'a> for SendFlagMessageSystem {
 					data.scores.redteam += 1;
 					other = data.flags.red;
 				} else {
+					// Other flags are not implemented for CTF
+					// if you are using this code as a base,
+					// support for other flags will need to be
+					// implemented.
 					unimplemented!();
 				}
 
-				let pos;
-				if data.carrier.get(other).unwrap().0.is_none() {
-					pos = *data.pos.get(other).unwrap();
-				} else {
-					pos = Position::default();
-				}
+				let flag = Flag(*data.team.get(other).unwrap());
 
-				data.conns.send_to_all(GameFlag {
-					ty,
-					flag: Flag(*data.team.get(other).unwrap()),
-					pos: pos,
-					id: None,
-					blueteam: data.scores.blueteam,
-					redteam: data.scores.redteam,
-				});
+				if data.carrier.get(other).unwrap().0.is_none() {
+					let pos = *data.pos.get(other).unwrap();
+					data.conns.send_to_all(GameFlag {
+						ty,
+						flag,
+						pos: pos,
+						id: None,
+						blueteam: data.scores.blueteam,
+						redteam: data.scores.redteam,
+					});
+				} else {
+					let carrier = data.carrier.get(other).unwrap().0.map(|x| x.into());
+
+					data.conns.send_to_all(GameFlag {
+						ty: FlagUpdateType::Carrier,
+						flag,
+						pos: Position::default(),
+						id: carrier,
+						blueteam: data.scores.blueteam,
+						redteam: data.scores.redteam,
+					})
+				}
 			}
 
 			data.conns.send_to_all(GameFlag {

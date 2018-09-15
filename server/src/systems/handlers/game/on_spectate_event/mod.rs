@@ -9,3 +9,15 @@ pub use self::send_spectate_packet::SendSpectatePacket;
 pub use self::send_timer_event::SendTimerEvent;
 pub use self::set_spectate_flag::SetSpectateFlag;
 pub use self::set_target::SetSpectateTarget;
+
+pub type AllSpectateEventHandlers = (
+	SendKillPacket,
+	SendSpectatePacket,
+	SendTimerEvent,
+	SetSpectateFlag,
+	SetSpectateTarget,
+);
+
+use systems;
+
+pub type KnownEventSources = (systems::handlers::command::Spectate);

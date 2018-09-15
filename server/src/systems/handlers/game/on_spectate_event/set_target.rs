@@ -2,8 +2,6 @@ use specs::*;
 
 use dispatch::SystemInfo;
 
-use systems::spectate::CommandHandler;
-
 use component::channel::*;
 use component::reference::PlayerRef;
 
@@ -40,7 +38,7 @@ impl<'a> System<'a> for SetSpectateTarget {
 }
 
 impl SystemInfo for SetSpectateTarget {
-	type Dependencies = CommandHandler;
+	type Dependencies = super::KnownEventSources;
 
 	fn name() -> &'static str {
 		concat!(module_path!(), "::", line!())

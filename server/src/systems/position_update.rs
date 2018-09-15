@@ -1,15 +1,17 @@
 use specs::*;
+use systems;
 use types::systemdata::*;
 use types::*;
 
-use component::time::*;
+use SystemInfo;
 
 use std::f32::consts;
 use std::marker::PhantomData;
 use std::time::Duration;
 
-use airmash_protocol::server::PlayerUpdate;
-use airmash_protocol::Upgrades as ServerUpgrades;
+use component::time::*;
+use protocol::server::PlayerUpdate;
+use protocol::Upgrades as ServerUpgrades;
 
 const PI: Rotation = Rotation {
 	value_unsafe: consts::PI,
@@ -302,11 +304,11 @@ impl<'a> System<'a> for PositionUpdate {
 	}
 }
 
-use dispatch::SystemInfo;
-use handlers::KeyHandler;
-
 impl SystemInfo for PositionUpdate {
-	type Dependencies = KeyHandler;
+	type Dependencies = (
+		systems::handlers::packet::KeyHandler,
+		systems::handlers::game::on_player_respawn::SetTraits,
+	);
 
 	fn name() -> &'static str {
 		concat!(module_path!(), "::", line!())
