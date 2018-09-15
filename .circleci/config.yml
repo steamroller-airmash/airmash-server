@@ -1,25 +1,5 @@
 version: 2
 jobs:
-  fetch:
-    working_directory: ~/build
-    docker: 
-      - image: rustlang/rust:nightly
-    steps:
-      - checkout
-      - run: 
-          name: Setup Environment Variables
-          command: |
-            echo 'export CARGO_HOME="/root/.cargo"' >> $BASH_ENV
-      - restore_cache:
-          key: fetch-cache-{{ checksum "Cargo.lock" }}
-      - run: 
-          name: Fetch dependencies
-          command: cargo fetch
-      - save_cache:
-          key: fetch-cache-{{ checksum "Cargo.lock" }}
-          paths:
-            - ~/cargo
-
   build:
     working_directory: ~/build
     docker:
@@ -48,12 +28,10 @@ jobs:
     working_directory: ~/build
     docker:
       - image: rustlang/rust:nightly
+    environment:
+      CARGO_HOME: /root/.cargo
     steps:
       - checkout
-      - run: 
-          name: Setup Environment Variables
-          command: |
-            echo 'export CARGO_HOME="/root/.cargo"' >> $BASH_ENV
       - restore_cache:
           key: fetch-cache-{{arch}}-{{ checksum "Cargo.lock" }}
       - run:
@@ -64,10 +42,5 @@ workflows:
   version: 2
   build_and_test:
     jobs:
-      - fetch
-      - build:
-          requires:
-            - fetch
-      - test:
-          requires:
-            - fetch
+      - build
+      - test
