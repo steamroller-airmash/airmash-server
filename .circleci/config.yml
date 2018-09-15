@@ -41,9 +41,6 @@ jobs:
       - image: rustlang/rust:nightly
     steps:
       - checkout
-      - run:
-        name: Save rustc version information
-        run: 
       - restore_cache:
         key: fetch-cache-{{ checksum "Cargo.lock" }}
       - run:
