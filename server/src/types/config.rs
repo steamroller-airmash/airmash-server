@@ -254,8 +254,6 @@ impl Default for MobInfos {
 			  damage that would be done to a goliath.
 			- This will then be multiplied by a factor
 			  specific to each plane type
-			- Missile lifetime should be replaced with
-			  a missile distance modifier
 		*/
 
 		map.insert(
@@ -268,7 +266,7 @@ impl Default for MobInfos {
 					base_speed: Speed::new(4.05),
 					speed_factor: 0.3,
 					damage: Health::new(0.4),
-					distance: Distance::new(1000.0),
+					distance: Distance::new(1104.0),
 				}),
 			},
 		);
@@ -283,7 +281,7 @@ impl Default for MobInfos {
 					base_speed: Speed::new(2.1),
 					speed_factor: 0.3,
 					damage: Health::new(1.2),
-					distance: Distance::new(1000.0),
+					distance: Distance::new(1076.0),
 				}),
 			},
 		);
@@ -298,7 +296,7 @@ impl Default for MobInfos {
 					base_speed: Speed::new(5.7),
 					speed_factor: 0.3,
 					damage: Health::new(0.2),
-					distance: Distance::new(1000.0),
+					distance: Distance::new(1161.0),
 				}),
 			},
 		);
@@ -313,7 +311,7 @@ impl Default for MobInfos {
 					base_speed: Speed::new(3.5),
 					speed_factor: 0.3,
 					damage: Health::new(0.4),
-					distance: Distance::new(1000.0),
+					distance: Distance::new(997.0),
 				}),
 			},
 		);
@@ -328,7 +326,7 @@ impl Default for MobInfos {
 					base_speed: Speed::new(3.5),
 					speed_factor: 0.3,
 					damage: Health::new(0.3),
-					distance: Distance::new(500.0),
+					distance: Distance::new(581.0),
 				}),
 			},
 		);
@@ -343,7 +341,7 @@ impl Default for MobInfos {
 					base_speed: Speed::new(2.8),
 					speed_factor: 0.3,
 					damage: Health::new(0.45),
-					distance: Distance::new(1000.0),
+					distance: Distance::new(819.0),
 				}),
 			},
 		);

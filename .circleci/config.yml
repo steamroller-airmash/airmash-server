@@ -1,0 +1,46 @@
+version: 2
+jobs:
+  build:
+    working_directory: ~/build
+    docker:
+      - image: rustlang/rust:nightly
+    steps:
+      - checkout
+      - run:
+          name: Save rustc version
+          command: rustc -V > ~/rustc.version
+      - run: 
+          name: Setup Environment Variables
+          command: |
+            echo 'export CARGO_HOME="/root/.cargo"' >> $BASH_ENV
+      - restore_cache:
+          key: fetch-cache-{{ checksum "Cargo.lock" }}
+      - restore_cache:
+          key: build-cache-{{ checksum "Cargo.lock" }}-{{ checksum "~/rustc.version" }}
+      - run:
+          name: Build Package
+          command: cargo +nightly build
+      - save_cache:
+          key: build-cache-{{ checksum "Cargo.lock" }}-{{ checksum "~/rustc.version" }}
+          paths:
+            - target
+  test:
+    working_directory: ~/build
+    docker:
+      - image: rustlang/rust:nightly
+    environment:
+      CARGO_HOME: /root/.cargo
+    steps:
+      - checkout
+      - restore_cache:
+          key: fetch-cache-{{arch}}-{{ checksum "Cargo.lock" }}
+      - run:
+          name: Test Package
+          command: cargo +nightly test
+
+workflows:
+  version: 2
+  build_and_test:
+    jobs:
+      - build
+      - test

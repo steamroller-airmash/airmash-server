@@ -35,6 +35,8 @@ pub struct PickupFlagSystemData<'a> {
 	pub is_flag: ReadStorage<'a, IsFlag>,
 	pub carrier: WriteStorage<'a, FlagCarrier>,
 	pub lastdrop: ReadStorage<'a, LastDrop>,
+
+	pub keystate: ReadStorage<'a, KeyState>,
 }
 
 impl<'a> System<'a> for PickupFlagSystem {
@@ -69,6 +71,7 @@ impl<'a> System<'a> for PickupFlagSystem {
 				&data.is_player,
 				&data.plane,
 				data.is_alive.mask(),
+				&data.keystate,
 			).join()
 				.filter(|(_, _, p_team, ..)| f_team != **p_team)
 				.filter(|(ent, ..)| {
@@ -77,6 +80,7 @@ impl<'a> System<'a> for PickupFlagSystem {
 						// Then check against contained player id
 						|| lastdrop.player.map(|x| x != *ent).unwrap_or(false)
 				})
+				.filter(|(_, _, _, _, _, _, ref keystate)| keystate.stealthed != true)
 				.filter_map(|(p_ent, p_pos, _, _, p_plane, ..)| {
 					let rad = ctfconfig::FLAG_RADIUS[&p_plane];
 					let dst = (*p_pos - f_pos).length2();
