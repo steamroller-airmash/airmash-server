@@ -6,6 +6,10 @@ jobs:
       - image: rustlang/rust:nightly
     steps:
       - checkout
+      - run: 
+          name: Setup Environment Variables
+          command: |
+            echo 'export CARGO_HOME="/root/.cargo"' >> $BASH_ENV
       - restore_cache:
           key: fetch-cache-{{ checksum "Cargo.lock" }}
       - run: 
@@ -25,6 +29,10 @@ jobs:
       - run:
           name: Save rustc version
           command: rustc -V > ~/rustc.version
+      - run: 
+          name: Setup Environment Variables
+          command: |
+            echo 'export CARGO_HOME="/root/.cargo"' >> $BASH_ENV
       - restore_cache:
           key: fetch-cache-{{ checksum "Cargo.lock" }}
       - restore_cache:
@@ -42,8 +50,12 @@ jobs:
       - image: rustlang/rust:nightly
     steps:
       - checkout
+      - run: 
+          name: Setup Environment Variables
+          command: |
+            echo 'export CARGO_HOME="/root/.cargo"' >> $BASH_ENV
       - restore_cache:
-          key: fetch-cache-{{ checksum "Cargo.lock" }}
+          key: fetch-cache-{{arch}}-{{ checksum "Cargo.lock" }}
       - run:
           name: Test Package
           command: cargo +nightly test
