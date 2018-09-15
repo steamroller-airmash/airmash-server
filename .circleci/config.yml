@@ -53,8 +53,8 @@ workflows:
     jobs:
       - fetch
       - build:
-        requires:
-          - fetch
+          requires:
+            - fetch
       - test:
-        requires:
-          - fetch
+          requires:
+            - fetch
