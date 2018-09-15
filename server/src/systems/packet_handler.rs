@@ -1,5 +1,6 @@
-use airmash_protocol::client::*;
-use airmash_protocol::from_bytes;
+use protocol::client::*;
+use protocol::{ClientPacket, ProtocolSerializationExt};
+use protocol_v5::ProtocolV5;
 use shrev::EventChannel;
 use specs::*;
 use websocket::OwnedMessage;
@@ -83,6 +84,7 @@ impl<'a> System<'a> for PacketHandler {
 	}
 
 	fn run(&mut self, mut sysdata: PacketHandlerData<'a>) {
+		let protocol = ProtocolV5 {};
 		while let Ok(evt) = self.channel.try_recv() {
 			match evt {
 				ConnectionEvent::ConnectionOpen(conn) => {
@@ -93,7 +95,7 @@ impl<'a> System<'a> for PacketHandler {
 				}
 				ConnectionEvent::Message(msg) => {
 					if let OwnedMessage::Binary(data) = msg.msg {
-						match from_bytes::<ClientPacket>(&data) {
+						match protocol.deserialize(&data) {
 							Ok(packet) => Self::dispatch(&mut sysdata, msg.conn, packet),
 							Err(_) => sysdata.onbinary.single_write(Message {
 								conn: msg.conn,

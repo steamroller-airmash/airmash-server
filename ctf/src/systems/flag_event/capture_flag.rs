@@ -5,8 +5,8 @@ use config as ctfconfig;
 
 use component::*;
 
-use server::protocol::server::{GameFlag, ServerPacket};
-use server::protocol::{to_bytes, FlagUpdateType};
+use server::protocol::server::GameFlag;
+use server::protocol::FlagUpdateType;
 
 pub struct CaptureFlag;
 
@@ -62,7 +62,7 @@ impl<'a> System<'a> for CaptureFlag {
 
 				let packet = GameFlag {
 					ty: FlagUpdateType::Position,
-					flag: *team,
+					flag: Flag(*team),
 					id: None,
 					pos: *pos,
 					// If both flags are captured at the same time
@@ -75,9 +75,7 @@ impl<'a> System<'a> for CaptureFlag {
 					redteam: scores.redteam + redinc,
 				};
 
-				conns.send_to_all(OwnedMessage::Binary(
-					to_bytes(&ServerPacket::GameFlag(packet)).unwrap(),
-				));
+				conns.send_to_all(packet);
 
 				channel.single_write(FlagEvent {
 					ty: FlagEventType::Capture,

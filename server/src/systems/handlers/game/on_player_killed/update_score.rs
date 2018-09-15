@@ -11,8 +11,6 @@ use component::event::TimerEvent;
 use component::time::ThisFrame;
 
 use protocol::server::ScoreUpdate;
-use protocol::{to_bytes, ServerPacket};
-use websocket::OwnedMessage;
 
 pub struct UpdateScore {
 	reader: Option<OnPlayerKilledReader>,
@@ -47,16 +45,14 @@ impl UpdateScore {
 		let total_kills = data.total_kills.get(player).unwrap().0;
 		let total_deaths = data.total_deaths.get(player).unwrap().0;
 
-		data.conns.send_to_all(OwnedMessage::Binary(
-			to_bytes(&ServerPacket::ScoreUpdate(ScoreUpdate {
-				id: player,
-				score,
-				earnings,
-				upgrades: upgrades.unused,
-				total_deaths,
-				total_kills,
-			})).unwrap(),
-		));
+		data.conns.send_to_all(ScoreUpdate {
+			id: player.into(),
+			score,
+			earnings,
+			upgrades: upgrades.unused,
+			total_deaths,
+			total_kills,
+		});
 	}
 }
 

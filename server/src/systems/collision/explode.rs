@@ -5,9 +5,7 @@ use types::*;
 
 use component::channel::*;
 
-use protocol::server::{MobDespawnCoords, ServerPacket};
-use protocol::to_bytes;
-use websocket::OwnedMessage;
+use protocol::server::MobDespawnCoords;
 
 pub struct MissileExplodeSystem {
 	reader: Option<OnMissileTerrainCollisionReader>,
@@ -56,14 +54,12 @@ impl<'a> System<'a> for MissileExplodeSystem {
 			data.entities.delete(missile_ent).unwrap();
 
 			let packet = MobDespawnCoords {
-				id: missile_ent,
+				id: missile_ent.into(),
 				ty: *data.types.get(missile_ent).unwrap(),
 				pos: *data.pos.get(missile_ent).unwrap(),
 			};
 
-			data.conns.send_to_all(OwnedMessage::Binary(
-				to_bytes(&ServerPacket::MobDespawnCoords(packet)).unwrap(),
-			));
+			data.conns.send_to_all(packet);
 		}
 	}
 }

@@ -10,7 +10,6 @@ use server::types::Upgrades;
 use server::*;
 
 use server::protocol::server::ScoreUpdate;
-use server::protocol::{to_bytes, ServerPacket};
 
 use component::*;
 use config::GAME_WIN_BOUNTY_BASE;
@@ -73,7 +72,7 @@ impl<'a> System<'a> for AwardBounty {
 						(earnings.0).0 += bounty;
 
 						let packet = ScoreUpdate {
-							id: player,
+							id: player.into(),
 							score: *score,
 							earnings: earnings.0,
 							total_deaths: deaths.0,
@@ -81,12 +80,7 @@ impl<'a> System<'a> for AwardBounty {
 							upgrades: upgrades.unused,
 						};
 
-						conns.send_to_player(
-							player,
-							OwnedMessage::Binary(
-								to_bytes(&ServerPacket::ScoreUpdate(packet)).unwrap(),
-							),
-						)
+						conns.send_to_player(player, packet)
 					},
 				);
 

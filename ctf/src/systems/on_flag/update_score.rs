@@ -5,8 +5,7 @@ use component::*;
 use config as ctfconfig;
 
 use server::component::counter::*;
-use server::protocol::server::{ScoreUpdate, ServerPacket};
-use server::protocol::to_bytes;
+use server::protocol::server::ScoreUpdate;
 use server::types::*;
 
 pub struct UpdateScore {
@@ -59,7 +58,7 @@ impl<'a> System<'a> for UpdateScore {
 			earnings.0 += score_increase;
 
 			let packet = ScoreUpdate {
-				id: player,
+				id: player.into(),
 				score: *score,
 				earnings: *earnings,
 
@@ -69,9 +68,7 @@ impl<'a> System<'a> for UpdateScore {
 				upgrades: data.upgrades.get(player).unwrap().unused,
 			};
 
-			data.conns.send_to_all(OwnedMessage::Binary(
-				to_bytes(&ServerPacket::ScoreUpdate(packet)).unwrap(),
-			));
+			data.conns.send_to_all(packet);
 		}
 	}
 }

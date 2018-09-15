@@ -2,10 +2,10 @@ use shrev::*;
 use specs::*;
 use types::*;
 
+use component::flag::*;
 use protocol::client::Whisper;
-use protocol::server::{ChatWhisper, Error, ServerPacket};
-use protocol::{to_bytes, ErrorType};
-use OwnedMessage;
+use protocol::server::{ChatWhisper, Error};
+use protocol::{ErrorType, ServerPacket};
 
 use component::flag::IsPlayer;
 
@@ -60,16 +60,14 @@ impl<'a> System<'a> for WhisperHandler {
 			if data.throttled.get(player).is_some() {
 				data.conns.send_to(
 					evt.0,
-					OwnedMessage::Binary(
-						to_bytes(&ServerPacket::Error(Error {
-							error: ErrorType::ChatThrottled,
-						})).unwrap(),
-					),
+					Error {
+						error: ErrorType::ChatThrottled,
+					},
 				);
 				continue;
 			}
 
-			let to = data.entities.entity(evt.1.id as u32);
+			let to = data.entities.entity(evt.1.id.0 as u32);
 
 			if !data.entities.is_alive(to) {
 				// The player doesn't exist
@@ -81,18 +79,16 @@ impl<'a> System<'a> for WhisperHandler {
 			}
 
 			let chat = ChatWhisper {
-				from: player,
-				to: to,
+				from: player.into(),
+				to: to.into(),
 				text: evt.1.text.clone(),
 			};
 
 			let packet = ServerPacket::ChatWhisper(chat);
 
-			data.conns
-				.send_to(evt.0, OwnedMessage::Binary(to_bytes(&packet).unwrap()));
+			data.conns.send_to(evt.0, packet.clone());
 
-			data.conns
-				.send_to_player(to, OwnedMessage::Binary(to_bytes(&packet).unwrap()));
+			data.conns.send_to_player(to, packet);
 		}
 	}
 }

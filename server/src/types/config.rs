@@ -45,11 +45,12 @@ pub struct MissileInfo {
 	pub base_speed: Speed,
 	pub speed_factor: f32,
 	pub damage: Health,
+	pub distance: Distance,
 }
 
 #[derive(Clone, Debug, Default)]
 pub struct MobInfo {
-	pub lifetime: Duration,
+	pub lifetime: Option<Duration>,
 	pub missile: Option<MissileInfo>,
 }
 
@@ -72,12 +73,15 @@ pub struct UpgradeInfos {
 	pub defense: UpgradeInfo,
 }
 
-#[derive(Clone, Default)]
+#[derive(Clone)]
 pub struct Config {
 	pub planes: PlaneInfos,
 	pub mobs: MobInfos,
 	pub upgrades: UpgradeInfos,
 	pub admin_enabled: bool,
+	pub spawn_shield_duration: Duration,
+	pub shield_duration: Duration,
+	pub inferno_duration: Duration,
 }
 
 impl Index<Plane> for PlaneInfos {
@@ -246,25 +250,23 @@ impl Default for MobInfos {
 
 		/*
 		Notes:
-			- Damage is normalized to the amount of 
+			- Damage is normalized to the amount of
 			  damage that would be done to a goliath.
 			- This will then be multiplied by a factor
 			  specific to each plane type
-			- Missile lifetime should be replaced with
-			  a missile distance modifier
 		*/
 
 		map.insert(
 			MobType::PredatorMissile,
 			MobInfo {
-				// TODO: Figure out missile lifetime
-				lifetime: Duration::from_millis(2300),
+				lifetime: None,
 				missile: Some(MissileInfo {
 					max_speed: Speed::new(9.0),
 					accel: AccelScalar::new(0.105),
 					base_speed: Speed::new(4.05),
 					speed_factor: 0.3,
 					damage: Health::new(0.4),
+					distance: Distance::new(1104.0),
 				}),
 			},
 		);
@@ -272,13 +274,14 @@ impl Default for MobInfos {
 		map.insert(
 			MobType::GoliathMissile,
 			MobInfo {
-				lifetime: Duration::from_millis(3550),
+				lifetime: None,
 				missile: Some(MissileInfo {
 					max_speed: Speed::new(6.0),
 					accel: AccelScalar::new(0.0375),
 					base_speed: Speed::new(2.1),
 					speed_factor: 0.3,
 					damage: Health::new(1.2),
+					distance: Distance::new(1076.0),
 				}),
 			},
 		);
@@ -286,13 +289,14 @@ impl Default for MobInfos {
 		map.insert(
 			MobType::MohawkMissile,
 			MobInfo {
-				lifetime: Duration::from_millis(2250),
+				lifetime: None,
 				missile: Some(MissileInfo {
 					max_speed: Speed::new(9.0),
 					accel: AccelScalar::new(0.14),
 					base_speed: Speed::new(5.7),
 					speed_factor: 0.3,
 					damage: Health::new(0.2),
+					distance: Distance::new(1161.0),
 				}),
 			},
 		);
@@ -300,13 +304,14 @@ impl Default for MobInfos {
 		map.insert(
 			MobType::TornadoSingleMissile,
 			MobInfo {
-				lifetime: Duration::from_millis(2500),
+				lifetime: None,
 				missile: Some(MissileInfo {
 					max_speed: Speed::new(7.0),
 					accel: AccelScalar::new(0.0875),
 					base_speed: Speed::new(3.5),
 					speed_factor: 0.3,
 					damage: Health::new(0.4),
+					distance: Distance::new(997.0),
 				}),
 			},
 		);
@@ -314,13 +319,14 @@ impl Default for MobInfos {
 		map.insert(
 			MobType::TornadoTripleMissile,
 			MobInfo {
-				lifetime: Duration::from_millis(1500),
+				lifetime: None,
 				missile: Some(MissileInfo {
 					max_speed: Speed::new(7.0),
 					accel: AccelScalar::new(0.0875),
 					base_speed: Speed::new(3.5),
 					speed_factor: 0.3,
 					damage: Health::new(0.3),
+					distance: Distance::new(581.0),
 				}),
 			},
 		);
@@ -328,13 +334,14 @@ impl Default for MobInfos {
 		map.insert(
 			MobType::ProwlerMissile,
 			MobInfo {
-				lifetime: Duration::from_millis(2270),
+				lifetime: None,
 				missile: Some(MissileInfo {
 					max_speed: Speed::new(7.0),
 					accel: AccelScalar::new(0.07),
 					base_speed: Speed::new(2.8),
 					speed_factor: 0.3,
 					damage: Health::new(0.45),
+					distance: Distance::new(819.0),
 				}),
 			},
 		);
@@ -343,7 +350,7 @@ impl Default for MobInfos {
 		map.insert(
 			MobType::Inferno,
 			MobInfo {
-				lifetime: Duration::from_secs(60),
+				lifetime: Some(Duration::from_secs(60)),
 				missile: None,
 			},
 		);
@@ -351,7 +358,7 @@ impl Default for MobInfos {
 		map.insert(
 			MobType::Shield,
 			MobInfo {
-				lifetime: Duration::from_secs(60),
+				lifetime: Some(Duration::from_secs(60)),
 				missile: None,
 			},
 		);
@@ -382,6 +389,20 @@ impl Default for UpgradeInfos {
 				cost: [N0, N1, N1, N1, N1, N1],
 				factor: [1.0, 1.05, 1.1, 1.15, 1.2, 1.25],
 			},
+		}
+	}
+}
+
+impl Default for Config {
+	fn default() -> Self {
+		Self {
+			planes: Default::default(),
+			mobs: Default::default(),
+			upgrades: Default::default(),
+			admin_enabled: true,
+			spawn_shield_duration: Duration::from_secs(2),
+			shield_duration: Duration::from_secs(10),
+			inferno_duration: Duration::from_secs(10),
 		}
 	}
 }

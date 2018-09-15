@@ -18,8 +18,8 @@ impl GameMode for EmptyGameMode {
         Team(player.id() as u16)
     }
     fn spawn_pos(&mut self, _: Entity, _: Team) -> Position {
-        let Closed01(x) = rand::random();
-        let Closed01(y) = rand::random();
+        let Closed01(x) = rand::random::<Closed01<f32>>();
+        let Closed01(y) = rand::random::<Closed01<f32>>();
         let mult: Vector2<f32> = Vector2::new(x, y);
 
         *SPAWN_TOP_RIGHT + *SPAWN_SIZE * mult

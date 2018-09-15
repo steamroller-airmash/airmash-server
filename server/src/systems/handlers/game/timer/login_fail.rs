@@ -5,9 +5,8 @@ use consts::timer::*;
 use types::*;
 
 use protocol::client::Login;
-use protocol::server::{Error, ServerPacket};
-use protocol::{to_bytes, ErrorType};
-use OwnedMessage;
+use protocol::server::Error;
+use protocol::ErrorType;
 
 // Login needs write access to just
 // about everything
@@ -51,13 +50,11 @@ impl<'a> System<'a> for LoginFailed {
 
 			data.conns.send_to(
 				evt.0,
-				OwnedMessage::Binary(
-					to_bytes(&ServerPacket::Error(Error {
-						error: ErrorType::Banned,
-					})).unwrap(),
-				),
+				Error {
+					error: ErrorType::Banned,
+				},
 			);
-			data.conns.send_to(evt.0, OwnedMessage::Close(None));
+			data.conns.close(evt.0);
 		}
 	}
 }

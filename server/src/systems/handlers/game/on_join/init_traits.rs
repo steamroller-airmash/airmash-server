@@ -4,10 +4,11 @@ use std::time::Instant;
 
 use types::*;
 
-use systems::handlers::packet::LoginHandler;
+use systems::handlers::game::timer::LoginHandler;
 use SystemInfo;
 
 use component::channel::*;
+use component::flag::*;
 use component::time::*;
 use protocol::PlayerStatus;
 
@@ -26,7 +27,7 @@ pub struct InitTraitsData<'a> {
 	pub plane: WriteStorage<'a, Plane>,
 	pub status: WriteStorage<'a, Status>,
 	pub session: WriteStorage<'a, Session>,
-	pub flag: WriteStorage<'a, Flag>,
+	pub flag: WriteStorage<'a, FlagCode>,
 	pub is_player: WriteStorage<'a, IsPlayer>,
 	pub pingdata: WriteStorage<'a, PingData>,
 	pub lastshot: WriteStorage<'a, LastShotTime>,

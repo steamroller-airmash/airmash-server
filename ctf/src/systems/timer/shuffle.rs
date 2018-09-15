@@ -6,7 +6,6 @@ use server::component::flag::*;
 use server::*;
 
 use server::protocol::server::{PlayerReteam, PlayerReteamPlayer};
-use server::protocol::{to_bytes, ServerPacket};
 
 use component::*;
 use consts::*;
@@ -77,16 +76,14 @@ impl<'a> System<'a> for Shuffle {
 			let swaps = swaps
 				.into_iter()
 				.map(|swap| PlayerReteamPlayer {
-					id: swap.player,
+					id: swap.player.into(),
 					team: swap.new_team,
 				})
 				.collect::<Vec<_>>();
 
 			let packet = PlayerReteam { players: swaps };
 
-			data.conns.send_to_all(OwnedMessage::Binary(
-				to_bytes(&ServerPacket::PlayerReteam(packet)).unwrap(),
-			));
+			data.conns.send_to_all(packet);
 		}
 	}
 }

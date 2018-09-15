@@ -1,8 +1,8 @@
 use specs::*;
 
 use server::component::channel::*;
-use server::protocol::server::{GameFlag, ServerPacket};
-use server::protocol::{to_bytes, FlagUpdateType};
+use server::protocol::server::GameFlag;
+use server::protocol::FlagUpdateType;
 use server::systems::handlers::game::on_join::SendLogin;
 use server::*;
 
@@ -54,17 +54,14 @@ impl<'a> System<'a> for SendFlagPosition {
 
 					let packet = GameFlag {
 						ty,
-						flag: *team,
+						flag: Flag(*team),
 						pos: *pos,
-						id: carrier.0,
+						id: carrier.0.map(Into::into),
 						blueteam: data.scores.blueteam,
 						redteam: data.scores.redteam,
 					};
 
-					data.conns.send_to_player(
-						evt.id,
-						OwnedMessage::Binary(to_bytes(&ServerPacket::GameFlag(packet)).unwrap()),
-					);
+					data.conns.send_to_player(evt.id, packet);
 				});
 		}
 	}

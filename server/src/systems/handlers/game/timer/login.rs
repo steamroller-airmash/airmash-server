@@ -3,6 +3,7 @@ use airmash_protocol::FlagCode;
 use specs::*;
 use uuid::Uuid;
 
+use std::convert::TryFrom;
 use std::str::FromStr;
 
 use component::channel::*;
@@ -55,7 +56,10 @@ impl LoginHandler {
 			conn, login.name, entity.id()
 		);
 
-		let flag = FlagCode::from_str(&login.flag).unwrap_or(FlagCode::UnitedNations);
+		let flag = {
+			let flag_str: &str = &login.flag;
+			FlagCode::try_from(flag_str).unwrap_or(FlagCode::UnitedNations)
+		};
 
 		let session = match Uuid::from_str(&login.session) {
 			Ok(s) => Some(s),

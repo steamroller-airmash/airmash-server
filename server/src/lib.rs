@@ -1,9 +1,8 @@
-#![feature(optin_builtin_traits)]
+#![feature(optin_builtin_traits, try_from, try_trait)]
 
 // Crates with macros
 #[macro_use]
 extern crate log;
-#[macro_use]
 extern crate dimensioned;
 #[macro_use]
 extern crate specs_derive;
@@ -19,6 +18,8 @@ extern crate fnv;
 extern crate hibitset;
 extern crate htmlescape;
 extern crate hyper;
+pub extern crate protocol_common;
+extern crate protocol_v5;
 extern crate rand;
 extern crate rayon;
 extern crate shred;
@@ -37,30 +38,27 @@ use websocket::futures;
 mod builder;
 mod dispatch;
 mod handlers;
-mod metrics;
 mod server;
 mod status;
 mod timeloop;
 mod timers;
-mod utils;
+
+pub use protocol_common as protocol;
 
 pub mod component;
 pub mod consts;
-pub mod protocol;
 pub mod systems;
 pub mod types;
+pub mod utils;
 
 use protocol as airmash_protocol;
 
-pub use websocket::OwnedMessage;
-
 pub use builder::AirmashServer;
-pub use metrics::MetricsHandler;
 
 pub use dispatch::{Builder, SystemDeps, SystemInfo};
 
 pub use types::{
-	Accel, AccelScalar, Config, Connections, Distance, Energy, EnergyRegen, FutureDispatcher,
+	Accel, AccelScalar, Config, Connections, Distance, Energy, EnergyRegen, Flag, FutureDispatcher,
 	GameMode, GameModeWriter, Health, HealthRegen, KeyState, Level, Mob, Name, Plane, Position,
 	Score, Speed, Team, Time, Vector2, Velocity,
 };

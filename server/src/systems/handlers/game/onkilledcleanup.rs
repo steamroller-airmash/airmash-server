@@ -13,8 +13,6 @@ use component::flag::IsDead;
 use component::time::ThisFrame;
 
 use protocol::server::MobDespawnCoords;
-use protocol::{to_bytes, ServerPacket};
-use websocket::OwnedMessage;
 
 pub struct PlayerKilledCleanup {
 	reader: Option<OnPlayerKilledReader>,
@@ -56,14 +54,12 @@ impl<'a> System<'a> for PlayerKilledCleanup {
 			data.isdead.insert(evt.player, IsDead).unwrap();
 
 			let despawn_packet = MobDespawnCoords {
-				id: evt.missile,
+				id: evt.missile.into(),
 				ty: *data.mob.get(evt.missile).unwrap(),
 				pos: evt.pos,
 			};
 
-			data.conns.send_to_all(OwnedMessage::Binary(
-				to_bytes(&ServerPacket::MobDespawnCoords(despawn_packet)).unwrap(),
-			));
+			data.conns.send_to_all(despawn_packet);
 
 			let player = evt.player;
 

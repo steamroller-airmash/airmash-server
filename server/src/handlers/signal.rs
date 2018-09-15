@@ -7,8 +7,6 @@ use std::time::{Duration, Instant};
 
 use protocol::server::ServerMessage;
 use protocol::ServerMessageType;
-use protocol::{to_bytes, ServerPacket};
-use websocket::OwnedMessage;
 
 use std::process;
 
@@ -31,9 +29,7 @@ impl<'a> System<'a> for SignalHandler {
 					text: "Server shutting down in 30 seconds!".to_string(),
 				};
 
-				data.send_to_all(OwnedMessage::Binary(
-					to_bytes(&ServerPacket::ServerMessage(msg)).unwrap(),
-				));
+				data.send_to_all(msg);
 
 				info!(
 					target:"server",

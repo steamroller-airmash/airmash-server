@@ -3,9 +3,8 @@ use specs::*;
 use types::*;
 
 use protocol::client::Chat;
-use protocol::server::{ChatPublic, Error, ServerPacket};
-use protocol::{to_bytes, ErrorType};
-use websocket::OwnedMessage;
+use protocol::server::{ChatPublic, Error};
+use protocol::ErrorType;
 
 use component::flag::{IsChatMuted, IsChatThrottled};
 
@@ -56,23 +55,17 @@ impl<'a> System<'a> for ChatHandler {
 			if data.throttled.get(player).is_some() {
 				data.conns.send_to(
 					evt.0,
-					OwnedMessage::Binary(
-						to_bytes(&ServerPacket::Error(Error {
-							error: ErrorType::ChatThrottled,
-						})).unwrap(),
-					),
+					Error {
+						error: ErrorType::ChatThrottled,
+					},
 				);
 				continue;
 			}
 
-			let chat = ChatPublic {
-				id: player,
+			data.conns.send_to_all(ChatPublic {
+				id: player.into(),
 				text: evt.1.text.clone(),
-			};
-
-			data.conns.send_to_all(OwnedMessage::Binary(
-				to_bytes(&ServerPacket::ChatPublic(chat)).unwrap(),
-			));
+			});
 		}
 	}
 }

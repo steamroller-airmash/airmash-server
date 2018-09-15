@@ -4,6 +4,7 @@ use component::channel::*;
 use types::*;
 use SystemInfo;
 
+use systems::handlers::command::AllCommandHandlers;
 use systems::handlers::game::on_join::AllJoinHandlers;
 
 /// Reset the keystate of a player when they
@@ -36,7 +37,7 @@ impl<'a> System<'a> for ResetKeyState {
 }
 
 impl SystemInfo for ResetKeyState {
-	type Dependencies = AllJoinHandlers;
+	type Dependencies = (AllJoinHandlers, AllCommandHandlers);
 
 	fn name() -> &'static str {
 		concat!(module_path!(), "::", line!())

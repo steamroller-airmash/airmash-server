@@ -1,9 +1,7 @@
 use airmash_protocol::server::PlayerLeave;
-use airmash_protocol::{to_bytes, ServerPacket};
 use shrev::*;
 use specs::*;
 use types::*;
-use websocket::OwnedMessage;
 
 use component::channel::{OnClose, OnPlayerLeave};
 use component::counter::PlayersGame;
@@ -64,10 +62,8 @@ impl<'a> System<'a> for OnCloseHandler {
 						players.0 -= 1;
 
 						// Send out PlayerLeave message
-						let player_leave = PlayerLeave { id: ent };
-						connections.send_to_all(OwnedMessage::Binary(
-							to_bytes(&ServerPacket::PlayerLeave(player_leave)).unwrap(),
-						));
+						let player_leave = PlayerLeave { id: ent.into() };
+						connections.send_to_all(player_leave);
 
 						onleave.single_write(EvtPlayerLeave(ent));
 						// Delete player entity

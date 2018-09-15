@@ -1,7 +1,6 @@
 use specs::*;
 use types::*;
 
-use OwnedMessage;
 use SystemInfo;
 
 use consts::timer::DELAYED_MESSAGE;
@@ -9,7 +8,6 @@ use consts::timer::DELAYED_MESSAGE;
 use component::channel::{OnTimerEvent, OnTimerEventReader};
 
 use protocol::server::ServerMessage;
-use protocol::{to_bytes, ServerPacket};
 
 #[derive(Default)]
 pub struct DelayMessage {
@@ -51,9 +49,7 @@ impl<'a> System<'a> for DelayMessage {
 				None => continue,
 			};
 
-			data.conns.send_to_all(OwnedMessage::Binary(
-				to_bytes(&ServerPacket::ServerMessage(packet)).unwrap(),
-			));
+			data.conns.send_to_all(packet);
 		}
 	}
 }

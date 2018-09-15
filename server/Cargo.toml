@@ -4,7 +4,7 @@ version = "0.0.1"
 authors = ["STEAMROLLER"]
 license = "Apache-2.0 OR MIT"
 publish = false
-repository = 'https://github.com/steamroller-airmash/airmash-front-page-server'
+repository = 'https://github.com/steamroller-airmash/airmash-server'
 
 
 [features]
@@ -15,9 +15,6 @@ nodelay = []
 proxied = []
 # Turn on bot blocking settings
 block-bots = []
-
-[build-dependencies]
-specgen = { path = "../specgen" }
 
 [dependencies]
 ws = "*"
@@ -39,12 +36,13 @@ htmlescape = "*"
 hibitset = "*"
 bounded-queue = { path = "../bounded-queue" }
 special-map = { path = "../special-map" }
+protocol-v5 = { path = "../protocol-v5" }
 serde = { version = "*", features = ["derive"] }
 serde_json = "*"
 
-[dependencies.cadence]
-version = "0.14"
-#optional = true
+[dependencies.protocol-common]
+path = "../protocol-common"
+features = ["specs"]
 
 [dependencies.uuid]
 version = "*"

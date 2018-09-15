@@ -1,14 +1,14 @@
 use specs::*;
 
 use component::channel::*;
+use component::flag::*;
 use types::*;
 use SystemInfo;
 
 use protocol::server::PlayerRespawn;
 use protocol::Upgrades as ProtocolUpgrades;
-use protocol::{to_bytes, ServerPacket};
-use OwnedMessage;
 
+use systems::handlers::command::AllCommandHandlers;
 use systems::handlers::game::on_join::AllJoinHandlers;
 use systems::handlers::game::on_player_respawn::SetTraits;
 
@@ -49,21 +49,19 @@ impl<'a> System<'a> for SendPlayerRespawn {
 
 			data.conns.send_to_visible(
 				player,
-				OwnedMessage::Binary(
-					to_bytes(&ServerPacket::PlayerRespawn(PlayerRespawn {
-						id: player,
-						pos: *data.pos.get(player).unwrap(),
-						rot: *data.rot.get(player).unwrap(),
-						upgrades: ProtocolUpgrades::default(),
-					})).unwrap(),
-				),
+				PlayerRespawn {
+					id: player.into(),
+					pos: *data.pos.get(player).unwrap(),
+					rot: *data.rot.get(player).unwrap(),
+					upgrades: ProtocolUpgrades::default(),
+				},
 			);
 		}
 	}
 }
 
 impl SystemInfo for SendPlayerRespawn {
-	type Dependencies = (AllJoinHandlers, SetTraits);
+	type Dependencies = (AllJoinHandlers, SetTraits, AllCommandHandlers);
 
 	fn name() -> &'static str {
 		concat!(module_path!(), "::", line!())

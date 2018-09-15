@@ -2,7 +2,6 @@ use specs::*;
 use types::systemdata::*;
 use types::*;
 
-use OwnedMessage;
 use SystemInfo;
 
 use component::channel::{OnPlayerRepel, OnPlayerRepelReader};
@@ -11,7 +10,6 @@ use component::reference::PlayerRef;
 use systems::specials::config::*;
 
 use protocol::server::{EventRepel, EventRepelMob, EventRepelPlayer};
-use protocol::{to_bytes, ServerPacket};
 
 /// Send [`EventRepel`] when a goliath uses it's special.
 ///
@@ -69,10 +67,12 @@ impl<'a> System<'a> for SendEventRepel {
 			let hit_players = (
 				&*data.entities,
 				&data.pos,
+				&data.team,
 				&data.is_player,
 				data.is_alive.mask(),
 			).join()
 				.filter(|(ent, ..)| *ent != evt.player)
+				.filter(|(_, _, &target_team, ..)| target_team != team)
 				.filter_map(|(ent, player_pos, ..)| {
 					let dist2 = (*player_pos - pos).length2();
 
@@ -127,7 +127,7 @@ impl<'a> System<'a> for SendEventRepel {
 					let ref info = data.config.planes[plane];
 
 					EventRepelPlayer {
-						id: player,
+						id: player.into(),
 						keystate,
 						health: *data.health.get(player).unwrap(),
 						health_regen: info.health_regen,
@@ -150,7 +150,7 @@ impl<'a> System<'a> for SendEventRepel {
 					let dir = (missile_pos - pos).normalized();
 
 					EventRepelMob {
-						id: missile,
+						id: missile.into(),
 						pos: missile_pos,
 						accel: dir * info.accel,
 						speed: *data.vel.get(missile).unwrap(),
@@ -162,7 +162,7 @@ impl<'a> System<'a> for SendEventRepel {
 
 			let packet = EventRepel {
 				clock: data.clock.get(),
-				id: evt.player,
+				id: evt.player.into(),
 				energy: *data.energy.get(evt.player).unwrap(),
 				energy_regen: *data.energy_regen.get(evt.player).unwrap(),
 				rot: *data.rot.get(evt.player).unwrap(),
@@ -172,10 +172,7 @@ impl<'a> System<'a> for SendEventRepel {
 				players,
 			};
 
-			data.conns.send_to_visible(
-				evt.player,
-				OwnedMessage::Binary(to_bytes(&ServerPacket::EventRepel(packet)).unwrap()),
-			);
+			data.conns.send_to_visible(evt.player, packet);
 		}
 	}
 }

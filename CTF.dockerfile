@@ -1,29 +1,7 @@
 FROM clux/muslrust:nightly
 
-WORKDIR /build/server
-
-# Cache downloaded packages to avoid redownloading
-# all dependencies every time a project file is 
-# changed on the server. Since this project downloads
-# a large number of dependencies, this should save 
-# a decent amount of bandwith
-ADD server/Cargo.toml /build/server/
-RUN mkdir src
-
-# Need to add specgen so cargo fetch works
-COPY specgen /build/specgen
-COPY bounded-queue /build/bounded-queue
-COPY special-map /build/special-map
-
-# Fetch all dependencies to save bandwith
-RUN echo > src/main.rs
-RUN cargo fetch
-RUN rm -rf src
-
-ADD server /build/server
-ADD ctf /build/ctf
-
-WORKDIR /build/ctf
+WORKDIR /build
+COPY . /build
 
 RUN cargo build --release
 RUN mkdir /artifacts

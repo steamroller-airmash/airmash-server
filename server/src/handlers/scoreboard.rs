@@ -1,31 +1,34 @@
 use specs::*;
+use types::systemdata::IsAlive;
 use types::*;
 
 use consts::timer::SCORE_BOARD;
 
 use component::channel::{OnTimerEvent, OnTimerEventReader};
-use component::flag::{IsDead, IsPlayer, IsSpectating};
+use component::flag::IsPlayer;
 use component::time::JoinTime;
 
 use protocol::server::{ScoreBoard, ScoreBoardData, ScoreBoardRanking};
-use protocol::{to_bytes, ServerPacket};
-use OwnedMessage;
 
 use std::cmp::{Ordering, Reverse};
 
-lazy_static! {
-	static ref SPEC_POSITION: Position =
-		Position::new(Distance::new(-16384.0), Distance::new(-8192.0));
+/// Collect an iterator of 2-tuples into a tuple of vectors
+fn collect_tuples<T, U, I>(iter: I) -> (Vec<T>, Vec<U>)
+where
+	I: Iterator<Item = (T, U)>,
+{
+	iter.fold((vec![], vec![]), |mut acc, (a, b)| {
+		acc.0.push(a);
+		acc.1.push(b);
+		acc
+	})
 }
 
+/// When a SCORE_BOARD timer event shows up,
+/// send a ScoreBoard packet to all players
+#[derive(Default)]
 pub struct ScoreBoardTimerHandler {
 	reader: Option<OnTimerEventReader>,
-}
-
-impl ScoreBoardTimerHandler {
-	pub fn new() -> Self {
-		Self { reader: None }
-	}
 }
 
 #[derive(SystemData)]
@@ -37,9 +40,8 @@ pub struct ScoreBoardSystemData<'a> {
 	scores: ReadStorage<'a, Score>,
 	levels: ReadStorage<'a, Level>,
 	pos: ReadStorage<'a, Position>,
-	flag: ReadStorage<'a, IsPlayer>,
-	isspec: ReadStorage<'a, IsSpectating>,
-	isdead: ReadStorage<'a, IsDead>,
+	is_player: ReadStorage<'a, IsPlayer>,
+	is_alive: IsAlive<'a>,
 	join_time: ReadStorage<'a, JoinTime>,
 }
 
@@ -62,23 +64,37 @@ impl<'a> System<'a> for ScoreBoardTimerHandler {
 				&*data.entities,
 				&data.scores,
 				&data.levels,
-				&data.flag,
 				&data.join_time,
+				&data.pos,
+				data.is_player.mask(),
 			).join()
-				.map(|(ent, score, level, _, join_time)| {
+				.map(|(ent, score, level, join_time, pos, ..)| {
+					let low_res_pos = if data.is_alive.get(ent) {
+						Some(*pos)
+					} else {
+						None
+					};
+
 					(
+						score.0,
+						join_time.0,
 						ScoreBoardData {
-							id: ent,
+							id: ent.into(),
 							score: *score,
 							level: *level,
 						},
-						join_time.0,
+						ScoreBoardRanking {
+							id: ent.into(),
+							pos: low_res_pos,
+						},
 					)
 				})
 				.collect::<Vec<_>>();
 
+			// Sort all data first by score (descending)
+			// then by join time (ascending)
 			packet_data.sort_by(|a, b| {
-				let ord = Reverse(a.0.score).cmp(&Reverse(b.0.score));
+				let ord = Reverse(a.0).cmp(&Reverse(b.0));
 
 				match ord {
 					Ordering::Equal => a.1.cmp(&b.1),
@@ -86,32 +102,19 @@ impl<'a> System<'a> for ScoreBoardTimerHandler {
 				}
 			});
 
-			let packet_data = packet_data
-				.into_iter()
-				.take(10)
-				.map(|(s, _)| s)
-				.collect::<Vec<_>>();
+			let (mut sb_data, rankings) =
+				collect_tuples(packet_data.into_iter().map(|x| (x.2, x.3)));
 
-			let rankings = (&*data.entities, &data.pos, &data.flag)
-				.join()
-				.map(|(ent, pos, _)| {
-					if data.isspec.get(ent).is_some() || data.isdead.get(ent).is_some() {
-						(ent, *SPEC_POSITION)
-					} else {
-						(ent, *pos)
-					}
-				})
-				.map(|(ent, pos)| ScoreBoardRanking { id: ent, pos: pos })
-				.collect::<Vec<ScoreBoardRanking>>();
+			// Only the top 10 players go for the
+			// score board.
+			sb_data.truncate(10);
 
 			let score_board = ScoreBoard {
-				data: packet_data,
-				rankings: rankings,
+				data: sb_data,
+				rankings,
 			};
 
-			data.conns.send_to_all(OwnedMessage::Binary(
-				to_bytes(&ServerPacket::ScoreBoard(score_board)).unwrap(),
-			));
+			data.conns.send_to_all(score_board);
 		}
 	}
 }
@@ -123,7 +126,7 @@ impl SystemInfo for ScoreBoardTimerHandler {
 	type Dependencies = (TimerHandler);
 
 	fn new() -> Self {
-		Self::new()
+		Self::default()
 	}
 
 	fn name() -> &'static str {

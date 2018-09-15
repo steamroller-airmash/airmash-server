@@ -4,6 +4,7 @@ use types::*;
 
 use component::channel::*;
 use component::event::PlayerHit;
+use component::flag::*;
 use component::reference::PlayerRef;
 
 pub struct MissileHitSystem {

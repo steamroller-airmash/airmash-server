@@ -1,7 +1,6 @@
 use dispatch::sysinfo::*;
 use shred::*;
 
-use metrics::MetricsHandler;
 use std::time::Instant;
 
 pub struct SystemWrapper<T>(pub T);
@@ -11,7 +10,6 @@ where
 	T: System<'a>,
 	T::SystemData: DynamicSystemData<'a>,
 {
-	pub metrics: ReadExpect<'a, MetricsHandler>,
 	pub inner: T::SystemData,
 }
 
@@ -23,13 +21,11 @@ where
 	type Accessor = <<T as System<'a>>::SystemData as DynamicSystemData<'a>>::Accessor;
 
 	fn setup(acc: &Self::Accessor, res: &mut Resources) {
-		<ReadExpect<'a, MetricsHandler> as SystemData<'a>>::setup(res);
 		T::SystemData::setup(acc, res);
 	}
 
 	fn fetch(acc: &Self::Accessor, res: &'a Resources) -> Self {
 		Self {
-			metrics: <ReadExpect<'a, MetricsHandler> as SystemData<'a>>::fetch(res),
 			inner: T::SystemData::fetch(acc, res),
 		}
 	}
@@ -47,15 +43,13 @@ where
 	}
 
 	fn run(&mut self, data: Self::SystemData) {
-		let SystemWrapperData { metrics, inner } = data;
+		let SystemWrapperData { inner } = data;
 
 		let start = Instant::now();
 
 		self.0.run(inner);
 
 		let time = Instant::now() - start;
-
-		metrics.time_duration(T::name(), time).unwrap();
 
 		trace!(
 			"System '{}' took {}.{:3} ms",

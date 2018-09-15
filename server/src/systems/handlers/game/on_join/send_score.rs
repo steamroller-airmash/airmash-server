@@ -3,14 +3,12 @@ use types::*;
 
 use super::*;
 
-use OwnedMessage;
 use SystemInfo;
 
 use component::channel::*;
 use component::counter::*;
 
 use protocol::server::ScoreUpdate;
-use protocol::{to_bytes, ServerPacket};
 
 pub struct SendScoreUpdate {
 	reader: Option<OnPlayerJoinReader>,
@@ -57,7 +55,7 @@ impl<'a> System<'a> for SendScoreUpdate {
 			let total_deaths = total_deaths.get(evt.id).unwrap();
 
 			let packet = ScoreUpdate {
-				id: evt.id,
+				id: evt.id.into(),
 				score: *score,
 				earnings: earnings.0,
 				upgrades: upgrades.unused,
@@ -65,9 +63,7 @@ impl<'a> System<'a> for SendScoreUpdate {
 				total_deaths: total_deaths.0,
 			};
 
-			conns.send_to_all(OwnedMessage::Binary(
-				to_bytes(&ServerPacket::ScoreUpdate(packet)).unwrap(),
-			));
+			conns.send_to_all(packet);
 		}
 	}
 }
@@ -79,6 +75,7 @@ impl SystemInfo for SendScoreUpdate {
 		InitKillCounters,
 		SendLogin,
 		InitConnection,
+		InitState,
 	);
 
 	fn name() -> &'static str {

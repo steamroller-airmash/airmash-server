@@ -5,7 +5,7 @@ authors = ["STEAMROLLER"]
 license = "Apache-2.0 OR MIT"
 description = "Airmash CTF game mode"
 publish = false
-repository = 'https://github.com/steamroller-airmash/airmash-front-page-server'
+repository = 'https://github.com/steamroller-airmash/airmash-server'
 
 
 [dependencies]

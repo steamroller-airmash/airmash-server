@@ -1,9 +1,11 @@
 use specs::*;
 
 use component::channel::*;
+use component::flag::*;
 use types::*;
 use SystemInfo;
 
+use systems::handlers::command::AllCommandHandlers;
 use systems::handlers::game::on_join::AllJoinHandlers;
 
 /// Set transform, health, energy and flags
@@ -67,7 +69,7 @@ impl<'a> System<'a> for SetTraits {
 }
 
 impl SystemInfo for SetTraits {
-	type Dependencies = AllJoinHandlers;
+	type Dependencies = (AllJoinHandlers, AllCommandHandlers);
 
 	fn name() -> &'static str {
 		concat!(module_path!(), "::", line!())

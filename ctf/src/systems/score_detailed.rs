@@ -4,7 +4,6 @@ use server::component::channel::*;
 use server::component::counter::*;
 use server::component::flag::*;
 use server::protocol::server::{ScoreDetailedCTF, ScoreDetailedCTFEntry};
-use server::protocol::{to_bytes, ServerPacket};
 use server::*;
 
 use component::Captures;
@@ -52,7 +51,7 @@ impl<'a> System<'a> for ScoreDetailed {
 			).join()
 				.map(|(ent, level, captures, score, kills, deaths, ping, ..)| {
 					ScoreDetailedCTFEntry {
-						id: ent,
+						id: ent.into(),
 						level: *level,
 						captures: captures.0 as u16,
 						score: *score,
@@ -67,10 +66,7 @@ impl<'a> System<'a> for ScoreDetailed {
 
 			let packet = ScoreDetailedCTF { scores };
 
-			data.conns.send_to(
-				evt.0,
-				OwnedMessage::Binary(to_bytes(&ServerPacket::ScoreDetailedCTF(packet)).unwrap()),
-			);
+			data.conns.send_to(evt.0, packet);
 		}
 	}
 }

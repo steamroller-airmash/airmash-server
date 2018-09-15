@@ -21,7 +21,7 @@ pub trait EventHandler<'a>: EventHandlerTypeProvider + Send {
 	fn on_event(&mut self, evt: &Self::Event, data: &mut Self::SystemData);
 }
 
-pub struct EventHandlerWrapper<T>
+pub(crate) struct EventHandlerWrapper<T>
 where
 	T: EventHandlerTypeProvider,
 {

@@ -14,6 +14,8 @@ use std::net::IpAddr;
 use std::sync::mpsc::Sender;
 use std::sync::Mutex;
 
+use protocol::ServerPacket;
+
 // Websocket hasn't updated, can't change this yet
 #[allow(deprecated)]
 pub type ConnectionSink = SplitSink<Framed<TcpStream, MessageCodec<OwnedMessage>>>;
@@ -39,15 +41,23 @@ pub enum ConnectionType {
 	Inactive,
 }
 
+#[derive(Debug)]
 pub enum MessageInfo {
 	ToConnection(ConnectionId),
 	ToTeam(Entity),
 	ToVisible(Entity),
 }
 
+#[derive(Debug)]
+pub enum MessageBody {
+	Packet(ServerPacket),
+	Binary(Vec<u8>),
+	Close,
+}
+
 pub struct Message {
 	pub info: MessageInfo,
-	pub msg: OwnedMessage,
+	pub msg: MessageBody,
 }
 
 pub struct Connections(
@@ -138,7 +148,10 @@ impl Connections {
 			.unwrap();
 	}
 
-	pub fn send_to_player(&self, player: Entity, msg: OwnedMessage) {
+	pub fn send_to_player<I>(&self, player: Entity, msg: I)
+	where
+		I: Into<ServerPacket>,
+	{
 		let conn = self.0.iter().find(|(_, c)| {
 			c.player.is_some() && c.ty == ConnectionType::Primary && c.player.unwrap() == player
 		});
@@ -156,7 +169,11 @@ impl Connections {
 		self.send_to(*conn.unwrap().0, msg);
 	}
 
-	pub fn send_to(&self, id: ConnectionId, msg: OwnedMessage) {
+	pub fn send_to<I>(&self, id: ConnectionId, msg: I)
+	where
+		I: Into<ServerPacket>,
+	{
+		let msg = msg.into();
 		trace!(
 			target: "server",
 			"Sent message to {:?}: {:?}",
@@ -168,12 +185,16 @@ impl Connections {
 			.unwrap()
 			.send(Message {
 				info: MessageInfo::ToConnection(id),
-				msg: msg,
+				msg: MessageBody::Packet(msg),
 			})
 			.unwrap();
 	}
 
-	pub fn send_to_all(&self, msg: OwnedMessage) {
+	pub fn send_to_all<I>(&self, msg: I)
+	where
+		I: Into<ServerPacket>,
+	{
+		let msg = msg.into();
 		self.0
 			.iter()
 			.filter_map(|(id, ref conn)| {
@@ -190,13 +211,17 @@ impl Connections {
 					.unwrap()
 					.send(Message {
 						info: MessageInfo::ToConnection(*id),
-						msg: msg.clone(),
+						msg: MessageBody::Packet(msg.clone()),
 					})
 					.unwrap();
 			});
 	}
 
-	pub fn send_to_others(&self, player: Entity, msg: OwnedMessage) {
+	pub fn send_to_others<I>(&self, player: Entity, msg: I)
+	where
+		I: Into<ServerPacket>,
+	{
+		let msg = msg.into();
 		self.0
 			.iter()
 			.filter_map(|(id, ref conn)| {
@@ -213,30 +238,47 @@ impl Connections {
 					.unwrap()
 					.send(Message {
 						info: MessageInfo::ToConnection(*id),
-						msg: msg.clone(),
+						msg: MessageBody::Packet(msg.clone()),
 					})
 					.unwrap()
 			});
 	}
 
-	pub fn send_to_team(&self, player: Entity, msg: OwnedMessage) {
+	pub fn send_to_team<I>(&self, player: Entity, msg: I)
+	where
+		I: Into<ServerPacket>,
+	{
 		self.1
 			.lock()
 			.unwrap()
 			.send(Message {
 				info: MessageInfo::ToTeam(player),
-				msg: msg,
+				msg: MessageBody::Packet(msg.into()),
 			})
 			.unwrap();
 	}
 
-	pub fn send_to_visible(&self, player: Entity, msg: OwnedMessage) {
+	pub fn send_to_visible<I>(&self, player: Entity, msg: I)
+	where
+		I: Into<ServerPacket>,
+	{
 		self.1
 			.lock()
 			.unwrap()
 			.send(Message {
 				info: MessageInfo::ToVisible(player),
-				msg: msg,
+				msg: MessageBody::Packet(msg.into()),
+			})
+			.unwrap();
+	}
+
+	pub fn close(&self, conn: ConnectionId) {
+		self.1
+			.lock()
+			.unwrap()
+			.send(Message {
+				info: MessageInfo::ToConnection(conn),
+				msg: MessageBody::Close,
 			})
 			.unwrap();
 	}

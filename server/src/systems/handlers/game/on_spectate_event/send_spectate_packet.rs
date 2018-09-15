@@ -1,15 +1,9 @@
 use specs::*;
-
 use types::*;
 
 use component::channel::*;
-
-use systems::spectate::CommandHandler;
-
 use protocol::server::GameSpectate;
-use protocol::{to_bytes, ServerPacket};
 
-use OwnedMessage;
 use SystemInfo;
 
 pub struct SendSpectatePacket {
@@ -40,19 +34,16 @@ impl<'a> System<'a> for SendSpectatePacket {
 			}
 
 			let packet = GameSpectate {
-				id: evt.target.unwrap(),
+				id: evt.target.unwrap().into(),
 			};
 
-			data.conns.send_to_player(
-				evt.player,
-				OwnedMessage::Binary(to_bytes(&ServerPacket::GameSpectate(packet)).unwrap()),
-			);
+			data.conns.send_to_player(evt.player, packet);
 		}
 	}
 }
 
 impl SystemInfo for SendSpectatePacket {
-	type Dependencies = CommandHandler;
+	type Dependencies = super::KnownEventSources;
 
 	fn name() -> &'static str {
 		concat!(module_path!(), "::", line!())

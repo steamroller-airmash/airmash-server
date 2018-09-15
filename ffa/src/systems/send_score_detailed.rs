@@ -7,8 +7,6 @@ use airmash_server::component::counter::*;
 use airmash_server::*;
 
 use airmash_server::protocol::server::{ScoreDetailedFFA, ScoreDetailedFFAEntry};
-use airmash_server::protocol::{to_bytes, ServerPacket};
-use airmash_server::OwnedMessage;
 
 #[derive(Default)]
 pub struct SendScoreDetailed {
@@ -58,7 +56,7 @@ impl<'a> System<'a> for SendScoreDetailed {
             ).join()
                 .map(
                     |(ent, level, score, kills, deaths, damage, ping)| ScoreDetailedFFAEntry {
-                        id: ent,
+                        id: ent.into(),
                         level: *level,
                         score: *score,
                         kills: kills.0 as u16,
@@ -73,14 +71,8 @@ impl<'a> System<'a> for SendScoreDetailed {
             // Avoid going over the capacity of Array
             entries.truncate(0xFFFF);
 
-            data.conns.send_to(
-                conn,
-                OwnedMessage::Binary(
-                    to_bytes(&ServerPacket::ScoreDetailedFFA(ScoreDetailedFFA {
-                        scores: entries,
-                    })).unwrap(),
-                ),
-            );
+            data.conns
+                .send_to(conn, ScoreDetailedFFA { scores: entries });
         }
     }
 }

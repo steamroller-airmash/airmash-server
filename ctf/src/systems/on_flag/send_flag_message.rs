@@ -4,7 +4,6 @@ use specs::*;
 use component::*;
 use server::protocol::server::GameFlag;
 use server::protocol::FlagUpdateType;
-use server::protocol::{to_bytes, ServerPacket};
 
 use BLUE_TEAM;
 use RED_TEAM;
@@ -58,38 +57,47 @@ impl<'a> System<'a> for SendFlagMessageSystem {
 					data.scores.redteam += 1;
 					other = data.flags.red;
 				} else {
+					// Other flags are not implemented for CTF
+					// if you are using this code as a base,
+					// support for other flags will need to be
+					// implemented.
 					unimplemented!();
 				}
 
-				let pos;
-				if data.carrier.get(other).unwrap().0.is_none() {
-					pos = *data.pos.get(other).unwrap();
-				} else {
-					pos = Position::default();
-				}
+				let flag = Flag(*data.team.get(other).unwrap());
 
-				data.conns.send_to_all(OwnedMessage::Binary(
-					to_bytes(&ServerPacket::GameFlag(GameFlag {
+				if data.carrier.get(other).unwrap().0.is_none() {
+					let pos = *data.pos.get(other).unwrap();
+					data.conns.send_to_all(GameFlag {
 						ty,
-						flag: *data.team.get(other).unwrap(),
+						flag,
 						pos: pos,
 						id: None,
 						blueteam: data.scores.blueteam,
 						redteam: data.scores.redteam,
-					})).unwrap(),
-				));
+					});
+				} else {
+					let carrier = data.carrier.get(other).unwrap().0.map(|x| x.into());
+
+					data.conns.send_to_all(GameFlag {
+						ty: FlagUpdateType::Carrier,
+						flag,
+						pos: Position::default(),
+						id: carrier,
+						blueteam: data.scores.blueteam,
+						redteam: data.scores.redteam,
+					})
+				}
 			}
 
-			data.conns.send_to_all(OwnedMessage::Binary(
-				to_bytes(&ServerPacket::GameFlag(GameFlag {
-					ty,
-					flag: *team,
-					pos: *data.pos.get(evt.flag).unwrap(),
-					id: evt.player,
-					blueteam: data.scores.blueteam,
-					redteam: data.scores.redteam,
-				})).unwrap(),
-			));
+			data.conns.send_to_all(GameFlag {
+				ty,
+				flag: Flag(*team),
+				pos: *data.pos.get(evt.flag).unwrap(),
+				id: evt.player.map(Into::into),
+				blueteam: data.scores.blueteam,
+				redteam: data.scores.redteam,
+			});
 		}
 	}
 }

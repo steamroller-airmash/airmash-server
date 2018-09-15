@@ -5,15 +5,13 @@ use types::*;
 
 use consts::timer::SCORE_BOARD;
 use dispatch::SystemInfo;
-use systems;
+use systems::handlers::game::on_player_hit::AllPlayerHitSystems;
 
 use component::channel::*;
 use component::event::TimerEvent;
 use component::time::ThisFrame;
 
 use protocol::server::PlayerKill;
-use protocol::{to_bytes, ServerPacket};
-use websocket::OwnedMessage;
 
 pub struct DisplayMessage {
 	reader: Option<OnPlayerKilledReader>,
@@ -46,8 +44,8 @@ impl<'a> System<'a> for DisplayMessage {
 	fn run(&mut self, mut data: Self::SystemData) {
 		for evt in data.channel.read(self.reader.as_mut().unwrap()) {
 			let packet = PlayerKill {
-				id: evt.player,
-				killer: Some(evt.killer),
+				id: evt.player.into(),
+				killer: Some(evt.killer.into()),
 				pos: evt.pos,
 			};
 
@@ -55,9 +53,7 @@ impl<'a> System<'a> for DisplayMessage {
 				warn!("Player {:?} killed themselves!", evt.player);
 			}
 
-			data.conns.send_to_all(OwnedMessage::Binary(
-				to_bytes(&ServerPacket::PlayerKill(packet)).unwrap(),
-			));
+			data.conns.send_to_all(packet);
 
 			data.timerevent.single_write(TimerEvent {
 				ty: *SCORE_BOARD,
@@ -69,7 +65,7 @@ impl<'a> System<'a> for DisplayMessage {
 }
 
 impl SystemInfo for DisplayMessage {
-	type Dependencies = (systems::missile::MissileHit);
+	type Dependencies = (AllPlayerHitSystems);
 
 	fn name() -> &'static str {
 		concat!(module_path!(), "::", line!())

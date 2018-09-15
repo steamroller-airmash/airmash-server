@@ -1,16 +1,17 @@
 use specs::*;
+use systems;
 use types::systemdata::*;
 use types::*;
 
-use component::time::*;
+use SystemInfo;
 
 use std::f32::consts;
 use std::marker::PhantomData;
 use std::time::Duration;
 
-use airmash_protocol::server::{PlayerUpdate, ServerPacket};
-use airmash_protocol::{to_bytes, Upgrades as ServerUpgrades};
-use websocket::OwnedMessage;
+use component::time::*;
+use protocol::server::PlayerUpdate;
+use protocol::Upgrades as ServerUpgrades;
 
 const PI: Rotation = Rotation {
 	value_unsafe: consts::PI,
@@ -135,7 +136,7 @@ impl PositionUpdate {
 					unimplemented!();
 				}
 
-				if powerups.inferno {
+				if powerups.inferno() {
 					max_speed *= info.inferno_factor;
 				}
 
@@ -197,13 +198,13 @@ impl PositionUpdate {
 
 					let ups = ServerUpgrades {
 						speed: upgrades.speed,
-						shield: powerups.shield,
-						inferno: powerups.inferno,
+						shield: powerups.shield(),
+						inferno: powerups.inferno(),
 					};
 
 					let packet = PlayerUpdate {
 						clock,
-						id: ent,
+						id: ent.into(),
 						keystate: state,
 						pos: *pos,
 						rot: *rot,
@@ -213,14 +214,10 @@ impl PositionUpdate {
 
 					trace!(target: "server", "Update: {:?}", packet);
 
-					let message = OwnedMessage::Binary(
-						to_bytes(&ServerPacket::PlayerUpdate(packet)).unwrap(),
-					);
-
 					if !keystate.stealthed {
-						data.conns.send_to_all(message);
+						data.conns.send_to_all(packet);
 					} else {
-						data.conns.send_to_team(ent, message);
+						data.conns.send_to_team(ent, packet);
 					}
 				},
 			)
@@ -256,13 +253,13 @@ impl PositionUpdate {
 
 					let ups = ServerUpgrades {
 						speed: upgrades.speed,
-						shield: powerups.shield,
-						inferno: powerups.inferno,
+						shield: powerups.shield(),
+						inferno: powerups.inferno(),
 					};
 
 					let packet = PlayerUpdate {
 						clock,
-						id: ent,
+						id: ent.into(),
 						keystate: state,
 						pos: *pos,
 						rot: *rot,
@@ -272,14 +269,10 @@ impl PositionUpdate {
 
 					trace!(target: "server", "Update: {:?}", packet);
 
-					let message = OwnedMessage::Binary(
-						to_bytes(&ServerPacket::PlayerUpdate(packet)).unwrap(),
-					);
-
 					if !keystate.stealthed {
-						data.conns.send_to_all(message);
+						data.conns.send_to_all(packet);
 					} else {
-						data.conns.send_to_team(ent, message);
+						data.conns.send_to_team(ent, packet);
 					}
 				},
 			)
@@ -311,11 +304,11 @@ impl<'a> System<'a> for PositionUpdate {
 	}
 }
 
-use dispatch::SystemInfo;
-use handlers::KeyHandler;
-
 impl SystemInfo for PositionUpdate {
-	type Dependencies = KeyHandler;
+	type Dependencies = (
+		systems::handlers::packet::KeyHandler,
+		systems::handlers::game::on_player_respawn::SetTraits,
+	);
 
 	fn name() -> &'static str {
 		concat!(module_path!(), "::", line!())

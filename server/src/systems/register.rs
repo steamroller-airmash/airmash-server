@@ -9,7 +9,6 @@ pub fn register<'a, 'b>(disp: Builder<'a, 'b>) -> Builder<'a, 'b> {
 		.with::<run_futures::RunTimedFutures>()
 		// Other handlers
 		.with_registrar(handlers::register)
-
 		// Systems with dependencies on handlers
 		.with::<PositionUpdate>()
 		// Register missle handlers
@@ -17,8 +16,6 @@ pub fn register<'a, 'b>(disp: Builder<'a, 'b>) -> Builder<'a, 'b> {
 		// EnergyRegen depends on MissileHit
 		.with::<EnergyRegenSystem>()
 		.with::<HealthRegenSystem>()
-		// Spectate handling
-		.with_registrar(spectate::register)
 		// Collision handling
 		.with_registrar(collision::register)
 		// Specials
@@ -29,4 +26,6 @@ pub fn register<'a, 'b>(disp: Builder<'a, 'b>) -> Builder<'a, 'b> {
 		.with_registrar(upgrades::register)
 		// Admin/Debug Commands
 		.with_registrar(admin::register)
+		// Powerups
+		.with_registrar(powerups::register)
 }

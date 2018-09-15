@@ -4,7 +4,7 @@ use specs::*;
 use server::component::channel::*;
 use server::component::time::ThisFrame;
 use server::protocol::server::GameFlag;
-use server::protocol::{to_bytes, FlagUpdateType, ServerPacket};
+use server::protocol::FlagUpdateType;
 
 use component::*;
 
@@ -64,7 +64,7 @@ impl<'a> System<'a> for Drop {
 
 					let packet = GameFlag {
 						ty: FlagUpdateType::Position,
-						flag: *team,
+						flag: Flag(*team),
 						id: None,
 						pos: player_pos,
 						blueteam: 0,
@@ -83,9 +83,7 @@ impl<'a> System<'a> for Drop {
 						time: thisframe.0,
 					};
 
-					conns.send_to_all(OwnedMessage::Binary(
-						to_bytes(&ServerPacket::GameFlag(packet)).unwrap(),
-					));
+					conns.send_to_all(packet);
 				});
 		}
 	}
