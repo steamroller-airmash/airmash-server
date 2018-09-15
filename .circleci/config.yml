@@ -24,7 +24,7 @@ jobs:
       - checkout
       - run:
           name: Save rustc version
-          run: rustc -V > ~/rustc.version
+          command: rustc -V > ~/rustc.version
       - restore_cache:
           key: fetch-cache-{{ checksum "Cargo.lock" }}
       - restore_cache:
@@ -43,10 +43,10 @@ jobs:
     steps:
       - checkout
       - restore_cache:
-        key: fetch-cache-{{ checksum "Cargo.lock" }}
+          key: fetch-cache-{{ checksum "Cargo.lock" }}
       - run:
-        name: Test Package
-        command: cargo +nightly test
+          name: Test Package
+          command: cargo +nightly test
 
 workflows:
   version: 2
