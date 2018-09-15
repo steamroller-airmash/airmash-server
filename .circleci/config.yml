@@ -8,8 +8,9 @@ jobs:
       - checkout
       - restore_cache:
           key: fetch-cache-{{ checksum "Cargo.lock" }}
-      - run: Fetch dependencies
-          name: cargo fetch
+      - run: 
+          name: Fetch dependencies
+          command: cargo fetch
       - save_cache:
           key: fetch-cache-{{ checksum "Cargo.lock" }}
           paths:
