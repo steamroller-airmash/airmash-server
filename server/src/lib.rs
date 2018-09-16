@@ -10,6 +10,7 @@ extern crate specs_derive;
 extern crate shred_derive;
 #[macro_use]
 extern crate lazy_static;
+#[macro_use]
 extern crate serde;
 
 // Regular Dependencies
@@ -22,6 +23,7 @@ pub extern crate protocol_common;
 extern crate protocol_v5;
 extern crate rand;
 extern crate rayon;
+extern crate serde_json;
 extern crate shred;
 extern crate shrev;
 extern crate simple_logger;

@@ -2,17 +2,21 @@ use specs::*;
 use types::*;
 
 use utils::event_handler::{EventHandler, EventHandlerTypeProvider};
+use SystemInfo;
 
 use component::channel::OnPlayerPowerup;
 use component::event::{CommandEvent, PlayerPowerup};
-
+use component::flag::IsPlayer;
 use protocol::server::CommandReply;
 use protocol::{CommandReplyType, PowerupType};
+use systems::PacketHandler;
 
 use std::convert::TryFrom;
 use std::option::NoneError;
 
-#[derive(Debug)]
+use serde_json;
+
+#[derive(Debug, Serialize)]
 enum CommandParseError<'a> {
 	NoSuchPlayer(u16),
 	InvalidPlayerId(&'a str),
@@ -73,6 +77,7 @@ pub struct GivePowerupData<'a> {
 	channel: Write<'a, OnPlayerPowerup>,
 	config: Read<'a, Config>,
 	conns: Read<'a, Connections>,
+	is_player: ReadStorage<'a, IsPlayer>,
 }
 
 impl GivePowerup {
@@ -92,14 +97,23 @@ impl GivePowerup {
 			return Ok(());
 		}
 
-		if data.conns.associated_player(conn).is_none() {
-			return Ok(());
-		}
+		let source = match data.conns.associated_player(conn) {
+			Some(p) => p,
+			None => return Ok(()),
+		};
 
 		let (ty, id) = parse_command_iter(packet.data.split(" "))?;
-		let player = data.entities.entity(id as u32);
+		let player = if id != 0 {
+			data.entities.entity(id as u32)
+		} else {
+			source
+		};
 
 		if !data.entities.is_alive(player) {
+			return Err(CommandParseError::NoSuchPlayer(id));
+		}
+
+		if !data.is_player.get(player).is_none() {
 			return Err(CommandParseError::NoSuchPlayer(id));
 		}
 
@@ -132,10 +146,22 @@ impl<'a> EventHandler<'a> for GivePowerup {
 				*conn,
 				CommandReply {
 					ty: CommandReplyType::ShowInPopup,
-					text: format!("{:#?}", e),
+					text: format!("{}", serde_json::to_string_pretty(&e).unwrap()),
 				},
 			);
 		}
+	}
+}
+
+impl SystemInfo for GivePowerup {
+	type Dependencies = PacketHandler;
+
+	fn name() -> &'static str {
+		concat!(module_path!(), "::", line!())
+	}
+
+	fn new() -> Self {
+		Self::default()
 	}
 }
 
