@@ -63,7 +63,7 @@ impl<'a> EventHandler<'a> for Teleport {
 				CommandReply {
 					ty: CommandReplyType::ShowInPopup,
 					text: format!(
-						"{}", 
+						"{}",
 						serde_json::to_string_pretty(&result.unwrap_err()).unwrap()
 					),
 				},

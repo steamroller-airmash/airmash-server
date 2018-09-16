@@ -23,6 +23,7 @@ pub extern crate protocol_common;
 extern crate protocol_v5;
 extern crate rand;
 extern crate rayon;
+extern crate serde_json;
 extern crate shred;
 extern crate shrev;
 extern crate simple_logger;
@@ -32,7 +33,6 @@ extern crate tokio;
 extern crate tokio_core;
 extern crate uuid;
 extern crate websocket;
-extern crate serde_json;
 
 use websocket::futures;
 

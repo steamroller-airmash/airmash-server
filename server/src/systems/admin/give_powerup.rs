@@ -4,9 +4,9 @@ use types::*;
 use utils::event_handler::{EventHandler, EventHandlerTypeProvider};
 use SystemInfo;
 
-use component::flag::{IsPlayer};
 use component::channel::OnPlayerPowerup;
 use component::event::{CommandEvent, PlayerPowerup};
+use component::flag::IsPlayer;
 use protocol::server::CommandReply;
 use protocol::{CommandReplyType, PowerupType};
 use systems::PacketHandler;
@@ -99,11 +99,15 @@ impl GivePowerup {
 
 		let source = match data.conns.associated_player(conn) {
 			Some(p) => p,
-			None => return Ok(())
+			None => return Ok(()),
 		};
 
 		let (ty, id) = parse_command_iter(packet.data.split(" "))?;
-		let player = if id != 0 { data.entities.entity(id as u32) } else { source };
+		let player = if id != 0 {
+			data.entities.entity(id as u32)
+		} else {
+			source
+		};
 
 		if !data.entities.is_alive(player) {
 			return Err(CommandParseError::NoSuchPlayer(id));
