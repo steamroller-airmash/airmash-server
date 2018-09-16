@@ -2,12 +2,13 @@ use specs::*;
 use types::*;
 
 use utils::event_handler::{EventHandler, EventHandlerTypeProvider};
+use SystemInfo;
 
 use component::channel::OnPlayerPowerup;
 use component::event::{CommandEvent, PlayerPowerup};
-
 use protocol::server::CommandReply;
 use protocol::{CommandReplyType, PowerupType};
+use systems::PacketHandler;
 
 use std::convert::TryFrom;
 use std::option::NoneError;
@@ -136,6 +137,18 @@ impl<'a> EventHandler<'a> for GivePowerup {
 				},
 			);
 		}
+	}
+}
+
+impl SystemInfo for GivePowerup {
+	type Dependencies = PacketHandler;
+
+	fn name() -> &'static str {
+		concat!(module_path!(), "::", line!())
+	}
+
+	fn new() -> Self {
+		Self::default()
 	}
 }
 
