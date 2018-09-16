@@ -11,6 +11,8 @@ use SystemInfo;
 
 use utils::{EventHandler, EventHandlerTypeProvider};
 
+use serde_json;
+
 /// Directly set the position of an entity
 #[derive(Default)]
 pub struct Teleport;
@@ -60,7 +62,10 @@ impl<'a> EventHandler<'a> for Teleport {
 				conn,
 				CommandReply {
 					ty: CommandReplyType::ShowInPopup,
-					text: format!("{:#?}", result.unwrap_err()),
+					text: format!(
+						"{}", 
+						serde_json::to_string_pretty(&result.unwrap_err()).unwrap()
+					),
 				},
 			);
 			return;
@@ -86,7 +91,7 @@ impl SystemInfo for Teleport {
 	}
 }
 
-#[derive(Copy, Clone, Debug, PartialEq)]
+#[derive(Copy, Clone, Debug, PartialEq, Serialize)]
 pub enum CommandParseError<'a> {
 	MissingArguments,
 	IdNotANumber(&'a str),

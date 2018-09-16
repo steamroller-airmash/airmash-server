@@ -10,6 +10,7 @@ extern crate specs_derive;
 extern crate shred_derive;
 #[macro_use]
 extern crate lazy_static;
+#[macro_use]
 extern crate serde;
 
 // Regular Dependencies
@@ -31,6 +32,7 @@ extern crate tokio;
 extern crate tokio_core;
 extern crate uuid;
 extern crate websocket;
+extern crate serde_json;
 
 use websocket::futures;
 
