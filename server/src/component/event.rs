@@ -159,6 +159,23 @@ pub struct PlayerPowerup {
 	pub ty: PowerupType,
 }
 
+/// All the different reasons a player could
+/// have for despawning.
+#[derive(Copy, Clone, Debug)]
+pub enum PlayerDespawnType {
+	Disconnect,
+	Killed,
+	Spectate,
+	Respawn
+}
+
+#[derive(Copy, Clone, Debug)]
+pub struct PlayerDespawn {
+	pub player: Entity,
+	pub ty: PlayerDespawnType,
+	pub pos: Position
+}
+
 impl Default for TimerEvent {
 	fn default() -> Self {
 		use consts::timer::INVALID;
