@@ -166,14 +166,14 @@ pub enum PlayerDespawnType {
 	Disconnect,
 	Killed,
 	Spectate,
-	Respawn
+	Respawn,
 }
 
 #[derive(Copy, Clone, Debug)]
 pub struct PlayerDespawn {
 	pub player: Entity,
 	pub ty: PlayerDespawnType,
-	pub pos: Position
+	pub pos: Position,
 }
 
 impl Default for TimerEvent {
