@@ -40,7 +40,7 @@ impl<'a> System<'a> for FreeName {
 }
 
 impl SystemInfo for FreeName {
-	type Dependencies = MissileHit;
+	type Dependencies = (MissileHit, super::KnownEventSources);
 
 	fn name() -> &'static str {
 		concat!(module_path!(), "::", line!())
