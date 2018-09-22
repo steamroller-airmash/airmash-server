@@ -47,6 +47,7 @@ pub fn register<'a, 'b>(builder: Builder<'a, 'b>) -> Builder<'a, 'b> {
 		.with::<on_player_respawn::ResetKeyState>()
 		.with::<on_player_respawn::SetTraits>()
 		.with::<on_player_respawn::SendPlayerRespawn>()
+		.with_handler::<on_player_respawn::CreateDespawnEvent>()
 		// Misc
 		.with::<PlayerKilledCleanup>()
 		// Chat throttling

@@ -54,7 +54,7 @@ pub struct PlayerKilled {
 }
 
 /// The status of the player when they respawned.
-#[derive(Copy, Clone, Debug)]
+#[derive(Copy, Clone, Debug, Eq, PartialEq, Hash)]
 pub enum PlayerRespawnPrevStatus {
 	Dead,
 	Alive,
