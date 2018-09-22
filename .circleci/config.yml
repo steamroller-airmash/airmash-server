@@ -67,5 +67,9 @@ workflows:
   build_and_test:
     jobs:
       - build
+          requires:
+            - fetch
       - test
+          requires:
+            - fetch
       - fetch
