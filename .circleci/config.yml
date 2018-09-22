@@ -33,6 +33,9 @@ jobs:
       - restore_cache:
           key: build-cache-{{ checksum "Cargo.lock" }}-{{ checksum "~/rustc.version" }}-{{ arch }}
       - run:
+          name: Fetch Dependencies
+          command: cargo +nightly fetch
+      - run:
           name: Build Package
           command: cargo +nightly build
       - save_cache:
@@ -54,6 +57,9 @@ jobs:
           key: fetch-cache-{{ checksum "Cargo.lock" }}
       - restore_cache:
           key: test-cache-{{ checksum "Cargo.lock" }}-{{ checksum "~/rustc.version" }}-{{ arch }}
+      - run:
+          name: Fetch Dependencies
+          command: cargo +nightly fetch
       - run:
           name: Test Package
           command: cargo +nightly test
