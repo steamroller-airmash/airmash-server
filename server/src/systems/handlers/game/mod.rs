@@ -5,6 +5,7 @@ mod onkilledcleanup;
 mod register;
 
 pub mod on_chat_throttled;
+pub mod on_despawn;
 pub mod on_join;
 pub mod on_leave;
 pub mod on_missile_fire;

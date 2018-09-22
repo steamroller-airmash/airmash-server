@@ -41,9 +41,7 @@ pub fn register<'a, 'b>(world: &mut World, disp: Builder<'a, 'b>) -> Builder<'a,
 	world.add_resource(Flags { red, blue });
 
 	disp
-		.with::<DropOnSpec>()
-		.with::<DropOnRespawn>()
-		.with::<DropOnDeath>()
+		.with_handler::<DropOnDespawn>()
 		.with_handler::<DropOnStealth>()
 		.with::<ScoreDetailed>()
 		// On Leave Events

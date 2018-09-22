@@ -33,7 +33,7 @@ impl<'a> System<'a> for UpdatePlayersGame {
 }
 
 impl SystemInfo for UpdatePlayersGame {
-	type Dependencies = ();
+	type Dependencies = (super::KnownEventSources);
 
 	fn name() -> &'static str {
 		concat!(module_path!(), "::", line!())
