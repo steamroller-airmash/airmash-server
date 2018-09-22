@@ -9,10 +9,12 @@ pub fn register<'a, 'b>(builder: Builder<'a, 'b>) -> Builder<'a, 'b> {
 		.with::<on_spectate_event::SendSpectatePacket>()
 		.with::<on_spectate_event::SendTimerEvent>()
 		.with::<on_spectate_event::SetSpectateTarget>()
+		.with_handler::<on_spectate_event::CreateDespawnEvent>()
 		// On player killed
 		.with::<on_player_killed::SetRespawnTimer>()
 		.with::<on_player_killed::DisplayMessage>()
 		.with::<on_player_killed::UpdateScore>()
+		.with_handler::<on_player_killed::CreateDespawnEvent>()
 		// On player joined
 		.with::<on_join::InitConnection>()
 		.with::<on_join::InitKillCounters>()
