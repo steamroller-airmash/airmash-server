@@ -44,7 +44,7 @@ impl<'a> EventHandler<'a> for SendPlayerPowerup {
 		let duration = data.config.spawn_shield_duration.as_secs() * 1000
 			+ data.config.spawn_shield_duration.subsec_millis() as u64;
 
-		data.conns.send_to_visible(
+		data.conns.send_to_player(
 			evt.id,
 			PlayerPowerup {
 				duration: duration as u32,
