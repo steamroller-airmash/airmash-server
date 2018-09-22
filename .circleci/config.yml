@@ -66,10 +66,10 @@ workflows:
   version: 2
   build_and_test:
     jobs:
-      - build
-          requires:
-            - fetch
-      - test
-          requires:
-            - fetch
       - fetch
+      - build:
+          requires:
+            - fetch
+      - test:
+          requires:
+            - fetch
