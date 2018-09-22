@@ -1,8 +1,9 @@
 use specs::*;
 
-use airmash_server::component::event::PlayerStealth;
-use airmash_server::utils::event_handler::{EventHandler, EventHandlerTypeProvider};
 use component::*;
+use server::component::event::PlayerStealth;
+use server::systems::handlers::game::on_despawn::KnownEventSources;
+use server::utils::event_handler::{EventHandler, EventHandlerTypeProvider};
 use server::*;
 
 #[derive(Default)]
@@ -50,7 +51,7 @@ impl<'a> EventHandler<'a> for DropOnStealth {
 }
 
 impl SystemInfo for DropOnStealth {
-	type Dependencies = ();
+	type Dependencies = (KnownEventSources, super::PickupFlagSystem);
 
 	fn name() -> &'static str {
 		concat!(module_path!(), "::", line!())

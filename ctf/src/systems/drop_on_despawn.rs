@@ -3,6 +3,7 @@ use specs::*;
 use component::*;
 
 use server::component::event::*;
+use server::systems::handlers::game::on_despawn::KnownEventSources;
 use server::utils::{EventHandler, EventHandlerTypeProvider};
 use server::*;
 
@@ -47,7 +48,7 @@ impl<'a> EventHandler<'a> for DropOnDespawn {
 }
 
 impl SystemInfo for DropOnDespawn {
-	type Dependencies = ();
+	type Dependencies = (KnownEventSources, super::PickupFlagSystem);
 
 	fn name() -> &'static str {
 		concat!(module_path!(), "::", line!())
