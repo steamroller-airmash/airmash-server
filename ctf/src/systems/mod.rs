@@ -1,5 +1,6 @@
 mod drop;
 mod drop_on_death;
+mod drop_on_despawn;
 mod drop_on_respawn;
 mod drop_on_spec;
 mod drop_on_stealth;
