@@ -7,7 +7,7 @@ use component::event::{PlayerDespawn, PlayerDespawnType, PlayerLeave};
 use utils::{EventHandler, EventHandlerTypeProvider};
 use SystemInfo;
 
-/// Create a despawn event when a player leaves
+/// Create a despawn event when a player dies
 #[derive(Default)]
 pub struct CreateDespawnEvent;
 
@@ -28,7 +28,7 @@ impl<'a> EventHandler<'a> for CreateDespawnEvent {
 		let &pos = data.pos.get(evt.0).unwrap();
 
 		data.channel.single_write(PlayerDespawn {
-			ty: PlayerDespawnType::Disconnect,
+			ty: PlayerDespawnType::Killed,
 			player: evt.0,
 			pos,
 		})
