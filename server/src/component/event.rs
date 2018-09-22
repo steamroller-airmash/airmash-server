@@ -52,9 +52,18 @@ pub struct PlayerKilled {
 	pub killer: Entity,
 	pub pos: Position,
 }
+
+/// The status of the player when they respawned.
+#[derive(Copy, Clone, Debug)]
+pub enum PlayerRespawnPrevStatus {
+	Dead,
+	Alive,
+}
+
 #[derive(Copy, Clone, Debug)]
 pub struct PlayerRespawn {
 	pub player: Entity,
+	pub prev_status: PlayerRespawnPrevStatus,
 }
 #[derive(Copy, Clone, Debug)]
 pub struct PlayerHit {

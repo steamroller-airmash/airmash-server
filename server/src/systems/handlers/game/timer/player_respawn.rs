@@ -61,7 +61,10 @@ impl<'a> System<'a> for PlayerRespawnSystem {
 					None => continue,
 				};
 
-			data.respawn_channel.single_write(PlayerRespawn { player });
+			data.respawn_channel.single_write(PlayerRespawn {
+				player,
+				prev_status: PlayerRespawnPrevStatus::Dead,
+			});
 		}
 	}
 }

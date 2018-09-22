@@ -57,13 +57,22 @@ impl<'a> EventHandler<'a> for Respawn {
 			return;
 		}
 
+		let prev_status =
+			match data.is_spec.get(player).is_some() || data.is_dead.get(player).is_some() {
+				true => PlayerRespawnPrevStatus::Dead,
+				false => PlayerRespawnPrevStatus::Alive,
+			};
+
 		data.planes.insert(player, plane).unwrap();
 		data.is_spec.remove(player);
 		// Prevent updates from happening until the actual respawn
 		// process is finished.
 		data.is_dead.insert(player, IsDead).unwrap();
 
-		data.channel.single_write(PlayerRespawn { player });
+		data.channel.single_write(PlayerRespawn {
+			player,
+			prev_status,
+		});
 
 		data.conns.send_to_all(PlayerType {
 			id: player.into(),
