@@ -1,4 +1,4 @@
-use hibitset::BitSetLike;
+use hibitset;
 use specs::*;
 
 use component::flag::{IsDead, IsSpectating};
@@ -17,7 +17,9 @@ impl<'a> IsAlive<'a> {
 		is_spec && is_dead
 	}
 
-	pub fn mask<'b: 'a>(&'b self) -> impl BitSetLike + Join + 'b {
+	pub fn mask<'b: 'a>(
+		&'b self,
+	) -> hibitset::BitSetNot<hibitset::BitSetOr<&hibitset::BitSet, &hibitset::BitSet>> {
 		!(self.is_spec.mask() | self.is_dead.mask())
 	}
 }
