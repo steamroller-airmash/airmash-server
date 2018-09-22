@@ -2,7 +2,7 @@ use specs::*;
 use types::*;
 
 use component::channel::OnPlayerDespawn;
-use component::event::{PlayerDespawn, PlayerDespawnType, PlayerLeave};
+use component::event::{PlayerDespawn, PlayerDespawnType, PlayerSpectate};
 
 use utils::{EventHandler, EventHandlerTypeProvider};
 use SystemInfo;
@@ -18,18 +18,18 @@ pub struct CreateDespawnEventData<'a> {
 }
 
 impl EventHandlerTypeProvider for CreateDespawnEvent {
-	type Event = PlayerLeave;
+	type Event = PlayerSpectate;
 }
 
 impl<'a> EventHandler<'a> for CreateDespawnEvent {
 	type SystemData = CreateDespawnEventData<'a>;
 
-	fn on_event(&mut self, evt: &PlayerLeave, data: &mut Self::SystemData) {
-		let &pos = data.pos.get(evt.0).unwrap();
+	fn on_event(&mut self, evt: &PlayerSpectate, data: &mut Self::SystemData) {
+		let &pos = data.pos.get(evt.player).unwrap();
 
 		data.channel.single_write(PlayerDespawn {
 			ty: PlayerDespawnType::Spectate,
-			player: evt.0,
+			player: evt.player,
 			pos,
 		})
 	}
