@@ -7,12 +7,14 @@ jobs:
     steps:
       - checkout
       - restore_cache:
-        key: fetch-cache-{{ checksum "Cargo.lock" }}
+          key: fetch-cache-{{ checksum "Cargo.lock" }}
       - run:
           name: Fetch Dependencies
           command: cargo +nightly fetch
       - save_cache:
-          key: fetch-cache{{ checksum "Cargo.lock" }}
+          key: fetch-cache-{{ checksum "Cargo.lock" }}
+          paths:
+            - ~/.cargo
   build:
     working_directory: ~/build
     docker:
