@@ -9,12 +9,12 @@ jobs:
       - restore_cache:
           key: fetch-cache-{{ checksum "Cargo.lock" }}-v2
       - run:
+          name: Fetch Dependencies
+          command: cargo +nightly fetch
+      - run:
           command: ls ~/.cargo
       - run:
           command: ls /
-      - run:
-          name: Fetch Dependencies
-          command: cargo +nightly fetch
       - save_cache:
           key: fetch-cache-{{ checksum "Cargo.lock" }}-v2
           paths:
