@@ -9,6 +9,7 @@ use std::f32::consts;
 use std::marker::PhantomData;
 use std::time::Duration;
 
+use component::flag::{ForcePlayerUpdate, IsPlayer};
 use component::time::*;
 use protocol::server::PlayerUpdate;
 use protocol::Upgrades as ServerUpgrades;
@@ -28,6 +29,8 @@ const FRAC_PI_2: Rotation = Rotation {
 	_marker: PhantomData,
 };
 
+/// Updates positions of all players in the game. Also
+/// sends updates every time a player
 pub struct PositionUpdate {
 	dirty: BitSet,
 	modify_reader: Option<ReaderId<ModifiedFlag>>,
@@ -42,6 +45,9 @@ pub struct PositionUpdateData<'a> {
 	upgrades: ReadStorage<'a, Upgrades>,
 	powerups: ReadStorage<'a, Powerups>,
 	planes: ReadStorage<'a, Plane>,
+	force_update: WriteStorage<'a, ForcePlayerUpdate>,
+	is_player: ReadStorage<'a, IsPlayer>,
+
 	lastframe: Read<'a, LastFrame>,
 	thisframe: Read<'a, ThisFrame>,
 	entities: Entities<'a>,
@@ -61,8 +67,6 @@ impl PositionUpdate {
 	fn step_players<'a>(data: &mut PositionUpdateData<'a>, config: &Read<'a, Config>) {
 		let delta = Time::from(data.thisframe.0 - data.lastframe.0);
 
-		let is_alive = &data.is_alive;
-
 		(
 			&mut data.pos,
 			&mut data.rot,
@@ -71,10 +75,9 @@ impl PositionUpdate {
 			&data.upgrades,
 			&data.powerups,
 			&data.planes,
-			&*data.entities,
+			data.is_alive.mask() & data.is_player.mask(),
 		).join()
-			.filter(|(_, _, _, _, _, _, _, ent)| is_alive.get(*ent))
-			.for_each(|(pos, rot, vel, keystate, upgrades, powerups, plane, _)| {
+			.for_each(|(pos, rot, vel, keystate, upgrades, powerups, plane, ..)| {
 				let mut movement_angle = None;
 				let info = &config.planes[*plane];
 				let boost_factor = if keystate.boost(&plane) {
@@ -133,7 +136,7 @@ impl PositionUpdate {
 
 				// Need to fill out config more
 				if upgrades.speed != 0 {
-					unimplemented!();
+					max_speed *= config.upgrades.speed.factor[upgrades.speed as usize]
 				}
 
 				if powerups.inferno() {
@@ -148,8 +151,7 @@ impl PositionUpdate {
 					*vel *= max_speed / speed_len;
 				} else {
 					if vel.x.abs() > min_speed || vel.y.abs() > min_speed {
-						let val = 1.0 - (info.brake_factor * delta).inner();
-						*vel *= val;
+						*vel *= 1.0 - (info.brake_factor * delta).inner();
 					} else {
 						*vel = Velocity::default()
 					}
@@ -178,6 +180,7 @@ impl PositionUpdate {
 		let thisframe = data.clock.frame.0;
 
 		(
+			&*data.entities,
 			&data.pos,
 			&data.rot,
 			&data.vel,
@@ -185,13 +188,12 @@ impl PositionUpdate {
 			&data.keystate,
 			&data.upgrades,
 			&data.powerups,
-			&*data.entities,
-			&self.dirty,
 			lastupdate,
+			// Update if dirty, or forced to do so
+			(&self.dirty | data.force_update.mask()) & data.is_alive.mask(),
 		).join()
-			.filter(|(_, _, _, _, _, _, _, ent, _, _)| data.is_alive.get(*ent))
 			.for_each(
-				|(pos, rot, vel, plane, keystate, upgrades, powerups, ent, _, lastupdate)| {
+				|(ent, pos, rot, vel, plane, keystate, upgrades, powerups, lastupdate, ..)| {
 					*lastupdate = LastUpdate(thisframe);
 
 					let state = keystate.to_server(&plane);
@@ -301,6 +303,8 @@ impl<'a> System<'a> for PositionUpdate {
 		Self::step_players(&mut data, &config);
 		self.send_updates(&mut data, &mut lastupdate);
 		self.send_outdated(&mut data, &mut lastupdate);
+
+		data.force_update.clear();
 	}
 }
 

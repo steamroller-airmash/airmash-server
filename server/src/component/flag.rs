@@ -32,6 +32,10 @@ pub struct IsChatThrottled;
 #[storage(NullStorage)]
 pub struct IsChatMuted;
 
+#[derive(Copy, Clone, Debug, Default, Component)]
+#[storage(NullStorage)]
+pub struct ForcePlayerUpdate;
+
 #[derive(Copy, Clone, Debug, Default)]
 pub struct IsBoosting;
 
