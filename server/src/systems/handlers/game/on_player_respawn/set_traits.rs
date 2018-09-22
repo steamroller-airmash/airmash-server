@@ -69,7 +69,11 @@ impl<'a> System<'a> for SetTraits {
 }
 
 impl SystemInfo for SetTraits {
-	type Dependencies = (AllJoinHandlers, AllCommandHandlers);
+	type Dependencies = (
+		AllJoinHandlers,
+		AllCommandHandlers,
+		super::CreateDespawnEvent,
+	);
 
 	fn name() -> &'static str {
 		concat!(module_path!(), "::", line!())

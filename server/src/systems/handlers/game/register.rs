@@ -9,10 +9,12 @@ pub fn register<'a, 'b>(builder: Builder<'a, 'b>) -> Builder<'a, 'b> {
 		.with::<on_spectate_event::SendSpectatePacket>()
 		.with::<on_spectate_event::SendTimerEvent>()
 		.with::<on_spectate_event::SetSpectateTarget>()
+		.with_handler::<on_spectate_event::CreateDespawnEvent>()
 		// On player killed
 		.with::<on_player_killed::SetRespawnTimer>()
 		.with::<on_player_killed::DisplayMessage>()
 		.with::<on_player_killed::UpdateScore>()
+		.with_handler::<on_player_killed::CreateDespawnEvent>()
 		// On player joined
 		.with::<on_join::InitConnection>()
 		.with::<on_join::InitKillCounters>()
@@ -34,6 +36,7 @@ pub fn register<'a, 'b>(builder: Builder<'a, 'b>) -> Builder<'a, 'b> {
 		// On player leave
 		.with::<on_leave::FreeName>()
 		.with::<on_leave::UpdatePlayersGame>()
+		.with_handler::<on_leave::CreateDespawnEvent>()
 		// On missile fire
 		.with::<on_missile_fire::SendPlayerFire>()
 		.with::<on_missile_fire::SetLastShot>()
@@ -44,6 +47,7 @@ pub fn register<'a, 'b>(builder: Builder<'a, 'b>) -> Builder<'a, 'b> {
 		.with::<on_player_respawn::ResetKeyState>()
 		.with::<on_player_respawn::SetTraits>()
 		.with::<on_player_respawn::SendPlayerRespawn>()
+		.with_handler::<on_player_respawn::CreateDespawnEvent>()
 		// Misc
 		.with::<PlayerKilledCleanup>()
 		// Chat throttling

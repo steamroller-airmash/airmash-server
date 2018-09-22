@@ -52,9 +52,18 @@ pub struct PlayerKilled {
 	pub killer: Entity,
 	pub pos: Position,
 }
+
+/// The status of the player when they respawned.
+#[derive(Copy, Clone, Debug, Eq, PartialEq, Hash)]
+pub enum PlayerRespawnPrevStatus {
+	Dead,
+	Alive,
+}
+
 #[derive(Copy, Clone, Debug)]
 pub struct PlayerRespawn {
 	pub player: Entity,
+	pub prev_status: PlayerRespawnPrevStatus,
 }
 #[derive(Copy, Clone, Debug)]
 pub struct PlayerHit {
@@ -157,6 +166,23 @@ pub struct PlayerPowerup {
 	pub player: Entity,
 	pub duration: Duration,
 	pub ty: PowerupType,
+}
+
+/// All the different reasons a player could
+/// have for despawning.
+#[derive(Copy, Clone, Debug)]
+pub enum PlayerDespawnType {
+	Disconnect,
+	Killed,
+	Spectate,
+	Respawn,
+}
+
+#[derive(Copy, Clone, Debug)]
+pub struct PlayerDespawn {
+	pub player: Entity,
+	pub ty: PlayerDespawnType,
+	pub pos: Position,
 }
 
 impl Default for TimerEvent {
