@@ -136,7 +136,7 @@ impl PositionUpdate {
 
 				// Need to fill out config more
 				if upgrades.speed != 0 {
-					unimplemented!();
+					max_speed *= config.upgrades.speed.factor[upgrades.speed as usize]
 				}
 
 				if powerups.inferno() {
@@ -151,8 +151,7 @@ impl PositionUpdate {
 					*vel *= max_speed / speed_len;
 				} else {
 					if vel.x.abs() > min_speed || vel.y.abs() > min_speed {
-						let val = 1.0 - (info.brake_factor * delta).inner();
-						*vel *= val;
+						*vel *= 1.0 - (info.brake_factor * delta).inner();
 					} else {
 						*vel = Velocity::default()
 					}
