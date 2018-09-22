@@ -3,7 +3,7 @@ jobs:
   fetch:
     working_directory: ~/build
     docker:
-      image: rustlang/rust:nightly
+      - image: rustlang/rust:nightly
     steps:
       - checkout
       - restore_cache:
