@@ -2,8 +2,10 @@ use shrev::*;
 use specs::*;
 use types::*;
 
-use airmash_protocol::client::Key;
-use airmash_protocol::KeyCode;
+use protocol::client::Key;
+use protocol::KeyCode;
+
+use component::time::{LastKeyTime, ThisFrame};
 
 pub struct KeyHandler {
 	reader: Option<ReaderId<(ConnectionId, Key)>>,
@@ -18,8 +20,11 @@ impl KeyHandler {
 #[derive(SystemData)]
 pub struct KeyHandlerData<'a> {
 	channel: Read<'a, EventChannel<(ConnectionId, Key)>>,
-	keystate: WriteStorage<'a, KeyState>,
 	conns: Read<'a, Connections>,
+	this_frame: Read<'a, ThisFrame>,
+
+	keystate: WriteStorage<'a, KeyState>,
+	last_key: WriteStorage<'a, LastKeyTime>,
 }
 
 impl<'a> System<'a> for KeyHandler {
@@ -52,6 +57,10 @@ impl<'a> System<'a> for KeyHandler {
 					"Received key {:?}",
 					evt
 				);
+
+				data.last_key
+					.insert(player, LastKeyTime(data.this_frame.0))
+					.unwrap();
 
 				match evt.1.key {
 					KeyCode::Up => keystate.up = evt.1.state,
