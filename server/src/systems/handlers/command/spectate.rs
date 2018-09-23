@@ -1,6 +1,8 @@
 use specs::*;
 use types::*;
 
+use std::time::Duration;
+
 use SystemInfo;
 
 use component::channel::*;
@@ -8,6 +10,7 @@ use component::event::PlayerSpectate;
 use component::event::*;
 use component::flag::{IsDead, IsPlayer, IsSpectating};
 use component::reference::PlayerRef;
+use component::time::{LastKeyTime, ThisFrame};
 
 use utils::{EventHandler, EventHandlerTypeProvider};
 
@@ -20,12 +23,15 @@ pub struct Spectate;
 pub struct SpectateData<'a> {
 	pub conns: Read<'a, Connections>,
 	pub channel: Write<'a, OnPlayerSpectate>,
+	pub this_frame: Read<'a, ThisFrame>,
 
 	pub is_spec: WriteStorage<'a, IsSpectating>,
 	pub is_dead: WriteStorage<'a, IsDead>,
 	pub is_player: ReadStorage<'a, IsPlayer>,
 	pub spec_target: ReadStorage<'a, PlayerRef>,
 	pub entities: Entities<'a>,
+	pub health: ReadStorage<'a, Health>,
+	pub last_key: ReadStorage<'a, LastKeyTime>,
 }
 
 impl EventHandlerTypeProvider for Spectate {
@@ -41,12 +47,15 @@ impl<'a> EventHandler<'a> for Spectate {
 		let Self::SystemData {
 			conns,
 			ref mut channel,
+			this_frame,
 
 			is_spec,
 			is_dead,
 			is_player,
 			entities,
 			spec_target,
+			health,
+			last_key,
 		} = data;
 
 		let &(conn, ref packet) = evt;
@@ -64,6 +73,17 @@ impl<'a> EventHandler<'a> for Spectate {
 			Ok(tgt) => tgt,
 			Err(_) => return,
 		};
+
+		let allowed = !check_allowed(
+			is_spec.get(player).is_some(),
+			health.get(player).unwrap(),
+			last_key.get(player).unwrap(),
+			&*this_frame,
+		);
+
+		if !allowed {
+			return;
+		}
 
 		let mut spec_event = PlayerSpectate {
 			player: player,
@@ -172,6 +192,24 @@ enum SpectateTarget {
 	Prev,
 	Force,
 	Target(u32),
+}
+
+fn check_allowed(
+	is_spec: bool,
+	health: &Health,
+	last_key: &LastKeyTime,
+	this_frame: &ThisFrame,
+) -> bool {
+	// If the player is already spectating, then they
+	// can do the spectate command no matter what
+	is_spec
+		|| (
+		// Players that don't have full health may not spectate
+		!(*health < Health::new(1.0))
+		// Players that have pressed a key within the last
+		// 2 seconds may not spectate
+		&& !(this_frame.0 - last_key.0 < Duration::from_secs(2))
+	)
 }
 
 fn parse_spectate_data<'a>(s: &'a str) -> Result<SpectateTarget, ()> {
