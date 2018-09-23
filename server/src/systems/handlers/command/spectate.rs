@@ -17,6 +17,7 @@ use protocol::ErrorType;
 
 use utils::{EventHandler, EventHandlerTypeProvider};
 
+use systems::handlers::game::on_join::InitTraits;
 use systems::PacketHandler;
 
 #[derive(Default)]
@@ -185,7 +186,7 @@ impl<'a> EventHandler<'a> for Spectate {
 }
 
 impl SystemInfo for Spectate {
-	type Dependencies = PacketHandler;
+	type Dependencies = (PacketHandler, InitTraits);
 
 	fn name() -> &'static str {
 		concat!(module_path!(), "::", line!())
