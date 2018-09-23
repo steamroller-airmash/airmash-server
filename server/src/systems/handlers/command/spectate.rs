@@ -12,6 +12,9 @@ use component::flag::{IsDead, IsPlayer, IsSpectating};
 use component::reference::PlayerRef;
 use component::time::{LastKeyTime, ThisFrame};
 
+use protocol::server::Error;
+use protocol::ErrorType;
+
 use utils::{EventHandler, EventHandlerTypeProvider};
 
 use systems::PacketHandler;
@@ -82,6 +85,13 @@ impl<'a> EventHandler<'a> for Spectate {
 		);
 
 		if !allowed {
+			conns.send_to(
+				conn,
+				Error {
+					error: ErrorType::IdleRequiredBeforeSpectate,
+				},
+			);
+
 			return;
 		}
 

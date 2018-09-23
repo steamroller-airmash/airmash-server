@@ -9,7 +9,8 @@ use component::event::*;
 use component::flag::*;
 use component::time::*;
 
-use protocol::server::PlayerType;
+use protocol::server::{Error, PlayerType};
+use protocol::ErrorType;
 
 use utils::{EventHandler, EventHandlerTypeProvider};
 
@@ -65,6 +66,13 @@ impl<'a> EventHandler<'a> for Respawn {
 		);
 
 		if !allowed {
+			data.conns.send_to(
+				conn,
+				Error {
+					error: ErrorType::IdleRequiredBeforeRespawn,
+				},
+			);
+
 			return;
 		}
 
