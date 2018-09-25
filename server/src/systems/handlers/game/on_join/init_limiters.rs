@@ -46,15 +46,13 @@ impl<'a> System<'a> for InitLimiters {
 				.insert(
 					evt.id,
 					ChatMuteLimiter(RateLimiter::new(MUTE_LIMIT, *MUTE_PERIOD)),
-				)
-				.unwrap();
+				).unwrap();
 
 			data.throttle
 				.insert(
 					evt.id,
 					ChatThrottleLimiter(RateLimiter::new(THROTTLE_LIMIT, *THROTTLE_PERIOD)),
-				)
-				.unwrap();
+				).unwrap();
 		}
 	}
 }

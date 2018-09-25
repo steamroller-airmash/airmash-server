@@ -50,7 +50,8 @@ impl SendLogin {
 			&data.status,
 			&data.team,
 			&data.powerups,
-		).join()
+		)
+			.join()
 			.map({
 				|(ent, pos, rot, plane, name, flag, upgrades, level, status, team, powerups)| {
 					let upgrade_field = ProtocolUpgrades {
@@ -72,8 +73,7 @@ impl SendLogin {
 						upgrades: upgrade_field,
 					}
 				}
-			})
-			.collect()
+			}).collect()
 	}
 }
 

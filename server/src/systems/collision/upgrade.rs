@@ -66,7 +66,8 @@ impl<'a> System<'a> for PlayerUpgradeCollisionSystem {
 			&plane,
 			&player_flag,
 			isalive.mask(),
-		).join()
+		)
+			.join()
 			.for_each(|(ent, pos, rot, team, plane, ..)| {
 				PLANE_HIT_CIRCLES[plane].iter().for_each(|hc| {
 					let offset = hc.offset.rotate(*rot);
@@ -107,8 +108,7 @@ impl<'a> System<'a> for PlayerUpgradeCollisionSystem {
 				}
 
 				collisions
-			})
-			.flatten()
+			}).flatten()
 			.map(PlayerUpgradeCollision)
 			.collect::<FnvHashSet<_>>();
 

@@ -31,7 +31,8 @@ impl<'a> System<'a> for MissileFireHandler {
 			&mut data.energy,
 			&data.lastshot,
 			data.fire_missile.is_alive.mask(),
-		).join()
+		)
+			.join()
 			.filter(|(_, _, keystate, ..)| keystate.fire)
 			.filter_map(|(ent, plane, _, energy, lastshot, ..)| {
 				let ref info = config.planes[*plane];
@@ -41,8 +42,7 @@ impl<'a> System<'a> for MissileFireHandler {
 				} else {
 					None
 				}
-			})
-			.filter(|(_, info, energy)| **energy > info.fire_energy)
+			}).filter(|(_, info, energy)| **energy > info.fire_energy)
 			.map(|(ent, info, energy)| {
 				*energy -= info.fire_energy;
 
@@ -54,8 +54,7 @@ impl<'a> System<'a> for MissileFireHandler {
 						ty: info.missile_type,
 					},
 				)
-			})
-			.collect::<Vec<_>>();
+			}).collect::<Vec<_>>();
 
 		for (ent, fire_info) in missiles {
 			data.fire_missile.fire_missiles(ent, &[fire_info]);

@@ -19,7 +19,6 @@ extern crate fnv;
 extern crate hibitset;
 extern crate htmlescape;
 extern crate hyper;
-pub extern crate protocol_common as protocol;
 extern crate protocol_v5;
 extern crate rand;
 extern crate rayon;
@@ -33,6 +32,9 @@ extern crate tokio;
 extern crate tokio_core;
 extern crate uuid;
 extern crate websocket;
+
+// Public dependencies
+pub extern crate protocol_common as protocol;
 
 use websocket::futures;
 

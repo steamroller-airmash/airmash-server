@@ -55,7 +55,8 @@ impl<'a> System<'a> for PickupFlagSystem {
 			&data.carrier,
 			&data.is_flag,
 			&data.lastdrop,
-		).join()
+		)
+			.join()
 			.map(|(ent, pos, team, carrier, _, lastdrop)| (ent, *pos, *team, *carrier, *lastdrop))
 			.collect::<Vec<(Entity, Position, Team, FlagCarrier, LastDrop)>>();
 
@@ -72,15 +73,15 @@ impl<'a> System<'a> for PickupFlagSystem {
 				&data.plane,
 				data.is_alive.mask(),
 				&data.keystate,
-			).join()
+			)
+				.join()
 				.filter(|(_, _, p_team, ..)| f_team != **p_team)
 				.filter(|(ent, ..)| {
 					// Check against time-since-drop
 					(data.thisframe.0 - lastdrop.time) > *ctfconfig::FLAG_NO_REGRAB_TIME
 						// Then check against contained player id
 						|| lastdrop.player.map(|x| x != *ent).unwrap_or(false)
-				})
-				.filter(|(_, _, _, _, _, _, ref keystate)| keystate.stealthed != true)
+				}).filter(|(_, _, _, _, _, _, ref keystate)| keystate.stealthed != true)
 				.filter_map(|(p_ent, p_pos, _, _, p_plane, ..)| {
 					let rad = ctfconfig::FLAG_RADIUS[&p_plane];
 					let dst = (*p_pos - f_pos).length2();
@@ -93,8 +94,7 @@ impl<'a> System<'a> for PickupFlagSystem {
 						// Only calculate actual distance if necessary
 						Some((p_ent, dst.sqrt() - rad))
 					}
-				})
-				.min_by(|a, b| {
+				}).min_by(|a, b| {
 					if a.1 < b.1 {
 						Ordering::Less
 					} else {

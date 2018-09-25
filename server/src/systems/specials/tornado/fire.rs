@@ -26,7 +26,8 @@ impl<'a> System<'a> for Fire {
 			&mut data.energy,
 			&data.plane,
 			data.fire_missile.is_alive.mask(),
-		).join()
+		)
+			.join()
 			.filter(|(_, _, _, plane, ..)| **plane == Plane::Tornado)
 			.filter_map(|(ent, keystate, energy, ..)| {
 				if keystate.special {
@@ -34,14 +35,12 @@ impl<'a> System<'a> for Fire {
 				} else {
 					None
 				}
-			})
-			.filter(|(_, energy)| **energy > *TORNADO_SPECIAL_ENERGY)
+			}).filter(|(_, energy)| **energy > *TORNADO_SPECIAL_ENERGY)
 			.map(|(ent, energy)| {
 				*energy -= *TORNADO_SPECIAL_ENERGY;
 
 				(ent, &*TORNADO_MISSILE_DETAILS)
-			})
-			.collect::<Vec<_>>();
+			}).collect::<Vec<_>>();
 
 		for (ent, fire_info) in missiles {
 			data.fire_missile.fire_missiles(ent, fire_info);

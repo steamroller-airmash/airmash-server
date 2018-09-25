@@ -48,7 +48,8 @@ impl<'a> System<'a> for ScoreDetailed {
 				&data.deaths,
 				&data.ping,
 				data.is_player.mask(),
-			).join()
+			)
+				.join()
 				.map(|(ent, level, captures, score, kills, deaths, ping, ..)| {
 					ScoreDetailedCTFEntry {
 						id: ent.into(),
@@ -61,8 +62,7 @@ impl<'a> System<'a> for ScoreDetailed {
 						damage: 0.0,
 						ping: ping.0 as u16,
 					}
-				})
-				.collect();
+				}).collect();
 
 			let packet = ScoreDetailedCTF { scores };
 

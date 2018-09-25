@@ -56,8 +56,7 @@ impl<'a> System<'a> for ReturnFlag {
 					.filter(|(_, _, _, carrier, ..)| carrier.0.is_none())
 					.filter(|(_, pos, team, ..)| {
 						(ctfconfig::FLAG_HOME_POS[&team] - **pos).length2().inner() > 0.01
-					})
-					.map(|(ent, pos, team, ..)| (ent, *pos, *team))
+					}).map(|(ent, pos, team, ..)| (ent, *pos, *team))
 					.collect::<Vec<_>>()
 			};
 
@@ -81,8 +80,7 @@ impl<'a> System<'a> for ReturnFlag {
 								} else {
 									None
 								}
-							})
-							.collect::<Vec<_>>();
+							}).collect::<Vec<_>>();
 
 					possible_returns
 						.sort_by(|(_, a), (_, b)| a.partial_cmp(&b).unwrap_or(Ordering::Greater));
@@ -90,8 +88,7 @@ impl<'a> System<'a> for ReturnFlag {
 					possible_returns
 						.first()
 						.map(|(player, _)| (*player, *flag, *flag_team))
-				})
-				.collect::<Vec<_>>()
+				}).collect::<Vec<_>>()
 		};
 
 		for (player, flag, team) in returned {

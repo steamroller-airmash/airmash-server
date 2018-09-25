@@ -33,7 +33,6 @@ impl ShuffleProvider for EvenShuffle {
 			.map(|(player, _, new)| TeamChangeEntry {
 				player,
 				new_team: new,
-			})
-			.collect()
+			}).collect()
 	}
 }

@@ -53,7 +53,8 @@ impl<'a> System<'a> for PlaneCollisionSystem {
 			&data.rot,
 			&data.planes,
 			&data.teams,
-		).par_join()
+		)
+			.par_join()
 			.map(|(ent, pos, rot, plane, team)| {
 				let mut collisions = vec![];
 
@@ -80,8 +81,7 @@ impl<'a> System<'a> for PlaneCollisionSystem {
 					.into_iter()
 					.map(|x| PlayerTerrainCollision(x))
 					.collect::<Vec<PlayerTerrainCollision>>()
-			})
-			.flatten()
+			}).flatten()
 			.collect::<Vec<PlayerTerrainCollision>>();
 
 		data.collisions.iter_write(vec.into_iter());

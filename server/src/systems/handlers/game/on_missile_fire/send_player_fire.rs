@@ -64,8 +64,7 @@ impl<'a> System<'a> for SendPlayerFire {
 						accel: vel.normalized() * info.accel,
 						max_speed: info.max_speed,
 					}
-				})
-				.collect::<Vec<_>>();
+				}).collect::<Vec<_>>();
 
 			let packet = PlayerFire {
 				clock: data.clock.get(),

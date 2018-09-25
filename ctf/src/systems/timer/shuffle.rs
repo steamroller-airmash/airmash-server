@@ -54,7 +54,8 @@ impl<'a> System<'a> for Shuffle {
 				&data.kills,
 				&data.deaths,
 				data.is_player.mask(),
-			).join()
+			)
+				.join()
 				.map(
 					|(ent, team, score, captures, kills, deaths, ..)| PlayerShuffleInfo {
 						player: ent,
@@ -64,8 +65,7 @@ impl<'a> System<'a> for Shuffle {
 						kills: kills.0,
 						deaths: deaths.0,
 					},
-				)
-				.collect::<Vec<_>>();
+				).collect::<Vec<_>>();
 
 			let swaps = data.shuffler.shuffle(player_info);
 
@@ -78,8 +78,7 @@ impl<'a> System<'a> for Shuffle {
 				.map(|swap| PlayerReteamPlayer {
 					id: swap.player.into(),
 					team: swap.new_team,
-				})
-				.collect::<Vec<_>>();
+				}).collect::<Vec<_>>();
 
 			let packet = PlayerReteam { players: swaps };
 

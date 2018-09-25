@@ -144,8 +144,7 @@ impl Connections {
 					}
 				}
 				Ok(())
-			})
-			.unwrap();
+			}).unwrap();
 	}
 
 	pub fn send_to_player<I>(&self, player: Entity, msg: I)
@@ -186,8 +185,7 @@ impl Connections {
 			.send(Message {
 				info: MessageInfo::ToConnection(id),
 				msg: MessageBody::Packet(msg),
-			})
-			.unwrap();
+			}).unwrap();
 	}
 
 	pub fn send_to_all<I>(&self, msg: I)
@@ -204,16 +202,14 @@ impl Connections {
 					}
 				}
 				None
-			})
-			.for_each(|id| {
+			}).for_each(|id| {
 				self.1
 					.lock()
 					.unwrap()
 					.send(Message {
 						info: MessageInfo::ToConnection(*id),
 						msg: MessageBody::Packet(msg.clone()),
-					})
-					.unwrap();
+					}).unwrap();
 			});
 	}
 
@@ -231,16 +227,14 @@ impl Connections {
 					}
 				}
 				None
-			})
-			.for_each(|id| {
+			}).for_each(|id| {
 				self.1
 					.lock()
 					.unwrap()
 					.send(Message {
 						info: MessageInfo::ToConnection(*id),
 						msg: MessageBody::Packet(msg.clone()),
-					})
-					.unwrap()
+					}).unwrap()
 			});
 	}
 
@@ -254,8 +248,7 @@ impl Connections {
 			.send(Message {
 				info: MessageInfo::ToTeam(player),
 				msg: MessageBody::Packet(msg.into()),
-			})
-			.unwrap();
+			}).unwrap();
 	}
 
 	pub fn send_to_visible<I>(&self, player: Entity, msg: I)
@@ -268,8 +261,7 @@ impl Connections {
 			.send(Message {
 				info: MessageInfo::ToVisible(player),
 				msg: MessageBody::Packet(msg.into()),
-			})
-			.unwrap();
+			}).unwrap();
 	}
 
 	pub fn close(&self, conn: ConnectionId) {
@@ -279,8 +271,7 @@ impl Connections {
 			.send(Message {
 				info: MessageInfo::ToConnection(conn),
 				msg: MessageBody::Close,
-			})
-			.unwrap();
+			}).unwrap();
 	}
 
 	pub fn iter<'a>(&'a self) -> impl Iterator<Item = &'a ConnectionData> {
