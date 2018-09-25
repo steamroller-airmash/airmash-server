@@ -19,7 +19,7 @@ extern crate fnv;
 extern crate hibitset;
 extern crate htmlescape;
 extern crate hyper;
-pub extern crate protocol_common;
+pub extern crate protocol_common as protocol;
 extern crate protocol_v5;
 extern crate rand;
 extern crate rayon;
@@ -44,8 +44,6 @@ mod server;
 mod status;
 mod timeloop;
 mod timers;
-
-pub use protocol_common as protocol;
 
 pub mod component;
 pub mod consts;
