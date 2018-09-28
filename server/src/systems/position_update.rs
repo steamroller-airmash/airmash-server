@@ -76,8 +76,7 @@ impl PositionUpdate {
 			&data.powerups,
 			&data.planes,
 			data.is_alive.mask() & data.is_player.mask(),
-		)
-			.join()
+		).join()
 			.for_each(|(pos, rot, vel, keystate, upgrades, powerups, plane, ..)| {
 				let mut movement_angle = None;
 				let info = &config.planes[*plane];
@@ -192,8 +191,7 @@ impl PositionUpdate {
 			lastupdate,
 			// Update if dirty, or forced to do so
 			(&self.dirty | data.force_update.mask()) & data.is_alive.mask(),
-		)
-			.join()
+		).join()
 			.for_each(
 				|(ent, pos, rot, vel, plane, keystate, upgrades, powerups, lastupdate, ..)| {
 					*lastupdate = LastUpdate(thisframe);
@@ -244,11 +242,11 @@ impl PositionUpdate {
 			&data.powerups,
 			&*data.entities,
 			lastupdate,
-		)
-			.join()
+		).join()
 			.filter(|(_, _, _, _, _, _, _, _, lastupdate)| {
 				lastupdate.0.elapsed() > Duration::from_secs(1)
-			}).filter(|(_, _, _, _, _, _, _, ent, _)| data.is_alive.get(*ent))
+			})
+			.filter(|(_, _, _, _, _, _, _, ent, _)| data.is_alive.get(*ent))
 			.for_each(
 				|(pos, rot, vel, plane, keystate, upgrades, powerups, ent, lastupdate)| {
 					*lastupdate = LastUpdate(data.thisframe.0);

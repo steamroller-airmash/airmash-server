@@ -18,7 +18,8 @@ pub fn start_timer_events(channel: Sender<TimerEvent>) {
 						ty: *SCORE_BOARD,
 						instant: instant,
 						..Default::default()
-					}).unwrap();
+					})
+					.unwrap();
 			},
 			Duration::from_secs(5),
 		)
@@ -34,7 +35,8 @@ pub fn start_timer_events(channel: Sender<TimerEvent>) {
 						ty: *PING_DISPATCH,
 						instant: instant,
 						..Default::default()
-					}).unwrap();
+					})
+					.unwrap();
 			},
 			Duration::from_secs(5),
 		)

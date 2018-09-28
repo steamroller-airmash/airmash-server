@@ -15,6 +15,7 @@ impl ShuffleProvider for RandomShuffle {
 				} else {
 					None
 				}
-			}).collect()
+			})
+			.collect()
 	}
 }

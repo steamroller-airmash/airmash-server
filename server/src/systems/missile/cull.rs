@@ -31,7 +31,8 @@ impl<'a> System<'a> for MissileCull {
 				} else {
 					None
 				}
-			}).for_each(|(ent, mob)| {
+			})
+			.for_each(|(ent, mob)| {
 				data.ents.delete(ent).unwrap();
 
 				let packet = MobDespawn {

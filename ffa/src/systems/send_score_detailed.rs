@@ -53,8 +53,7 @@ impl<'a> System<'a> for SendScoreDetailed {
                 &data.deaths,
                 &data.damage,
                 &data.ping,
-            )
-                .join()
+            ).join()
                 .map(
                     |(ent, level, score, kills, deaths, damage, ping)| ScoreDetailedFFAEntry {
                         id: ent.into(),
@@ -65,7 +64,8 @@ impl<'a> System<'a> for SendScoreDetailed {
                         damage: damage.0.inner(),
                         ping: ping.0 as u16,
                     },
-                ).collect::<Vec<_>>();
+                )
+                .collect::<Vec<_>>();
 
             entries.sort_by(|a, b| a.score.cmp(&b.score));
             // Avoid going over the capacity of Array

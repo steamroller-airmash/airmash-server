@@ -64,8 +64,7 @@ impl<'a> System<'a> for PlayerMissileCollisionSystem {
 			&plane,
 			&player_flag,
 			isalive.mask(),
-		)
-			.join()
+		).join()
 			.for_each(|(ent, pos, rot, team, plane, ..)| {
 				PLANE_HIT_CIRCLES[plane].iter().for_each(|hc| {
 					let offset = hc.offset.rotate(*rot);
@@ -105,7 +104,8 @@ impl<'a> System<'a> for PlayerMissileCollisionSystem {
 				}
 
 				collisions
-			}).flatten()
+			})
+			.flatten()
 			.map(|x| PlayerMissileCollision(x))
 			.collect::<FnvHashSet<PlayerMissileCollision>>();
 

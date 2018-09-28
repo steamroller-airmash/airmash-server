@@ -40,7 +40,8 @@ impl<'a> System<'a> for EnergyRegenSystem {
 				let mult = config.upgrades.energy.factor[upgrades.energy as usize];
 
 				(energy, *regen * mult)
-			}).for_each(|(energy, regen)| {
+			})
+			.for_each(|(energy, regen)| {
 				let val: Energy = *energy + regen * dt;
 
 				*energy = Energy::new(val.inner().min(1.0).max(0.0));

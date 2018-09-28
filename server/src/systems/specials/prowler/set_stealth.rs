@@ -45,12 +45,12 @@ impl<'a> System<'a> for SetStealth {
 			&*data.entities,
 			data.is_alive.mask(),
 			data.is_player.mask(),
-		)
-			.join()
+		).join()
 			.filter(|(plane, ..)| **plane == PlaneType::Prowler)
 			.filter(|(_, _, _, last_stealth, ..)| {
 				this_frame.0 - last_stealth.0 > *PROWLER_SPECIAL_DELAY
-			}).filter(|(_, _, keystate, ..)| keystate.special)
+			})
+			.filter(|(_, _, keystate, ..)| keystate.special)
 			.filter(|(_, energy, ..)| **energy > *PROWLER_SPECIAL_ENERGY)
 			.for_each(|(_, energy, keystate, last_stealth, ent, ..)| {
 				flips.push(ent);

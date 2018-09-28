@@ -70,8 +70,7 @@ impl<'a> System<'a> for SendEventRepel {
 				&data.team,
 				&data.is_player,
 				data.is_alive.mask(),
-			)
-				.join()
+			).join()
 				.filter(|(ent, ..)| *ent != evt.player)
 				.filter(|(_, _, &target_team, ..)| target_team != team)
 				.filter_map(|(ent, player_pos, ..)| {
@@ -82,7 +81,8 @@ impl<'a> System<'a> for SendEventRepel {
 					} else {
 						None
 					}
-				}).collect::<Vec<_>>();
+				})
+				.collect::<Vec<_>>();
 
 			let hit_missiles = (&*data.entities, &data.pos, &data.team, &data.is_missile)
 				.join()
@@ -95,7 +95,8 @@ impl<'a> System<'a> for SendEventRepel {
 					} else {
 						None
 					}
-				}).collect::<Vec<_>>();
+				})
+				.collect::<Vec<_>>();
 
 			for (player, player_pos) in hit_players.iter() {
 				let dir = (*player_pos - pos).normalized();

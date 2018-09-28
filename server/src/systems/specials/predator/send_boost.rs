@@ -56,8 +56,7 @@ impl SendEventBoost {
 			&self.dirty,
 			data.is_alive.mask(),
 			data.is_player.mask(),
-		)
-			.join()
+		).join()
 			.for_each(|(ent, pos, rot, vel, energy, energy_regen, _, _, _)| {
 				let packet = EventBoost {
 					id: ent.into(),

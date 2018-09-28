@@ -57,8 +57,7 @@ impl<'a> System<'a> for DecloakProwler {
 				&data.team,
 				data.is_player.mask(),
 				data.is_alive.mask(),
-			)
-				.join()
+			).join()
 				.filter(|(ent, ..)| *ent != evt.player)
 				.filter(|(_, _, player_team, ..)| **player_team != team)
 				.filter_map(|(ent, player_pos, ..)| {
@@ -69,7 +68,8 @@ impl<'a> System<'a> for DecloakProwler {
 					} else {
 						None
 					}
-				}).collect::<Vec<_>>();
+				})
+				.collect::<Vec<_>>();
 
 			for player in hit_players {
 				let keystate = data.keystate.get_mut(player).unwrap();

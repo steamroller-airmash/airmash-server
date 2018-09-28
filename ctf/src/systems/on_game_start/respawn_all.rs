@@ -48,7 +48,8 @@ impl<'a> System<'a> for RespawnAll {
 				.map(|(ent, is_alive)| PlayerRespawn {
 					player: ent,
 					prev_status: if is_alive { Alive } else { Dead },
-				}).collect::<Vec<_>>();
+				})
+				.collect::<Vec<_>>();
 
 			data.respawn_channel.iter_write(players.into_iter());
 		}

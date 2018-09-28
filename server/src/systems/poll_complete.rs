@@ -114,7 +114,8 @@ impl<'a> System<'a> for PollComplete {
 				.poll_complete()
 				.map_err(|e| {
 					info!("poll_complete failed with error {:?}", e);
-				}).err();
+				})
+				.err();
 		}
 
 		let time = Instant::now() - start;

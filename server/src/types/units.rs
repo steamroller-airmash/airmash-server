@@ -4,7 +4,7 @@ use specs::DenseVecStorage;
 
 pub use dimensioned::{Cbrt, Recip, Root, Sqrt};
 
-pub use protocol_common::{
+pub use protocol::{
 	Accel, AccelScalar, BaseType, Distance, Energy, EnergyRegen, Flag, Health, HealthRegen, Level,
 	Position, Rotation, RotationRate, Score, Speed, Team, Time, Velocity,
 };

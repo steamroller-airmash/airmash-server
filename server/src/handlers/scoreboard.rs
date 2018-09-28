@@ -67,8 +67,7 @@ impl<'a> System<'a> for ScoreBoardTimerHandler {
 				&data.join_time,
 				&data.pos,
 				data.is_player.mask(),
-			)
-				.join()
+			).join()
 				.map(|(ent, score, level, join_time, pos, ..)| {
 					let low_res_pos = if data.is_alive.get(ent) {
 						Some(*pos)
@@ -89,7 +88,8 @@ impl<'a> System<'a> for ScoreBoardTimerHandler {
 							pos: low_res_pos,
 						},
 					)
-				}).collect::<Vec<_>>();
+				})
+				.collect::<Vec<_>>();
 
 			// Sort all data first by score (descending)
 			// then by join time (ascending)

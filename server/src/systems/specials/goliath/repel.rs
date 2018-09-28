@@ -44,14 +44,14 @@ impl<'a> System<'a> for GoliathRepel {
 			&mut data.last_repel,
 			&data.is_player,
 			data.is_alive.mask(),
-		)
-			.join()
+		).join()
 			.filter(|(_, _, _, plane, ..)| **plane == Plane::Goliath)
 			.filter(|(_, _, energy, ..)| **energy > *GOLIATH_SPECIAL_ENERGY)
 			.filter(|(_, keystate, ..)| keystate.special)
 			.filter(|(_, _, _, _, last_repel, ..)| {
 				this_frame.0 - last_repel.0 > *GOLIATH_SPECIAL_INTERVAL
-			}).for_each(|(ent, _, energy, _, last_repel, ..)| {
+			})
+			.for_each(|(ent, _, energy, _, last_repel, ..)| {
 				channel.single_write(PlayerRepel { player: ent });
 
 				*energy -= *GOLIATH_SPECIAL_ENERGY;

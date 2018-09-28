@@ -15,7 +15,8 @@ pub fn timeloop<'a, 'b, F: FnMut(Instant) -> ()>(
 				"A timer error occurred: {}",
 				e
 			);
-		}).for_each(move |instant| {
+		})
+		.for_each(move |instant| {
 			trace!(
 				target: "server",
 				"Starting gameloop iteration at {:?}",

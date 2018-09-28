@@ -107,7 +107,8 @@ impl<'a> FireMissiles<'a> {
 				);
 
 				missile
-			}).collect::<Vec<_>>();
+			})
+			.collect::<Vec<_>>();
 
 		self.channel.single_write(MissileFire {
 			player: owner,

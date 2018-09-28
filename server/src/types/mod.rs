@@ -7,7 +7,6 @@ mod powerups;
 mod ratelimit;
 mod units;
 mod upgrades;
-mod vector2;
 
 mod connection_events;
 
@@ -18,6 +17,8 @@ pub mod systemdata;
 pub(crate) mod connection;
 pub(crate) mod gamemode;
 
+pub use protocol::Vector2;
+
 pub use self::components::*;
 pub use self::config::Config;
 pub use self::future::FutureDispatcher;
@@ -27,7 +28,6 @@ pub use self::powerups::*;
 pub use self::ratelimit::RateLimiter;
 pub use self::units::*;
 pub use self::upgrades::*;
-pub use self::vector2::*;
 
 pub mod event {
 	pub use types::connection_events::*;
