@@ -34,7 +34,7 @@ extern crate uuid;
 extern crate websocket;
 
 // Public dependencies
-pub extern crate protocol_common as protocol;
+pub extern crate airmash_protocol as protocol;
 
 use websocket::futures;
 

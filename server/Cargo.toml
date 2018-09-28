@@ -39,8 +39,8 @@ protocol-v5 = { path = "../protocol-v5" }
 serde = { version = "*", features = ["derive"] }
 serde_json = "*"
 
-[dependencies.protocol-common]
-path = "../protocol-common"
+[dependencies.airmash-protocol]
+git = "https://github.com/steamroller-airmash/airmash-protocol-rs"
 features = ["specs"]
 
 [dependencies.uuid]
