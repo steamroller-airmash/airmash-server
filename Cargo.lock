@@ -702,18 +702,6 @@ dependencies = [
 ]
 
 [[package]]
-name = "protocol-common"
-version = "0.0.1"
-dependencies = [
- "dimensioned 0.7.0 (registry+https://github.com/rust-lang/crates.io-index)",
- "fnv 1.0.6 (registry+https://github.com/rust-lang/crates.io-index)",
- "lazy_static 1.1.0 (registry+https://github.com/rust-lang/crates.io-index)",
- "serde 1.0.79 (registry+https://github.com/rust-lang/crates.io-index)",
- "specs 0.12.3 (registry+https://github.com/rust-lang/crates.io-index)",
- "specs-derive 0.2.0 (registry+https://github.com/rust-lang/crates.io-index)",
-]
-
-[[package]]
 name = "protocol-v5"
 version = "0.0.1"
 dependencies = [
