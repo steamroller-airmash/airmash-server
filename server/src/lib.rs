@@ -14,6 +14,7 @@ extern crate lazy_static;
 extern crate serde;
 
 // Regular Dependencies
+extern crate airmash_protocol_v5 as protocol_v5;
 extern crate bounded_queue;
 extern crate fnv;
 extern crate hibitset;
@@ -31,7 +32,6 @@ extern crate tokio;
 extern crate tokio_core;
 extern crate uuid;
 extern crate websocket;
-extern crate airmash_protocol_v5 as protocol_v5;
 
 // Public dependencies
 pub extern crate airmash_protocol as protocol;
