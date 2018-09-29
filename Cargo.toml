@@ -12,6 +12,5 @@ members = [
 	"ffa",
 	"bounded-queue",
 	"special-map",
-	"protocol-v5",
-	"protocol-common"
+	"protocol-v5"
 ]

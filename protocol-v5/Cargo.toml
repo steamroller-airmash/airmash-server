@@ -7,4 +7,4 @@ publish = false
 repository = 'https://github.com/steamroller-airmash/airmash-server'
 
 [dependencies]
-protocol-common = { path="../protocol-common" }
+airmash-protocol = { git="https://github.com/steamroller-airmash/airmash-protocol-rs" }
