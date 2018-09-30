@@ -14,12 +14,12 @@ extern crate lazy_static;
 extern crate serde;
 
 // Regular Dependencies
+extern crate airmash_protocol_v5 as protocol_v5;
 extern crate bounded_queue;
 extern crate fnv;
 extern crate hibitset;
 extern crate htmlescape;
 extern crate hyper;
-extern crate protocol_v5;
 extern crate rand;
 extern crate rayon;
 extern crate serde_json;
@@ -34,7 +34,7 @@ extern crate uuid;
 extern crate websocket;
 
 // Public dependencies
-pub extern crate protocol_common as protocol;
+pub extern crate airmash_protocol as protocol;
 
 use websocket::futures;
 

@@ -35,12 +35,12 @@ htmlescape = "*"
 hibitset = "*"
 bounded-queue = { path = "../bounded-queue" }
 special-map = { path = "../special-map" }
-protocol-v5 = { path = "../protocol-v5" }
+airmash-protocol-v5 = "0.0"
 serde = { version = "*", features = ["derive"] }
 serde_json = "*"
 
-[dependencies.protocol-common]
-path = "../protocol-common"
+[dependencies.airmash-protocol]
+version = "0.2"
 features = ["specs"]
 
 [dependencies.uuid]

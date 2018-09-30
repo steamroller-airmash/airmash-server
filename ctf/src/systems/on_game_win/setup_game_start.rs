@@ -32,7 +32,7 @@ impl<'a> System<'a> for SetupGameStart {
 	fn run(&mut self, data: Self::SystemData) {
 		for _ in data.channel.read(self.reader.as_mut().unwrap()) {
 			data.future
-				.run_delayed(Duration::from_secs(85), move |inst| TimerEvent {
+				.run_delayed(Duration::from_secs(60), move |inst| TimerEvent {
 					ty: *GAME_START_TIMER,
 					instant: inst,
 					data: None,
