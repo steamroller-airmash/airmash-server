@@ -1,10 +1,7 @@
 use specs::*;
 
-use types::*;
-
 use component::channel::*;
 use component::event::*;
-use component::flag::*;
 use consts::timer::*;
 
 use systems::TimerHandler;
@@ -16,22 +13,9 @@ pub struct PlayerRespawnSystem {
 
 #[derive(SystemData)]
 pub struct PlayerRespawnSystemData<'a> {
-	pub channel: Read<'a, OnTimerEvent>,
-	pub conns: Read<'a, Connections>,
-	pub respawn_channel: Write<'a, OnPlayerRespawn>,
-
-	pub team: ReadStorage<'a, Team>,
-
-	pub pos: WriteStorage<'a, Position>,
-	pub vel: WriteStorage<'a, Velocity>,
-	pub rot: WriteStorage<'a, Rotation>,
-	pub health: WriteStorage<'a, Health>,
-	pub energy: WriteStorage<'a, Energy>,
-
-	pub is_dead: WriteStorage<'a, IsDead>,
-	pub is_spec: ReadStorage<'a, IsSpectating>,
-
-	pub gamemode: GameModeWriter<'a, GameMode>,
+	channel: Read<'a, OnTimerEvent>,
+	respawn_channel: Write<'a, OnPlayerRespawn>,
+	entities: Entities<'a>,
 }
 
 impl<'a> System<'a> for PlayerRespawnSystem {
@@ -60,6 +44,10 @@ impl<'a> System<'a> for PlayerRespawnSystem {
 					},
 					None => continue,
 				};
+
+			if !data.entities.is_alive(player) {
+				continue;
+			}
 
 			data.respawn_channel.single_write(PlayerRespawn {
 				player,
