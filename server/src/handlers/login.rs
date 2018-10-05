@@ -42,72 +42,78 @@ impl<'a> System<'a> for LoginHandler {
 	}
 
 	fn run(&mut self, (channel, conns): Self::SystemData) {
-		if let Some(ref mut reader) = self.reader {
-			for evt in channel.read(reader).cloned() {
-				let conninfo = conns.0[&evt.0].info.clone();
-				let channel = self.channel.as_ref().unwrap().clone();
+		for evt in channel.read(self.reader.as_mut().unwrap()).cloned() {
+			let conn_opt = conns.0.get(&evt.0);
 
-				let connid = evt.0;
-
-				let mut event = TimerEvent {
-					ty: *LOGIN_PASSED,
-					instant: Instant::now(),
-					data: Some(Box::new(evt)),
-				};
-
-				if cfg!(not(features = "block-bots")) {
-					channel.send(event).unwrap();
+			let conninfo = match conn_opt {
+				Some(x) => x.info.clone(),
+				None => {
+					warn!("{:?} doesn't exist!", evt.0);
 					continue;
 				}
+			};
+			let channel = self.channel.as_ref().unwrap().clone();
 
-				let upstream = self.upstream.clone();
-				let mut is_bot = conninfo.origin.is_none();
+			let connid = evt.0;
 
-				if let Some(upstream) = upstream {
-					let url = format!("http://{}/{}", upstream, conninfo.addr);
-					let url = Url::parse(&url).unwrap();
-					let client = Arc::clone(&self.client);
+			let mut event = TimerEvent {
+				ty: *LOGIN_PASSED,
+				instant: Instant::now(),
+				data: Some(Box::new(evt)),
+			};
 
-					let is_bot = is_bot || match client.get(url).send() {
-						Ok(mut v) => {
-							let mut s = "".to_owned();
-							v.read_to_string(&mut s).ok();
+			if cfg!(not(features = "block-bots")) {
+				channel.send(event).unwrap();
+				continue;
+			}
 
-							match s.parse() {
-								Ok(v) => v,
-								Err(_) => false,
-							}
+			let upstream = self.upstream.clone();
+			let mut is_bot = conninfo.origin.is_none();
+
+			if let Some(upstream) = upstream {
+				let url = format!("http://{}/{}", upstream, conninfo.addr);
+				let url = Url::parse(&url).unwrap();
+				let client = Arc::clone(&self.client);
+
+				let is_bot = is_bot || match client.get(url).send() {
+					Ok(mut v) => {
+						let mut s = "".to_owned();
+						v.read_to_string(&mut s).ok();
+
+						match s.parse() {
+							Ok(v) => v,
+							Err(_) => false,
 						}
-						Err(_) => false,
-					};
-
-					if is_bot {
-						event.ty = *LOGIN_FAILED;
 					}
+					Err(_) => false,
+				};
 
-					channel.send(event).unwrap();
-				} else {
-					if is_bot {
-						event.ty = *LOGIN_FAILED;
-					}
-
-					channel.send(event).unwrap();
+				if is_bot {
+					event.ty = *LOGIN_FAILED;
 				}
 
-				info!(
-					"{:?} with addr {:?} and origin {:?} is a bot? {:?}",
-					connid, conninfo.addr, conninfo.origin, is_bot
-				);
+				channel.send(event).unwrap();
+			} else {
+				if is_bot {
+					event.ty = *LOGIN_FAILED;
+				}
+
+				channel.send(event).unwrap();
 			}
+
+			info!(
+				"{:?} with addr {:?} and origin {:?} is a bot? {:?}",
+				connid, conninfo.addr, conninfo.origin, is_bot
+			);
 		}
 	}
 }
 
 use dispatch::SystemInfo;
-use handlers::OnCloseHandler;
+use handlers::{OnCloseHandler, OnOpenHandler};
 
 impl SystemInfo for LoginHandler {
-	type Dependencies = OnCloseHandler;
+	type Dependencies = (OnOpenHandler, OnCloseHandler);
 
 	fn new() -> Self {
 		Self::new()

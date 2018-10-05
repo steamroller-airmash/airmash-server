@@ -10,7 +10,7 @@ pub use types::event::{ConnectionClose, ConnectionOpen, Message};
 use types::*;
 pub use utils::timer::TimerEventType;
 
-pub type BinaryEvent = Message;
+pub type BinaryEvent = (ConnectionId, Vec<u8>);
 pub type LoginEvent = (ConnectionId, Login);
 pub type BackupEvent = (ConnectionId, Backup);
 pub type CommandEvent = (ConnectionId, Command);

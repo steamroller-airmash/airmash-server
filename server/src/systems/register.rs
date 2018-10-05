@@ -16,6 +16,7 @@ pub fn register<'a, 'b>(disp: Builder<'a, 'b>) -> Builder<'a, 'b> {
 		// EnergyRegen depends on MissileHit
 		.with::<EnergyRegenSystem>()
 		.with::<HealthRegenSystem>()
+		.with::<Disconnect>()
 		// Collision handling
 		.with_registrar(collision::register)
 		// Specials

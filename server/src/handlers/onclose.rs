@@ -1,17 +1,15 @@
 use airmash_protocol::server::PlayerLeave;
-use shrev::*;
 use specs::*;
 use types::*;
 
-use component::channel::{OnClose, OnPlayerLeave};
+use component::channel::{OnClose, OnCloseReader, OnPlayerLeave};
 use component::counter::PlayersGame;
 use component::event::PlayerLeave as EvtPlayerLeave;
 use dispatch::SystemInfo;
 use handlers::OnOpenHandler;
-use types::event::ConnectionClose;
 
 pub struct OnCloseHandler {
-	reader: Option<ReaderId<ConnectionClose>>,
+	reader: Option<OnCloseReader>,
 }
 
 impl OnCloseHandler {
@@ -30,10 +28,7 @@ impl<'a> System<'a> for OnCloseHandler {
 	);
 
 	fn setup(&mut self, res: &mut Resources) {
-		self.reader = Some(
-			res.fetch_mut::<EventChannel<ConnectionClose>>()
-				.register_reader(),
-		);
+		self.reader = Some(res.fetch_mut::<OnClose>().register_reader());
 
 		Self::SystemData::setup(res);
 	}

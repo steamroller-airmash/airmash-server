@@ -1,3 +1,4 @@
+mod disconnect;
 mod energy_regen;
 mod health_regen;
 mod packet_handler;
@@ -17,6 +18,7 @@ pub mod powerups;
 pub mod specials;
 pub mod upgrades;
 
+pub use self::disconnect::Disconnect;
 pub use self::energy_regen::EnergyRegenSystem;
 pub use self::health_regen::HealthRegenSystem;
 pub use self::packet_handler::PacketHandler;
