@@ -219,7 +219,7 @@ fn check_allowed(
 		!(*health < Health::new(1.0))
 		// Players that have pressed a key within the last
 		// 2 seconds may not spectate
-		&& !(this_frame.0 - last_key.0 < Duration::from_secs(2))
+		&& !(this_frame.0 - last_key.0 > Duration::from_secs(2))
 	)
 }
 
