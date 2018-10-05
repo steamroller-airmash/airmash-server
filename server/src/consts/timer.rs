@@ -10,4 +10,5 @@ lazy_static! {
 	pub static ref LOGIN_PASSED: TimerEventType = TimerEventType::register();
 	pub static ref LOGIN_FAILED: TimerEventType = TimerEventType::register();
 	pub static ref DELAYED_MESSAGE: TimerEventType = TimerEventType::register();
+	pub static ref CLEAR_DEAD_FLAG: TimerEventType = TimerEventType::register();
 }
