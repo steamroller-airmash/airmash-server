@@ -59,8 +59,8 @@ impl<'a> EventHandler<'a> for Respawn {
 		};
 
 		let allowed = !check_allowed(
-			data.is_spec.get(player).is_some(),
 			data.is_dead.get(player).is_some(),
+			data.is_spec.get(player).is_some(),
 			data.health.get(player).unwrap(),
 			data.last_key.get(player).unwrap(),
 			&*data.this_frame,
@@ -124,7 +124,7 @@ fn check_allowed(
 	// period after dying (the is represented by the
 	// IsDead flag)
 	!is_dead
-		|| (
+		&& (
 		// If the player is spectating then they may respawn
 		// at any time
 		is_spec || (
