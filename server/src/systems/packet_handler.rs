@@ -1,4 +1,3 @@
-use protocol::client::*;
 use protocol::{ClientPacket, ProtocolSerializationExt};
 use protocol_v5::ProtocolV5;
 use shrev::EventChannel;
@@ -38,6 +37,7 @@ pub struct PacketHandlerData<'a> {
 	pub localping: Write<'a, OnLocalPing>,
 	pub scoredetailed: Write<'a, OnScoreDetailed>,
 	pub ack: Write<'a, OnAck>,
+	pub message: Write<'a, OnMessage>,
 }
 
 impl PacketHandler {
@@ -79,8 +79,7 @@ impl<'a> System<'a> for PacketHandler {
 
 		// Override some default sizes
 		// to prevent buffers from overflowing
-		res.insert::<EventChannel<(ConnectionId, Pong)>>(EventChannel::with_capacity(200));
-		res.insert::<EventChannel<Message>>(EventChannel::with_capacity(200));
+		res.insert::<OnMessage>(EventChannel::with_capacity(400));
 	}
 
 	fn run(&mut self, mut sysdata: PacketHandlerData<'a>) {
@@ -94,15 +93,14 @@ impl<'a> System<'a> for PacketHandler {
 					sysdata.onclose.single_write(conn);
 				}
 				ConnectionEvent::Message(msg) => {
-					if let OwnedMessage::Binary(data) = msg.msg {
+					if let OwnedMessage::Binary(ref data) = msg.msg {
 						match protocol.deserialize(&data) {
 							Ok(packet) => Self::dispatch(&mut sysdata, msg.conn, packet),
-							Err(_) => sysdata.onbinary.single_write(Message {
-								conn: msg.conn,
-								msg: OwnedMessage::Binary(data),
-							}),
+							Err(_) => sysdata.onbinary.single_write((msg.conn, data.clone())),
 						}
 					}
+
+					sysdata.message.single_write(msg);
 				}
 			}
 		}

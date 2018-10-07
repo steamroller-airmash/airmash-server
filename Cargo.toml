@@ -11,7 +11,5 @@ members = [
 	"ctf",
 	"ffa",
 	"bounded-queue",
-	"special-map",
-	"protocol-v5",
-	"protocol-common"
+	"special-map"
 ]

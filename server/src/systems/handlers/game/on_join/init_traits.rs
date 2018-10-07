@@ -20,6 +20,7 @@ pub struct InitTraits {
 pub struct InitTraitsData<'a> {
 	pub channel: Read<'a, OnPlayerJoin>,
 	pub start_time: Read<'a, StartTime>,
+	pub this_frame: Read<'a, ThisFrame>,
 
 	pub score: WriteStorage<'a, Score>,
 	pub level: WriteStorage<'a, Level>,
@@ -32,6 +33,7 @@ pub struct InitTraitsData<'a> {
 	pub pingdata: WriteStorage<'a, PingData>,
 	pub lastshot: WriteStorage<'a, LastShotTime>,
 	pub lastupdate: WriteStorage<'a, LastUpdate>,
+	pub last_key: WriteStorage<'a, LastKeyTime>,
 }
 
 impl<'a> System<'a> for InitTraits {
@@ -47,6 +49,7 @@ impl<'a> System<'a> for InitTraits {
 		let Self::SystemData {
 			channel,
 			start_time,
+			this_frame,
 
 			mut score,
 			mut level,
@@ -59,6 +62,7 @@ impl<'a> System<'a> for InitTraits {
 			mut is_player,
 			mut pingdata,
 			mut lastshot,
+			mut last_key,
 		} = data;
 
 		for evt in channel.read(self.reader.as_mut().unwrap()) {
@@ -76,6 +80,7 @@ impl<'a> System<'a> for InitTraits {
 			is_player.insert(evt.id, IsPlayer).unwrap();
 			pingdata.insert(evt.id, PingData::default()).unwrap();
 			lastshot.insert(evt.id, LastShotTime(start_time.0)).unwrap();
+			last_key.insert(evt.id, LastKeyTime(this_frame.0)).unwrap();
 		}
 	}
 }

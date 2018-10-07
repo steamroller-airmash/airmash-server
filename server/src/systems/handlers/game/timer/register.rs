@@ -9,4 +9,5 @@ pub fn register<'a, 'b>(builder: Builder<'a, 'b>) -> Builder<'a, 'b> {
 		.with::<LoginFailed>()
 		.with::<LoginHandler>()
 		.with::<DelayMessage>()
+		.with_handler::<ClearDeadFlag>()
 }

@@ -10,6 +10,7 @@ pub fn register<'a, 'b>(builder: Builder<'a, 'b>) -> Builder<'a, 'b> {
 		.with::<on_spectate_event::SendTimerEvent>()
 		.with::<on_spectate_event::SetSpectateTarget>()
 		.with_handler::<on_spectate_event::CreateDespawnEvent>()
+		.with_handler::<on_spectate_event::SetDeadFlag>()
 		// On player killed
 		.with::<on_player_killed::SetRespawnTimer>()
 		.with::<on_player_killed::DisplayMessage>()

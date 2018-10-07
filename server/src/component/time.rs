@@ -34,18 +34,22 @@ pub struct LastStealthTime(pub Instant);
 #[derive(Clone, Debug, Copy, Component)]
 pub struct LastRepelTime(pub Instant);
 
-impl Default for LastFrame {
-	fn default() -> Self {
-		LastFrame(Instant::now())
+macro_rules! impl_default {
+	{
+		$( $name:ident, )*
+	} => {
+		$(
+			impl Default for $name {
+				fn default() -> Self {
+					$name(Instant::now())
+				}
+			}
+		)*
 	}
 }
-impl Default for ThisFrame {
-	fn default() -> Self {
-		ThisFrame(Instant::now())
-	}
-}
-impl Default for StartTime {
-	fn default() -> Self {
-		StartTime(Instant::now())
-	}
+
+impl_default!{
+	LastFrame,
+	ThisFrame,
+	StartTime,
 }

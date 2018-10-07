@@ -2,15 +2,19 @@ use specs::*;
 use types::*;
 
 use std::convert::TryFrom;
+use std::time::Duration;
 
 use component::channel::*;
 use component::event::*;
 use component::flag::*;
+use component::time::*;
 
-use protocol::server::PlayerType;
+use protocol::server::{Error, PlayerType};
+use protocol::ErrorType;
 
 use utils::{EventHandler, EventHandlerTypeProvider};
 
+use systems::handlers::game::on_join::InitTraits;
 use systems::PacketHandler;
 use SystemInfo;
 
@@ -23,9 +27,11 @@ pub struct RespawnData<'a> {
 	planes: WriteStorage<'a, Plane>,
 	is_spec: WriteStorage<'a, IsSpectating>,
 	is_dead: WriteStorage<'a, IsDead>,
+	last_key: ReadStorage<'a, LastKeyTime>,
 
 	conns: Read<'a, Connections>,
 	channel: Write<'a, OnPlayerRespawn>,
+	this_frame: Read<'a, ThisFrame>,
 }
 
 impl EventHandlerTypeProvider for Respawn {
@@ -52,8 +58,22 @@ impl<'a> EventHandler<'a> for Respawn {
 			Err(_) => return,
 		};
 
-		// Make sure player health is a 100% before allowing respawn
-		if *data.health.get(player).unwrap() < Health::new(1.0) {
+		let allowed = !check_allowed(
+			data.is_dead.get(player).is_some(),
+			data.is_spec.get(player).is_some(),
+			data.health.get(player).unwrap(),
+			data.last_key.get(player).unwrap(),
+			&*data.this_frame,
+		);
+
+		if !allowed {
+			data.conns.send_to(
+				conn,
+				Error {
+					error: ErrorType::IdleRequiredBeforeRespawn,
+				},
+			);
+
 			return;
 		}
 
@@ -82,7 +102,7 @@ impl<'a> EventHandler<'a> for Respawn {
 }
 
 impl SystemInfo for Respawn {
-	type Dependencies = PacketHandler;
+	type Dependencies = (PacketHandler, InitTraits);
 
 	fn name() -> &'static str {
 		concat!(module_path!(), "::", line!())
@@ -91,6 +111,30 @@ impl SystemInfo for Respawn {
 	fn new() -> Self {
 		Self::default()
 	}
+}
+
+fn check_allowed(
+	is_spec: bool,
+	is_dead: bool,
+	health: &Health,
+	last_key: &LastKeyTime,
+	this_frame: &ThisFrame,
+) -> bool {
+	// A player may not respawn during the 2s cooldown
+	// period after dying (the is represented by the
+	// IsDead flag)
+	!is_dead
+		&& (
+		// If the player is spectating then they may respawn
+		// at any time
+		is_spec || (
+			// Players that don't have full health may not respawn
+			!(*health < Health::new(1.0))
+			// Players that have pressed a key within the last
+			// 2 seconds may not respawn
+			&& !(this_frame.0 - last_key.0 < Duration::from_secs(2))
+		)
+	)
 }
 
 fn parse_plane<'a>(s: &'a str) -> Result<Plane, ()> {

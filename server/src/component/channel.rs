@@ -1,7 +1,7 @@
 use shrev::*;
 
 use component::event::*;
-use types::event::{ConnectionClose, ConnectionOpen};
+use types::event::{ConnectionClose, ConnectionOpen, Message};
 
 // Connection Events
 pub type OnOpen = EventChannel<ConnectionOpen>;
@@ -56,6 +56,9 @@ pub type OnPlayerPowerupCollision = EventChannel<PlayerPowerupCollision>;
 pub type OnMissileTerrainCollision = EventChannel<MissileTerrainCollision>;
 pub type OnPlayerUpgradeCollision = EventChannel<PlayerUpgradeCollision>;
 
+// Internal events
+pub(crate) type OnMessage = EventChannel<Message>;
+
 // Readers
 pub type OnOpenReader = ReaderId<ConnectionOpen>;
 pub type OnCloseReader = ReaderId<ConnectionClose>;
@@ -104,3 +107,6 @@ pub type OnPlayerTerrainCollisionReader = ReaderId<PlayerTerrainCollision>;
 pub type OnPlayerPowerupCollisionReader = ReaderId<PlayerPowerupCollision>;
 pub type OnMissileTerrainCollisionReader = ReaderId<MissileTerrainCollision>;
 pub type OnPlayerUpgradeCollisionReader = ReaderId<PlayerUpgradeCollision>;
+
+// Internal events
+pub(crate) type OnMessageReader = ReaderId<Message>;
