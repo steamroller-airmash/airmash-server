@@ -45,7 +45,6 @@ impl<'a> System<'a> for InitState {
 			data.energy.insert(evt.id, Energy::new(1.0)).unwrap();
 			data.health.insert(evt.id, Health::new(1.0)).unwrap();
 			data.keystate.insert(evt.id, KeyState::default()).unwrap();
-			data.powerups.insert(evt.id, Powerups::default()).unwrap();
 			data.upgrades.insert(evt.id, Upgrades::default()).unwrap();
 			data.energy_regen.insert(evt.id, energy_regen).unwrap();
 			data.health_regen.insert(evt.id, health_regen).unwrap();

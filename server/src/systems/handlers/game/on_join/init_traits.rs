@@ -3,8 +3,6 @@ use specs::*;
 use std::time::Instant;
 
 use types::*;
-
-use systems::handlers::game::timer::LoginHandler;
 use SystemInfo;
 
 use component::channel::*;
@@ -86,7 +84,7 @@ impl<'a> System<'a> for InitTraits {
 }
 
 impl SystemInfo for InitTraits {
-	type Dependencies = LoginHandler;
+	type Dependencies = super::KnownEventSources;
 
 	fn name() -> &'static str {
 		concat!(module_path!(), "::", line!())

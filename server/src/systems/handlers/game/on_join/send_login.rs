@@ -49,10 +49,10 @@ impl SendLogin {
 			&data.level,
 			&data.status,
 			&data.team,
-			&data.powerups,
 		).join()
 			.map({
-				|(ent, pos, rot, plane, name, flag, upgrades, level, status, team, powerups)| {
+				|(ent, pos, rot, plane, name, flag, upgrades, level, status, team)| {
+					let powerups = data.powerups.get(ent);
 					let upgrade_field = ProtocolUpgrades {
 						speed: upgrades.speed,
 						shield: powerups.shield(),

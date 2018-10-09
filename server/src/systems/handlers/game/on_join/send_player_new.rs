@@ -7,6 +7,8 @@ use component::channel::*;
 use protocol::server::PlayerNew;
 use protocol::Upgrades as ProtocolUpgrades;
 
+/// Send a `PlayerNew` packet to all other players when
+/// a new player joins.
 pub struct SendPlayerNew {
 	reader: Option<OnPlayerJoinReader>,
 }
@@ -53,7 +55,7 @@ impl<'a> System<'a> for SendPlayerNew {
 		} = data;
 
 		for evt in channel.read(self.reader.as_mut().unwrap()) {
-			let powerups = *powerups.get(evt.id).unwrap();
+			let powerups = powerups.get(evt.id);
 
 			let upgrades = ProtocolUpgrades {
 				speed: upgrades.get(evt.id).unwrap().speed,
@@ -84,6 +86,8 @@ impl SystemInfo for SendPlayerNew {
 		super::InitConnection,
 		super::InitState,
 		super::InitTransform,
+		super::SendPlayerPowerup,
+		super::SendLogin,
 	);
 
 	fn name() -> &'static str {

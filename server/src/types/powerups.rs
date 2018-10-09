@@ -4,27 +4,41 @@ use protocol::PowerupType;
 
 use std::time::Instant;
 
-#[derive(Copy, Clone, Debug)]
-pub struct PowerupDetails {
+#[derive(Copy, Clone, Debug, Component)]
+pub struct Powerups {
 	pub ty: PowerupType,
 	pub end_time: Instant,
 }
 
-#[derive(Default, Clone, Copy, Debug, Component)]
-pub struct Powerups {
-	pub details: Option<PowerupDetails>,
+pub trait PowerupExt {
+	fn shield(&self) -> bool;
+	fn inferno(&self) -> bool;
 }
 
-impl Powerups {
-	pub fn shield(&self) -> bool {
-		self.details
-			.map(|details| details.ty == PowerupType::Shield)
-			.unwrap_or(false)
+impl PowerupExt for Powerups {
+	fn shield(&self) -> bool {
+		self.ty == PowerupType::Shield
+	}
+	fn inferno(&self) -> bool {
+		self.ty == PowerupType::Inferno
+	}
+}
+
+impl PowerupExt for Option<Powerups> {
+	fn shield(&self) -> bool {
+		self.map(|details| details.shield()).unwrap_or(false)
 	}
 
-	pub fn inferno(&self) -> bool {
-		self.details
-			.map(|details| details.ty == PowerupType::Inferno)
-			.unwrap_or(false)
+	fn inferno(&self) -> bool {
+		self.map(|details| details.inferno()).unwrap_or(false)
+	}
+}
+
+impl<'a> PowerupExt for Option<&'a Powerups> {
+	fn shield(&self) -> bool {
+		self.map(|x| x.shield()).unwrap_or(false)
+	}
+	fn inferno(&self) -> bool {
+		self.map(|x| x.inferno()).unwrap_or(false)
 	}
 }
