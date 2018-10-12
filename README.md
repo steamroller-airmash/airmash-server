@@ -1,6 +1,8 @@
 
 # AIRMASH Server
 
+[![Gitter chat](https://badges.gitter.im/org.png)](https://gitter.im/airmash-server/Lobby?utm_source=share-link&utm_medium=link&utm_campaign=share-link)
+
 This is an implementation of a server for the game
 [AIRMASH](https://airma.sh). As of this moment it
 aims to be fully compatible with the official 
