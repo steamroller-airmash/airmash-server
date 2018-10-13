@@ -29,7 +29,6 @@ shred = "*"
 shred-derive = "*"
 shrev = "*"
 tokio = "*"
-tokio-core = "*"
 rayon = "1.0"
 htmlescape = "*"
 hibitset = "*"
@@ -49,8 +48,3 @@ features = ["specs"]
 [dependencies.uuid]
 version = "*"
 features=["v5"]
-
-[dependencies.websocket]
-version = "0.20"
-default-features = false
-features = [ "async", "async-ssl" ]

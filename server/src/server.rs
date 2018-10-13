@@ -5,26 +5,30 @@ use types::event::*;
 use types::*;
 
 use std::fmt::Debug;
-use std::net::{ToSocketAddrs, IpAddr, Ipv4Addr};
+use std::net::{IpAddr, Ipv4Addr, ToSocketAddrs};
 use std::sync::mpsc::Sender;
 
 use status;
 
-use ws::{self, Sender as WsSender, Handler, Handshake, Result as WsResult, Message as WsMessage, CloseCode, Request, Response};
+use ws::{
+	self, CloseCode, Handler, Handshake, Message as WsMessage, Request, Response,
+	Result as WsResult, Sender as WsSender,
+};
 
 struct MessageHandler {
 	channel: Sender<ConnectionEvent>,
 	sender: WsSender,
 	id: ConnectionId,
-	closed: bool
+	closed: bool,
 }
 
 fn get_real_ip(shake: &Handshake) -> WsResult<(IpAddr, Option<String>)> {
 	let default_ipaddr = IpAddr::V4(Ipv4Addr::new(0, 0, 0, 0));
 	let ref req = shake.request;
-	
+
 	Ok((
-		shake.remote_addr()?
+		shake
+			.remote_addr()?
 			.map(|x| x.parse().unwrap_or(default_ipaddr))
 			.unwrap_or(default_ipaddr),
 		req.origin()?.map(|x| x.to_owned()),
@@ -33,7 +37,9 @@ fn get_real_ip(shake: &Handshake) -> WsResult<(IpAddr, Option<String>)> {
 
 impl Handler for MessageHandler {
 	fn on_shutdown(&mut self) {
-		if self.closed { return };
+		if self.closed {
+			return;
+		};
 
 		self.channel.send(ConnectionEvent::ConnectionClose(ConnectionClose { conn: self.id }))
 			.map_err(|e| {
@@ -82,7 +88,9 @@ impl Handler for MessageHandler {
 	}
 
 	fn on_close(&mut self, _: CloseCode, _: &str) {
-		if self.closed { return };
+		if self.closed {
+			return;
+		};
 		self.closed = true;
 
 		self.channel.send(ConnectionEvent::ConnectionClose(ConnectionClose { conn: self.id }))
@@ -98,25 +106,18 @@ impl Handler for MessageHandler {
 	fn on_request(&mut self, req: &Request) -> WsResult<Response> {
 		let req = Response::from_request(req);
 
-		Ok(
-			req
-				.unwrap_or_else(|_| {
-					let status = status::generate_status_page();
+		Ok(req.unwrap_or_else(|_| {
+			let status = status::generate_status_page();
 
-					let mut res = Response::new(
-						200,
-						"OK",
-						status.into_bytes()
-					);
+			let mut res = Response::new(200, "OK", status.into_bytes());
 
-					res.headers_mut().push((
-						"Content-Type".to_owned(), 
-						"application/json; charset=utf-8".to_owned().into_bytes()
-					));
-					
-					res
-				})
-		)
+			res.headers_mut().push((
+				"Content-Type".to_owned(),
+				"application/json; charset=utf-8".to_owned().into_bytes(),
+			));
+
+			res
+		}))
 	}
 }
 
@@ -134,7 +135,7 @@ where
 		id: ConnectionId::new(),
 		channel: channel.clone(),
 		sender: out,
-		closed: false
+		closed: false,
 	});
 
 	if let Err(e) = result {

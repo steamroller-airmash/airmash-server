@@ -14,9 +14,10 @@ extern crate serde;
 
 // Regular Dependencies
 extern crate airmash_protocol_v5 as protocol_v5;
-extern crate dimensioned;
 extern crate bounded_queue;
+extern crate dimensioned;
 extern crate fnv;
+extern crate futures;
 extern crate hibitset;
 extern crate htmlescape;
 extern crate hyper;
@@ -31,7 +32,6 @@ extern crate specs;
 extern crate tokio;
 extern crate uuid;
 extern crate ws;
-extern crate futures;
 
 // Public dependencies
 pub extern crate airmash_protocol as protocol;

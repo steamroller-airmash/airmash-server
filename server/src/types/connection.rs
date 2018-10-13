@@ -67,13 +67,7 @@ impl Connections {
 		Connections(FnvHashMap::default(), Mutex::new(channel))
 	}
 
-	pub fn add(
-		&mut self,
-		id: ConnectionId,
-		sink: WsSender,
-		addr: IpAddr,
-		origin: Option<String>,
-	) {
+	pub fn add(&mut self, id: ConnectionId, sink: WsSender, addr: IpAddr, origin: Option<String>) {
 		let data = ConnectionData {
 			sink: sink,
 			ty: ConnectionType::Inactive,
