@@ -40,14 +40,14 @@ impl<'a> System<'a> for OnCloseHandler {
 		if let Some(ref mut reader) = self.reader {
 			for evt in channel.read(reader) {
 				let (player, ty) = {
-					let conn = connections.0.get(&evt.conn).unwrap_or_else(|| {
-						error!(
-							target: "server",
-							"Attempted to close non-existent connection {:?}",
-							evt.conn
-						);
-						panic!("Connection {:?} not found", evt.conn);
-					});
+					let conn = match connections.0.get(&evt.conn) {
+						Some(c) => c,
+						None => {
+							// This can sometimes happen legitimately if a disconnect occurrs.
+							continue;
+						}
+					};
+
 					(conn.player, conn.ty)
 				};
 

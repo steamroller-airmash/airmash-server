@@ -45,7 +45,7 @@ impl<'a> EventHandler<'a> for InflictDamage {
 		let plane = data.plane.get(evt.player).unwrap();
 		let health = data.health.get_mut(evt.player).unwrap();
 		let upgrades = data.upgrades.get(evt.player).unwrap();
-		let powerups = data.powerups.get(evt.player).unwrap();
+		let powerups = data.powerups.get(evt.player);
 
 		let mob = data.mob.get(evt.missile).unwrap();
 		let pos = data.pos.get(evt.missile).unwrap();

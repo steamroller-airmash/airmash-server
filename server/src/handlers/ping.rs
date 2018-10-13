@@ -7,6 +7,7 @@ use consts::timer::PING_DISPATCH;
 use protocol::server::Ping as ServerPing;
 
 use component::channel::{OnTimerEvent, OnTimerEventReader};
+use systems::handlers::game::on_join::SendLogin;
 
 pub struct PingTimerHandler {
 	reader: Option<OnTimerEventReader>,
@@ -65,7 +66,7 @@ use handlers::OnCloseHandler;
 use systems::TimerHandler;
 
 impl SystemInfo for PingTimerHandler {
-	type Dependencies = (OnCloseHandler, TimerHandler);
+	type Dependencies = (OnCloseHandler, TimerHandler, SendLogin);
 
 	fn new() -> Self {
 		Self::new()

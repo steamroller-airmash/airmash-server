@@ -33,22 +33,28 @@ impl<'a> System<'a> for CheckExpired {
 			this_frame,
 		} = data;
 
-		let events = (&*entities, &mut powerups, is_alive.mask())
-			.join()
-			.filter(|(_, powerup, ..)| powerup.details.is_some())
-			.filter(|(_, powerup, ..)| powerup.details.unwrap().end_time > this_frame.0)
-			.map(|(ent, powerup, ..)| {
-				let inner = powerup.details.unwrap();
-				powerup.details = None;
+		let mut ents = vec![];
 
-				PowerupExpired {
-					player: ent,
-					ty: inner.ty,
-				}
-			});
+		{
+			let events = (&*entities, &mut powerups, is_alive.mask())
+				.join()
+				.filter(|(_, powerup, ..)| powerup.end_time > this_frame.0)
+				.map(|(ent, powerup, ..)| {
+					ents.push(ent);
 
-		for evt in events {
-			channel.single_write(evt);
+					PowerupExpired {
+						player: ent,
+						ty: powerup.ty,
+					}
+				});
+
+			for evt in events {
+				channel.single_write(evt);
+			}
+		}
+
+		for ent in ents {
+			powerups.remove(ent).unwrap();
 		}
 	}
 }

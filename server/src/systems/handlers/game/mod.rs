@@ -11,6 +11,7 @@ pub mod on_leave;
 pub mod on_missile_fire;
 pub mod on_player_hit;
 pub mod on_player_killed;
+pub mod on_player_powerup;
 pub mod on_player_respawn;
 pub mod on_powerup_expire;
 pub mod on_spectate_event;

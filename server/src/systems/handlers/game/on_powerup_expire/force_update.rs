@@ -31,7 +31,9 @@ impl<'a> EventHandler<'a> for ForceUpdate {
 			return;
 		}
 
-		data.last_update.get_mut(evt.player).unwrap().0 = data.game_start.0;
+		data.last_update
+			.insert(evt.player, LastUpdate(data.game_start.0))
+			.unwrap();
 	}
 }
 
