@@ -43,11 +43,7 @@ impl<'a> System<'a> for OnCloseHandler {
 					let conn = match connections.0.get(&evt.conn) {
 						Some(c) => c,
 						None => {
-							error!(
-								target: "server",
-								"Attempted to close non-existent connection {:?}",
-								evt.conn
-							);
+							// This can sometimes happen legitimately if a disconnect occurrs.
 							continue;
 						}
 					};

@@ -13,7 +13,7 @@ use SystemInfo;
 
 use systems::PacketHandler;
 
-const NO_PACKET_TIMEOUT: Duration = Duration::from_secs(5);
+const NO_PACKET_TIMEOUT: Duration = Duration::from_secs(10);
 
 /// Get rid of players that are no longer connected.
 ///
@@ -23,7 +23,7 @@ const NO_PACKET_TIMEOUT: Duration = Duration::from_secs(5);
 /// implementations, etc.). But it will also disconnect
 /// clients that just don't send any packets either.
 ///
-/// The timeout that is enforced for players is 5 seconds
+/// The timeout that is enforced for players is 10 seconds
 /// without a packet. Since the default client blasts the
 /// server with an ack packet every 50ms this will only
 /// affect disconnected clients and improperly written
