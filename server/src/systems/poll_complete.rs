@@ -1,10 +1,9 @@
 use specs::prelude::*;
 use std::time::Instant;
-use tokio::prelude::Sink;
 use types::connection::{Message, MessageBody, MessageInfo};
 use types::*;
 
-use websocket::OwnedMessage;
+use ws::CloseCode;
 
 use protocol::Protocol;
 use protocol_v5::ProtocolV5;
@@ -34,13 +33,16 @@ impl PollComplete {
 	fn send_to_connection<'a>(
 		conns: &mut Write<'a, Connections>,
 		id: ConnectionId,
-		msg: OwnedMessage,
+		msg: Option<Vec<u8>>,
 	) {
 		trace!(target: "airmash:packet-dump", "{:?}", msg);
 
 		match conns.0.get_mut(&id) {
 			Some(ref mut conn) => {
-				Connections::send_sink(&mut conn.sink, msg);
+				match msg {
+					Some(msg) => Connections::send_sink(&mut conn.sink, msg.into()),
+					None => conn.sink.close(CloseCode::Normal).unwrap(),
+				}
 			}
 			// The connection probably closed,
 			// do nothing
@@ -74,12 +76,12 @@ impl<'a> System<'a> for PollComplete {
 				msg.info
 			);
 
-			let data = match msg.msg {
+			let data: Option<Vec<u8>> = match msg.msg {
 				MessageBody::Packet(ref packet) => {
-					OwnedMessage::Binary(protocol.serialize_server(packet).unwrap().next().unwrap())
+					Some(protocol.serialize_server(packet).unwrap().next().unwrap())
 				}
-				MessageBody::Binary(bin) => OwnedMessage::Binary(bin),
-				MessageBody::Close => OwnedMessage::Close(None),
+				MessageBody::Binary(bin) => Some(bin),
+				MessageBody::Close => None,
 			};
 
 			match msg.info {
@@ -108,15 +110,6 @@ impl<'a> System<'a> for PollComplete {
 			"Sent {} packets this frame",
 			cnt
 		);
-
-		for conn in conns.iter_mut() {
-			conn.sink
-				.poll_complete()
-				.map_err(|e| {
-					info!("poll_complete failed with error {:?}", e);
-				})
-				.err();
-		}
 
 		let time = Instant::now() - start;
 		trace!(
