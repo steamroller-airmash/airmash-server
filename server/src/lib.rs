@@ -3,7 +3,6 @@
 // Crates with macros
 #[macro_use]
 extern crate log;
-extern crate dimensioned;
 #[macro_use]
 extern crate specs_derive;
 #[macro_use]
@@ -16,7 +15,9 @@ extern crate serde;
 // Regular Dependencies
 extern crate airmash_protocol_v5 as protocol_v5;
 extern crate bounded_queue;
+extern crate dimensioned;
 extern crate fnv;
+extern crate futures;
 extern crate hibitset;
 extern crate htmlescape;
 extern crate hyper;
@@ -29,14 +30,11 @@ extern crate simple_logger;
 extern crate special_map;
 extern crate specs;
 extern crate tokio;
-extern crate tokio_core;
 extern crate uuid;
-extern crate websocket;
+extern crate ws;
 
 // Public dependencies
 pub extern crate airmash_protocol as protocol;
-
-use websocket::futures;
 
 // Modules
 mod builder;

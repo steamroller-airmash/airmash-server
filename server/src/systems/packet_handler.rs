@@ -2,7 +2,6 @@ use protocol::{ClientPacket, ProtocolSerializationExt};
 use protocol_v5::ProtocolV5;
 use shrev::EventChannel;
 use specs::*;
-use websocket::OwnedMessage;
 
 use std::any::Any;
 use std::mem;
@@ -93,11 +92,9 @@ impl<'a> System<'a> for PacketHandler {
 					sysdata.onclose.single_write(conn);
 				}
 				ConnectionEvent::Message(msg) => {
-					if let OwnedMessage::Binary(ref data) = msg.msg {
-						match protocol.deserialize(&data) {
-							Ok(packet) => Self::dispatch(&mut sysdata, msg.conn, packet),
-							Err(_) => sysdata.onbinary.single_write((msg.conn, data.clone())),
-						}
+					match protocol.deserialize(&msg.msg) {
+						Ok(packet) => Self::dispatch(&mut sysdata, msg.conn, packet),
+						Err(_) => sysdata.onbinary.single_write((msg.conn, msg.msg.clone())),
 					}
 
 					sysdata.message.single_write(msg);

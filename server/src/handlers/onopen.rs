@@ -2,8 +2,6 @@ use shrev::*;
 use specs::*;
 use types::*;
 
-use std::mem;
-
 use dispatch::SystemInfo;
 use types::event::ConnectionOpen;
 
@@ -37,9 +35,7 @@ impl<'a> System<'a> for OnOpenHandler {
 	fn run(&mut self, (channel, mut connections): Self::SystemData) {
 		if let Some(ref mut reader) = self.reader {
 			for evt in channel.read(reader) {
-				let sink = mem::replace(&mut *evt.sink.lock().unwrap(), None);
-
-				connections.add(evt.conn, sink.unwrap(), evt.addr, evt.origin.clone());
+				connections.add(evt.conn, evt.sink.clone(), evt.addr, evt.origin.clone());
 			}
 		}
 	}
