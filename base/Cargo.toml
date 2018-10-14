@@ -11,5 +11,5 @@ repository = 'https://github.com/steamroller-airmash/airmash-server'
 [dependencies]
 specs = "*"
 airmash-server = { path='../server' }
-log = "0.4"
+log = "*"
 env_logger = "*"
