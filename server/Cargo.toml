@@ -18,7 +18,7 @@ block-bots = []
 
 [dependencies]
 simple_logger = "*"
-log = "0.4.1"
+log = "*"
 specs = { version = "*", features = ["nightly"] }
 specs-derive = "*"
 dimensioned = "*"
