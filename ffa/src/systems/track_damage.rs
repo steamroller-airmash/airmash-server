@@ -20,8 +20,8 @@ pub struct TrackDamageData<'a> {
     config: Read<'a, Config>,
     channel: Read<'a, OnPlayerHit>,
 
-	mob: ReadStorage<'a, Mob>,
-	owner: ReadStorage<'a, PlayerRef>,
+    mob: ReadStorage<'a, Mob>,
+    owner: ReadStorage<'a, PlayerRef>,
 
     damage: WriteStorage<'a, TotalDamage>,
 }
