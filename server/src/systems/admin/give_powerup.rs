@@ -122,6 +122,14 @@ impl GivePowerup {
 			Inferno => data.config.inferno_duration,
 		};
 
+		info!(
+			"Gave powerup of type {:?} to {:?} with duration of {}.{:03}s",
+			ty,
+			player,
+			duration.as_secs(),
+			duration.subsec_millis()
+		);
+
 		data.channel.single_write(PlayerPowerup {
 			player,
 			duration,

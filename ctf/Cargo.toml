@@ -11,7 +11,7 @@ specs = "*"
 shrev = "*"
 shred = { version = "*", features= ["nightly"] }
 fnv = "*"
-log = "0.4"
+log = "*"
 rand = "0.4"
 specs-derive = "*"
 shred-derive = "*"

@@ -33,6 +33,6 @@ pub mod event {
 	pub use types::connection_events::*;
 }
 
-pub use self::connection::{ConnectionSink, ConnectionType, Connections};
+pub use self::connection::{ConnectionType, Connections};
 pub use self::gamemode::{GameMode, GameModeWriter};
 pub use self::systemdata::fire_missiles::MissileFireInfo;

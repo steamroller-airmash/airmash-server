@@ -53,3 +53,7 @@ pub type AllJoinHandlers = (
 	UpdatePlayersGame,
 	SendPlayerPowerup,
 );
+
+use systems;
+
+pub type KnownEventSources = (systems::handlers::game::timer::LoginHandler);

@@ -14,7 +14,7 @@ shred = "*"
 specs-derive = "*"
 shred-derive = "*"
 airmash-server = { path='../server' }
-log = "0.4"
+log = "*"
 env_logger = "*"
 rand = "0.4"
 lazy_static = "*"

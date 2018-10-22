@@ -67,16 +67,34 @@ impl PositionUpdate {
 	fn step_players<'a>(data: &mut PositionUpdateData<'a>, config: &Read<'a, Config>) {
 		let delta = Time::from(data.thisframe.0 - data.lastframe.0);
 
+		let PositionUpdateData {
+			entities,
+			pos,
+			rot,
+			vel,
+			keystate,
+			upgrades,
+			powerups,
+			planes,
+			is_alive,
+			is_player,
+			..
+		} = data;
+
 		(
-			&mut data.pos,
-			&mut data.rot,
-			&mut data.vel,
-			&data.keystate,
-			&data.upgrades,
-			&data.powerups,
-			&data.planes,
-			data.is_alive.mask() & data.is_player.mask(),
+			&*entities,
+			pos,
+			rot,
+			vel,
+			&*keystate,
+			&*upgrades,
+			&*planes,
+			is_alive.mask() & is_player.mask(),
 		).join()
+			.map(|(ent, pos, rot, vel, keystate, upgrades, plane, ..)| {
+				let powerups = powerups.get(ent);
+				(pos, rot, vel, keystate, upgrades, powerups, plane)
+			})
 			.for_each(|(pos, rot, vel, keystate, upgrades, powerups, plane, ..)| {
 				let mut movement_angle = None;
 				let info = &config.planes[*plane];
@@ -187,13 +205,20 @@ impl PositionUpdate {
 			&data.planes,
 			&data.keystate,
 			&data.upgrades,
-			&data.powerups,
 			lastupdate,
 			// Update if dirty, or forced to do so
 			(&self.dirty | data.force_update.mask()) & data.is_alive.mask(),
 		).join()
+			.map(
+				|(ent, pos, rot, vel, plane, keystate, upgrades, lastupdate, ..)| {
+					let powerups = data.powerups.get(ent);
+					(
+						ent, pos, rot, vel, plane, keystate, upgrades, powerups, lastupdate,
+					)
+				},
+			)
 			.for_each(
-				|(ent, pos, rot, vel, plane, keystate, upgrades, powerups, lastupdate, ..)| {
+				|(ent, pos, rot, vel, plane, keystate, upgrades, powerups, lastupdate)| {
 					*lastupdate = LastUpdate(thisframe);
 
 					let state = keystate.to_server(&plane);
@@ -214,7 +239,7 @@ impl PositionUpdate {
 						upgrades: ups,
 					};
 
-					trace!(target: "server", "Update: {:?}", packet);
+					trace!(target: "airmash:position_update", "Update: {:?}", packet);
 
 					if !keystate.stealthed {
 						data.conns.send_to_all(packet);
@@ -233,20 +258,25 @@ impl PositionUpdate {
 		let clock = data.clock.get();
 
 		(
+			lastupdate,
 			&data.pos,
 			&data.rot,
 			&data.vel,
 			&data.planes,
 			&data.keystate,
 			&data.upgrades,
-			&data.powerups,
 			&*data.entities,
-			lastupdate,
+			data.is_alive.mask(),
 		).join()
-			.filter(|(_, _, _, _, _, _, _, _, lastupdate)| {
-				lastupdate.0.elapsed() > Duration::from_secs(1)
-			})
-			.filter(|(_, _, _, _, _, _, _, ent, _)| data.is_alive.get(*ent))
+			.filter(|(lastupdate, ..)| lastupdate.0.elapsed() > Duration::from_secs(1))
+			.map(
+				|(lastupdate, pos, rot, vel, plane, keystate, upgrades, ent, ..)| {
+					let powerups = data.powerups.get(ent);
+					(
+						pos, rot, vel, plane, keystate, upgrades, powerups, ent, lastupdate,
+					)
+				},
+			)
 			.for_each(
 				|(pos, rot, vel, plane, keystate, upgrades, powerups, ent, lastupdate)| {
 					*lastupdate = LastUpdate(data.thisframe.0);
@@ -269,7 +299,7 @@ impl PositionUpdate {
 						upgrades: ups,
 					};
 
-					trace!(target: "server", "Update: {:?}", packet);
+					trace!(target: "airmash:position_update", "Update: {:?}", packet);
 
 					if !keystate.stealthed {
 						data.conns.send_to_all(packet);

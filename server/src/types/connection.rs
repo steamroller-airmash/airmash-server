@@ -1,14 +1,7 @@
 use types::ConnectionId;
 
 use fnv::FnvHashMap;
-use futures::stream::SplitSink;
-use futures::{AsyncSink, Sink};
 use specs::Entity;
-use websocket::async::{MessageCodec, TcpStream};
-// Can't change this yet since websocket has not updated
-#[allow(deprecated)]
-use websocket::client::async::Framed;
-use websocket::OwnedMessage;
 
 use std::net::IpAddr;
 use std::sync::mpsc::Sender;
@@ -16,12 +9,10 @@ use std::sync::Mutex;
 
 use protocol::ServerPacket;
 
-// Websocket hasn't updated, can't change this yet
-#[allow(deprecated)]
-pub type ConnectionSink = SplitSink<Framed<TcpStream, MessageCodec<OwnedMessage>>>;
+use ws::{self, Sender as WsSender};
 
 pub struct ConnectionData {
-	pub sink: ConnectionSink,
+	pub sink: WsSender,
 	pub id: ConnectionId,
 	pub ty: ConnectionType,
 	pub player: Option<Entity>,
@@ -76,13 +67,7 @@ impl Connections {
 		Connections(FnvHashMap::default(), Mutex::new(channel))
 	}
 
-	pub fn add(
-		&mut self,
-		id: ConnectionId,
-		sink: ConnectionSink,
-		addr: IpAddr,
-		origin: Option<String>,
-	) {
+	pub fn add(&mut self, id: ConnectionId, sink: WsSender, addr: IpAddr, origin: Option<String>) {
 		let data = ConnectionData {
 			sink: sink,
 			ty: ConnectionType::Inactive,
@@ -133,19 +118,8 @@ impl Connections {
 		conn.ty = ty;
 	}
 
-	pub fn send_sink(conn: &mut ConnectionSink, msg: OwnedMessage) {
-		conn.start_send(msg)
-			.and_then(|x| {
-				match x {
-					AsyncSink::Ready => (),
-					AsyncSink::NotReady(item) => {
-						conn.poll_complete().unwrap();
-						conn.start_send(item).unwrap();
-					}
-				}
-				Ok(())
-			})
-			.unwrap();
+	pub fn send_sink(conn: &mut WsSender, msg: ws::Message) {
+		conn.send(msg).unwrap();
 	}
 
 	pub fn send_to_player<I>(&self, player: Entity, msg: I)

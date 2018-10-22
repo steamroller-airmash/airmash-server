@@ -1,12 +1,11 @@
 use std::net::IpAddr;
-use std::sync::Mutex;
+use types::ConnectionId;
 
-use types::{ConnectionId, ConnectionSink};
-use websocket::OwnedMessage;
+use ws::Sender as WsSender;
 
 pub struct ConnectionOpen {
 	pub conn: ConnectionId,
-	pub sink: Mutex<Option<ConnectionSink>>,
+	pub sink: WsSender,
 	pub addr: IpAddr,
 	pub origin: Option<String>,
 }
@@ -19,7 +18,7 @@ pub struct ConnectionClose {
 #[derive(Clone, Debug)]
 pub struct Message {
 	pub conn: ConnectionId,
-	pub msg: OwnedMessage,
+	pub msg: Vec<u8>,
 }
 
 pub enum ConnectionEvent {
