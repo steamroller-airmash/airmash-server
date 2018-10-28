@@ -13,4 +13,6 @@ EXPOSE 3501
 
 COPY --from=0 /artifacts/airmash-server /app/airmash-server
 
+ENV RUST_LOG=info,ws=warn
+
 ENTRYPOINT [ "/app/airmash-server" ]
