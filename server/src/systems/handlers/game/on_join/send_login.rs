@@ -49,7 +49,8 @@ impl SendLogin {
 			&data.level,
 			&data.status,
 			&data.team,
-		).join()
+		)
+			.join()
 			.map({
 				|(ent, pos, rot, plane, name, flag, upgrades, level, status, team)| {
 					let powerups = data.powerups.get(ent);

@@ -67,7 +67,8 @@ impl<'a> System<'a> for ScoreBoardTimerHandler {
 				&data.join_time,
 				&data.pos,
 				data.is_player.mask(),
-			).join()
+			)
+				.join()
 				.map(|(ent, score, level, join_time, pos, ..)| {
 					let low_res_pos = if data.is_alive.get(ent) {
 						Some(*pos)

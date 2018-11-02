@@ -1,6 +1,6 @@
 use std::sync::atomic::{AtomicUsize, Ordering, ATOMIC_USIZE_INIT};
 
-use specs::DenseVecStorage;
+use specs::{DenseVecStorage, Component};
 
 pub use dimensioned::{Cbrt, Recip, Root, Sqrt};
 

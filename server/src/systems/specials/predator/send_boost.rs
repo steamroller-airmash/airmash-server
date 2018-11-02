@@ -1,8 +1,10 @@
 use shrev::*;
+use specs::prelude::ComponentEvent;
 use specs::*;
 
 use types::systemdata::*;
 use types::*;
+use utils::maybe_init::MaybeInit;
 
 use systems::specials::predator::SetBoostingFlag;
 use SystemInfo;
@@ -11,10 +13,11 @@ use component::flag::{IsBoosting, IsPlayer};
 
 use protocol::server::EventBoost;
 
+#[derive(Default)]
 pub struct SendEventBoost {
-	pub dirty: BitSet,
-	pub insert: Option<ReaderId<InsertedFlag>>,
-	pub remove: Option<ReaderId<RemovedFlag>>,
+	pub inserted: BitSet,
+	pub removed: BitSet,
+	pub changed: MaybeInit<ReaderId<ComponentEvent>>,
 }
 
 #[derive(SystemData)]
@@ -35,15 +38,7 @@ pub struct SendEventBoostData<'a> {
 }
 
 impl SendEventBoost {
-	pub fn new() -> Self {
-		Self {
-			dirty: Default::default(),
-			insert: None,
-			remove: None,
-		}
-	}
-
-	fn send_packets<'a>(&self, data: &SendEventBoostData<'a>, boost: bool) {
+	fn send_packets<'a>(&self, data: &SendEventBoostData<'a>, boost: bool, dirty: &BitSet) {
 		let clock = data.clock.get();
 
 		(
@@ -53,10 +48,11 @@ impl SendEventBoost {
 			&data.vel,
 			&data.energy,
 			&data.energy_regen,
-			&self.dirty,
+			dirty,
 			data.is_alive.mask(),
 			data.is_player.mask(),
-		).join()
+		)
+			.join()
 			.for_each(|(ent, pos, rot, vel, energy, energy_regen, _, _, _)| {
 				let packet = EventBoost {
 					id: ent.into(),
@@ -84,20 +80,27 @@ impl<'a> System<'a> for SendEventBoost {
 
 		let mut storage: WriteStorage<IsBoosting> = WriteStorage::fetch(&res);
 
-		self.insert = Some(storage.track_inserted());
-		self.remove = Some(storage.track_removed());
+		self.changed = MaybeInit::new(storage.register_reader());
 	}
 
 	fn run(&mut self, data: Self::SystemData) {
-		self.dirty.clear();
-		data.boosting
-			.populate_inserted(&mut self.insert.as_mut().unwrap(), &mut self.dirty);
-		self.send_packets(&data, true);
+		self.inserted.clear();
+		self.removed.clear();
 
-		self.dirty.clear();
-		data.boosting
-			.populate_removed(&mut self.remove.as_mut().unwrap(), &mut self.dirty);
-		self.send_packets(&data, false);
+		for event in data.boosting.channel().read(&mut self.changed) {
+			match event {
+				ComponentEvent::Inserted(id) => {
+					self.inserted.add(*id);
+				}
+				ComponentEvent::Removed(id) => {
+					self.removed.add(*id);
+				}
+				_ => (),
+			}
+		}
+
+		self.send_packets(&data, true, &self.inserted);
+		self.send_packets(&data, false, &self.removed);
 	}
 }
 
@@ -109,6 +112,6 @@ impl SystemInfo for SendEventBoost {
 	}
 
 	fn new() -> Self {
-		Self::new()
+		Self::default()
 	}
 }

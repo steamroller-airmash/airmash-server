@@ -51,7 +51,8 @@ impl<'a> System<'a> for MissileTerrainCollisionSystem {
 			&data.mob,
 			&data.team,
 			&data.flag,
-		).par_join()
+		)
+			.par_join()
 			.map(|(ent, pos, mob, team, _)| {
 				let mut collisions = vec![];
 
