@@ -37,11 +37,13 @@ impl<'a> System<'a> for CaptureFlag {
 			&mut data.carrier,
 			&data.flag,
 			&*data.ents,
-		).join()
+		)
+			.join()
 			.filter(|(pos, team, carrier, _, _)| {
 				// Filter out all flags that aren't within cap radius
 				(ctfconfig::FLAG_RETURN_POS[&team] - **pos).length2()
-					< *ctfconfig::CAP_RADIUS * *ctfconfig::CAP_RADIUS && carrier.0.is_some()
+					< *ctfconfig::CAP_RADIUS * *ctfconfig::CAP_RADIUS
+					&& carrier.0.is_some()
 			})
 			.for_each(|(pos, team, carrier, _, ent)| {
 				let captor = carrier.0.unwrap();

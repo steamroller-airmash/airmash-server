@@ -248,13 +248,11 @@ impl Default for MobInfos {
 	fn default() -> Self {
 		let mut map = FnvHashMap::default();
 
-		/*
-		Notes:
-			- Damage is normalized to the amount of
-			  damage that would be done to a goliath.
-			- This will then be multiplied by a factor
-			  specific to each plane type
-		*/
+		// Notes:
+		//   - Damage is normalized to the amount of
+		//     damage that would be done to a goliath.
+		//   - This will then be multiplied by a factor
+		//     specific to each plane type
 
 		map.insert(
 			MobType::PredatorMissile,

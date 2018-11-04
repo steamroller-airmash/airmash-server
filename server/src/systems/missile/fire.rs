@@ -31,7 +31,8 @@ impl<'a> System<'a> for MissileFireHandler {
 			&mut data.energy,
 			&data.lastshot,
 			data.fire_missile.is_alive.mask(),
-		).join()
+		)
+			.join()
 			.filter(|(_, _, keystate, ..)| keystate.fire)
 			.filter_map(|(ent, plane, _, energy, lastshot, ..)| {
 				let ref info = config.planes[*plane];

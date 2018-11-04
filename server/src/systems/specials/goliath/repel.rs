@@ -44,7 +44,8 @@ impl<'a> System<'a> for GoliathRepel {
 			&mut data.last_repel,
 			&data.is_player,
 			data.is_alive.mask(),
-		).join()
+		)
+			.join()
 			.filter(|(_, _, _, plane, ..)| **plane == Plane::Goliath)
 			.filter(|(_, _, energy, ..)| **energy > *GOLIATH_SPECIAL_ENERGY)
 			.filter(|(_, keystate, ..)| keystate.special)

@@ -53,7 +53,8 @@ impl<'a> System<'a> for SendScoreDetailed {
                 &data.deaths,
                 &data.damage,
                 &data.ping,
-            ).join()
+            )
+                .join()
                 .map(
                     |(ent, level, score, kills, deaths, damage, ping)| ScoreDetailedFFAEntry {
                         id: ent.into(),

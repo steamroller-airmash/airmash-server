@@ -11,8 +11,8 @@ use std::sync::mpsc::Sender;
 use status;
 
 use ws::{
-	self, CloseCode, Handler, Handshake, Message as WsMessage, Request, Response,
-	Result as WsResult, Sender as WsSender,
+	Builder, CloseCode, Handler, Handshake, Message as WsMessage, Request, Response,
+	Result as WsResult, Sender as WsSender, Settings,
 };
 
 struct MessageHandler {
@@ -41,10 +41,11 @@ impl Handler for MessageHandler {
 			return;
 		};
 
-		self.channel.send(ConnectionEvent::ConnectionClose(ConnectionClose { conn: self.id }))
-			.map_err(|e| {
-				error!(target: "server", "Channel send error: {}", e)
-			})
+		self.channel
+			.send(ConnectionEvent::ConnectionClose(ConnectionClose {
+				conn: self.id,
+			}))
+			.map_err(|e| error!(target: "server", "Channel send error: {}", e))
 			// Swallow error since if this errors
 			// we are most likely shutting down.
 			// The error will be logged anyway.
@@ -54,35 +55,33 @@ impl Handler for MessageHandler {
 	fn on_open(&mut self, shake: Handshake) -> WsResult<()> {
 		let (realaddr, origin) = get_real_ip(&shake)?;
 
-		self.channel.send(ConnectionEvent::ConnectionOpen(ConnectionOpen {
-			conn: self.id,
-			sink: self.sender.clone(),
-			addr: realaddr,
-			origin: origin,
-		}))
-		.map_err(|e| {
-			error!(target: "server", "Channel send error: {}", e)
-		})
-		// Swallow error since if this errors
-		// we are most likely shutting down.
-		// The error will be logged anyway.
-		.err();
+		self.channel
+			.send(ConnectionEvent::ConnectionOpen(ConnectionOpen {
+				conn: self.id,
+				sink: self.sender.clone(),
+				addr: realaddr,
+				origin: origin,
+			}))
+			.map_err(|e| error!(target: "server", "Channel send error: {}", e))
+			// Swallow error since if this errors
+			// we are most likely shutting down.
+			// The error will be logged anyway.
+			.err();
 
 		Ok(())
 	}
 
 	fn on_message(&mut self, msg: WsMessage) -> WsResult<()> {
-		self.channel.send(ConnectionEvent::Message(Message {
-			conn: self.id,
-			msg: msg.into_data(),
-		}))
-		.map_err(|e| {
-			error!(target: "server", "Channel send error: {}", e)
-		})
-		// Swallow error since if this errors
-		// we are most likely shutting down.
-		// The error will be logged anyway.
-		.err();
+		self.channel
+			.send(ConnectionEvent::Message(Message {
+				conn: self.id,
+				msg: msg.into_data(),
+			}))
+			.map_err(|e| error!(target: "server", "Channel send error: {}", e))
+			// Swallow error since if this errors
+			// we are most likely shutting down.
+			// The error will be logged anyway.
+			.err();
 
 		Ok(())
 	}
@@ -93,10 +92,11 @@ impl Handler for MessageHandler {
 		};
 		self.closed = true;
 
-		self.channel.send(ConnectionEvent::ConnectionClose(ConnectionClose { conn: self.id }))
-			.map_err(|e| {
-				error!(target: "server", "Channel send error: {}", e)
-			})
+		self.channel
+			.send(ConnectionEvent::ConnectionClose(ConnectionClose {
+				conn: self.id,
+			}))
+			.map_err(|e| error!(target: "server", "Channel send error: {}", e))
 			// Swallow error since if this errors
 			// we are most likely shutting down.
 			// The error will be logged anyway.
@@ -131,15 +131,26 @@ where
 		addr
 	);
 
-	let result = ws::listen(addr, move |out| MessageHandler {
-		id: ConnectionId::new(),
-		channel: channel.clone(),
-		sender: out,
-		closed: false,
+	let mut builder = Builder::new();
+	builder.with_settings(Settings {
+		max_connections: 512,
+		queue_size: 10,
+		..Default::default()
 	});
+
+	let result = builder
+		.build(move |out| MessageHandler {
+			id: ConnectionId::new(),
+			channel: channel.clone(),
+			sender: out,
+			closed: false,
+		})
+		.and_then(move |ws| ws.listen(addr));
 
 	if let Err(e) = result {
 		error!("Server failed with error {}", e);
-		// TODO: Maybe force shutdown here?
+	// TODO: Maybe force shutdown here?
+	} else {
+		info!("WS server shutting down");
 	}
 }

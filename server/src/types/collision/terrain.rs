@@ -26,7 +26,8 @@ impl Terrain {
 			rad: Distance::new(var[2] as f32),
 			layer: 0,
 			ent: ents.entity(0),
-		}).for_each(|hc| {
+		})
+		.for_each(|hc| {
 			for coord in intersected_buckets(hc.pos, hc.rad) {
 				buckets.get_or_insert(coord).push(hc);
 			}

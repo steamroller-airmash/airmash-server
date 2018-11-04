@@ -53,7 +53,8 @@ impl<'a> System<'a> for PlaneCollisionSystem {
 			&data.rot,
 			&data.planes,
 			&data.teams,
-		).par_join()
+		)
+			.par_join()
 			.map(|(ent, pos, rot, plane, team)| {
 				let mut collisions = vec![];
 

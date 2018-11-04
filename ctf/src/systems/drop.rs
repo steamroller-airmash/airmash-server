@@ -78,7 +78,8 @@ impl<'a> System<'a> for DropSystem {
 				&mut carrier,
 				&mut lastdrop,
 				&*entities,
-			).join()
+			)
+				.join()
 				.filter(|(_, _, _, carrier, _, _)| {
 					carrier.0.is_some() && carrier.0.unwrap() == player
 				})

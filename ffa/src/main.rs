@@ -23,6 +23,7 @@ use airmash_server::*;
 
 fn main() {
     env::set_var("RUST_BACKTRACE", "1");
+    env::set_var("RUST_LOG", "info");
     env_logger::init();
 
     let mut server = AirmashServer::new("0.0.0.0:3501")

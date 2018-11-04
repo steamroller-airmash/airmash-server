@@ -75,18 +75,19 @@ impl<'a> System<'a> for LoginHandler {
 				let url = Url::parse(&url).unwrap();
 				let client = Arc::clone(&self.client);
 
-				let is_bot = is_bot || match client.get(url).send() {
-					Ok(mut v) => {
-						let mut s = "".to_owned();
-						v.read_to_string(&mut s).ok();
+				let is_bot = is_bot
+					|| match client.get(url).send() {
+						Ok(mut v) => {
+							let mut s = "".to_owned();
+							v.read_to_string(&mut s).ok();
 
-						match s.parse() {
-							Ok(v) => v,
-							Err(_) => false,
+							match s.parse() {
+								Ok(v) => v,
+								Err(_) => false,
+							}
 						}
-					}
-					Err(_) => false,
-				};
+						Err(_) => false,
+					};
 
 				if is_bot {
 					event.ty = *LOGIN_FAILED;
