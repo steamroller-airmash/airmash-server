@@ -64,7 +64,8 @@ impl<'a> System<'a> for AwardBounty {
 				&data.deaths,
 				&data.upgrades,
 				data.is_player.mask(),
-			).join()
+			)
+				.join()
 				.filter(|(player_team, ..)| team == **player_team)
 				.for_each(
 					|(_, score, player, earnings, kills, deaths, upgrades, ..)| {

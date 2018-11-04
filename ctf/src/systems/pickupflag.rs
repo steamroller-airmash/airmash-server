@@ -55,7 +55,8 @@ impl<'a> System<'a> for PickupFlagSystem {
 			&data.carrier,
 			&data.is_flag,
 			&data.lastdrop,
-		).join()
+		)
+			.join()
 			.map(|(ent, pos, team, carrier, _, lastdrop)| (ent, *pos, *team, *carrier, *lastdrop))
 			.collect::<Vec<(Entity, Position, Team, FlagCarrier, LastDrop)>>();
 
@@ -72,7 +73,8 @@ impl<'a> System<'a> for PickupFlagSystem {
 				&data.plane,
 				data.is_alive.mask(),
 				&data.keystate,
-			).join()
+			)
+				.join()
 				.filter(|(_, _, p_team, ..)| f_team != **p_team)
 				.filter(|(ent, ..)| {
 					// Check against time-since-drop

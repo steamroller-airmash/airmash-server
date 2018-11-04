@@ -11,8 +11,8 @@ use std::sync::mpsc::Sender;
 use status;
 
 use ws::{
-	self, CloseCode, Handler, Handshake, Message as WsMessage, Request, Response,
-	Result as WsResult, Sender as WsSender,
+	Builder, CloseCode, Handler, Handshake, Message as WsMessage, Request, Response,
+	Result as WsResult, Sender as WsSender, Settings,
 };
 
 struct MessageHandler {
@@ -131,15 +131,26 @@ where
 		addr
 	);
 
-	let result = ws::listen(addr, move |out| MessageHandler {
-		id: ConnectionId::new(),
-		channel: channel.clone(),
-		sender: out,
-		closed: false,
+	let mut builder = Builder::new();
+	builder.with_settings(Settings {
+		max_connections: 512,
+		queue_size: 10,
+		..Default::default()
 	});
+
+	let result = builder
+		.build(move |out| MessageHandler {
+			id: ConnectionId::new(),
+			channel: channel.clone(),
+			sender: out,
+			closed: false,
+		})
+		.and_then(move |ws| ws.listen(addr));
 
 	if let Err(e) = result {
 		error!("Server failed with error {}", e);
-		// TODO: Maybe force shutdown here?
+	// TODO: Maybe force shutdown here?
+	} else {
+		info!("WS server shutting down");
 	}
 }
