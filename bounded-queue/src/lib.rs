@@ -1,4 +1,6 @@
-//! Fast, zero-allocation, bounded queue implementation.
+//! Fast, zero-allocation*, bounded queue implementation.
+//! 
+//! * Except on queue creation.
 
 use std::mem;
 
