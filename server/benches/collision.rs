@@ -22,9 +22,9 @@ fn generate_circles() -> Vec<HitCircle> {
 	let mut circles = vec![];
 
 	for _ in 0..16000 {
-		let x: f32 = rand::random();
-		let y: f32 = rand::random();
-		let r: f32 = rand::random();
+		let x: f32 = rand::random() * 32768.0;
+		let y: f32 = rand::random() * 16384.0;
+		let r: f32 = rand::random() * 35.0;
 
 		circles.push(HitCircle {
 			pos: Position::new(x, y),

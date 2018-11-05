@@ -56,21 +56,17 @@ impl<'a> System<'a> for MissileTerrainCollisionSystem {
 			.map(|(ent, pos, mob, team, _)| {
 				let mut collisions = vec![];
 
-				for (offset, rad) in COLLIDERS[mob].iter() {
-					let hc = HitCircle {
-						pos: *pos + *offset,
-						rad: *rad,
-						layer: team.0,
-						ent: ent,
-					};
-
-					for coord in intersected_buckets(hc.pos, hc.rad) {
-						match self.terrain.buckets.get(coord) {
-							Some(bucket) => bucket.collide(hc, &mut collisions),
-							None => (),
+				let it = COLLIDERS[mob].iter()
+					.map(|(offset, rad)| {
+						HitCircle {
+							pos: *pos + *offset,
+							rad: *rad,
+							layer: team.0,
+							ent: ent,
 						}
-					}
-				}
+					});
+
+				self.terrain.collide(it, &mut collisions);
 
 				collisions
 					.into_iter()

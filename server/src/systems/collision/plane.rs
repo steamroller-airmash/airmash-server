@@ -58,24 +58,18 @@ impl<'a> System<'a> for PlaneCollisionSystem {
 			.map(|(ent, pos, rot, plane, team)| {
 				let mut collisions = vec![];
 
-				(*PLANE_HIT_CIRCLES)[plane].iter().for_each(|hc| {
+				let it = (*PLANE_HIT_CIRCLES)[plane].iter().map(|hc| {
 					let offset = hc.offset.rotate(*rot);
 
-					let circle = HitCircle {
+				  HitCircle {
 						pos: *pos + offset,
 						rad: hc.radius,
 						layer: team.0,
 						ent: ent,
-					};
-
-					for coord in intersected_buckets(circle.pos, hc.radius) {
-						trace!(target: "server", "Added to bucket {:?}", coord);
-						match self.terrain.buckets.get(coord) {
-							Some(bucket) => bucket.collide(circle, &mut collisions),
-							None => (),
-						}
 					}
 				});
+
+				self.terrain.collide(it, &mut collisions);
 
 				collisions
 					.into_iter()

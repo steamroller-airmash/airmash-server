@@ -54,9 +54,7 @@ impl<'a> System<'a> for PlayerMissileCollisionSystem {
 			missile_flag,
 		} = data;
 
-		let mut buckets = Array2D::<Bucket>::new(BUCKETS_X, BUCKETS_Y);
-
-		(
+		let it = (
 			&*ent,
 			&pos,
 			&rot,
@@ -66,43 +64,39 @@ impl<'a> System<'a> for PlayerMissileCollisionSystem {
 			isalive.mask(),
 		)
 			.join()
-			.for_each(|(ent, pos, rot, team, plane, ..)| {
-				PLANE_HIT_CIRCLES[plane].iter().for_each(|hc| {
-					let offset = hc.offset.rotate(*rot);
+			.map(|(ent, &pos, &rot, &team, &plane, ..)| {
+				PLANE_HIT_CIRCLES[&plane].iter().map(move |hc| {
+					let offset = hc.offset.rotate(rot);
 
-					let circle = HitCircle {
-						pos: *pos + offset,
+					HitCircle {
+						pos: pos + offset,
 						rad: hc.radius,
 						layer: team.0,
 						ent: ent,
-					};
-
-					for coord in intersected_buckets(circle.pos, circle.rad) {
-						buckets.get_or_insert(coord).push(circle);
 					}
-				});
-			});
+				})
+			})
+			.flatten()
+			.collect();
+
+		let grid = Grid::new(it);
 
 		let collisions = (&*ent, &pos, &team, &mob, &missile_flag)
 			.par_join()
-			.map(|(ent, pos, team, mob, _)| {
+			.map(|(ent, &pos, &team, &mob, _)| {
 				let mut collisions = vec![];
 
-				for (offset, rad) in COLLIDERS[mob].iter() {
-					let hc = HitCircle {
-						pos: *pos + *offset,
-						rad: *rad,
-						layer: team.0,
-						ent: ent,
-					};
-
-					for coord in intersected_buckets(hc.pos, hc.rad) {
-						match buckets.get(coord) {
-							Some(bucket) => bucket.collide(hc, &mut collisions),
-							None => (),
+				let it = COLLIDERS[&mob].iter()
+					.map(move |(offset, rad)| {
+						HitCircle {
+							pos: pos + *offset,
+							rad: *rad,
+							layer: team.0,
+							ent: ent,
 						}
-					}
-				}
+					});
+
+				grid.collide(it, &mut collisions);
 
 				collisions
 			})
