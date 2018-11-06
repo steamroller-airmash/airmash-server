@@ -157,12 +157,10 @@ impl Grid {
 					if let Some(&(start, len)) = self.buckets.get(&(x, y)) {
 						for i in start..len {
 							let hc2 = self.circles[i as usize];
-
-							let dx = hc2.pos.x - hc.pos.x;
-							let dy = hc2.pos.y - hc.pos.y;
 							let r = hc2.rad + hc.rad;
+							let dist2 = (hc.pos - hc2.pos).length2();
 
-							if dx * dx + dy * dy < r * r && hc2.layer != hc.layer {
+							if dist2 < r * r && hc2.layer != hc.layer {
 								out.push(Collision(hc, hc2));
 							}
 						}

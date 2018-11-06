@@ -4,12 +4,6 @@ use types::*;
 
 use types::collision::*;
 
-// Buckets are configurable here
-pub const BUCKETS_Y: usize = 64;
-pub const BUCKETS_X: usize = BUCKETS_Y * 2;
-pub const BUCKET_WIDTH: f32 = (32768.0 / ((BUCKETS_Y * 2) as f64)) as f32;
-pub const BUCKET_HEIGHT: f32 = (32768.0 / (BUCKETS_Y as f64)) as f32;
-
 #[derive(Default, Debug)]
 pub struct Terrain {
 	pub buckets: Grid,
