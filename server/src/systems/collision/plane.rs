@@ -61,7 +61,7 @@ impl<'a> System<'a> for PlaneCollisionSystem {
 				let it = (*PLANE_HIT_CIRCLES)[plane].iter().map(|hc| {
 					let offset = hc.offset.rotate(*rot);
 
-				  HitCircle {
+					HitCircle {
 						pos: *pos + offset,
 						rad: hc.radius,
 						layer: team.0,

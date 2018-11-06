@@ -56,15 +56,12 @@ impl<'a> System<'a> for MissileTerrainCollisionSystem {
 			.map(|(ent, pos, mob, team, _)| {
 				let mut collisions = vec![];
 
-				let it = COLLIDERS[mob].iter()
-					.map(|(offset, rad)| {
-						HitCircle {
-							pos: *pos + *offset,
-							rad: *rad,
-							layer: team.0,
-							ent: ent,
-						}
-					});
+				let it = COLLIDERS[mob].iter().map(|(offset, rad)| HitCircle {
+					pos: *pos + *offset,
+					rad: *rad,
+					layer: team.0,
+					ent: ent,
+				});
 
 				self.terrain.collide(it, &mut collisions);
 

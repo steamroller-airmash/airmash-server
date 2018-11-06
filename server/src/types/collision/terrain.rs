@@ -32,9 +32,9 @@ impl Terrain {
 				pos: Position::new(var[0] as f32, var[1] as f32),
 				rad: Distance::new(var[2] as f32),
 				layer: 0,
-				ent: ent
+				ent: ent,
 			})
-			.collect()
+			.collect(),
 		);
 
 		Self { buckets: grid }
@@ -44,9 +44,9 @@ impl Terrain {
 		Self::new(TERRAIN.iter(), ents)
 	}
 
-	pub fn collide<I>(&self, it: I, out: &mut Vec<Collision>) 
+	pub fn collide<I>(&self, it: I, out: &mut Vec<Collision>)
 	where
-		I: Iterator<Item = HitCircle>
+		I: Iterator<Item = HitCircle>,
 	{
 		self.buckets.collide(it, out)
 	}

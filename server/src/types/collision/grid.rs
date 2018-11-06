@@ -1,9 +1,9 @@
-
-use types::collision::{HitCircle, Collision};
 use hashbrown::HashMap;
 use std::cmp::Ordering;
 
-const BUCKETS_X: u32 = 512;
+use types::collision::{Collision, HitCircle};
+
+const BUCKETS_X: u32 = BUCKETS_Y * 2;
 const BUCKETS_Y: u32 = 512;
 const BOUND_X: f32 = 16384.0;
 const BOUND_Y: f32 = 8192.0;
@@ -12,10 +12,51 @@ const BUCKET_Y: f32 = (16384 / 512) as f32;
 const INV_BX: f32 = 1.0 / BUCKET_X;
 const INV_BY: f32 = 1.0 / BUCKET_Y;
 
+/// Efficient spatial-index for collision checking.
+///
+/// This is a lookup structure to efficiently check
+/// for circle-circle collisions without having `O(n^2)`
+/// runtime in the average case. The way it works is
+/// by putting circles into buckets, the number of
+/// buckets is stored in `BUCKETS_X` and `BUCKETS_Y` in
+/// the source file of this struct.
+///
+/// When checking a circle `x` for a collision, the
+/// buckets are used as a preliminary filter to quickly
+/// get a set of possible colliding circles. After that
+/// they are checked linearly (`O(n)` for each circle).
+///
+/// # Caveats
+/// - This can still be `O(n^2)` worst case if all the
+///   circles are in a single bucket. (e.g. if there
+///   are multiple planes and missiles in the same
+///   bucket.)
+/// - Constructing the `Grid` is `O(n log n)` since the
+///   source array must be sorted.
+///
+/// # Example
+/// Creating a grid from a list of circles.
+/// ```
+/// # extern crate airmash_server;
+/// # use airmash_server::types::collision::{Grid, HitCircle};
+/// # fn main() {
+/// # let circles_from_elsewhere = return;
+/// // Hit circles from terrain, planes, etc.
+/// let circles: Vec<HitCircle> = circles_from_elsewhere;
+///
+/// // Grid takes ownership of the hitcircle vector
+/// let grid = Grid::new(circles);
+/// # }
+/// ```
+///
+/// # Notes
+/// - Due to (current) bucket sizes no bucket will
+///   contain more than 1 terrain hitcircle.
 #[derive(Clone, Default, Debug)]
 pub struct Grid {
 	circles: Vec<HitCircle>,
 	buckets: HashMap<(u32, u32), (u32, u32)>,
+	max_r: f32,
 }
 
 fn bucket(a: &HitCircle) -> (u32, u32) {
@@ -36,6 +77,7 @@ fn spatial_sort(a: &HitCircle, b: &HitCircle) -> Ordering {
 }
 
 impl Grid {
+	/// Create a new `Grid` from a list of hit circles.
 	pub fn new(mut circles: Vec<HitCircle>) -> Self {
 		circles.sort_by(spatial_sort);
 
@@ -44,11 +86,18 @@ impl Grid {
 		let mut current = (0, 0);
 		let mut i = 0;
 		let mut bucket_start = 0;
+		let mut max_r = 0.0.into();
 		for hc in &circles {
 			let b = bucket(hc);
 
+			if hc.rad.inner() > max_r {
+				max_r = hc.rad.inner();
+			}
+
 			if b != current {
-				buckets.insert(current, (bucket_start, i));
+				if i != bucket_start {
+					buckets.insert(current, (bucket_start, i));
+				}
 				bucket_start = i;
 				current = b;
 			}
@@ -56,30 +105,47 @@ impl Grid {
 			i += 1;
 		}
 
-		Self { circles, buckets }
+		Self {
+			circles,
+			buckets,
+			max_r,
+		}
 	}
 
-	pub fn collide<I>(&self, b: I, out: &mut Vec<Collision>) 
+	/// Collide a number of circles against all circles
+	/// currently within the grid.
+	///
+	/// # Notes
+	/// Eventually the return type of this function will
+	/// be replaced with a generator once generators are
+	/// available on stable. This will prevent having to
+	/// allocate a vec when doing collision checking.
+	pub fn collide<I>(&self, b: I, out: &mut Vec<Collision>)
 	where
-		I: Iterator<Item = HitCircle>
+		I: Iterator<Item = HitCircle>,
 	{
 		for hc in b {
 			let b = bucket(&hc);
 
-			let range = (hc.rad.inner() * INV_BX) as u32;
+			// Largest radii that need to be checked in each direction.
+			// If this is larger than it needs to be, then the algorithm
+			// will be slower, but if it's too small then collisions that
+			// are supposed to be found will be missed
+			let rx = ((hc.rad.inner() + self.max_r + BUCKET_X) * INV_BX) as u32;
+			let ry = ((hc.rad.inner() + self.max_r + BUCKET_Y) * INV_BY) as u32;
 			let range_x = (
-				if range > b.0 { 0 } else { b.0 - range },
-				(range + b.0).min(BUCKETS_X)
+				if rx > b.0 { 0 } else { b.0 - rx },
+				(rx + b.0 + 1).min(BUCKETS_X),
 			);
 			let range_y = (
-				if range > b.1 { 0 } else { b.1 - range },
-				(range + b.1).min(BUCKETS_Y)
+				if ry > b.1 { 0 } else { b.1 - ry },
+				(ry + b.1 + 1).min(BUCKETS_Y),
 			);
 
-			for x in range_x.0 .. range_x.1 {
-				for y in range_y.0 .. range_y.1 {
-					if let Some(&(start, idx)) = self.buckets.get(&(x, y)) {
-						for i in start..idx {
+			for x in range_x.0..range_x.1 {
+				for y in range_y.0..range_y.1 {
+					if let Some(&(start, len)) = self.buckets.get(&(x, y)) {
+						for i in start..len {
 							let hc2 = self.circles[i as usize];
 
 							let dx = hc2.pos.x - hc.pos.x;
