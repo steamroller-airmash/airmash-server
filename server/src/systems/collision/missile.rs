@@ -54,8 +54,6 @@ impl<'a> System<'a> for MissileTerrainCollisionSystem {
 		)
 			.par_join()
 			.map(|(ent, pos, mob, team, _)| {
-				let mut collisions = vec![];
-
 				let it = COLLIDERS[mob].iter().map(|(offset, rad)| HitCircle {
 					pos: *pos + *offset,
 					rad: *rad,
@@ -63,9 +61,7 @@ impl<'a> System<'a> for MissileTerrainCollisionSystem {
 					ent: ent,
 				});
 
-				self.terrain.collide(it, &mut collisions);
-
-				collisions
+				self.terrain.collide(it)
 					.into_iter()
 					.map(|x| MissileTerrainCollision(x))
 					.collect::<Vec<MissileTerrainCollision>>()

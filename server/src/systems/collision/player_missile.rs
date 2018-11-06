@@ -2,14 +2,12 @@ use fnv::FnvHashSet;
 use specs::prelude::*;
 
 use types::collision::*;
-use types::systemdata::IsAlive;
 use types::*;
 
 use component::channel::*;
 use component::event::PlayerMissileCollision;
 use component::flag::*;
-
-use consts::config::PLANE_HIT_CIRCLES;
+use component::collision::PlaneGrid;
 
 pub struct PlayerMissileCollisionSystem;
 
@@ -17,16 +15,12 @@ pub struct PlayerMissileCollisionSystem;
 pub struct PlayerMissileCollisionSystemData<'a> {
 	pub channel: Write<'a, OnPlayerMissileCollision>,
 	pub ent: Entities<'a>,
-
-	pub pos: ReadStorage<'a, Position>,
-	pub rot: ReadStorage<'a, Rotation>,
-	pub team: ReadStorage<'a, Team>,
-	pub plane: ReadStorage<'a, Plane>,
-	pub player_flag: ReadStorage<'a, IsPlayer>,
-	pub isalive: IsAlive<'a>,
+	pub grid: Read<'a, PlaneGrid>,
 
 	pub mob: ReadStorage<'a, Mob>,
 	pub missile_flag: ReadStorage<'a, IsMissile>,
+	pub pos: ReadStorage<'a, Position>,
+	pub team: ReadStorage<'a, Team>,
 }
 
 impl PlayerMissileCollisionSystem {
@@ -43,49 +37,19 @@ impl<'a> System<'a> for PlayerMissileCollisionSystem {
 			mut channel,
 			ent,
 
+			grid,
 			pos,
-			rot,
 			team,
-			plane,
-			player_flag,
-			isalive,
 
 			mob,
 			missile_flag,
 		} = data;
 
-		let it = (
-			&*ent,
-			&pos,
-			&rot,
-			&team,
-			&plane,
-			&player_flag,
-			isalive.mask(),
-		)
-			.join()
-			.map(|(ent, &pos, &rot, &team, &plane, ..)| {
-				PLANE_HIT_CIRCLES[&plane].iter().map(move |hc| {
-					let offset = hc.offset.rotate(rot);
-
-					HitCircle {
-						pos: pos + offset,
-						rad: hc.radius,
-						layer: team.0,
-						ent: ent,
-					}
-				})
-			})
-			.flatten()
-			.collect();
-
-		let grid = Grid::new(it);
+		let grid = &grid.0;
 
 		let collisions = (&*ent, &pos, &team, &mob, &missile_flag)
 			.par_join()
 			.map(|(ent, &pos, &team, &mob, _)| {
-				let mut collisions = vec![];
-
 				let it = COLLIDERS[&mob].iter().map(move |(offset, rad)| HitCircle {
 					pos: pos + *offset,
 					rad: *rad,
@@ -93,9 +57,7 @@ impl<'a> System<'a> for PlayerMissileCollisionSystem {
 					ent: ent,
 				});
 
-				grid.collide(it, &mut collisions);
-
-				collisions
+				grid.collide(it)
 			})
 			.flatten()
 			.map(|x| PlayerMissileCollision(x))
@@ -107,9 +69,10 @@ impl<'a> System<'a> for PlayerMissileCollisionSystem {
 
 use dispatch::SystemInfo;
 use systems::PositionUpdate;
+use systems::collision::GenPlaneGrid;
 
 impl SystemInfo for PlayerMissileCollisionSystem {
-	type Dependencies = PositionUpdate;
+	type Dependencies = (PositionUpdate, GenPlaneGrid);
 
 	fn name() -> &'static str {
 		concat!(module_path!(), "::", line!())

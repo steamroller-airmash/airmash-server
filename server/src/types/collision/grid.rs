@@ -114,13 +114,23 @@ impl Grid {
 
 	/// Collide a number of circles against all circles
 	/// currently within the grid.
-	///
+	pub fn collide<I>(&self, b: I) -> Vec<Collision> 
+	where
+		I: Iterator<Item = HitCircle>,
+	{
+		let mut result = vec![];
+		self.collide_nocopy(b, &mut result);
+		result
+	}
+	/// Collide a number of circles against all circles
+	/// currently within the grid.
+	/// 
 	/// # Notes
 	/// Eventually the return type of this function will
 	/// be replaced with a generator once generators are
 	/// available on stable. This will prevent having to
 	/// allocate a vec when doing collision checking.
-	pub fn collide<I>(&self, b: I, out: &mut Vec<Collision>)
+	pub fn collide_nocopy<I>(&self, b: I, out: &mut Vec<Collision>)
 	where
 		I: Iterator<Item = HitCircle>,
 	{
@@ -160,5 +170,13 @@ impl Grid {
 				}
 			}
 		}
+	}
+
+	pub fn into_inner(self) -> Vec<HitCircle> {
+		self.circles
+	}
+
+	pub fn iter(&self) -> impl Iterator<Item = &HitCircle> {
+		self.circles.iter()
 	}
 }

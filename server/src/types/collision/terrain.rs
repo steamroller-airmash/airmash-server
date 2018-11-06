@@ -44,10 +44,10 @@ impl Terrain {
 		Self::new(TERRAIN.iter(), ents)
 	}
 
-	pub fn collide<I>(&self, it: I, out: &mut Vec<Collision>)
+	pub fn collide<I>(&self, it: I) -> Vec<Collision>
 	where
 		I: Iterator<Item = HitCircle>,
 	{
-		self.buckets.collide(it, out)
+		self.buckets.collide(it)
 	}
 }

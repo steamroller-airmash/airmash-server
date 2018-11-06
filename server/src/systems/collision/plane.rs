@@ -56,8 +56,6 @@ impl<'a> System<'a> for PlaneCollisionSystem {
 		)
 			.par_join()
 			.map(|(ent, pos, rot, plane, team)| {
-				let mut collisions = vec![];
-
 				let it = (*PLANE_HIT_CIRCLES)[plane].iter().map(|hc| {
 					let offset = hc.offset.rotate(*rot);
 
@@ -69,9 +67,7 @@ impl<'a> System<'a> for PlaneCollisionSystem {
 					}
 				});
 
-				self.terrain.collide(it, &mut collisions);
-
-				collisions
+				self.terrain.collide(it)
 					.into_iter()
 					.map(|x| PlayerTerrainCollision(x))
 					.collect::<Vec<PlayerTerrainCollision>>()
