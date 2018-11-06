@@ -22,9 +22,9 @@ fn generate_circles() -> Vec<HitCircle> {
 	let mut circles = vec![];
 
 	for _ in 0..16000 {
-		let x: f32 = rand::random() * 32768.0;
-		let y: f32 = rand::random() * 16384.0;
-		let r: f32 = rand::random() * 35.0;
+		let x: f32 = rand::random::<f32>() * 32768.0;
+		let y: f32 = rand::random::<f32>() * 16384.0;
+		let r: f32 = rand::random::<f32>() * 35.0;
 
 		circles.push(HitCircle {
 			pos: Position::new(x, y),
@@ -49,14 +49,7 @@ fn terrain_collision(b: &mut Bencher) {
 	b.iter(move || {
 		let mut vec = vec![];
 
-		for circle in &circles {
-			for coord in intersected_buckets(circle.pos, circle.rad) {
-				match terrain.buckets.get(coord) {
-					Some(bucket) => bucket.collide(*circle, &mut vec),
-					None => (),
-				}
-			}
-		}
+		terrain.collide(circles.iter().cloned(), &mut vec);
 
 		vec
 	})
