@@ -8,4 +8,5 @@ pub fn register<'a, 'b>(disp: Builder<'a, 'b>) -> Builder<'a, 'b> {
 		.with::<PlayerUpgradeCollisionSystem>()
 		.with::<BounceSystem>()
 		.with::<MissileExplodeSystem>()
+		.with::<GenPlaneGrid>()
 }

@@ -37,33 +37,3 @@ impl HitCircle {
 		(a.pos - b.pos).length2() < (a.rad + b.rad) * (a.rad + b.rad)
 	}
 }
-
-impl Bucket {
-	pub fn new() -> Self {
-		Self::default()
-	}
-
-	pub fn push(&mut self, obj: HitCircle) {
-		self.elems.push(obj)
-	}
-	pub fn clear(&mut self) {
-		self.elems.clear()
-	}
-
-	/// Checks all hit circles within this bucket
-	/// for pairwise collisions. Will not return
-	/// a collision multiple times. Note that
-	/// hit circles within the same layer cannot
-	/// collide with each other.
-	pub fn collide(&self, hc: HitCircle, out: &mut Vec<Collision>) {
-		let len = self.elems.len();
-
-		for i in 0..len {
-			let a = &self.elems[i];
-
-			if a.layer != hc.layer && HitCircle::intersects(a, &hc) {
-				out.push(Collision(*a, hc))
-			}
-		}
-	}
-}
