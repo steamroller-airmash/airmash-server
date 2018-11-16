@@ -14,4 +14,7 @@ use systems;
 
 pub type AllPlayerPowerupSystems = (TriggerUpdate);
 
-pub type KnownEventSources = (systems::admin::GivePowerup);
+pub type KnownEventSources = (
+	systems::admin::GivePowerup,
+	systems::handlers::game::on_player_respawn::GiveShield,
+);
