@@ -46,11 +46,5 @@ fn terrain_collision(b: &mut Bencher) {
 	let circles = generate_circles();
 	let terrain = Terrain::with_entity(TERRAIN.iter(), ent);
 
-	b.iter(move || {
-		let mut vec = vec![];
-
-		terrain.collide(circles.iter().cloned(), &mut vec);
-
-		vec
-	})
+	b.iter(move || terrain.collide(circles.iter().cloned()))
 }

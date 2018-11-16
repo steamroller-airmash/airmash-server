@@ -114,7 +114,7 @@ impl Grid {
 
 	/// Collide a number of circles against all circles
 	/// currently within the grid.
-	pub fn collide<I>(&self, b: I) -> Vec<Collision> 
+	pub fn collide<I>(&self, b: I) -> Vec<Collision>
 	where
 		I: Iterator<Item = HitCircle>,
 	{
@@ -124,7 +124,7 @@ impl Grid {
 	}
 	/// Collide a number of circles against all circles
 	/// currently within the grid.
-	/// 
+	///
 	/// # Notes
 	/// Eventually the return type of this function will
 	/// be replaced with a generator once generators are

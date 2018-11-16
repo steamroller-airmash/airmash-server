@@ -166,6 +166,15 @@ where
 		self
 	}
 
+	#[doc(hidden)]
+	/// For use with testing, builds all the systems
+	/// and throws away the resulting dispatcher.
+	/// This will panic if there are any dependency
+	/// loops among the systems.
+	pub fn test_build_systems(self) {
+		let _ = self.builder.build();
+	}
+
 	pub fn with_engine(self) -> Self {
 		self.with_engine_systems()
 			.with_engine_resources()
