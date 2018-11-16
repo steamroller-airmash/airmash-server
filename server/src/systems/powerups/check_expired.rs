@@ -9,6 +9,8 @@ use component::channel::OnPowerupExpired;
 use component::event::PowerupExpired;
 use component::time::ThisFrame;
 
+use systems::handlers::game::on_player_powerup::SetPowerupLifetime;
+
 #[derive(Default)]
 pub struct CheckExpired;
 
@@ -35,23 +37,18 @@ impl<'a> System<'a> for CheckExpired {
 
 		let mut ents = vec![];
 
-		{
-			let events = (&*entities, &mut powerups, is_alive.mask())
-				.join()
-				.filter(|(_, powerup, ..)| powerup.end_time > this_frame.0)
-				.map(|(ent, powerup, ..)| {
-					ents.push(ent);
+		(&*entities, &mut powerups, is_alive.mask())
+			.join()
+			.filter(|(_, powerup, ..)| powerup.end_time > this_frame.0)
+			.map(|(ent, powerup, ..)| {
+				ents.push(ent);
 
-					PowerupExpired {
-						player: ent,
-						ty: powerup.ty,
-					}
-				});
-
-			for evt in events {
-				channel.single_write(evt);
-			}
-		}
+				PowerupExpired {
+					player: ent,
+					ty: powerup.ty,
+				}
+			})
+			.for_each(|evt| channel.single_write(evt));
 
 		for ent in ents {
 			powerups.remove(ent).unwrap();
@@ -60,7 +57,7 @@ impl<'a> System<'a> for CheckExpired {
 }
 
 impl SystemInfo for CheckExpired {
-	type Dependencies = ();
+	type Dependencies = (SetPowerupLifetime);
 
 	fn name() -> &'static str {
 		concat!(module_path!(), "::", line!())

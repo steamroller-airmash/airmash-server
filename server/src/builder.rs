@@ -171,7 +171,7 @@ where
 	/// and throws away the resulting dispatcher.
 	/// This will panic if there are any dependency
 	/// loops among the systems.
-	pub fn test_build_systems(mut self) {
+	pub fn test_build_systems(self) {
 		let _ = self.builder.build();
 	}
 
