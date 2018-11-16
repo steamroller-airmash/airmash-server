@@ -40,6 +40,7 @@ serde_json = "1.0"
 ws = "*"
 futures = "*"
 hyper = "0.10"
+hashbrown = "*"
 
 [dependencies.airmash-protocol]
 version = "0.2"

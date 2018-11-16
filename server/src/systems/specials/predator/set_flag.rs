@@ -38,7 +38,8 @@ impl<'a> System<'a> for SetBoostingFlag {
 			keystate.mask(),
 			&mut data.energy_regen,
 			&*data.entities,
-		).join()
+		)
+			.join()
 			.filter(|(plane, _, _, _, _)| **plane == PlaneType::Predator)
 			.for_each(|(_, energy, _, energy_regen, ent)| {
 				let keystate = keystate.get(ent).unwrap();

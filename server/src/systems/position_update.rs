@@ -1,7 +1,9 @@
+use specs::prelude::ComponentEvent;
 use specs::*;
 use systems;
 use types::systemdata::*;
 use types::*;
+use utils::maybe_init::MaybeInit;
 
 use SystemInfo;
 
@@ -31,9 +33,10 @@ const FRAC_PI_2: Rotation = Rotation {
 
 /// Updates positions of all players in the game. Also
 /// sends updates every time a player
+#[derive(Default)]
 pub struct PositionUpdate {
 	dirty: BitSet,
-	modify_reader: Option<ReaderId<ModifiedFlag>>,
+	modify_reader: MaybeInit<ReaderId<ComponentEvent>>,
 }
 
 #[derive(SystemData)]
@@ -58,10 +61,7 @@ pub struct PositionUpdateData<'a> {
 
 impl PositionUpdate {
 	pub fn new() -> Self {
-		Self {
-			dirty: BitSet::default(),
-			modify_reader: None,
-		}
+		Self::default()
 	}
 
 	fn step_players<'a>(data: &mut PositionUpdateData<'a>, config: &Read<'a, Config>) {
@@ -90,7 +90,8 @@ impl PositionUpdate {
 			&*upgrades,
 			&*planes,
 			is_alive.mask() & is_player.mask(),
-		).join()
+		)
+			.join()
 			.map(|(ent, pos, rot, vel, keystate, upgrades, plane, ..)| {
 				let powerups = powerups.get(ent);
 				(pos, rot, vel, keystate, upgrades, powerups, plane)
@@ -208,7 +209,8 @@ impl PositionUpdate {
 			lastupdate,
 			// Update if dirty, or forced to do so
 			(&self.dirty | data.force_update.mask()) & data.is_alive.mask(),
-		).join()
+		)
+			.join()
 			.map(
 				|(ent, pos, rot, vel, plane, keystate, upgrades, lastupdate, ..)| {
 					let powerups = data.powerups.get(ent);
@@ -267,7 +269,8 @@ impl PositionUpdate {
 			&data.upgrades,
 			&*data.entities,
 			data.is_alive.mask(),
-		).join()
+		)
+			.join()
 			.filter(|(lastupdate, ..)| lastupdate.0.elapsed() > Duration::from_secs(1))
 			.map(
 				|(lastupdate, pos, rot, vel, plane, keystate, upgrades, ent, ..)| {
@@ -322,13 +325,19 @@ impl<'a> System<'a> for PositionUpdate {
 		Self::SystemData::setup(res);
 
 		let mut storage: WriteStorage<KeyState> = SystemData::fetch(&res);
-		self.modify_reader = Some(storage.track_modified());
+		self.modify_reader = MaybeInit::new(storage.register_reader());
 	}
 
 	fn run(&mut self, (mut data, config, mut lastupdate): Self::SystemData) {
 		self.dirty.clear();
-		data.keystate
-			.populate_modified(&mut self.modify_reader.as_mut().unwrap(), &mut self.dirty);
+		for event in data.keystate.channel().read(&mut self.modify_reader) {
+			match event {
+				ComponentEvent::Modified(id) => {
+					self.dirty.add(*id);
+				}
+				_ => (),
+			}
+		}
 
 		Self::step_players(&mut data, &config);
 		self.send_updates(&mut data, &mut lastupdate);

@@ -125,16 +125,17 @@ fn check_allowed(
 	// IsDead flag)
 	!is_dead
 		&& (
-		// If the player is spectating then they may respawn
-		// at any time
-		is_spec || (
-			// Players that don't have full health may not respawn
-			!(*health < Health::new(1.0))
+			// If the player is spectating then they may respawn
+			// at any time
+			is_spec
+				|| (
+					// Players that don't have full health may not respawn
+					!(*health < Health::new(1.0))
 			// Players that have pressed a key within the last
 			// 2 seconds may not respawn
 			&& !(this_frame.0 - last_key.0 < Duration::from_secs(2))
+				)
 		)
-	)
 }
 
 fn parse_plane<'a>(s: &'a str) -> Result<Plane, ()> {

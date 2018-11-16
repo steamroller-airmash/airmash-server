@@ -18,6 +18,7 @@ extern crate bounded_queue;
 extern crate dimensioned;
 extern crate fnv;
 extern crate futures;
+extern crate hashbrown;
 extern crate hibitset;
 extern crate htmlescape;
 extern crate hyper;

@@ -11,7 +11,7 @@ FROM alpine:latest
 
 EXPOSE 3501
 
-ENV RUST_LOG=info,airmash:packet-dump=trace
+ENV RUST_LOG=info,ws=warn
 
 COPY --from=0 /artifacts/airmash-server /app/airmash-server
 

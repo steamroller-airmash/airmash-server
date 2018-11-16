@@ -54,7 +54,8 @@ impl<'a> System<'a> for Shuffle {
 				&data.kills,
 				&data.deaths,
 				data.is_player.mask(),
-			).join()
+			)
+				.join()
 				.map(
 					|(ent, team, score, captures, kills, deaths, ..)| PlayerShuffleInfo {
 						player: ent,

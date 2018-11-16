@@ -4,14 +4,12 @@ use specs::prelude::*;
 use Mob;
 
 use types::collision::*;
-use types::systemdata::IsAlive;
 use types::*;
 
 use component::channel::*;
+use component::collision::PlaneGrid;
 use component::event::PlayerUpgradeCollision;
 use component::flag::*;
-
-use consts::config::PLANE_HIT_CIRCLES;
 
 pub struct PlayerUpgradeCollisionSystem;
 
@@ -19,13 +17,10 @@ pub struct PlayerUpgradeCollisionSystem;
 pub struct PlayerUpgradeCollisionSystemData<'a> {
 	pub channel: Write<'a, OnPlayerUpgradeCollision>,
 	pub ent: Entities<'a>,
+	pub grid: Read<'a, PlaneGrid>,
 
 	pub pos: ReadStorage<'a, Position>,
-	pub rot: ReadStorage<'a, Rotation>,
 	pub team: ReadStorage<'a, Team>,
-	pub plane: ReadStorage<'a, Plane>,
-	pub player_flag: ReadStorage<'a, IsPlayer>,
-	pub isalive: IsAlive<'a>,
 
 	pub mob: ReadStorage<'a, Mob>,
 	pub missile_flag: ReadStorage<'a, IsMissile>,
@@ -44,69 +39,29 @@ impl<'a> System<'a> for PlayerUpgradeCollisionSystem {
 		let Self::SystemData {
 			mut channel,
 			ent,
+			grid,
 
 			pos,
-			rot,
 			team,
-			plane,
-			player_flag,
-			isalive,
 
 			mob,
 			missile_flag,
 		} = data;
 
-		let mut buckets = Array2D::<Bucket>::new(BUCKETS_X, BUCKETS_Y);
-
-		(
-			&*ent,
-			&pos,
-			&rot,
-			&team,
-			&plane,
-			&player_flag,
-			isalive.mask(),
-		).join()
-			.for_each(|(ent, pos, rot, team, plane, ..)| {
-				PLANE_HIT_CIRCLES[plane].iter().for_each(|hc| {
-					let offset = hc.offset.rotate(*rot);
-
-					let circle = HitCircle {
-						pos: *pos + offset,
-						rad: hc.radius,
-						layer: team.0,
-						ent: ent,
-					};
-
-					for coord in intersected_buckets(circle.pos, circle.rad) {
-						buckets.get_or_insert(coord).push(circle);
-					}
-				});
-			});
+		let grid = &grid.0;
 
 		let collisions = (&*ent, &pos, &team, &mob, !missile_flag.mask())
 			.par_join()
 			.filter(|(_, _, _, &mob, ..)| mob == Mob::Upgrade)
 			.map(|(ent, pos, team, mob, ..)| {
-				let mut collisions = vec![];
+				let it = COLLIDERS[mob].iter().map(|(offset, rad)| HitCircle {
+					pos: *pos + *offset,
+					rad: *rad,
+					layer: team.0,
+					ent: ent,
+				});
 
-				for (offset, rad) in COLLIDERS[mob].iter() {
-					let hc = HitCircle {
-						pos: *pos + *offset,
-						rad: *rad,
-						layer: team.0,
-						ent: ent,
-					};
-
-					for coord in intersected_buckets(hc.pos, hc.rad) {
-						match buckets.get(coord) {
-							Some(bucket) => bucket.collide(hc, &mut collisions),
-							None => (),
-						}
-					}
-				}
-
-				collisions
+				grid.collide(it)
 			})
 			.flatten()
 			.map(PlayerUpgradeCollision)
@@ -116,11 +71,12 @@ impl<'a> System<'a> for PlayerUpgradeCollisionSystem {
 	}
 }
 
+use super::GenPlaneGrid;
 use dispatch::SystemInfo;
 use systems::PositionUpdate;
 
 impl SystemInfo for PlayerUpgradeCollisionSystem {
-	type Dependencies = PositionUpdate;
+	type Dependencies = (PositionUpdate, GenPlaneGrid);
 
 	fn name() -> &'static str {
 		concat!(module_path!(), "::", line!())

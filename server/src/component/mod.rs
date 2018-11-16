@@ -2,6 +2,7 @@
 
 pub mod channel;
 pub mod collection;
+pub mod collision;
 pub mod counter;
 pub mod event;
 pub mod flag;

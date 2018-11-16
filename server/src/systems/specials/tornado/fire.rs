@@ -26,7 +26,8 @@ impl<'a> System<'a> for Fire {
 			&mut data.energy,
 			&data.plane,
 			data.fire_missile.is_alive.mask(),
-		).join()
+		)
+			.join()
 			.filter(|(_, _, _, plane, ..)| **plane == Plane::Tornado)
 			.filter_map(|(ent, keystate, energy, ..)| {
 				if keystate.special {

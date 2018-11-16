@@ -215,12 +215,12 @@ fn check_allowed(
 	// can do the spectate command no matter what
 	is_spec
 		|| (
-		// Players that don't have full health may not spectate
-		!(*health < Health::new(1.0))
+			// Players that don't have full health may not spectate
+			!(*health < Health::new(1.0))
 		// Players that have pressed a key within the last
 		// 2 seconds may not spectate
 		&& !(this_frame.0 - last_key.0 > Duration::from_secs(2))
-	)
+		)
 }
 
 fn parse_spectate_data<'a>(s: &'a str) -> Result<SpectateTarget, ()> {

@@ -27,9 +27,10 @@ impl GameMode for EmptyGameMode {
 }
 
 fn main() {
-	env_logger::init();
-
 	env::set_var("RUST_BACKTRACE", "1");
+	env::set_var("RUST_LOG", "info");
+
+	env_logger::init();
 
 	AirmashServer::new("0.0.0.0:3501")
 		.with_engine()

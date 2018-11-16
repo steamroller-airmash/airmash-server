@@ -11,8 +11,7 @@ use protocol::PowerupType;
 use types::Config;
 use utils::event_handler::{EventHandler, EventHandlerTypeProvider};
 
-/// Add the initial 2s shield when a player joins
-/// and send that packet to all visible players.
+/// Give the newly joined player an initial 2s shield.
 #[derive(Default)]
 pub struct SendPlayerPowerup;
 
