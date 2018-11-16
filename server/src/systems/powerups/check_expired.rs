@@ -39,7 +39,7 @@ impl<'a> System<'a> for CheckExpired {
 
 		(&*entities, &mut powerups, is_alive.mask())
 			.join()
-			.filter(|(_, powerup, ..)| powerup.end_time > this_frame.0)
+			.filter(|(_, powerup, ..)| powerup.end_time < this_frame.0)
 			.map(|(ent, powerup, ..)| {
 				ents.push(ent);
 
