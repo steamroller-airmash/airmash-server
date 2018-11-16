@@ -5,9 +5,9 @@ use types::collision::*;
 use types::*;
 
 use component::channel::*;
+use component::collision::PlaneGrid;
 use component::event::PlayerMissileCollision;
 use component::flag::*;
-use component::collision::PlaneGrid;
 
 pub struct PlayerMissileCollisionSystem;
 
@@ -68,8 +68,8 @@ impl<'a> System<'a> for PlayerMissileCollisionSystem {
 }
 
 use dispatch::SystemInfo;
-use systems::PositionUpdate;
 use systems::collision::GenPlaneGrid;
+use systems::PositionUpdate;
 
 impl SystemInfo for PlayerMissileCollisionSystem {
 	type Dependencies = (PositionUpdate, GenPlaneGrid);

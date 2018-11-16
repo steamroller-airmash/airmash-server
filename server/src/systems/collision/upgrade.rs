@@ -7,9 +7,9 @@ use types::collision::*;
 use types::*;
 
 use component::channel::*;
+use component::collision::PlaneGrid;
 use component::event::PlayerUpgradeCollision;
 use component::flag::*;
-use component::collision::PlaneGrid;
 
 pub struct PlayerUpgradeCollisionSystem;
 
@@ -54,15 +54,12 @@ impl<'a> System<'a> for PlayerUpgradeCollisionSystem {
 			.par_join()
 			.filter(|(_, _, _, &mob, ..)| mob == Mob::Upgrade)
 			.map(|(ent, pos, team, mob, ..)| {
-				let it = COLLIDERS[mob].iter()
-					.map(|(offset, rad)| {
-						HitCircle {
-							pos: *pos + *offset,
-							rad: *rad,
-							layer: team.0,
-							ent: ent,
-						}
-					});
+				let it = COLLIDERS[mob].iter().map(|(offset, rad)| HitCircle {
+					pos: *pos + *offset,
+					rad: *rad,
+					layer: team.0,
+					ent: ent,
+				});
 
 				grid.collide(it)
 			})
@@ -74,9 +71,9 @@ impl<'a> System<'a> for PlayerUpgradeCollisionSystem {
 	}
 }
 
+use super::GenPlaneGrid;
 use dispatch::SystemInfo;
 use systems::PositionUpdate;
-use super::GenPlaneGrid;
 
 impl SystemInfo for PlayerUpgradeCollisionSystem {
 	type Dependencies = (PositionUpdate, GenPlaneGrid);

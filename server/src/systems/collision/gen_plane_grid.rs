@@ -1,13 +1,12 @@
-
 use specs::*;
 
-use SystemInfo;
-use types::*;
 use types::collision::*;
 use types::systemdata::IsAlive;
+use types::*;
+use SystemInfo;
 
-use component::flag::IsPlayer;
 use component::collision::PlaneGrid;
+use component::flag::IsPlayer;
 
 use consts::config::PLANE_HIT_CIRCLES;
 
@@ -40,7 +39,7 @@ impl<'a> System<'a> for GenPlaneGrid {
 			&data.rot,
 			&data.team,
 			&data.plane,
-			data.is_player.mask() & data.is_alive.mask()
+			data.is_player.mask() & data.is_alive.mask(),
 		)
 			.join()
 			.map(|(ent, &pos, &rot, &team, &plane, ..)| {
@@ -51,7 +50,7 @@ impl<'a> System<'a> for GenPlaneGrid {
 						pos: pos + offset,
 						rad: hc.radius,
 						layer: team.0,
-						ent: ent
+						ent: ent,
 					}
 				})
 			})

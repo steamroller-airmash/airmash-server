@@ -32,8 +32,8 @@ within the `base` folder. Note that rust nightly is required.
 
 ## Logging in to the server
 
-To access the server locally, run a server hosting 
-[these](https://nofile.io/f/u9UnVHoGn71/static.zip) files locally, 
+To access the server locally, run a server hosting the files
+[here](https://github.com/steamroller-airmash/airmash-mirror) locally, 
 then open that server in a web browser (e.g. `localhost:8000`) and
 use as a normal airmash client.
 

@@ -67,7 +67,8 @@ impl<'a> System<'a> for PlaneCollisionSystem {
 					}
 				});
 
-				self.terrain.collide(it)
+				self.terrain
+					.collide(it)
 					.into_iter()
 					.map(|x| PlayerTerrainCollision(x))
 					.collect::<Vec<PlayerTerrainCollision>>()

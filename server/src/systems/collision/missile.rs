@@ -61,7 +61,8 @@ impl<'a> System<'a> for MissileTerrainCollisionSystem {
 					ent: ent,
 				});
 
-				self.terrain.collide(it)
+				self.terrain
+					.collide(it)
 					.into_iter()
 					.map(|x| MissileTerrainCollision(x))
 					.collect::<Vec<MissileTerrainCollision>>()
