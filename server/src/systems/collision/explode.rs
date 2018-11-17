@@ -4,8 +4,14 @@ use types::collision::Collision;
 use types::*;
 
 use component::channel::*;
+use component::reference::PlayerRef;
+use component::flag::IsMissile;
+use component::event::TimerEvent;
 
+use consts::timer::DELETE_ENTITY;
 use protocol::server::MobDespawnCoords;
+
+use std::time::Duration;
 
 pub struct MissileExplodeSystem {
 	reader: Option<OnMissileTerrainCollisionReader>,
@@ -16,6 +22,8 @@ pub struct MissileExplodeSystemData<'a> {
 	pub conns: Read<'a, Connections>,
 	pub channel: Read<'a, OnMissileTerrainCollision>,
 	pub entities: Entities<'a>,
+	pub dispatch: ReadExpect<'a, FutureDispatcher>,
+	pub lazy: Read<'a, LazyUpdate>,
 
 	pub types: ReadStorage<'a, Mob>,
 	pub pos: ReadStorage<'a, Position>,
@@ -51,7 +59,23 @@ impl<'a> System<'a> for MissileExplodeSystem {
 				missile_ent = c1.ent;
 			}
 
-			data.entities.delete(missile_ent).unwrap();
+			// Remove a bunch of components that are used to 
+			// recognize missiles lazily (they will get
+			// removed at the end of the frame)
+			data.lazy.remove::<Position>(missile_ent);
+			data.lazy.remove::<Mob>(missile_ent);
+			data.lazy.remove::<IsMissile>(missile_ent);
+			data.lazy.remove::<Velocity>(missile_ent);
+			data.lazy.remove::<Team>(missile_ent);
+			data.lazy.remove::<PlayerRef>(missile_ent);
+
+			data.dispatch.run_delayed(Duration::from_secs(60), move |inst| {
+				TimerEvent {
+					ty: *DELETE_ENTITY,
+					instant: inst,
+					data: Some(Box::new(missile_ent))
+				}
+			});
 
 			let packet = MobDespawnCoords {
 				id: missile_ent.into(),

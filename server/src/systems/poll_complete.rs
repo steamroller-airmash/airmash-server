@@ -1,7 +1,11 @@
 use specs::prelude::*;
 use std::time::Instant;
-use types::connection::{Message, MessageBody, MessageInfo};
+
 use types::*;
+use types::collision::HitCircle;
+use types::connection::{Message, MessageBody, MessageInfo};
+
+use component::collision::PlaneGrid;
 
 use ws::CloseCode;
 
@@ -18,9 +22,13 @@ pub struct PollComplete {
 #[derive(SystemData)]
 pub struct PollCompleteData<'a> {
 	conns: Write<'a, Connections>,
+	config: Read<'a, Config>,
+	grid: Read<'a, PlaneGrid>,
+	entities: Entities<'a>,
 
 	associated: ReadStorage<'a, AssociatedConnection>,
 	teams: ReadStorage<'a, Team>,
+	pos: ReadStorage<'a, Position>,
 }
 
 impl PollComplete {
@@ -58,8 +66,12 @@ impl<'a> System<'a> for PollComplete {
 
 	fn run(&mut self, data: Self::SystemData) {
 		let mut conns = data.conns;
+		let config = data.config;
 		let associated = data.associated;
+		let pos = data.pos;
+		let grid = data.grid;
 		let teams = data.teams;
+		let entities = &*data.entities;
 		let protocol = ProtocolV5 {};
 
 		let start = Instant::now();
@@ -95,10 +107,23 @@ impl<'a> System<'a> for PollComplete {
 						});
 				}
 				MessageInfo::ToVisible(_player) => {
-					// TODO: Implement this properly
-					(&associated).join().for_each(|associated| {
-						Self::send_to_connection(&mut conns, associated.0, data.clone());
-					});
+					let vals: Vec<_> = (&associated, &pos, entities).par_join()
+						.filter(|(_, &pos, ent)| {
+							grid.0.test_collide(HitCircle{ 
+								pos: pos,
+								rad: config.view_radius,
+								layer: 0,
+								ent: *ent
+							})
+						})
+						.map(|(x, ..)| x)
+						.collect();
+
+					vals
+						.into_iter()
+						.for_each(|associated| {
+							Self::send_to_connection(&mut conns, associated.0, data.clone());
+						});
 				}
 			}
 		}

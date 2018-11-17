@@ -120,22 +120,35 @@ fn check_allowed(
 	last_key: &LastKeyTime,
 	this_frame: &ThisFrame,
 ) -> bool {
+	// Note to my future self and maintainers:
+	//  Originally this code was written as one big
+	//  boolean expression. This was unclear and caused
+	//  some bugs so now it's been rewritten in this
+	//  fashion. This is a lot more clear and I'd prefer
+	//  if it stayed that way.
+
 	// A player may not respawn during the 2s cooldown
-	// period after dying (the is represented by the
+	// period after dying (this is represented by the
 	// IsDead flag)
-	!is_dead
-		&& (
-			// If the player is spectating then they may respawn
-			// at any time
-			is_spec
-				|| (
-					// Players that don't have full health may not respawn
-					!(*health < Health::new(1.0))
-			// Players that have pressed a key within the last
-			// 2 seconds may not respawn
-			&& !(this_frame.0 - last_key.0 < Duration::from_secs(2))
-				)
-		)
+	if is_dead {
+		return false;
+	}
+
+	// If the player is spectating then they may respawn
+	// at any time. Note that is_dead will prevent respawning
+	// during the first 2 seconds after going into spec.
+	if is_spec {
+		return true;
+	}
+
+	// Players that don't have full health may not respawn
+	if *health < Health::new(1.0) {
+		return false;
+	}
+
+	// Players that have not pressed a key within the last
+	// 2 seconds may not respawn.
+	!(this_frame.0 - last_key.0 > Duration::from_secs(2))
 }
 
 fn parse_plane<'a>(s: &'a str) -> Result<Plane, ()> {
@@ -146,6 +159,7 @@ fn parse_plane<'a>(s: &'a str) -> Result<Plane, ()> {
 #[cfg(test)]
 mod test {
 	use super::*;
+	use std::time::*;
 	use types::Plane::*;
 	#[test]
 	fn parse_valid_plane() {
@@ -178,5 +192,38 @@ mod test {
 	#[test]
 	fn parse_non_number_plane() {
 		assert!(parse_plane("foo").is_err());
+	}
+
+	#[test]
+	fn check_not_allowed_dead() {
+		assert!(!check_allowed(
+			true,
+			true,
+			&Health::new(1.0),
+			&LastKeyTime(Instant::now() - Duration::from_secs(4)),
+			&ThisFrame(Instant::now())
+		));
+	}
+
+	#[test]
+	fn check_allowed_spec() {
+		assert!(check_allowed(
+			true,
+			false,
+			&Health::new(1.0),
+			&LastKeyTime(Instant::now() - Duration::from_secs(5)),
+			&ThisFrame(Instant::now())
+		));
+	}
+
+	#[test]
+	fn check_not_allowed_low_health() {
+		assert!(!check_allowed(
+			true,
+			false,
+			&Health::new(0.5),
+			&LastKeyTime(Instant::now() - Duration::from_secs(10)),
+			&ThisFrame(Instant::now())
+		));
 	}
 }

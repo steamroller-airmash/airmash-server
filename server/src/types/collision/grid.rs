@@ -170,6 +170,45 @@ impl Grid {
 		}
 	}
 
+	/// Indicate whether a hit circle collides with
+	/// any circles within the grid.
+	pub fn test_collide(&self, hc: HitCircle) -> bool {
+		let b = bucket(&hc);
+
+		// Largest radii that need to be checked in each direction.
+		// If this is larger than it needs to be, then the algorithm
+		// will be slower, but if it's too small then collisions that
+		// are supposed to be found will be missed
+		let rx = ((hc.rad.inner() + self.max_r + BUCKET_X) * INV_BX) as u32;
+		let ry = ((hc.rad.inner() + self.max_r + BUCKET_Y) * INV_BY) as u32;
+		let range_x = (
+			if rx > b.0 { 0 } else { b.0 - rx },
+			(rx + b.0 + 1).min(BUCKETS_X),
+		);
+		let range_y = (
+			if ry > b.1 { 0 } else { b.1 - ry },
+			(ry + b.1 + 1).min(BUCKETS_Y),
+		);
+
+		for x in range_x.0..range_x.1 {
+			for y in range_y.0..range_y.1 {
+				if let Some(&(start, len)) = self.buckets.get(&(x, y)) {
+					for i in start..len {
+						let hc2 = self.circles[i as usize];
+						let r = hc2.rad + hc.rad;
+						let dist2 = (hc.pos - hc2.pos).length2();
+
+						if dist2 < r * r && hc2.layer != hc.layer {
+							return true;
+						}
+					}
+				}
+			}
+		}
+
+		false
+	}
+
 	pub fn into_inner(self) -> Vec<HitCircle> {
 		self.circles
 	}

@@ -27,7 +27,6 @@ extern crate rayon;
 extern crate serde_json;
 extern crate shred;
 extern crate shrev;
-extern crate simple_logger;
 extern crate special_map;
 extern crate specs;
 extern crate tokio;
