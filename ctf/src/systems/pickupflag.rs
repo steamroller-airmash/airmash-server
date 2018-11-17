@@ -3,7 +3,6 @@ use specs::*;
 use server::component::flag::*;
 use server::component::time::ThisFrame;
 use server::types::systemdata::*;
-use server::types::Sqrt;
 use server::*;
 
 use component::*;

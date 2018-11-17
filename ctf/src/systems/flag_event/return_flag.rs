@@ -23,6 +23,7 @@ pub struct ReturnFlagData<'a> {
 	pub is_flag: ReadStorage<'a, IsFlag>,
 	pub is_player: ReadStorage<'a, IsPlayer>,
 	pub carrier: ReadStorage<'a, FlagCarrier>,
+	pub keystate: ReadStorage<'a, KeyState>,
 	pub is_alive: IsAlive<'a>,
 
 	pub scores: Read<'a, GameScores>,
@@ -42,6 +43,7 @@ impl<'a> System<'a> for ReturnFlag {
 			is_flag,
 			is_player,
 			carrier,
+			keystate,
 			is_alive,
 
 			scores,
@@ -68,21 +70,29 @@ impl<'a> System<'a> for ReturnFlag {
 			flags
 				.iter()
 				.filter_map(|(flag, flag_pos, flag_team)| {
-					let mut possible_returns =
-						(&*ents, &pos, &plane, &team, &is_player, is_alive.mask())
-							.join()
-							.filter(|(_, _, _, player_team, ..)| **player_team == *flag_team)
-							.filter_map(|(player, player_pos, plane, ..)| {
-								let radius = ctfconfig::FLAG_RADIUS[&plane];
-								let dist2 = (*player_pos - *flag_pos).length2();
+					let mut possible_returns = (
+						&*ents,
+						&pos,
+						&plane,
+						&team,
+						&keystate,
+						&is_player,
+						is_alive.mask(),
+					)
+						.join()
+						.filter(|(_, _, _, player_team, ..)| **player_team == *flag_team)
+						.filter(|(_, _, _, _, keystate, ..)| !keystate.stealthed)
+						.filter_map(|(player, player_pos, plane, ..)| {
+							let radius = ctfconfig::FLAG_RADIUS[&plane];
+							let dist2 = (*player_pos - *flag_pos).length2();
 
-								if dist2 < radius * radius {
-									Some((player, dist2))
-								} else {
-									None
-								}
-							})
-							.collect::<Vec<_>>();
+							if dist2 < radius * radius {
+								Some((player, dist2))
+							} else {
+								None
+							}
+						})
+						.collect::<Vec<_>>();
 
 					possible_returns
 						.sort_by(|(_, a), (_, b)| a.partial_cmp(&b).unwrap_or(Ordering::Greater));
