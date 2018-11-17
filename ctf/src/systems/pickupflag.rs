@@ -87,13 +87,14 @@ impl<'a> System<'a> for PickupFlagSystem {
 					let rad = ctfconfig::FLAG_RADIUS[&p_plane];
 					let dst = (*p_pos - f_pos).length2();
 
-					// Quickly filter out negative distances
-					// without doing a sqrt
+					// Filter out distances that are too large
+					// to pick up the flag
 					if dst > rad * rad {
 						None
 					} else {
-						// Only calculate actual distance if necessary
-						Some((p_ent, dst.sqrt() - rad))
+						// Comparing squared distances has the same
+						// properties as using the actual distance
+						Some((p_ent, dst - rad * rad))
 					}
 				})
 				.min_by(|a, b| {
