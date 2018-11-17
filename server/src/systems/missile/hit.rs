@@ -1,11 +1,16 @@
 use specs::*;
 use types::collision::*;
 use types::*;
+use types::FutureDispatcher;
 
 use component::channel::*;
 use component::event::PlayerHit;
 use component::flag::*;
 use component::reference::PlayerRef;
+use component::event::TimerEvent;
+
+use consts::timer::DELETE_ENTITY;
+use consts::missile::ID_REUSE_TIME;
 
 pub struct MissileHitSystem {
 	reader: Option<OnPlayerMissileCollisionReader>,
@@ -13,22 +18,14 @@ pub struct MissileHitSystem {
 
 #[derive(SystemData)]
 pub struct MissileHitSystemData<'a> {
-	pub channel: Read<'a, OnPlayerMissileCollision>,
-	pub kill_channel: Write<'a, OnPlayerKilled>,
-	pub hit_channel: Write<'a, OnPlayerHit>,
-	pub config: Read<'a, Config>,
-	pub conns: Read<'a, Connections>,
+	channel: Read<'a, OnPlayerMissileCollision>,
+	hit_channel: Write<'a, OnPlayerHit>,
+	dispatch: ReadExpect<'a, FutureDispatcher>,
+	lazy: Read<'a, LazyUpdate>,
 
-	pub health: WriteStorage<'a, Health>,
-	pub plane: ReadStorage<'a, Plane>,
-	pub upgrades: ReadStorage<'a, Upgrades>,
-	pub owner: ReadStorage<'a, PlayerRef>,
-	pub player_flag: ReadStorage<'a, IsPlayer>,
-	pub entities: Entities<'a>,
-	pub hitmarker: WriteStorage<'a, HitMarker>,
-
-	pub mob: ReadStorage<'a, Mob>,
-	pub pos: ReadStorage<'a, Position>,
+	player_flag: ReadStorage<'a, IsPlayer>,
+	entities: Entities<'a>,
+	hitmarker: WriteStorage<'a, HitMarker>,
 }
 
 impl MissileHitSystem {
@@ -74,7 +71,24 @@ impl<'a> System<'a> for MissileHitSystem {
 			}
 
 			data.hitmarker.insert(missile.ent, HitMarker {}).unwrap();
-			data.entities.delete(missile.ent).unwrap();
+
+			// Remove a bunch of components that are used to 
+			// recognize missiles lazily (they will get
+			// removed at the end of the frame)
+			data.lazy.remove::<Position>(missile.ent);
+			data.lazy.remove::<Mob>(missile.ent);
+			data.lazy.remove::<IsMissile>(missile.ent);
+			data.lazy.remove::<Velocity>(missile.ent);
+			data.lazy.remove::<Team>(missile.ent);
+			data.lazy.remove::<PlayerRef>(missile.ent);
+
+			data.dispatch.run_delayed(*ID_REUSE_TIME, move |inst| {
+				TimerEvent {
+					ty: *DELETE_ENTITY,
+					instant: inst,
+					data: Some(Box::new(missile.ent))
+				}
+			});
 
 			data.hit_channel.single_write(PlayerHit {
 				player: player.ent,

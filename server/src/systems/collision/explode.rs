@@ -9,9 +9,8 @@ use component::flag::IsMissile;
 use component::event::TimerEvent;
 
 use consts::timer::DELETE_ENTITY;
+use consts::missile::ID_REUSE_TIME;
 use protocol::server::MobDespawnCoords;
-
-use std::time::Duration;
 
 pub struct MissileExplodeSystem {
 	reader: Option<OnMissileTerrainCollisionReader>,
@@ -69,7 +68,7 @@ impl<'a> System<'a> for MissileExplodeSystem {
 			data.lazy.remove::<Team>(missile_ent);
 			data.lazy.remove::<PlayerRef>(missile_ent);
 
-			data.dispatch.run_delayed(Duration::from_secs(60), move |inst| {
+			data.dispatch.run_delayed(*ID_REUSE_TIME, move |inst| {
 				TimerEvent {
 					ty: *DELETE_ENTITY,
 					instant: inst,

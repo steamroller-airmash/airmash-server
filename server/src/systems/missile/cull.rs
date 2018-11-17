@@ -2,7 +2,12 @@ use specs::*;
 use types::*;
 
 use component::missile::MissileTrajectory;
+use component::reference::PlayerRef;
+use component::flag::IsMissile;
+use component::event::TimerEvent;
 use dispatch::SystemInfo;
+use consts::timer::DELETE_ENTITY;
+use consts::missile::ID_REUSE_TIME;
 
 use airmash_protocol::server::MobDespawn;
 
@@ -10,11 +15,13 @@ pub struct MissileCull;
 
 #[derive(SystemData)]
 pub struct MissileCullData<'a> {
-	pub ents: Entities<'a>,
-	pub missile_trajectory: ReadStorage<'a, MissileTrajectory>,
-	pub pos: ReadStorage<'a, Position>,
-	pub mob: ReadStorage<'a, Mob>,
-	pub conns: Read<'a, Connections>,
+	ents: Entities<'a>,
+	missile_trajectory: ReadStorage<'a, MissileTrajectory>,
+	pos: ReadStorage<'a, Position>,
+	mob: ReadStorage<'a, Mob>,
+	conns: Read<'a, Connections>,
+	lazy: Read<'a, LazyUpdate>,
+	dispatch: ReadExpect<'a, FutureDispatcher>,
 }
 
 impl<'a> System<'a> for MissileCull {
@@ -33,7 +40,24 @@ impl<'a> System<'a> for MissileCull {
 				}
 			})
 			.for_each(|(ent, mob)| {
-				data.ents.delete(ent).unwrap();
+
+			// Remove a bunch of components that are used to 
+			// recognize missiles lazily (they will get
+			// removed at the end of the frame)
+			data.lazy.remove::<Position>(ent);
+			data.lazy.remove::<Mob>(ent);
+			data.lazy.remove::<IsMissile>(ent);
+			data.lazy.remove::<Velocity>(ent);
+			data.lazy.remove::<Team>(ent);
+			data.lazy.remove::<PlayerRef>(ent);
+
+			data.dispatch.run_delayed(*ID_REUSE_TIME, move |inst| {
+				TimerEvent {
+					ty: *DELETE_ENTITY,
+					instant: inst,
+					data: Some(Box::new(ent))
+				}
+			});
 
 				let packet = MobDespawn {
 					id: ent.into(),
