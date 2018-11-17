@@ -10,4 +10,5 @@ pub fn register<'a, 'b>(builder: Builder<'a, 'b>) -> Builder<'a, 'b> {
 		.with::<LoginHandler>()
 		.with::<DelayMessage>()
 		.with_handler::<ClearDeadFlag>()
+		.with_handler::<DeleteEntity>()
 }
