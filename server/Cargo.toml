@@ -17,7 +17,6 @@ proxied = []
 block-bots = []
 
 [dependencies]
-simple_logger = "*"
 log = "*"
 specs = { version = "*", features = ["nightly"] }
 specs-derive = "*"

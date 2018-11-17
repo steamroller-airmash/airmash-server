@@ -82,6 +82,7 @@ pub struct Config {
 	pub spawn_shield_duration: Duration,
 	pub shield_duration: Duration,
 	pub inferno_duration: Duration,
+	pub view_radius: Distance,
 }
 
 impl Index<Plane> for PlaneInfos {
@@ -401,6 +402,7 @@ impl Default for Config {
 			spawn_shield_duration: Duration::from_secs(2),
 			shield_duration: Duration::from_secs(10),
 			inferno_duration: Duration::from_secs(10),
+			view_radius: Distance::new(4500.0),
 		}
 	}
 }
