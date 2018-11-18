@@ -121,11 +121,11 @@ impl Default for PlaneInfos {
 
 				health_regen: HealthRegen::new(0.001),
 				energy_regen: EnergyRegen::new(0.008),
-				fire_delay: Duration::from_millis(0),
+				fire_delay: Duration::from_millis(550),
 
 				damage_factor: 2.0,
 
-				fire_energy: Energy::new(0.0),
+				fire_energy: Energy::new(0.6),
 
 				missile_type: MobType::PredatorMissile,
 				missile_offset: Distance::new(35.0),
@@ -148,11 +148,11 @@ impl Default for PlaneInfos {
 
 				health_regen: HealthRegen::new(0.0005),
 				energy_regen: EnergyRegen::new(0.005),
-				fire_delay: Duration::from_millis(0),
+				fire_delay: Duration::from_millis(300),
 
 				damage_factor: 1.0,
 
-				fire_energy: Energy::new(0.0),
+				fire_energy: Energy::new(0.9),
 
 				missile_type: MobType::GoliathMissile,
 				missile_offset: Distance::new(35.0),
@@ -175,11 +175,11 @@ impl Default for PlaneInfos {
 
 				health_regen: HealthRegen::new(0.001),
 				energy_regen: EnergyRegen::new(0.01),
-				fire_delay: Duration::from_millis(0),
+				fire_delay: Duration::from_millis(300),
 
 				damage_factor: 2.6375,
 
-				fire_energy: Energy::new(0.0),
+				fire_energy: Energy::new(0.3),
 
 				missile_type: MobType::MohawkMissile,
 				// This will have to be a special case
@@ -203,11 +203,11 @@ impl Default for PlaneInfos {
 
 				health_regen: HealthRegen::new(0.001),
 				energy_regen: EnergyRegen::new(0.006),
-				fire_delay: Duration::from_millis(0),
+				fire_delay: Duration::from_millis(500),
 
 				damage_factor: 5.0 / 3.0,
 
-				fire_energy: Energy::new(0.0),
+				fire_energy: Energy::new(0.5),
 
 				missile_type: MobType::TornadoSingleMissile,
 				missile_offset: Distance::new(40.0),
@@ -230,11 +230,11 @@ impl Default for PlaneInfos {
 
 				health_regen: HealthRegen::new(0.001),
 				energy_regen: EnergyRegen::new(0.006),
-				fire_delay: Duration::from_millis(0),
+				fire_delay: Duration::from_millis(300),
 
 				damage_factor: 5.0 / 3.0,
 
-				fire_energy: Energy::new(0.0),
+				fire_energy: Energy::new(0.75),
 
 				missile_type: MobType::ProwlerMissile,
 				missile_offset: Distance::new(35.0),

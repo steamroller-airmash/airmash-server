@@ -219,7 +219,7 @@ mod test {
 	#[test]
 	fn check_not_allowed_low_health() {
 		assert!(!check_allowed(
-			true,
+			false,
 			false,
 			&Health::new(0.5),
 			&LastKeyTime(Instant::now() - Duration::from_secs(10)),
