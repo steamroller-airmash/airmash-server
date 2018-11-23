@@ -1,6 +1,4 @@
 use specs::*;
-
-use systems::missile::MissileFireHandler;
 use SystemInfo;
 
 use component::channel::*;
@@ -43,7 +41,7 @@ impl<'a> System<'a> for SetLastShot {
 }
 
 impl SystemInfo for SetLastShot {
-	type Dependencies = MissileFireHandler;
+	type Dependencies = super::KnownEventSources;
 
 	fn name() -> &'static str {
 		concat!(module_path!(), "::", line!())

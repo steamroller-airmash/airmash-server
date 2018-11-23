@@ -10,7 +10,20 @@ pub use protocol::{
 };
 #[derive(Copy, Clone, Debug, Eq, PartialEq, Hash, Default, Component, Ord, PartialOrd)]
 pub struct ConnectionId(pub usize);
-#[derive(Copy, Clone, Debug, Eq, PartialEq, Hash, Default, Component, Ord, PartialOrd, Serialize, Deserialize)]
+#[derive(
+	Copy,
+	Clone,
+	Debug,
+	Eq,
+	PartialEq,
+	Hash,
+	Default,
+	Component,
+	Ord,
+	PartialOrd,
+	Serialize,
+	Deserialize,
+)]
 pub struct UpgradeCount(pub u16);
 
 static CONNECTION_ID: AtomicUsize = ATOMIC_USIZE_INIT;

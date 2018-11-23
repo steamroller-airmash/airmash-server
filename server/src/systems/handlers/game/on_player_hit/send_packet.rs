@@ -25,6 +25,7 @@ pub struct SendPacketData<'a> {
 
 	pub mob: ReadStorage<'a, Mob>,
 	pub pos: ReadStorage<'a, Position>,
+	pub is_missile: ReadStorage<'a, IsMissile>,
 }
 
 impl SendPacket {
@@ -44,6 +45,10 @@ impl<'a> System<'a> for SendPacket {
 
 	fn run(&mut self, data: Self::SystemData) {
 		for evt in data.channel.read(self.reader.as_mut().unwrap()) {
+			if !data.is_missile.get(evt.missile).is_some() {
+				continue;
+			}
+
 			let pos = data.pos.get(evt.missile).unwrap();
 			let mob = data.mob.get(evt.missile).unwrap();
 			let owner = data.owner.get(evt.missile).unwrap();

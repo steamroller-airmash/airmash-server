@@ -4,6 +4,7 @@ use components::TotalDamage;
 
 use super::AddDamage;
 
+use airmash_server::component::flag::IsMissile;
 use airmash_server::component::channel::*;
 use airmash_server::component::reference::PlayerRef;
 use airmash_server::systems::missile::MissileHit;
@@ -22,6 +23,7 @@ pub struct TrackDamageData<'a> {
 
     mob: ReadStorage<'a, Mob>,
     owner: ReadStorage<'a, PlayerRef>,
+    is_missile: ReadStorage<'a, IsMissile>,
 
     damage: WriteStorage<'a, TotalDamage>,
 }
@@ -37,6 +39,11 @@ impl<'a> System<'a> for TrackDamage {
 
     fn run(&mut self, mut data: Self::SystemData) {
         for evt in data.channel.read(self.reader.as_mut().unwrap()) {
+            // Ignore invalid missiles
+            if !data.is_missile.get(evt.missile).is_some() {
+                continue;
+            }
+
             let mob = *data.mob.get(evt.missile).unwrap();
             let owner = *data.owner.get(evt.missile).unwrap();
 

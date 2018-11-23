@@ -2,8 +2,8 @@ mod atomic;
 mod terrain;
 
 pub mod config;
-pub mod timer;
 pub mod missile;
+pub mod timer;
 
 pub use self::atomic::NUM_PLAYERS;
 pub use self::atomic::SHUTDOWN;

@@ -4,12 +4,12 @@ use types::collision::Collision;
 use types::*;
 
 use component::channel::*;
-use component::reference::PlayerRef;
-use component::flag::IsMissile;
 use component::event::TimerEvent;
+use component::flag::IsMissile;
+use component::reference::PlayerRef;
 
-use consts::timer::DELETE_ENTITY;
 use consts::missile::ID_REUSE_TIME;
+use consts::timer::DELETE_ENTITY;
 use protocol::server::MobDespawnCoords;
 
 pub struct MissileExplodeSystem {
@@ -58,7 +58,7 @@ impl<'a> System<'a> for MissileExplodeSystem {
 				missile_ent = c1.ent;
 			}
 
-			// Remove a bunch of components that are used to 
+			// Remove a bunch of components that are used to
 			// recognize missiles lazily (they will get
 			// removed at the end of the frame)
 			data.lazy.remove::<Position>(missile_ent);
@@ -68,13 +68,12 @@ impl<'a> System<'a> for MissileExplodeSystem {
 			data.lazy.remove::<Team>(missile_ent);
 			data.lazy.remove::<PlayerRef>(missile_ent);
 
-			data.dispatch.run_delayed(*ID_REUSE_TIME, move |inst| {
-				TimerEvent {
+			data.dispatch
+				.run_delayed(*ID_REUSE_TIME, move |inst| TimerEvent {
 					ty: *DELETE_ENTITY,
 					instant: inst,
-					data: Some(Box::new(missile_ent))
-				}
-			});
+					data: Some(Box::new(missile_ent)),
+				});
 
 			let packet = MobDespawnCoords {
 				id: missile_ent.into(),

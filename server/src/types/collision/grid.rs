@@ -1,4 +1,3 @@
-use hashbrown::HashMap;
 use std::cmp::Ordering;
 
 use types::collision::{Collision, HitCircle};
@@ -55,7 +54,8 @@ const INV_BY: f32 = 1.0 / BUCKET_Y;
 #[derive(Clone, Default, Debug)]
 pub struct Grid {
 	circles: Vec<HitCircle>,
-	buckets: HashMap<(u32, u32), (u32, u32)>,
+	buckets: Vec<(u32, u32)>,
+	//buckets: HashMap<(u32, u32), (u32, u32)>,
 	max_r: f32,
 }
 
@@ -81,28 +81,32 @@ impl Grid {
 	pub fn new(mut circles: Vec<HitCircle>) -> Self {
 		circles.sort_by(spatial_sort);
 
-		let mut buckets = HashMap::default();
+		let mut buckets = vec![(0xFFFFFFFF as u32, 0xFFFFFFFF as u32); (BUCKETS_X * BUCKETS_Y) as usize];
 
-		let mut current = (0, 0);
-		let mut i = 0;
-		let mut bucket_start = 0;
-		let mut max_r = 0.0.into();
-		for hc in &circles {
-			let b = bucket(hc);
+		let mut i: usize = 0;
+		let mut max_r = 0.0;
 
-			if hc.rad.inner() > max_r {
-				max_r = hc.rad.inner();
-			}
+		for y in 0..BUCKETS_Y {
+			for x in 0..BUCKETS_X {
+				let start = i;
+				
+				while i < circles.len() && (x,y) == bucket(&circles[i]) {
+					if circles[i].rad.inner() > max_r {
+						max_r = circles[i].rad.inner();
+					}
 
-			if b != current {
-				if i != bucket_start {
-					buckets.insert(current, (bucket_start, i));
+					i += 1;
 				}
-				bucket_start = i;
-				current = b;
+					
+				buckets[(y * BUCKETS_X + x) as usize] = (start as u32, (i - start) as u32);
 			}
+		}
 
-			i += 1;
+		for i in 0..buckets.len() {
+			let (x, y) = buckets[i];
+			if !(x != 0xFFFFFFFF && y != 0xFFFFFFFF) {
+				assert!(x != 0xFFFFFFFF && y != 0xFFFFFFFF);
+			}
 		}
 
 		Self {
@@ -152,18 +156,17 @@ impl Grid {
 				(ry + b.1 + 1).min(BUCKETS_Y),
 			);
 
-			for x in range_x.0..range_x.1 {
-				for y in range_y.0..range_y.1 {
-					if let Some(&(start, len)) = self.buckets.get(&(x, y)) {
-						for i in start..len {
-							let hc2 = self.circles[i as usize];
-							let r = hc2.rad + hc.rad;
-							let dist2 = (hc.pos - hc2.pos).length2();
+			for y in range_y.0..range_y.1 {
+				let (start, _) = self.buckets[(y * BUCKETS_X + range_x.0) as usize];
+				let (end, endlen) = self.buckets[(y * BUCKETS_X + range_x.1) as usize];
+				let end = end + endlen;
+				for i in start..end {
+					let hc2 = self.circles[i as usize];
+					let r = hc2.rad + hc.rad;
+					let dist2 = (hc.pos - hc2.pos).length2();
 
-							if dist2 < r * r && hc2.layer != hc.layer {
-								out.push(Collision(hc, hc2));
-							}
-						}
+					if dist2 < r * r && hc2.layer != hc.layer {
+						out.push(Collision(hc, hc2));
 					}
 				}
 			}
@@ -190,19 +193,13 @@ impl Grid {
 			(ry + b.1 + 1).min(BUCKETS_Y),
 		);
 
-		for x in range_x.0..range_x.1 {
-			for y in range_y.0..range_y.1 {
-				if let Some(&(start, len)) = self.buckets.get(&(x, y)) {
-					for i in start..len {
-						let hc2 = self.circles[i as usize];
-						let r = hc2.rad + hc.rad;
-						let dist2 = (hc.pos - hc2.pos).length2();
-
-						if dist2 < r * r && hc2.layer != hc.layer {
-							return true;
-						}
-					}
-				}
+		for y in range_y.0..range_y.1 {
+			let (start, _) = self.buckets[(y * BUCKETS_X + range_x.0) as usize];
+			let (end, endlen) = self.buckets[(y * BUCKETS_X + range_x.1) as usize];
+			let end = end + endlen;
+			
+			if start != end {
+				return true;
 			}
 		}
 

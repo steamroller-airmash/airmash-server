@@ -4,7 +4,6 @@ use types::systemdata::*;
 use types::*;
 
 use dispatch::SystemInfo;
-use systems::missile::MissileFireHandler;
 
 use component::channel::*;
 
@@ -81,7 +80,7 @@ impl<'a> System<'a> for SendPlayerFire {
 }
 
 impl SystemInfo for SendPlayerFire {
-	type Dependencies = MissileFireHandler;
+	type Dependencies = super::KnownEventSources;
 
 	fn name() -> &'static str {
 		concat!(module_path!(), "::", line!())

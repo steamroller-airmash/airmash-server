@@ -1,16 +1,16 @@
 use specs::*;
 use types::collision::*;
-use types::*;
 use types::FutureDispatcher;
+use types::*;
 
 use component::channel::*;
 use component::event::PlayerHit;
+use component::event::TimerEvent;
 use component::flag::*;
 use component::reference::PlayerRef;
-use component::event::TimerEvent;
 
-use consts::timer::DELETE_ENTITY;
 use consts::missile::ID_REUSE_TIME;
+use consts::timer::DELETE_ENTITY;
 
 pub struct MissileHitSystem {
 	reader: Option<OnPlayerMissileCollisionReader>,
@@ -72,7 +72,7 @@ impl<'a> System<'a> for MissileHitSystem {
 
 			data.hitmarker.insert(missile.ent, HitMarker {}).unwrap();
 
-			// Remove a bunch of components that are used to 
+			// Remove a bunch of components that are used to
 			// recognize missiles lazily (they will get
 			// removed at the end of the frame)
 			data.lazy.remove::<Position>(missile.ent);
@@ -82,13 +82,12 @@ impl<'a> System<'a> for MissileHitSystem {
 			data.lazy.remove::<Team>(missile.ent);
 			data.lazy.remove::<PlayerRef>(missile.ent);
 
-			data.dispatch.run_delayed(*ID_REUSE_TIME, move |inst| {
-				TimerEvent {
+			data.dispatch
+				.run_delayed(*ID_REUSE_TIME, move |inst| TimerEvent {
 					ty: *DELETE_ENTITY,
 					instant: inst,
-					data: Some(Box::new(missile.ent))
-				}
-			});
+					data: Some(Box::new(missile.ent)),
+				});
 
 			data.hit_channel.single_write(PlayerHit {
 				player: player.ent,

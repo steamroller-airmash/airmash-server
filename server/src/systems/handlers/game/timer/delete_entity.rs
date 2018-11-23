@@ -1,17 +1,17 @@
 use specs::*;
 
-use consts::timer::DELETE_ENTITY;
 use component::event::TimerEvent;
+use consts::timer::DELETE_ENTITY;
 
-use SystemInfo;
 use utils::{EventHandler, EventHandlerTypeProvider};
+use SystemInfo;
 
 #[derive(Default)]
 pub struct DeleteEntity;
 
 #[derive(SystemData)]
 pub struct DeleteEntityData<'a> {
-	entities: Entities<'a>
+	entities: Entities<'a>,
 }
 
 impl EventHandlerTypeProvider for DeleteEntity {

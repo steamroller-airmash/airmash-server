@@ -98,6 +98,7 @@ impl<'a> FireMissiles<'a> {
 					.with(team, &mut self.team)
 					.with(spawn_time, &mut self.spawn_time)
 					.with(missile_trajectory, &mut self.missile_trajectory)
+					.with(info.ty, &mut self.mob)
 					.build();
 
 				trace!(

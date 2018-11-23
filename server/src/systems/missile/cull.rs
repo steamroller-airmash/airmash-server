@@ -1,13 +1,13 @@
 use specs::*;
 use types::*;
 
+use component::event::TimerEvent;
+use component::flag::IsMissile;
 use component::missile::MissileTrajectory;
 use component::reference::PlayerRef;
-use component::flag::IsMissile;
-use component::event::TimerEvent;
-use dispatch::SystemInfo;
-use consts::timer::DELETE_ENTITY;
 use consts::missile::ID_REUSE_TIME;
+use consts::timer::DELETE_ENTITY;
+use dispatch::SystemInfo;
 
 use airmash_protocol::server::MobDespawn;
 
@@ -40,24 +40,22 @@ impl<'a> System<'a> for MissileCull {
 				}
 			})
 			.for_each(|(ent, mob)| {
+				// Remove a bunch of components that are used to
+				// recognize missiles lazily (they will get
+				// removed at the end of the frame)
+				data.lazy.remove::<Position>(ent);
+				data.lazy.remove::<Mob>(ent);
+				data.lazy.remove::<IsMissile>(ent);
+				data.lazy.remove::<Velocity>(ent);
+				data.lazy.remove::<Team>(ent);
+				data.lazy.remove::<PlayerRef>(ent);
 
-			// Remove a bunch of components that are used to 
-			// recognize missiles lazily (they will get
-			// removed at the end of the frame)
-			data.lazy.remove::<Position>(ent);
-			data.lazy.remove::<Mob>(ent);
-			data.lazy.remove::<IsMissile>(ent);
-			data.lazy.remove::<Velocity>(ent);
-			data.lazy.remove::<Team>(ent);
-			data.lazy.remove::<PlayerRef>(ent);
-
-			data.dispatch.run_delayed(*ID_REUSE_TIME, move |inst| {
-				TimerEvent {
-					ty: *DELETE_ENTITY,
-					instant: inst,
-					data: Some(Box::new(ent))
-				}
-			});
+				data.dispatch
+					.run_delayed(*ID_REUSE_TIME, move |inst| TimerEvent {
+						ty: *DELETE_ENTITY,
+						instant: inst,
+						data: Some(Box::new(ent)),
+					});
 
 				let packet = MobDespawn {
 					id: ent.into(),

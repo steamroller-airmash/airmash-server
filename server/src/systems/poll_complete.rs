@@ -1,9 +1,9 @@
 use specs::prelude::*;
 use std::time::Instant;
 
-use types::*;
 use types::collision::HitCircle;
 use types::connection::{Message, MessageBody, MessageInfo};
+use types::*;
 
 use component::collision::PlaneGrid;
 
@@ -107,23 +107,22 @@ impl<'a> System<'a> for PollComplete {
 						});
 				}
 				MessageInfo::ToVisible(_player) => {
-					let vals: Vec<_> = (&associated, &pos, entities).par_join()
+					let vals: Vec<_> = (&associated, &pos, entities)
+						.par_join()
 						.filter(|(_, &pos, ent)| {
-							grid.0.test_collide(HitCircle{ 
+							grid.0.test_collide(HitCircle {
 								pos: pos,
 								rad: config.view_radius,
 								layer: 0,
-								ent: *ent
+								ent: *ent,
 							})
 						})
 						.map(|(x, ..)| x)
 						.collect();
 
-					vals
-						.into_iter()
-						.for_each(|associated| {
-							Self::send_to_connection(&mut conns, associated.0, data.clone());
-						});
+					vals.into_iter().for_each(|associated| {
+						Self::send_to_connection(&mut conns, associated.0, data.clone());
+					});
 				}
 			}
 		}

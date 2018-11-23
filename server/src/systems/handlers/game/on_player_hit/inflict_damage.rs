@@ -11,6 +11,7 @@ use component::reference::PlayerRef;
 use utils::event_handler::{EventHandler, EventHandlerTypeProvider};
 
 use systems::missile::MissileHit;
+use systems::handlers::game::on_missile_fire::KnownEventSources;
 
 #[derive(Default)]
 pub struct InflictDamage;
@@ -32,6 +33,7 @@ pub struct InflictDamageData<'a> {
 
 	pub mob: ReadStorage<'a, Mob>,
 	pub pos: ReadStorage<'a, Position>,
+	pub is_missile: ReadStorage<'a, IsMissile>,
 }
 
 impl EventHandlerTypeProvider for InflictDamage {
@@ -42,14 +44,19 @@ impl<'a> EventHandler<'a> for InflictDamage {
 	type SystemData = InflictDamageData<'a>;
 
 	fn on_event(&mut self, evt: &PlayerHit, data: &mut Self::SystemData) {
-		let plane = data.plane.get(evt.player).unwrap();
-		let health = data.health.get_mut(evt.player).unwrap();
-		let upgrades = data.upgrades.get(evt.player).unwrap();
+		// Ignore dead missiles that get queued up
+		if !data.is_missile.get(evt.missile).is_some() {
+			return;
+		}
+
+		let plane = data.plane.get(evt.player).expect("Player did not have a plane component!");
+		let health = data.health.get_mut(evt.player).expect("Player did not have a health component!");
+		let upgrades = data.upgrades.get(evt.player).expect("Player did not have the upgrades component!");
 		let powerups = data.powerups.get(evt.player);
 
-		let mob = data.mob.get(evt.missile).unwrap();
-		let pos = data.pos.get(evt.missile).unwrap();
-		let owner = data.owner.get(evt.missile).unwrap();
+		let mob = data.mob.get(evt.missile).expect("Missile did not have a mob component");
+		let pos = data.pos.get(evt.missile).expect("Missile did not have a position component");
+		let owner = data.owner.get(evt.missile).expect("Missile did not have an owner component");
 
 		let ref planeconf = data.config.planes[*plane];
 		let ref mobconf = data.config.mobs[*mob].missile.unwrap();
@@ -75,7 +82,7 @@ impl<'a> EventHandler<'a> for InflictDamage {
 }
 
 impl SystemInfo for InflictDamage {
-	type Dependencies = MissileHit;
+	type Dependencies = (MissileHit, KnownEventSources);
 
 	fn name() -> &'static str {
 		concat!(module_path!(), "::", line!())
