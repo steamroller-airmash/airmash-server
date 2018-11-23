@@ -9,11 +9,13 @@ use component::flag::IsPlayer;
 use component::time::{LastStealthTime, ThisFrame};
 use systems::specials::config::*;
 
-/// Send [`EventRepel`] when a goliath uses it's special.
+/// Send [`EventRepel`][0] when a goliath uses it's special.
 ///
 /// This system also position, speed, velocity,
 /// team and owner for players and mobs that
 /// are caught in the deflection.
+/// 
+/// [0]: airmash_protocol::server::EventRepel
 #[derive(Default)]
 pub struct DecloakProwler {
 	reader: Option<OnPlayerRepelReader>,
