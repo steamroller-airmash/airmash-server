@@ -81,7 +81,8 @@ impl Grid {
 	pub fn new(mut circles: Vec<HitCircle>) -> Self {
 		circles.sort_by(spatial_sort);
 
-		let mut buckets = vec![(0xFFFFFFFF as u32, 0xFFFFFFFF as u32); (BUCKETS_X * BUCKETS_Y) as usize];
+		let mut buckets =
+			vec![(0xFFFFFFFF as u32, 0xFFFFFFFF as u32); (BUCKETS_X * BUCKETS_Y) as usize];
 
 		let mut i: usize = 0;
 		let mut max_r = 0.0;
@@ -89,15 +90,15 @@ impl Grid {
 		for y in 0..BUCKETS_Y {
 			for x in 0..BUCKETS_X {
 				let start = i;
-				
-				while i < circles.len() && (x,y) == bucket(&circles[i]) {
+
+				while i < circles.len() && (x, y) == bucket(&circles[i]) {
 					if circles[i].rad.inner() > max_r {
 						max_r = circles[i].rad.inner();
 					}
 
 					i += 1;
 				}
-					
+
 				buckets[(y * BUCKETS_X + x) as usize] = (start as u32, (i - start) as u32);
 			}
 		}
@@ -197,7 +198,7 @@ impl Grid {
 			let (start, _) = self.buckets[(y * BUCKETS_X + range_x.0) as usize];
 			let (end, endlen) = self.buckets[(y * BUCKETS_X + range_x.1) as usize];
 			let end = end + endlen;
-			
+
 			if start != end {
 				return true;
 			}

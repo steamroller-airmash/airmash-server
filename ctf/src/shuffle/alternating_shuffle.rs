@@ -1,16 +1,15 @@
-
 use super::*;
 
 use config::{BLUE_TEAM, RED_TEAM};
 use rand::random;
 
-/// Shuffle that alternates players between red and 
+/// Shuffle that alternates players between red and
 /// blue down the leaderboard.
-/// 
+///
 /// The basic algorithm is to sort all the players by
 /// score, then to alternate them between each team.
 /// (e.g. 1st place on blue, 2nd place on red, etc.)
-/// 
+///
 /// Credits to `AES-GCM-128` for the original idea.
 #[allow(dead_code)]
 pub struct AlternatingShuffle;
@@ -28,8 +27,7 @@ impl ShuffleProvider for AlternatingShuffle {
 		let teams;
 		if random() {
 			teams = [RED_TEAM, BLUE_TEAM];
-		}
-		else {
+		} else {
 			teams = [BLUE_TEAM, RED_TEAM];
 		}
 
@@ -42,7 +40,7 @@ impl ShuffleProvider for AlternatingShuffle {
 			.filter(|(_, _, old, new)| old != new)
 			.map(|(_, player, _, new)| TeamChangeEntry {
 				player,
-				new_team: new
+				new_team: new,
 			})
 			.collect()
 	}

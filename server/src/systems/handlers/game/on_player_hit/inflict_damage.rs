@@ -10,8 +10,8 @@ use component::reference::PlayerRef;
 
 use utils::event_handler::{EventHandler, EventHandlerTypeProvider};
 
-use systems::missile::MissileHit;
 use systems::handlers::game::on_missile_fire::KnownEventSources;
+use systems::missile::MissileHit;
 
 #[derive(Default)]
 pub struct InflictDamage;
@@ -49,14 +49,32 @@ impl<'a> EventHandler<'a> for InflictDamage {
 			return;
 		}
 
-		let plane = data.plane.get(evt.player).expect("Player did not have a plane component!");
-		let health = data.health.get_mut(evt.player).expect("Player did not have a health component!");
-		let upgrades = data.upgrades.get(evt.player).expect("Player did not have the upgrades component!");
+		let plane = data
+			.plane
+			.get(evt.player)
+			.expect("Player did not have a plane component!");
+		let health = data
+			.health
+			.get_mut(evt.player)
+			.expect("Player did not have a health component!");
+		let upgrades = data
+			.upgrades
+			.get(evt.player)
+			.expect("Player did not have the upgrades component!");
 		let powerups = data.powerups.get(evt.player);
 
-		let mob = data.mob.get(evt.missile).expect("Missile did not have a mob component");
-		let pos = data.pos.get(evt.missile).expect("Missile did not have a position component");
-		let owner = data.owner.get(evt.missile).expect("Missile did not have an owner component");
+		let mob = data
+			.mob
+			.get(evt.missile)
+			.expect("Missile did not have a mob component");
+		let pos = data
+			.pos
+			.get(evt.missile)
+			.expect("Missile did not have a position component");
+		let owner = data
+			.owner
+			.get(evt.missile)
+			.expect("Missile did not have an owner component");
 
 		let ref planeconf = data.config.planes[*plane];
 		let ref mobconf = data.config.mobs[*mob].missile.unwrap();

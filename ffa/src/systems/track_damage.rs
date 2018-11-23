@@ -4,8 +4,8 @@ use components::TotalDamage;
 
 use super::AddDamage;
 
-use airmash_server::component::flag::IsMissile;
 use airmash_server::component::channel::*;
+use airmash_server::component::flag::IsMissile;
 use airmash_server::component::reference::PlayerRef;
 use airmash_server::systems::missile::MissileHit;
 use airmash_server::*;

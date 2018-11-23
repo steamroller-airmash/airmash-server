@@ -211,16 +211,28 @@ fn check_allowed(
 	last_key: &LastKeyTime,
 	this_frame: &ThisFrame,
 ) -> bool {
-	// If the player is already spectating, then they
-	// can do the spectate command no matter what
-	is_spec
-		|| (
-			// Players that don't have full health may not spectate
-			!(*health < Health::new(1.0))
-		// Players that have pressed a key within the last
-		// 2 seconds may not spectate
-		&& !(this_frame.0 - last_key.0 > Duration::from_secs(2))
-		)
+	// Note to my future self and maintainers:
+	//  Originally this code was written as one big
+	//  boolean expression. This was unclear and caused
+	//  some bugs so now it's been rewritten in this
+	//  fashion. This is a lot more clear and I'd prefer
+	//  if it stayed that way.
+
+	// If the player is spectating then they may respawn
+	// at any time. Note that is_dead will prevent respawning
+	// during the first 2 seconds after going into spec.
+	if is_spec {
+		return true;
+	}
+
+	// Players that don't have full health may not respawn
+	if *health < Health::new(1.0) {
+		return false;
+	}
+
+	// Players that have not pressed a key within the last
+	// 2 seconds may not respawn.
+	!(this_frame.0 - last_key.0 > Duration::from_secs(2))
 }
 
 fn parse_spectate_data<'a>(s: &'a str) -> Result<SpectateTarget, ()> {
