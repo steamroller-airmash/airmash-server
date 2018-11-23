@@ -5,7 +5,7 @@ use std::time::Duration;
 
 use types::*;
 
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct PlaneInfo {
 	// Rotation
 	pub turn_factor: RotationRate,
@@ -38,7 +38,7 @@ pub struct PlaneInfo {
 	pub missile_offset: Distance,
 }
 
-#[derive(Copy, Clone, Debug, Default)]
+#[derive(Copy, Clone, Debug, Default, Serialize, Deserialize)]
 pub struct MissileInfo {
 	pub max_speed: Speed,
 	pub accel: AccelScalar,
@@ -48,24 +48,24 @@ pub struct MissileInfo {
 	pub distance: Distance,
 }
 
-#[derive(Clone, Debug, Default)]
+#[derive(Clone, Debug, Default, Serialize, Deserialize)]
 pub struct MobInfo {
 	pub lifetime: Option<Duration>,
 	pub missile: Option<MissileInfo>,
 }
 
-#[derive(Clone, Debug, Default)]
+#[derive(Clone, Debug, Default, Serialize, Deserialize)]
 pub struct UpgradeInfo {
 	pub cost: [UpgradeCount; 6],
 	pub factor: [f32; 6],
 }
 
-#[derive(Clone, Debug)]
+#[derive(Clone, Debug, Serialize, Deserialize)]
 pub struct PlaneInfos(pub FnvHashMap<Plane, PlaneInfo>);
-#[derive(Clone, Debug)]
+#[derive(Clone, Debug, Serialize, Deserialize)]
 pub struct MobInfos(pub FnvHashMap<MobType, MobInfo>);
 
-#[derive(Clone, Debug)]
+#[derive(Clone, Debug, Serialize, Deserialize)]
 pub struct UpgradeInfos {
 	pub speed: UpgradeInfo,
 	pub missile: UpgradeInfo,
@@ -73,7 +73,7 @@ pub struct UpgradeInfos {
 	pub defense: UpgradeInfo,
 }
 
-#[derive(Clone)]
+#[derive(Clone, Serialize, Deserialize)]
 pub struct Config {
 	pub planes: PlaneInfos,
 	pub mobs: MobInfos,
