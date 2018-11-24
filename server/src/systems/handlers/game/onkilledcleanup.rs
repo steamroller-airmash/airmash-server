@@ -59,7 +59,7 @@ impl<'a> System<'a> for PlayerKilledCleanup {
 				pos: evt.pos,
 			};
 
-			data.conns.send_to_all(despawn_packet);
+			data.conns.send_to_visible(evt.pos, despawn_packet);
 
 			let player = evt.player;
 

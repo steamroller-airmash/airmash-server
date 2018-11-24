@@ -46,11 +46,8 @@ impl<'a> System<'a> for WhisperHandler {
 	fn run(&mut self, data: Self::SystemData) {
 		for evt in data.channel.read(self.reader.as_mut().unwrap()) {
 			info!("{:?}", evt);
-			let player = match data.conns.0.get(&evt.0) {
-				Some(data) => match data.player {
-					Some(player) => player,
-					None => continue,
-				},
+			let player = match data.conns.associated_player(evt.0) {
+				Some(player) => player,
 				None => continue,
 			};
 

@@ -2,7 +2,7 @@ use specs::*;
 use types::systemdata::*;
 use types::*;
 
-use std::time::{Instant, Duration};
+use std::time::{Duration, Instant};
 
 use protocol::server::Ping as ServerPing;
 use systems::handlers::game::on_join::SendLogin;
@@ -20,7 +20,9 @@ pub struct PingTimerHandlerData<'a> {
 
 impl PingTimerHandler {
 	pub fn new() -> Self {
-		Self { lastping: Instant::now() }
+		Self {
+			lastping: Instant::now(),
+		}
 	}
 }
 
@@ -47,7 +49,6 @@ impl<'a> System<'a> for PingTimerHandler {
 					},
 				);
 			});
-		
 	}
 }
 

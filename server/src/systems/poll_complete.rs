@@ -21,14 +21,13 @@ pub struct PollComplete {
 
 #[derive(SystemData)]
 pub struct PollCompleteData<'a> {
-	conns: Write<'a, Connections>,
+	conns: Read<'a, Connections>,
 	config: Read<'a, Config>,
 	grid: Read<'a, PlaneGrid>,
 	entities: Entities<'a>,
 
 	associated: ReadStorage<'a, AssociatedConnection>,
 	teams: ReadStorage<'a, Team>,
-	pos: ReadStorage<'a, Position>,
 }
 
 impl PollComplete {
@@ -39,16 +38,16 @@ impl PollComplete {
 
 impl PollComplete {
 	fn send_to_connection<'a>(
-		conns: &mut Write<'a, Connections>,
+		conns: &Read<'a, Connections>,
 		id: ConnectionId,
 		msg: Option<Vec<u8>>,
 	) {
 		trace!(target: "airmash:packet-dump", "{:?}", msg);
 
-		match conns.0.get_mut(&id) {
-			Some(ref mut conn) => match msg {
-				Some(msg) => Connections::send_sink(&mut conn.sink, msg.into()),
-				None => conn.sink.close(CloseCode::Normal).unwrap(),
+		match conns.conns.get(&id).map(|ref x| x.sink.clone()) {
+			Some(mut conn) => match msg {
+				Some(msg) => Connections::send_sink(&mut conn, msg.into()),
+				None => conn.close(CloseCode::Normal).unwrap(),
 			},
 			// The connection probably closed,
 			// do nothing
@@ -65,27 +64,16 @@ impl<'a> System<'a> for PollComplete {
 	type SystemData = PollCompleteData<'a>;
 
 	fn run(&mut self, data: Self::SystemData) {
-		let mut conns = data.conns;
+		let conns = data.conns;
 		let config = data.config;
 		let associated = data.associated;
-		let pos = data.pos;
 		let grid = data.grid;
 		let teams = data.teams;
 		let entities = &*data.entities;
 		let protocol = ProtocolV5 {};
 
 		let start = Instant::now();
-		let mut cnt = 0;
 		while let Ok(msg) = self.channel.try_recv() {
-			cnt += 1;
-
-			trace!(
-				target: "airmash:packet-dump",
-				"Sending packet {:#?} to {:?}",
-				msg.msg,
-				msg.info
-			);
-
 			let data: Option<Vec<u8>> = match msg.msg {
 				MessageBody::Packet(ref packet) => {
 					Some(protocol.serialize_server(packet).unwrap().next().unwrap())
@@ -95,43 +83,34 @@ impl<'a> System<'a> for PollComplete {
 			};
 
 			match msg.info {
-				MessageInfo::ToConnection(id) => Self::send_to_connection(&mut conns, id, data),
+				MessageInfo::ToConnection(id) => Self::send_to_connection(&conns, id, data),
 				MessageInfo::ToTeam(player) => {
 					let player_team = *teams.get(player).unwrap();
 
 					(&associated, &teams)
-						.join()
+						.par_join()
 						.filter(|(_, team)| **team == player_team)
 						.for_each(|(associated, _)| {
-							Self::send_to_connection(&mut conns, associated.0, data.clone());
+							Self::send_to_connection(&conns, associated.0, data.clone());
 						});
 				}
-				MessageInfo::ToVisible(_player) => {
-					let vals: Vec<_> = (&associated, &pos, entities)
-						.par_join()
-						.filter(|(_, &pos, ent)| {
-							grid.0.test_collide(HitCircle {
-								pos: pos,
-								rad: config.view_radius,
-								layer: 0,
-								ent: *ent,
-							})
+				MessageInfo::ToVisible(pos) => {
+					let ent = entities.entity(0);
+					grid.0
+						.rough_collide(HitCircle {
+							pos: pos,
+							rad: config.view_radius,
+							layer: 0,
+							ent: ent,
 						})
-						.map(|(x, ..)| x)
-						.collect();
-
-					vals.into_iter().for_each(|associated| {
-						Self::send_to_connection(&mut conns, associated.0, data.clone());
-					});
+						.into_iter()
+						.filter_map(|x| associated.get(x))
+						.for_each(|associated| {
+							Self::send_to_connection(&conns, associated.0, data.clone())
+						});
 				}
 			}
 		}
-
-		trace!(
-			target: "airmash:packets-sent",
-			"Sent {} packets this frame",
-			cnt
-		);
 
 		let time = Instant::now() - start;
 		trace!(

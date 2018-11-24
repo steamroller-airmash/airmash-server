@@ -21,6 +21,7 @@ pub struct SendEventStealthData<'a> {
 	pub channel: Read<'a, OnPlayerStealth>,
 	pub start_time: Read<'a, StartTime>,
 
+	pub pos: ReadStorage<'a, Position>,
 	pub energy: ReadStorage<'a, Energy>,
 	pub energy_regen: ReadStorage<'a, EnergyRegen>,
 	pub is_alive: IsAlive<'a>,
@@ -48,6 +49,7 @@ impl<'a> System<'a> for SendEventStealth {
 			channel,
 			start_time,
 
+			pos,
 			energy,
 			energy_regen,
 			is_alive,
@@ -67,7 +69,8 @@ impl<'a> System<'a> for SendEventStealth {
 			};
 
 			if evt.stealthed {
-				conns.send_to_visible(evt.player, packet);
+				let pos = *pos.get(evt.player).unwrap();
+				conns.send_to_visible(pos, packet);
 			} else {
 				conns.send_to_player(evt.player, packet);
 

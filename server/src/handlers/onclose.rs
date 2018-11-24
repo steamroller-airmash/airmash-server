@@ -40,7 +40,7 @@ impl<'a> System<'a> for OnCloseHandler {
 		if let Some(ref mut reader) = self.reader {
 			for evt in channel.read(reader) {
 				let (player, ty) = {
-					let conn = match connections.0.get(&evt.conn) {
+					let conn = match connections.conns.get(&evt.conn) {
 						Some(c) => c,
 						None => {
 							// This can sometimes happen legitimately if a disconnect occurrs.

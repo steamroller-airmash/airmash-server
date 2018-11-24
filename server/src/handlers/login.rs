@@ -43,7 +43,7 @@ impl<'a> System<'a> for LoginHandler {
 
 	fn run(&mut self, (channel, conns): Self::SystemData) {
 		for evt in channel.read(self.reader.as_mut().unwrap()).cloned() {
-			let conn_opt = conns.0.get(&evt.0);
+			let conn_opt = conns.conns.get(&evt.0);
 
 			let conninfo = match conn_opt {
 				Some(x) => x.info.clone(),

@@ -70,7 +70,7 @@ impl<'a> System<'a> for SendPacket {
 				}],
 			};
 
-			data.conns.send_to_all(packet);
+			data.conns.send_to_visible(*pos, packet);
 		}
 	}
 }

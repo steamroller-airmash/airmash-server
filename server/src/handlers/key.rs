@@ -42,11 +42,8 @@ impl<'a> System<'a> for KeyHandler {
 	fn run(&mut self, mut data: Self::SystemData) {
 		if let Some(ref mut reader) = self.reader {
 			for evt in data.channel.read(reader) {
-				let player = match data.conns.0.get(&evt.0) {
-					Some(data) => match data.player {
-						Some(player) => player,
-						None => continue,
-					},
+				let player = match data.conns.associated_player(evt.0) {
+					Some(player) => player,
 					None => continue,
 				};
 

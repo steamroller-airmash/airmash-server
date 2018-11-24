@@ -244,7 +244,7 @@ impl PositionUpdate {
 					trace!(target: "airmash:position_update", "Update: {:?}", packet);
 
 					if !keystate.stealthed {
-						data.conns.send_to_all(packet);
+						data.conns.send_to_visible(packet.pos, packet);
 					} else {
 						data.conns.send_to_team(ent, packet);
 					}

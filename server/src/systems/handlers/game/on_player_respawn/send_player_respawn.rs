@@ -46,12 +46,13 @@ impl<'a> System<'a> for SendPlayerRespawn {
 			}
 
 			let player = evt.player;
+			let pos = *data.pos.get(player).unwrap();
 
 			data.conns.send_to_visible(
-				player,
+				pos,
 				PlayerRespawn {
 					id: player.into(),
-					pos: *data.pos.get(player).unwrap(),
+					pos: pos,
 					rot: *data.rot.get(player).unwrap(),
 					upgrades: ProtocolUpgrades::default(),
 				},

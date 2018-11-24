@@ -53,7 +53,7 @@ impl<'a> System<'a> for DisplayMessage {
 				warn!("Player {:?} killed themselves!", evt.player);
 			}
 
-			data.conns.send_to_all(packet);
+			data.conns.send_to_visible(evt.pos, packet);
 
 			data.timerevent.single_write(TimerEvent {
 				ty: *SCORE_BOARD,

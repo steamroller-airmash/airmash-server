@@ -66,6 +66,8 @@ impl<'a> System<'a> for SendPlayerFire {
 				})
 				.collect::<Vec<_>>();
 
+			let pos = *data.pos.get(evt.player).unwrap();
+
 			let packet = PlayerFire {
 				clock: data.clock.get(),
 				id: evt.player.into(),
@@ -74,7 +76,7 @@ impl<'a> System<'a> for SendPlayerFire {
 				projectiles,
 			};
 
-			data.conns.send_to_visible(evt.player, packet);
+			data.conns.send_to_visible(pos, packet);
 		}
 	}
 }
