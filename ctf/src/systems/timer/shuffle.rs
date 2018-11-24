@@ -3,16 +3,16 @@ use specs::*;
 use server::component::channel::*;
 use server::component::counter::*;
 use server::component::flag::*;
-use server::*;
 use server::types::GameModeWriter;
+use server::*;
 
 use server::protocol::server::{PlayerReteam, PlayerReteamPlayer};
 
-use config::*;
 use component::*;
+use config::*;
 use consts::*;
-use shuffle::*;
 use gamemode::CTFGameMode;
+use shuffle::*;
 
 #[derive(Default)]
 pub struct Shuffle {
@@ -78,16 +78,16 @@ impl<'a> System<'a> for Shuffle {
 				*data.team.get_mut(swap.player).unwrap() = swap.new_team;
 			}
 
-			let (red, blue) = swaps.iter()
+			let (red, blue) = swaps
+				.iter()
 				.map(|x| {
 					if x.new_team == RED_TEAM {
 						(1, 0)
-					}
-					else {
+					} else {
 						(0, 1)
 					}
 				})
-				.fold((0, 0), |acc, x| { (acc.0 + x.0, acc.1 + x.1) });
+				.fold((0, 0), |acc, x| (acc.0 + x.0, acc.1 + x.1));
 
 			let gamemode: &mut CTFGameMode = &mut *data.gamemode;
 

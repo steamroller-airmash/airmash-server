@@ -14,7 +14,7 @@ use systems::specials::config::*;
 /// This system also position, speed, velocity,
 /// team and owner for players and mobs that
 /// are caught in the deflection.
-/// 
+///
 /// [0]: airmash_protocol::server::EventRepel
 #[derive(Default)]
 pub struct DecloakProwler {

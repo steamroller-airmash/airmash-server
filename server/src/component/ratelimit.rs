@@ -1,7 +1,7 @@
 //! Components for keeping track of
 //! ratelimits. These should all be
 //! wrappers around [`types::RateLimiter`][0].
-//! 
+//!
 //! [0]: ::types::RateLimiter
 
 use specs::*;

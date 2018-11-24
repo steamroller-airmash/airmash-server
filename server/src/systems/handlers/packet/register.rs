@@ -17,4 +17,5 @@ pub fn register<'a, 'b>(builder: Builder<'a, 'b>) -> Builder<'a, 'b> {
 		.with::<SignalHandler>()
 		.with::<WhisperHandler>()
 		.with::<ChatEventHandler>()
+		.with_handler::<TeamChatHandler>()
 }
