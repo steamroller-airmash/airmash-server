@@ -3,6 +3,8 @@ use specs::*;
 
 use component::*;
 
+use airmash_server::systems::handlers::game::on_join::AllJoinHandlers;
+
 use super::PickupFlagSystem;
 
 pub struct FlagSpeedSystem {
@@ -39,11 +41,7 @@ impl<'a> System<'a> for FlagSpeedSystem {
 
 		for evt in channel.read(self.reader.as_mut().unwrap()) {
 			match evt.ty {
-				FlagEventType::Capture => {
-					let player = evt.player.unwrap();
-					keystate.get_mut(player).unwrap().flagspeed = false;
-				}
-				FlagEventType::Drop => {
+				FlagEventType::Capture | FlagEventType::Drop => {
 					let player = evt.player.unwrap();
 					keystate.get_mut(player).unwrap().flagspeed = false;
 				}
@@ -58,7 +56,7 @@ impl<'a> System<'a> for FlagSpeedSystem {
 }
 
 impl SystemInfo for FlagSpeedSystem {
-	type Dependencies = (PickupFlagSystem);
+	type Dependencies = (PickupFlagSystem, AllJoinHandlers);
 
 	fn name() -> &'static str {
 		concat!(module_path!(), "::", line!())
