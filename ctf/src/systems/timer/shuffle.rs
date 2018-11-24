@@ -4,12 +4,15 @@ use server::component::channel::*;
 use server::component::counter::*;
 use server::component::flag::*;
 use server::*;
+use server::types::GameModeWriter;
 
 use server::protocol::server::{PlayerReteam, PlayerReteamPlayer};
 
+use config::*;
 use component::*;
 use consts::*;
 use shuffle::*;
+use gamemode::CTFGameMode;
 
 #[derive(Default)]
 pub struct Shuffle {
@@ -22,6 +25,7 @@ pub struct ShuffleData<'a> {
 	shuffler: ReadExpect<'a, Box<ShuffleProvider + Sync + Send>>,
 	conns: Read<'a, Connections>,
 	entities: Entities<'a>,
+	gamemode: GameModeWriter<'a, CTFGameMode>,
 
 	is_player: ReadStorage<'a, IsPlayer>,
 	captures: ReadStorage<'a, Captures>,
@@ -73,6 +77,22 @@ impl<'a> System<'a> for Shuffle {
 			for swap in swaps.iter() {
 				*data.team.get_mut(swap.player).unwrap() = swap.new_team;
 			}
+
+			let (red, blue) = swaps.iter()
+				.map(|x| {
+					if x.new_team == RED_TEAM {
+						(1, 0)
+					}
+					else {
+						(0, 1)
+					}
+				})
+				.fold((0, 0), |acc, x| { (acc.0 + x.0, acc.1 + x.1) });
+
+			let gamemode: &mut CTFGameMode = &mut *data.gamemode;
+
+			gamemode.redteam = red;
+			gamemode.blueteam = blue;
 
 			let swaps = swaps
 				.into_iter()
