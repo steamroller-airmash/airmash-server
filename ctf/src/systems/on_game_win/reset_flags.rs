@@ -6,8 +6,6 @@ use systems::on_flag::AllFlagSystems;
 use server::utils::event_handler::{EventHandler, EventHandlerTypeProvider};
 use server::SystemInfo;
 
-use {BLUE_TEAM, RED_TEAM};
-
 #[derive(Default)]
 pub struct ResetFlags;
 
@@ -24,18 +22,14 @@ impl EventHandlerTypeProvider for ResetFlags {
 impl<'a> EventHandler<'a> for ResetFlags {
 	type SystemData = ResetFlagsData<'a>;
 
-	fn on_event(&mut self, evt: &GameWinEvent, data: &mut Self::SystemData) {
-		let winner = evt.winning_team;
-		let flag = if winner == RED_TEAM {
-			data.flags.blue
-		} else if winner == BLUE_TEAM {
-			data.flags.red
-		} else {
-			unimplemented!()
-		};
-
+	fn on_event(&mut self, _: &GameWinEvent, data: &mut Self::SystemData) {
 		data.channel.single_write(FlagEvent {
-			flag,
+			flag: data.flags.blue,
+			player: None,
+			ty: FlagEventType::Return,
+		});
+		data.channel.single_write(FlagEvent {
+			flag: data.flags.red,
 			player: None,
 			ty: FlagEventType::Return,
 		});

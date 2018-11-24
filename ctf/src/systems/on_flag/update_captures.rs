@@ -53,7 +53,7 @@ impl<'a> System<'a> for UpdateCaptures {
 impl SystemInfo for UpdateCaptures {
 	// It doesn't matter too much when we handle this
 	// it can happen the next frame
-	type Dependencies = ();
+	type Dependencies = (super::KnownEventSources);
 
 	fn name() -> &'static str {
 		concat!(module_path!(), "::", line!())
