@@ -1,13 +1,20 @@
+macro_rules! try_get_error {
+	($ent:expr, $storage:expr) => {
+		error!(
+			"Unable to fetch component from {} for {:?} (line {})",
+			stringify!($storage),
+			$ent,
+			line!()
+		);
+	};
+}
+
 macro_rules! log_none {
 	($ent:expr, $storage:expr) => {
 		match $storage.get($ent) {
 			Some(x) => Some(x),
 			None => {
-				error!(
-					"Unable to fetch component from {} for {:?}",
-					stringify!($storage),
-					$ent
-				);
+				try_get_error!($ent, $storage);
 				None
 				}
 			}
@@ -16,11 +23,7 @@ macro_rules! log_none {
 		match $storage.get_mut($ent) {
 			Some(x) => Some(x),
 			None => {
-				error!(
-					"Unable to fetch component from {} for {:?}",
-					stringify!($storage),
-					$ent
-				);
+				try_get_error!($ent, $storage);
 				None
 				}
 			}
@@ -33,11 +36,7 @@ macro_rules! try_get {
 		match $storage.get($ent) {
 			Some(x) => x,
 			None => {
-				error!(
-					"Unable to fetch component from {} for {:?}",
-					stringify!($storage),
-					$ent
-				);
+				try_get_error!($ent, $storage);
 				return;
 				}
 			}
@@ -46,11 +45,7 @@ macro_rules! try_get {
 		match $storage.get_mut($ent) {
 			Some(x) => x,
 			None => {
-				error!(
-					"Unable to fetch component from {} for {:?}",
-					stringify!($storage),
-					$ent
-				);
+				try_get_error!($ent, $storage);
 				return;
 				}
 			}
