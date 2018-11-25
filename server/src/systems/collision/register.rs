@@ -6,7 +6,7 @@ pub fn register<'a, 'b>(disp: Builder<'a, 'b>) -> Builder<'a, 'b> {
 		.with::<MissileTerrainCollisionSystem>()
 		.with::<PlayerMissileCollisionSystem>()
 		.with::<PlayerUpgradeCollisionSystem>()
-		.with::<BounceSystem>()
-		.with::<MissileExplodeSystem>()
+		.with_handler::<BounceSystem>()
+		.with_handler::<MissileExplodeSystem>()
 		.with::<GenPlaneGrid>()
 }

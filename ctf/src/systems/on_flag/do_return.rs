@@ -1,7 +1,7 @@
 use server::*;
 use specs::*;
 
-use config::{BLUE_TEAM, RED_TEAM, FLAG_HOME_POS};
+use config::{BLUE_TEAM, FLAG_HOME_POS, RED_TEAM};
 
 use component::*;
 
