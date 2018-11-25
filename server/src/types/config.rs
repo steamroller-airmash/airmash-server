@@ -402,7 +402,7 @@ impl Default for Config {
 			spawn_shield_duration: Duration::from_secs(2),
 			shield_duration: Duration::from_secs(10),
 			inferno_duration: Duration::from_secs(10),
-			view_radius: Distance::new(4500.0),
+			view_radius: Distance::new(2250.0),
 		}
 	}
 }

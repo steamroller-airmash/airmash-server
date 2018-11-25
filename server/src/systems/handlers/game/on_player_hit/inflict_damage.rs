@@ -49,32 +49,14 @@ impl<'a> EventHandler<'a> for InflictDamage {
 			return;
 		}
 
-		let plane = data
-			.plane
-			.get(evt.player)
-			.expect("Player did not have a plane component!");
-		let health = data
-			.health
-			.get_mut(evt.player)
-			.expect("Player did not have a health component!");
-		let upgrades = data
-			.upgrades
-			.get(evt.player)
-			.expect("Player did not have the upgrades component!");
+		let plane = try_get!(evt.player, data.plane);
+		let health = try_get!(evt.player, mut data.health);
+		let upgrades = try_get!(evt.player, data.upgrades);
 		let powerups = data.powerups.get(evt.player);
 
-		let mob = data
-			.mob
-			.get(evt.missile)
-			.expect("Missile did not have a mob component");
-		let pos = data
-			.pos
-			.get(evt.missile)
-			.expect("Missile did not have a position component");
-		let owner = data
-			.owner
-			.get(evt.missile)
-			.expect("Missile did not have an owner component");
+		let mob = try_get!(evt.missile, data.mob);
+		let pos = try_get!(evt.missile, data.pos);
+		let owner = try_get!(evt.missile, data.owner);
 
 		let ref planeconf = data.config.planes[*plane];
 		let ref mobconf = data.config.mobs[*mob].missile.unwrap();

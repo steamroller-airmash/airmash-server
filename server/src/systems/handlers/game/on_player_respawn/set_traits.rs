@@ -1,9 +1,11 @@
 use specs::*;
 
-use component::channel::*;
+use component::event::*;
 use component::flag::*;
 use types::*;
 use SystemInfo;
+
+use utils::{EventHandler, EventHandlerTypeProvider};
 
 use systems::handlers::command::AllCommandHandlers;
 use systems::handlers::game::on_join::AllJoinHandlers;
@@ -20,14 +22,11 @@ use systems::handlers::game::on_join::AllJoinHandlers;
 /// - [`Health`]
 /// - [`Energy`]
 #[derive(Default)]
-pub struct SetTraits {
-	reader: Option<OnPlayerRespawnReader>,
-}
+pub struct SetTraits;
 
 #[derive(SystemData)]
 pub struct SetTraitsData<'a> {
-	channel: Read<'a, OnPlayerRespawn>,
-
+	entities: Entities<'a>,
 	team: ReadStorage<'a, Team>,
 	pos: WriteStorage<'a, Position>,
 	vel: WriteStorage<'a, Velocity>,
@@ -40,31 +39,31 @@ pub struct SetTraitsData<'a> {
 	gamemode: GameModeWriter<'a, GameMode>,
 }
 
-impl<'a> System<'a> for SetTraits {
+impl EventHandlerTypeProvider for SetTraits {
+	type Event = PlayerRespawn;
+}
+
+impl<'a> EventHandler<'a> for SetTraits {
 	type SystemData = SetTraitsData<'a>;
 
-	fn setup(&mut self, res: &mut Resources) {
-		Self::SystemData::setup(res);
+	fn on_event(&mut self, evt: &PlayerRespawn, data: &mut Self::SystemData) {
+		if !data.entities.is_alive(evt.player) {
+			return;
+		}
 
-		self.reader = Some(res.fetch_mut::<OnPlayerRespawn>().register_reader());
-	}
-
-	fn run(&mut self, mut data: Self::SystemData) {
 		let gamemode = data.gamemode.get_mut();
 
-		for evt in data.channel.read(self.reader.as_mut().unwrap()) {
-			let player = evt.player;
-			let team = *data.team.get(player).unwrap();
-			let pos = gamemode.spawn_pos(player, team);
+		let player = evt.player;
+		let team = *try_get!(player, data.team);
+		let pos = gamemode.spawn_pos(player, team);
 
-			*data.pos.get_mut(player).unwrap() = pos;
-			*data.vel.get_mut(player).unwrap() = Velocity::default();
-			*data.rot.get_mut(player).unwrap() = Rotation::default();
-			*data.health.get_mut(player).unwrap() = Health::new(1.0);
-			*data.energy.get_mut(player).unwrap() = Energy::new(1.0);
+		data.pos.insert(player, pos).unwrap();
+		data.vel.insert(player, Velocity::default()).unwrap();
+		data.rot.insert(player, Rotation::default()).unwrap();
+		data.health.insert(player, Health::new(1.0)).unwrap();
+		data.energy.insert(player, Energy::new(1.0)).unwrap();
 
-			data.is_dead.remove(player);
-		}
+		data.is_dead.remove(player);
 	}
 }
 

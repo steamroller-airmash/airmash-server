@@ -249,10 +249,10 @@ where
 				world.add_resource(LastFrame(now));
 
 				let duration = Instant::now() - now;
-				if duration > Duration::from_millis(30) {
+				if duration > Duration::from_millis(120) {
 					// Adjust this down once it becomes a more rare event
 					warn!(
-						"Frame took {} ms! (longer than 30 ms)",
+						"Frame took {} ms! (longer than 120 ms)",
 						1000 * duration.as_secs() + (duration.subsec_millis() as u64)
 					);
 				} else {
