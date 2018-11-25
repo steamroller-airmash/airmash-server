@@ -1,7 +1,7 @@
 use server::*;
 use specs::*;
 
-use config::{BLUE_TEAM, RED_TEAM};
+use config::{BLUE_TEAM, RED_TEAM, FLAG_HOME_POS};
 
 use component::*;
 
@@ -43,10 +43,13 @@ impl<'a> EventHandler<'a> for DoReturn {
 
 		let team;
 		if evt.flag == flags.red {
-			team = BLUE_TEAM;
-		} else {
 			team = RED_TEAM;
+		} else {
+			team = BLUE_TEAM;
 		}
+
+		let pos = (*FLAG_HOME_POS)[&team];
+		*flag_pos = pos;
 
 		data.carriers.get_mut(evt.flag).unwrap().0 = None;
 
