@@ -1,19 +1,19 @@
 use specs::*;
 use types::*;
 
-use component::channel::*;
+use component::event::*;
 use systems::missile::MissileFireHandler;
 use SystemInfo;
 
+use utils::{EventHandler, EventHandlerTypeProvider};
+
 use protocol::server::EventStealth;
 
-pub struct DestealthOnFire {
-	reader: Option<OnMissileFireReader>,
-}
+#[derive(Default)]
+pub struct DestealthOnFire;
 
 #[derive(SystemData)]
 pub struct DestealthOnFireData<'a> {
-	channel: Read<'a, OnMissileFire>,
 	conns: Read<'a, Connections>,
 
 	keystate: WriteStorage<'a, KeyState>,
@@ -22,32 +22,28 @@ pub struct DestealthOnFireData<'a> {
 	energy_regen: ReadStorage<'a, EnergyRegen>,
 }
 
-impl<'a> System<'a> for DestealthOnFire {
+impl EventHandlerTypeProvider for DestealthOnFire {
+	type Event = MissileFire;
+}
+
+impl<'a> EventHandler<'a> for DestealthOnFire {
 	type SystemData = DestealthOnFireData<'a>;
 
-	fn setup(&mut self, res: &mut Resources) {
-		Self::SystemData::setup(res);
-
-		self.reader = Some(res.fetch_mut::<OnMissileFire>().register_reader());
-	}
-
-	fn run(&mut self, mut data: Self::SystemData) {
-		for evt in data.channel.read(self.reader.as_mut().unwrap()) {
-			if *data.plane.get(evt.player).unwrap() != Plane::Prowler {
-				continue;
-			}
-
-			data.keystate.get_mut(evt.player).unwrap().stealthed = false;
-
-			let packet = EventStealth {
-				id: evt.player.into(),
-				state: false,
-				energy: *data.energy.get(evt.player).unwrap(),
-				energy_regen: *data.energy_regen.get(evt.player).unwrap(),
-			};
-
-			data.conns.send_to_player(evt.player, packet);
+	fn on_event(&mut self, evt: &MissileFire, data: &mut Self::SystemData) {
+		if *try_get!(evt.player, data.plane) != Plane::Prowler {
+			return;
 		}
+
+		try_get!(evt.player, mut data.keystate).stealthed = false;
+
+		let packet = EventStealth {
+			id: evt.player.into(),
+			state: false,
+			energy: *try_get!(evt.player, data.energy),
+			energy_regen: *try_get!(evt.player, data.energy_regen),
+		};
+
+		data.conns.send_to_player(evt.player, packet);
 	}
 }
 
@@ -59,6 +55,6 @@ impl SystemInfo for DestealthOnFire {
 	}
 
 	fn new() -> Self {
-		Self { reader: None }
+		Self::default()
 	}
 }

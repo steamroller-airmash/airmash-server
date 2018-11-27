@@ -34,13 +34,13 @@ impl<'a> System<'a> for SetStealth {
 	type SystemData = SetStealthData<'a>;
 
 	fn run(&mut self, mut data: Self::SystemData) {
-		let mut flips = vec![];
 		let this_frame = *data.this_frame;
+		let mut channel = data.channel;
 
 		(
 			&data.plane,
 			&mut data.energy,
-			&data.keystate,
+			&mut data.keystate,
 			&mut data.last_stealth,
 			&*data.entities,
 			data.is_alive.mask(),
@@ -53,25 +53,22 @@ impl<'a> System<'a> for SetStealth {
 			})
 			.filter(|(_, _, keystate, ..)| keystate.special)
 			.filter(|(_, energy, ..)| **energy > *PROWLER_SPECIAL_ENERGY)
-			.for_each(|(_, energy, keystate, last_stealth, ent, ..)| {
-				flips.push(ent);
-
+			.map(|(_, energy, keystate, last_stealth, ent, ..)| {
 				if !keystate.stealthed {
 					*energy -= *PROWLER_SPECIAL_ENERGY;
 				}
 				*last_stealth = LastStealthTime(this_frame.0);
+
+				(ent, keystate)
+			})
+			.for_each(|(ent, keystate)| {
+				keystate.stealthed = !keystate.stealthed;
+
+				channel.single_write(PlayerStealth {
+					player: ent,
+					stealthed: keystate.stealthed,
+				});
 			});
-
-		for ent in flips {
-			let ref mut keystate = data.keystate.get_mut(ent).unwrap();
-
-			keystate.stealthed = !keystate.stealthed;
-
-			data.channel.single_write(PlayerStealth {
-				player: ent,
-				stealthed: keystate.stealthed,
-			});
-		}
 	}
 }
 

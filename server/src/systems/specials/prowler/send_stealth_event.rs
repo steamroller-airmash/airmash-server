@@ -6,19 +6,18 @@ use types::*;
 use systems::specials::prowler::SetStealth;
 use SystemInfo;
 
-use component::channel::*;
+use component::event::*;
 use component::time::{LastUpdate, StartTime};
+use utils::{EventHandler, EventHandlerTypeProvider};
 
 use protocol::server::EventStealth;
 
-pub struct SendEventStealth {
-	pub reader: Option<OnPlayerStealthReader>,
-}
+#[derive(Default)]
+pub struct SendEventStealth;
 
 #[derive(SystemData)]
 pub struct SendEventStealthData<'a> {
 	pub conns: Read<'a, Connections>,
-	pub channel: Read<'a, OnPlayerStealth>,
 	pub start_time: Read<'a, StartTime>,
 
 	pub pos: ReadStorage<'a, Position>,
@@ -28,57 +27,48 @@ pub struct SendEventStealthData<'a> {
 	pub last_update: WriteStorage<'a, LastUpdate>,
 }
 
-impl SendEventStealth {
-	pub fn new() -> Self {
-		Self { reader: None }
-	}
+impl EventHandlerTypeProvider for SendEventStealth {
+	type Event = PlayerStealth;
 }
 
-impl<'a> System<'a> for SendEventStealth {
+impl<'a> EventHandler<'a> for SendEventStealth {
 	type SystemData = SendEventStealthData<'a>;
 
-	fn setup(&mut self, res: &mut Resources) {
-		Self::SystemData::setup(res);
-
-		self.reader = Some(res.fetch_mut::<OnPlayerStealth>().register_reader());
-	}
-
-	fn run(&mut self, data: Self::SystemData) {
+	fn on_event(&mut self, evt: &PlayerStealth, data: &mut Self::SystemData) {
 		let Self::SystemData {
 			conns,
-			channel,
 			start_time,
 
 			pos,
 			energy,
 			energy_regen,
 			is_alive,
-			mut last_update,
+			ref mut last_update,
 		} = data;
 
-		for evt in channel.read(self.reader.as_mut().unwrap()) {
-			if !is_alive.get(evt.player) {
-				continue;
-			}
+		if !is_alive.get(evt.player) {
+			return;
+		}
 
-			let packet = EventStealth {
-				id: evt.player.into(),
-				state: evt.stealthed,
-				energy: *energy.get(evt.player).unwrap(),
-				energy_regen: *energy_regen.get(evt.player).unwrap(),
-			};
+		let packet = EventStealth {
+			id: evt.player.into(),
+			state: evt.stealthed,
+			energy: *try_get!(evt.player, energy),
+			energy_regen: *try_get!(evt.player, energy_regen),
+		};
 
-			if evt.stealthed {
-				let pos = *pos.get(evt.player).unwrap();
-				conns.send_to_visible(pos, packet);
-			} else {
-				conns.send_to_player(evt.player, packet);
+		if evt.stealthed {
+			let pos = *try_get!(evt.player, pos);
+			conns.send_to_visible(pos, packet);
+		} else {
+			conns.send_to_player(evt.player, packet);
 
-				// Force position update system to send an update packet
-				// by changing the time of the last update to the server
-				// start time
-				*last_update.get_mut(evt.player).unwrap() = LastUpdate(start_time.0);
-			}
+			// Force position update system to send an update packet
+			// by changing the time of the last update to the server
+			// start time
+			last_update
+				.insert(evt.player, LastUpdate(start_time.0))
+				.unwrap();
 		}
 	}
 }
@@ -91,6 +81,6 @@ impl SystemInfo for SendEventStealth {
 	}
 
 	fn new() -> Self {
-		Self::new()
+		Self::default()
 	}
 }

@@ -2,21 +2,19 @@ use specs::*;
 use types::systemdata::*;
 use types::*;
 
-use component::channel::*;
 use component::event::*;
 use component::flag::*;
 use systems::collision::PlayerMissileCollisionSystem;
+use utils::{EventHandler, EventHandlerTypeProvider};
 use SystemInfo;
 
 use protocol::server::EventStealth;
 
-pub struct DestealthOnHit {
-	reader: Option<OnPlayerMissileCollisionReader>,
-}
+#[derive(Default)]
+pub struct DestealthOnHit;
 
 #[derive(SystemData)]
 pub struct DestealthOnHitData<'a> {
-	channel: Read<'a, OnPlayerMissileCollision>,
 	conns: Read<'a, Connections>,
 
 	keystate: WriteStorage<'a, KeyState>,
@@ -27,44 +25,38 @@ pub struct DestealthOnHitData<'a> {
 	energy_regen: ReadStorage<'a, EnergyRegen>,
 }
 
-impl<'a> System<'a> for DestealthOnHit {
+impl EventHandlerTypeProvider for DestealthOnHit {
+	type Event = PlayerMissileCollision;
+}
+
+impl<'a> EventHandler<'a> for DestealthOnHit {
 	type SystemData = DestealthOnHitData<'a>;
 
-	fn setup(&mut self, res: &mut Resources) {
-		Self::SystemData::setup(res);
+	fn on_event(&mut self, evt: &PlayerMissileCollision, data: &mut Self::SystemData) {
+		let &PlayerMissileCollision(evt) = evt;
+		let player = data
+			.is_player
+			.get(evt.0.ent)
+			.map(|_| evt.0.ent)
+			.unwrap_or(evt.1.ent);
 
-		self.reader = Some(
-			res.fetch_mut::<OnPlayerMissileCollision>()
-				.register_reader(),
-		);
-	}
-
-	fn run(&mut self, mut data: Self::SystemData) {
-		for PlayerMissileCollision(evt) in data.channel.read(self.reader.as_mut().unwrap()) {
-			let player = data
-				.is_player
-				.get(evt.0.ent)
-				.map(|_| evt.0.ent)
-				.unwrap_or(evt.1.ent);
-
-			if *data.plane.get(player).unwrap() != Plane::Prowler {
-				continue;
-			}
-			if !data.is_alive.get(player) {
-				continue;
-			}
-
-			data.keystate.get_mut(player).unwrap().stealthed = false;
-
-			let packet = EventStealth {
-				id: player.into(),
-				state: false,
-				energy: *data.energy.get(player).unwrap(),
-				energy_regen: *data.energy_regen.get(player).unwrap(),
-			};
-
-			data.conns.send_to_player(player, packet);
+		if *try_get!(player, data.plane) != Plane::Prowler {
+			return;
 		}
+		if !data.is_alive.get(player) {
+			return;
+		}
+
+		try_get!(player, mut data.keystate).stealthed = false;
+
+		let packet = EventStealth {
+			id: player.into(),
+			state: false,
+			energy: *try_get!(player, data.energy),
+			energy_regen: *try_get!(player, data.energy_regen),
+		};
+
+		data.conns.send_to_player(player, packet);
 	}
 }
 
@@ -76,6 +68,6 @@ impl SystemInfo for DestealthOnHit {
 	}
 
 	fn new() -> Self {
-		Self { reader: None }
+		Self::default()
 	}
 }
