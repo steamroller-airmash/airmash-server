@@ -4,10 +4,12 @@ use types::*;
 
 use SystemInfo;
 
-use component::channel::{OnPlayerRepel, OnPlayerRepelReader};
+use component::event::PlayerRepel;
 use component::flag::IsPlayer;
 use component::time::{LastStealthTime, ThisFrame};
 use systems::specials::config::*;
+
+use utils::{EventHandler, EventHandlerTypeProvider};
 
 /// Send [`EventRepel`][0] when a goliath uses it's special.
 ///
@@ -17,13 +19,10 @@ use systems::specials::config::*;
 ///
 /// [0]: airmash_protocol::server::EventRepel
 #[derive(Default)]
-pub struct DecloakProwler {
-	reader: Option<OnPlayerRepelReader>,
-}
+pub struct DecloakProwler;
 
 #[derive(SystemData)]
 pub struct DecloakProwlerData<'a> {
-	channel: Read<'a, OnPlayerRepel>,
 	entities: Entities<'a>,
 	this_frame: Read<'a, ThisFrame>,
 
@@ -35,55 +34,48 @@ pub struct DecloakProwlerData<'a> {
 	is_player: ReadStorage<'a, IsPlayer>,
 }
 
-impl DecloakProwler {}
+impl EventHandlerTypeProvider for DecloakProwler {
+	type Event = PlayerRepel;
+}
 
-impl<'a> System<'a> for DecloakProwler {
+impl<'a> EventHandler<'a> for DecloakProwler {
 	type SystemData = DecloakProwlerData<'a>;
 
-	fn setup(&mut self, res: &mut Resources) {
-		Self::SystemData::setup(res);
-
-		self.reader = Some(res.fetch_mut::<OnPlayerRepel>().register_reader());
-	}
-
-	fn run(&mut self, mut data: Self::SystemData) {
+	fn on_event(&mut self, evt: &PlayerRepel, data: &mut Self::SystemData) {
+		let pos = *try_get!(evt.player, data.pos);
+		let team = *try_get!(evt.player, data.team);
 		let player_r2 = *GOLIATH_SPECIAL_RADIUS_PLAYER * *GOLIATH_SPECIAL_RADIUS_PLAYER;
 
-		for evt in data.channel.read(self.reader.as_mut().unwrap()) {
-			let pos = *data.pos.get(evt.player).unwrap();
-			let team = *data.team.get(evt.player).unwrap();
+		let hit_players = (
+			&*data.entities,
+			&data.pos,
+			&data.team,
+			data.is_player.mask(),
+			data.is_alive.mask(),
+		)
+			.join()
+			.filter(|(ent, ..)| *ent != evt.player)
+			.filter(|(_, _, player_team, ..)| **player_team != team)
+			.filter_map(|(ent, player_pos, ..)| {
+				let dist2 = (*player_pos - pos).length2();
 
-			let hit_players = (
-				&*data.entities,
-				&data.pos,
-				&data.team,
-				data.is_player.mask(),
-				data.is_alive.mask(),
-			)
-				.join()
-				.filter(|(ent, ..)| *ent != evt.player)
-				.filter(|(_, _, player_team, ..)| **player_team != team)
-				.filter_map(|(ent, player_pos, ..)| {
-					let dist2 = (*player_pos - pos).length2();
+				if dist2 < player_r2 {
+					Some(ent)
+				} else {
+					None
+				}
+			})
+			.collect::<Vec<_>>();
 
-					if dist2 < player_r2 {
-						Some(ent)
-					} else {
-						None
-					}
-				})
-				.collect::<Vec<_>>();
+		for player in hit_players {
+			let keystate = try_get!(player, mut data.keystate);
 
-			for player in hit_players {
-				let keystate = data.keystate.get_mut(player).unwrap();
+			keystate.stealthed = false;
+			keystate.special = false;
 
-				keystate.stealthed = false;
-				keystate.special = false;
-
-				data.last_stealth
-					.insert(player, LastStealthTime(data.this_frame.0))
-					.unwrap();
-			}
+			data.last_stealth
+				.insert(player, LastStealthTime(data.this_frame.0))
+				.unwrap();
 		}
 	}
 }
@@ -96,6 +88,6 @@ impl SystemInfo for DecloakProwler {
 	}
 
 	fn new() -> Self {
-		Self { reader: None }
+		Self::default()
 	}
 }

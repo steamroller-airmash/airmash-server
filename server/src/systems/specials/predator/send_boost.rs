@@ -22,19 +22,19 @@ pub struct SendEventBoost {
 
 #[derive(SystemData)]
 pub struct SendEventBoostData<'a> {
-	pub entities: Entities<'a>,
-	pub conns: Read<'a, Connections>,
+	entities: Entities<'a>,
+	conns: Read<'a, Connections>,
 
-	pub boosting: ReadStorage<'a, IsBoosting>,
-	pub pos: ReadStorage<'a, Position>,
-	pub rot: ReadStorage<'a, Rotation>,
-	pub vel: ReadStorage<'a, Velocity>,
-	pub energy: ReadStorage<'a, Energy>,
-	pub energy_regen: ReadStorage<'a, EnergyRegen>,
-	pub is_player: ReadStorage<'a, IsPlayer>,
-	pub is_alive: IsAlive<'a>,
+	boosting: ReadStorage<'a, IsBoosting>,
+	pos: ReadStorage<'a, Position>,
+	rot: ReadStorage<'a, Rotation>,
+	vel: ReadStorage<'a, Velocity>,
+	energy: ReadStorage<'a, Energy>,
+	energy_regen: ReadStorage<'a, EnergyRegen>,
+	is_player: ReadStorage<'a, IsPlayer>,
+	is_alive: IsAlive<'a>,
 
-	pub clock: ReadClock<'a>,
+	clock: ReadClock<'a>,
 }
 
 impl SendEventBoost {
@@ -67,7 +67,7 @@ impl SendEventBoost {
 					energy_regen: *energy_regen,
 				};
 
-				data.conns.send_to_all(packet);
+				data.conns.send_to_visible(*pos, packet);
 			});
 	}
 }

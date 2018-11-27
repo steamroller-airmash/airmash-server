@@ -10,7 +10,7 @@ pub fn register<'a, 'b>(builder: Builder<'a, 'b>) -> Builder<'a, 'b> {
 		.with::<prowler::DestealthOnFire>()
 		.with::<prowler::DestealthOnHit>()
 		.with::<goliath::GoliathRepel>()
-		.with::<goliath::SendEventRepel>()
-		.with::<goliath::DestealthProwler>()
+		.with_handler::<goliath::SendEventRepel>()
+		.with_handler::<goliath::DestealthProwler>()
 		.with::<tornado::Fire>()
 }
