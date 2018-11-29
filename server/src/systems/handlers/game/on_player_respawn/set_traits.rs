@@ -1,7 +1,6 @@
 use specs::*;
 
 use component::event::*;
-use component::flag::*;
 use types::*;
 use SystemInfo;
 
@@ -13,8 +12,7 @@ use systems::handlers::game::on_join::AllJoinHandlers;
 /// Set transform, health, energy and flags
 /// for a player when they respawn.
 ///
-/// More specifically, this system removes the
-/// [`IsDead`] flag and sets the following:
+/// More specifically, this system sets the following:
 ///
 /// - [`Position`]
 /// - [`Velocity`]
@@ -33,8 +31,6 @@ pub struct SetTraitsData<'a> {
 	rot: WriteStorage<'a, Rotation>,
 	health: WriteStorage<'a, Health>,
 	energy: WriteStorage<'a, Energy>,
-
-	is_dead: WriteStorage<'a, IsDead>,
 
 	gamemode: GameModeWriter<'a, GameMode>,
 }
@@ -62,8 +58,6 @@ impl<'a> EventHandler<'a> for SetTraits {
 		data.rot.insert(player, Rotation::default()).unwrap();
 		data.health.insert(player, Health::new(1.0)).unwrap();
 		data.energy.insert(player, Energy::new(1.0)).unwrap();
-
-		data.is_dead.remove(player);
 	}
 }
 

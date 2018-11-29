@@ -1,4 +1,3 @@
-mod clear_dead_flag;
 mod delay_message;
 mod delete_entity;
 mod login;
@@ -7,7 +6,6 @@ mod player_respawn;
 mod register;
 mod unthrottle;
 
-pub use self::clear_dead_flag::ClearDeadFlag;
 pub use self::delay_message::DelayMessage;
 pub use self::delete_entity::DeleteEntity;
 pub use self::login::LoginHandler;

@@ -2,58 +2,62 @@ use specs::*;
 
 use component::channel::*;
 use component::event::*;
+use component::flag::{IsDead, IsSpectating};
 use consts::timer::*;
+
+use utils::{EventHandler, EventHandlerTypeProvider};
 
 use systems::TimerHandler;
 use SystemInfo;
 
-pub struct PlayerRespawnSystem {
-	reader: Option<OnTimerEventReader>,
-}
+#[derive(Default)]
+pub struct PlayerRespawnSystem;
 
 #[derive(SystemData)]
 pub struct PlayerRespawnSystemData<'a> {
-	channel: Read<'a, OnTimerEvent>,
 	respawn_channel: Write<'a, OnPlayerRespawn>,
 	entities: Entities<'a>,
+	is_dead: WriteStorage<'a, IsDead>,
+	is_spec: ReadStorage<'a, IsSpectating>,
 }
 
-impl<'a> System<'a> for PlayerRespawnSystem {
+impl EventHandlerTypeProvider for PlayerRespawnSystem {
+	type Event = TimerEvent;
+}
+
+impl<'a> EventHandler<'a> for PlayerRespawnSystem {
 	type SystemData = PlayerRespawnSystemData<'a>;
 
-	fn setup(&mut self, res: &mut Resources) {
-		Self::SystemData::setup(res);
-
-		self.reader = Some(res.fetch_mut::<OnTimerEvent>().register_reader());
-	}
-
-	fn run(&mut self, mut data: Self::SystemData) {
-		for evt in data.channel.read(self.reader.as_mut().unwrap()) {
-			if evt.ty != *RESPAWN_TIME {
-				continue;
-			}
-
-			let player =
-				match evt.data {
-					Some(ref dat) => match (*dat).downcast_ref::<Entity>() {
-						Some(val) => *val,
-						None => {
-							error!("Unable to downcast TimerEvent data to Entity! Event will be skipped.");
-							continue;
-						}
-					},
-					None => continue,
-				};
-
-			if !data.entities.is_alive(player) {
-				continue;
-			}
-
-			data.respawn_channel.single_write(PlayerRespawn {
-				player,
-				prev_status: PlayerRespawnPrevStatus::Dead,
-			});
+	fn on_event(&mut self, evt: &TimerEvent, data: &mut Self::SystemData) {
+		if evt.ty != *RESPAWN_TIME {
+			return;
 		}
+
+		let player = match evt.data {
+			Some(ref dat) => match (*dat).downcast_ref::<Entity>() {
+				Some(val) => *val,
+				None => {
+					error!("Unable to downcast TimerEvent data to Entity! Event will be skipped.");
+					return;
+				}
+			},
+			None => return,
+		};
+
+		if !data.entities.is_alive(player) {
+			return;
+		}
+
+		data.is_dead.remove(player);
+
+		if data.is_spec.get(player).is_some() {
+			return;
+		}
+
+		data.respawn_channel.single_write(PlayerRespawn {
+			player,
+			prev_status: PlayerRespawnPrevStatus::Dead,
+		});
 	}
 }
 
@@ -65,6 +69,6 @@ impl SystemInfo for PlayerRespawnSystem {
 	}
 
 	fn new() -> Self {
-		Self { reader: None }
+		Self::default()
 	}
 }

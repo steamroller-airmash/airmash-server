@@ -1,16 +1,11 @@
 use specs::*;
 
-use std::time::Duration;
-
-use consts::timer::RESPAWN_TIME;
 use types::*;
 
 use SystemInfo;
 
 use component::channel::*;
-use component::event::TimerEvent;
 use component::flag::IsDead;
-use component::time::ThisFrame;
 
 use protocol::server::MobDespawnCoords;
 
@@ -20,18 +15,11 @@ pub struct PlayerKilledCleanup {
 
 #[derive(SystemData)]
 pub struct PlayerKilledCleanupData<'a> {
-	pub entities: Entities<'a>,
-	pub channel: Read<'a, OnPlayerKilled>,
-	pub conns: Read<'a, Connections>,
-	pub thisframe: Read<'a, ThisFrame>,
-	pub timerchannel: Write<'a, OnTimerEvent>,
+	channel: Read<'a, OnPlayerKilled>,
+	conns: Read<'a, Connections>,
 
-	pub name: ReadStorage<'a, Name>,
-	pub level: ReadStorage<'a, Level>,
-	pub isdead: WriteStorage<'a, IsDead>,
-	pub mob: ReadStorage<'a, Mob>,
-
-	pub futdispatch: ReadExpect<'a, FutureDispatcher>,
+	isdead: WriteStorage<'a, IsDead>,
+	mob: ReadStorage<'a, Mob>,
 }
 
 impl PlayerKilledCleanup {
@@ -55,23 +43,11 @@ impl<'a> System<'a> for PlayerKilledCleanup {
 
 			let despawn_packet = MobDespawnCoords {
 				id: evt.missile.into(),
-				ty: *data.mob.get(evt.missile).unwrap(),
+				ty: *try_get!(evt.missile, data.mob),
 				pos: evt.pos,
 			};
 
 			data.conns.send_to_visible(evt.pos, despawn_packet);
-
-			let player = evt.player;
-
-			// Set a timer event to make the player respawn
-			data.futdispatch
-				.run_delayed(Duration::from_secs(2), move |instant| {
-					Some(TimerEvent {
-						ty: *RESPAWN_TIME,
-						instant,
-						data: Some(Box::new(player)),
-					})
-				});
 		}
 	}
 }
