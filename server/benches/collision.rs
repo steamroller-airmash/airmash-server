@@ -48,3 +48,24 @@ fn terrain_collision(b: &mut Bencher) {
 
 	b.iter(move || terrain.collide(circles.iter().cloned()))
 }
+
+#[bench]
+fn create_grid(b: &mut Bencher) {
+	let circles = generate_circles();
+
+	b.iter(move || Grid::new(circles.clone()));
+}
+
+#[bench]
+fn copy_vector(b: &mut Bencher) {
+	let circles = generate_circles();
+
+	b.iter(move || circles.clone());
+}
+
+#[bench]
+fn create_empty_grid(b: &mut Bencher) {
+	let circles = vec![];
+
+	b.iter(move || Grid::new(circles.clone()));
+}
