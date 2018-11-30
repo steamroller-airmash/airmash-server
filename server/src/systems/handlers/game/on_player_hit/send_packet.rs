@@ -49,12 +49,12 @@ impl<'a> System<'a> for SendPacket {
 				continue;
 			}
 
-			let pos = data.pos.get(evt.missile).unwrap();
-			let mob = data.mob.get(evt.missile).unwrap();
-			let owner = data.owner.get(evt.missile).unwrap();
+			let pos = try_get!(evt.missile, data.pos);
+			let mob = try_get!(evt.missile, data.mob);
+			let owner = try_get!(evt.missile, data.owner);
 
-			let health = data.health.get(evt.player).unwrap();
-			let plane = data.plane.get(evt.player).unwrap();
+			let health = try_get!(evt.player, data.health);
+			let plane = try_get!(evt.player, data.plane);
 
 			let ref planeconf = data.config.planes[*plane];
 
@@ -70,7 +70,7 @@ impl<'a> System<'a> for SendPacket {
 				}],
 			};
 
-			data.conns.send_to_all(packet);
+			data.conns.send_to_visible(*pos, packet);
 		}
 	}
 }

@@ -1,4 +1,5 @@
 use types::ConnectionId;
+use types::Position;
 
 use fnv::FnvHashMap;
 use specs::Entity;
@@ -36,7 +37,7 @@ pub enum ConnectionType {
 pub enum MessageInfo {
 	ToConnection(ConnectionId),
 	ToTeam(Entity),
-	ToVisible(Entity),
+	ToVisible(Position),
 }
 
 #[derive(Debug)]
@@ -51,10 +52,10 @@ pub struct Message {
 	pub msg: MessageBody,
 }
 
-pub struct Connections(
-	pub FnvHashMap<ConnectionId, ConnectionData>,
-	Mutex<Sender<Message>>,
-);
+pub struct Connections {
+	pub conns: FnvHashMap<ConnectionId, ConnectionData>,
+	lock: Mutex<Sender<Message>>,
+}
 
 impl Default for Connections {
 	fn default() -> Self {
@@ -64,7 +65,10 @@ impl Default for Connections {
 
 impl Connections {
 	pub fn new(channel: Sender<Message>) -> Self {
-		Connections(FnvHashMap::default(), Mutex::new(channel))
+		Connections {
+			conns: FnvHashMap::default(),
+			lock: Mutex::new(channel),
+		}
 	}
 
 	pub fn add(&mut self, id: ConnectionId, sink: WsSender, addr: IpAddr, origin: Option<String>) {
@@ -76,10 +80,10 @@ impl Connections {
 			info: ConnectionInfo { addr, origin },
 		};
 
-		self.0.insert(id, data);
+		self.conns.insert(id, data);
 	}
 	pub fn remove(&mut self, id: ConnectionId) {
-		self.0.remove(&id).unwrap_or_else(|| {
+		self.conns.remove(&id).unwrap_or_else(|| {
 			error!(
 				target: "server",
 				"Attempted to remove non-existent connection {:?}",
@@ -91,7 +95,7 @@ impl Connections {
 	pub fn remove_player(&mut self, player: Entity) {
 		let mut conns = vec![];
 
-		for conn in self.0.values() {
+		for conn in self.conns.values() {
 			if let Some(p) = conn.player {
 				if p == player {
 					conns.push(conn.id);
@@ -105,7 +109,7 @@ impl Connections {
 	}
 
 	pub fn associate(&mut self, id: ConnectionId, player: Entity, ty: ConnectionType) {
-		let ref mut conn = self.0.get_mut(&id).unwrap_or_else(|| {
+		let ref mut conn = self.conns.get_mut(&id).unwrap_or_else(|| {
 			error!(
 				target: "server",
 				"Attempted to associate non-existent connection {:?} with player {:?}",
@@ -126,7 +130,7 @@ impl Connections {
 	where
 		I: Into<ServerPacket>,
 	{
-		let conn = self.0.iter().find(|(_, c)| {
+		let conn = self.conns.iter().find(|(_, c)| {
 			c.player.is_some() && c.ty == ConnectionType::Primary && c.player.unwrap() == player
 		});
 
@@ -154,7 +158,7 @@ impl Connections {
 			id, msg
 		);
 
-		self.1
+		self.lock
 			.lock()
 			.unwrap()
 			.send(Message {
@@ -169,7 +173,7 @@ impl Connections {
 		I: Into<ServerPacket>,
 	{
 		let msg = msg.into();
-		self.0
+		self.conns
 			.iter()
 			.filter_map(|(id, ref conn)| {
 				if conn.player.is_some() {
@@ -180,7 +184,7 @@ impl Connections {
 				None
 			})
 			.for_each(|id| {
-				self.1
+				self.lock
 					.lock()
 					.unwrap()
 					.send(Message {
@@ -196,7 +200,7 @@ impl Connections {
 		I: Into<ServerPacket>,
 	{
 		let msg = msg.into();
-		self.0
+		self.conns
 			.iter()
 			.filter_map(|(id, ref conn)| {
 				if let Some(ent) = conn.player {
@@ -207,7 +211,7 @@ impl Connections {
 				None
 			})
 			.for_each(|id| {
-				self.1
+				self.lock
 					.lock()
 					.unwrap()
 					.send(Message {
@@ -222,7 +226,7 @@ impl Connections {
 	where
 		I: Into<ServerPacket>,
 	{
-		self.1
+		self.lock
 			.lock()
 			.unwrap()
 			.send(Message {
@@ -232,22 +236,22 @@ impl Connections {
 			.unwrap();
 	}
 
-	pub fn send_to_visible<I>(&self, player: Entity, msg: I)
+	pub fn send_to_visible<I>(&self, pos: Position, msg: I)
 	where
 		I: Into<ServerPacket>,
 	{
-		self.1
+		self.lock
 			.lock()
 			.unwrap()
 			.send(Message {
-				info: MessageInfo::ToVisible(player),
+				info: MessageInfo::ToVisible(pos),
 				msg: MessageBody::Packet(msg.into()),
 			})
 			.unwrap();
 	}
 
 	pub fn close(&self, conn: ConnectionId) {
-		self.1
+		self.lock
 			.lock()
 			.unwrap()
 			.send(Message {
@@ -258,15 +262,15 @@ impl Connections {
 	}
 
 	pub fn iter<'a>(&'a self) -> impl Iterator<Item = &'a ConnectionData> {
-		self.0.values()
+		self.conns.values()
 	}
 
 	pub fn iter_mut<'a>(&'a mut self) -> impl Iterator<Item = &'a mut ConnectionData> {
-		self.0.values_mut()
+		self.conns.values_mut()
 	}
 
 	pub fn associated_player(&self, connid: ConnectionId) -> Option<Entity> {
-		match self.0.get(&connid) {
+		match self.conns.get(&connid) {
 			Some(ref v) => v.player,
 			None => None,
 		}

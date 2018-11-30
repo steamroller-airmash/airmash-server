@@ -1,3 +1,5 @@
+use hashbrown::HashSet;
+use specs::Entity;
 use std::cmp::Ordering;
 
 use types::collision::{Collision, HitCircle};
@@ -175,7 +177,8 @@ impl Grid {
 	}
 
 	/// Indicate whether a hit circle collides with
-	/// any circles within the grid.
+	/// any circles within the grid. (This is only
+	/// an approximation.)
 	pub fn test_collide(&self, hc: HitCircle) -> bool {
 		let b = bucket(&hc);
 
@@ -205,6 +208,40 @@ impl Grid {
 		}
 
 		false
+	}
+	/// Get all entities that the hit circle could potentially
+	/// collide with
+	pub fn rough_collide(&self, hc: HitCircle) -> HashSet<Entity> {
+		let b = bucket(&hc);
+
+		// Largest radii that need to be checked in each direction.
+		// If this is larger than it needs to be, then the algorithm
+		// will be slower, but if it's too small then collisions that
+		// are supposed to be found will be missed
+		let rx = ((hc.rad.inner() + self.max_r + BUCKET_X) * INV_BX) as u32;
+		let ry = ((hc.rad.inner() + self.max_r + BUCKET_Y) * INV_BY) as u32;
+		let range_x = (
+			if rx > b.0 { 0 } else { b.0 - rx },
+			(rx + b.0 + 1).min(BUCKETS_X),
+		);
+		let range_y = (
+			if ry > b.1 { 0 } else { b.1 - ry },
+			(ry + b.1 + 1).min(BUCKETS_Y),
+		);
+
+		let mut result = HashSet::default();
+
+		for y in range_y.0..range_y.1 {
+			let (start, _) = self.buckets[(y * BUCKETS_X + range_x.0) as usize];
+			let (end, endlen) = self.buckets[(y * BUCKETS_X + range_x.1) as usize];
+			let end = end + endlen;
+
+			for i in start..end {
+				result.insert(self.circles[i as usize].ent);
+			}
+		}
+
+		result
 	}
 
 	pub fn into_inner(self) -> Vec<HitCircle> {

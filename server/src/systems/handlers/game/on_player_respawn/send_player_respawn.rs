@@ -1,12 +1,14 @@
 use specs::*;
 
-use component::channel::*;
+use component::event::PlayerRespawn as EvtPlayerRespawn;
 use component::flag::*;
 use types::*;
 use SystemInfo;
 
 use protocol::server::PlayerRespawn;
 use protocol::Upgrades as ProtocolUpgrades;
+
+use utils::{EventHandler, EventHandlerTypeProvider};
 
 use systems::handlers::command::AllCommandHandlers;
 use systems::handlers::game::on_join::AllJoinHandlers;
@@ -16,13 +18,11 @@ use systems::handlers::game::on_player_respawn::SetTraits;
 /// all visible players if the target
 /// player is not currently spectating.
 #[derive(Default)]
-pub struct SendPlayerRespawn {
-	reader: Option<OnPlayerRespawnReader>,
-}
+pub struct SendPlayerRespawn;
 
 #[derive(SystemData)]
 pub struct SendPlayerRespawnData<'a> {
-	channel: Read<'a, OnPlayerRespawn>,
+	entities: Entities<'a>,
 	conns: Read<'a, Connections>,
 
 	is_spec: ReadStorage<'a, IsSpectating>,
@@ -30,33 +30,36 @@ pub struct SendPlayerRespawnData<'a> {
 	rot: ReadStorage<'a, Rotation>,
 }
 
-impl<'a> System<'a> for SendPlayerRespawn {
+impl EventHandlerTypeProvider for SendPlayerRespawn {
+	type Event = EvtPlayerRespawn;
+}
+
+impl<'a> EventHandler<'a> for SendPlayerRespawn {
 	type SystemData = SendPlayerRespawnData<'a>;
 
-	fn setup(&mut self, res: &mut Resources) {
-		Self::SystemData::setup(res);
-
-		self.reader = Some(res.fetch_mut::<OnPlayerRespawn>().register_reader());
-	}
-
-	fn run(&mut self, data: Self::SystemData) {
-		for evt in data.channel.read(self.reader.as_mut().unwrap()) {
-			if data.is_spec.get(evt.player).is_some() {
-				continue;
-			}
-
-			let player = evt.player;
-
-			data.conns.send_to_visible(
-				player,
-				PlayerRespawn {
-					id: player.into(),
-					pos: *data.pos.get(player).unwrap(),
-					rot: *data.rot.get(player).unwrap(),
-					upgrades: ProtocolUpgrades::default(),
-				},
-			);
+	fn on_event(&mut self, evt: &EvtPlayerRespawn, data: &mut Self::SystemData) {
+		if !data.entities.is_alive(evt.player) {
+			return;
 		}
+
+		if data.is_spec.get(evt.player).is_some() {
+			return;
+		}
+
+		let player = evt.player;
+		let pos = *try_get!(player, data.pos);
+		let rot = *try_get!(player, data.rot);
+
+		info!("Player {:?} respawned!", player);
+		data.conns.send_to_visible(
+			pos,
+			PlayerRespawn {
+				id: player.into(),
+				pos: pos,
+				rot: rot,
+				upgrades: ProtocolUpgrades::default(),
+			},
+		);
 	}
 }
 

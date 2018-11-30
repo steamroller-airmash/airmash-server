@@ -61,11 +61,8 @@ impl<'a> System<'a> for DropSystem {
 				continue;
 			}
 
-			let player = match conns.0.get(&evt.0) {
-				Some(conn) => match conn.player {
-					Some(p) => p,
-					None => continue,
-				},
+			let player = match conns.associated_player(evt.0) {
+				Some(p) => p,
 				None => continue,
 			};
 

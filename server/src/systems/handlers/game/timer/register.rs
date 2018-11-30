@@ -4,11 +4,10 @@ use super::*;
 
 pub fn register<'a, 'b>(builder: Builder<'a, 'b>) -> Builder<'a, 'b> {
 	builder
-		.with::<PlayerRespawn>()
+		.with_handler::<PlayerRespawn>()
 		.with::<UnthrottlePlayer>()
 		.with::<LoginFailed>()
 		.with::<LoginHandler>()
 		.with::<DelayMessage>()
-		.with_handler::<ClearDeadFlag>()
 		.with_handler::<DeleteEntity>()
 }

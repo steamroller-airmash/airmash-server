@@ -13,6 +13,7 @@ pub struct ForceUpdate;
 
 #[derive(SystemData)]
 pub struct ForceUpdateData<'a> {
+	entities: Entities<'a>,
 	is_alive: IsAlive<'a>,
 	game_start: Read<'a, StartTime>,
 
@@ -27,6 +28,10 @@ impl<'a> EventHandler<'a> for ForceUpdate {
 	type SystemData = ForceUpdateData<'a>;
 
 	fn on_event(&mut self, evt: &Self::Event, data: &mut Self::SystemData) {
+		if !data.entities.is_alive(evt.player) {
+			return;
+		}
+
 		if !data.is_alive.get(evt.player) {
 			return;
 		}

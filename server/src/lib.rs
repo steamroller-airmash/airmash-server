@@ -36,6 +36,10 @@ extern crate ws;
 // Public dependencies
 pub extern crate airmash_protocol as protocol;
 
+// Needs to be first because of macros
+#[macro_use]
+pub mod utils;
+
 // Modules
 mod builder;
 mod dispatch;
@@ -49,7 +53,6 @@ pub mod component;
 pub mod consts;
 pub mod systems;
 pub mod types;
-pub mod utils;
 
 use protocol as airmash_protocol;
 

@@ -42,7 +42,7 @@ impl<'a> System<'a> for SetBoostingFlag {
 			.join()
 			.filter(|(plane, _, _, _, _)| **plane == PlaneType::Predator)
 			.for_each(|(_, energy, _, energy_regen, ent)| {
-				let keystate = keystate.get(ent).unwrap();
+				let keystate = try_get!(ent, keystate);
 
 				if *energy == Energy::new(0.0) || !keystate.special {
 					if boosting.get(ent).is_some() {
@@ -66,7 +66,7 @@ impl<'a> System<'a> for SetBoostingFlag {
 		// Clear specific keys without iterating over
 		// all key states mutably
 		for ent in clears {
-			keystate.get_mut(ent).unwrap().special = false;
+			try_get!(ent, mut keystate).special = false;
 		}
 	}
 }

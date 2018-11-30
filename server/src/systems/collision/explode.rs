@@ -3,86 +3,72 @@ use specs::*;
 use types::collision::Collision;
 use types::*;
 
-use component::channel::*;
-use component::event::TimerEvent;
+use component::event::*;
 use component::flag::IsMissile;
 use component::reference::PlayerRef;
+use utils::{EventHandler, EventHandlerTypeProvider};
 
 use consts::missile::ID_REUSE_TIME;
 use consts::timer::DELETE_ENTITY;
 use protocol::server::MobDespawnCoords;
 
-pub struct MissileExplodeSystem {
-	reader: Option<OnMissileTerrainCollisionReader>,
-}
+#[derive(Default)]
+pub struct MissileExplodeSystem;
 
 #[derive(SystemData)]
 pub struct MissileExplodeSystemData<'a> {
-	pub conns: Read<'a, Connections>,
-	pub channel: Read<'a, OnMissileTerrainCollision>,
-	pub entities: Entities<'a>,
-	pub dispatch: ReadExpect<'a, FutureDispatcher>,
-	pub lazy: Read<'a, LazyUpdate>,
+	conns: Read<'a, Connections>,
+	dispatch: ReadExpect<'a, FutureDispatcher>,
+	lazy: Read<'a, LazyUpdate>,
 
-	pub types: ReadStorage<'a, Mob>,
-	pub pos: ReadStorage<'a, Position>,
+	types: ReadStorage<'a, Mob>,
+	pos: ReadStorage<'a, Position>,
 }
 
-impl MissileExplodeSystem {
-	pub fn new() -> Self {
-		Self { reader: None }
-	}
+impl EventHandlerTypeProvider for MissileExplodeSystem {
+	type Event = MissileTerrainCollision;
 }
 
-impl<'a> System<'a> for MissileExplodeSystem {
+impl<'a> EventHandler<'a> for MissileExplodeSystem {
 	type SystemData = MissileExplodeSystemData<'a>;
 
-	fn setup(&mut self, res: &mut Resources) {
-		Self::SystemData::setup(res);
+	fn on_event(&mut self, evt: &MissileTerrainCollision, data: &mut Self::SystemData) {
+		let Collision(c1, c2) = evt.0;
 
-		self.reader = Some(
-			res.fetch_mut::<OnMissileTerrainCollision>()
-				.register_reader(),
-		);
-	}
+		let missile_ent;
 
-	fn run(&mut self, data: Self::SystemData) {
-		for evt in data.channel.read(self.reader.as_mut().unwrap()) {
-			let Collision(c1, c2) = evt.0;
-
-			let missile_ent;
-
-			if c1.ent.id() == 0 {
-				missile_ent = c2.ent;
-			} else {
-				missile_ent = c1.ent;
-			}
-
-			// Remove a bunch of components that are used to
-			// recognize missiles lazily (they will get
-			// removed at the end of the frame)
-			data.lazy.remove::<Position>(missile_ent);
-			data.lazy.remove::<Mob>(missile_ent);
-			data.lazy.remove::<IsMissile>(missile_ent);
-			data.lazy.remove::<Velocity>(missile_ent);
-			data.lazy.remove::<Team>(missile_ent);
-			data.lazy.remove::<PlayerRef>(missile_ent);
-
-			data.dispatch
-				.run_delayed(*ID_REUSE_TIME, move |inst| TimerEvent {
-					ty: *DELETE_ENTITY,
-					instant: inst,
-					data: Some(Box::new(missile_ent)),
-				});
-
-			let packet = MobDespawnCoords {
-				id: missile_ent.into(),
-				ty: *data.types.get(missile_ent).unwrap(),
-				pos: *data.pos.get(missile_ent).unwrap(),
-			};
-
-			data.conns.send_to_all(packet);
+		if c1.ent.id() == 0 {
+			missile_ent = c2.ent;
+		} else {
+			missile_ent = c1.ent;
 		}
+
+		// Remove a bunch of components that are used to
+		// recognize missiles lazily (they will get
+		// removed at the end of the frame)
+		data.lazy.remove::<Position>(missile_ent);
+		data.lazy.remove::<Mob>(missile_ent);
+		data.lazy.remove::<IsMissile>(missile_ent);
+		data.lazy.remove::<Velocity>(missile_ent);
+		data.lazy.remove::<Team>(missile_ent);
+		data.lazy.remove::<PlayerRef>(missile_ent);
+
+		data.dispatch
+			.run_delayed(*ID_REUSE_TIME, move |inst| TimerEvent {
+				ty: *DELETE_ENTITY,
+				instant: inst,
+				data: Some(Box::new(missile_ent)),
+			});
+
+		let pos = *try_get!(missile_ent, data.pos);
+
+		let packet = MobDespawnCoords {
+			id: missile_ent.into(),
+			ty: *try_get!(missile_ent, data.types),
+			pos,
+		};
+
+		data.conns.send_to_visible(pos, packet);
 	}
 }
 
@@ -97,6 +83,6 @@ impl SystemInfo for MissileExplodeSystem {
 	}
 
 	fn new() -> Self {
-		Self::new()
+		Self::default()
 	}
 }

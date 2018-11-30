@@ -25,7 +25,7 @@ impl<'a> EventHandler<'a> for CreateDespawnEvent {
 	type SystemData = CreateDespawnEventData<'a>;
 
 	fn on_event(&mut self, evt: &PlayerKilled, data: &mut Self::SystemData) {
-		let &pos = data.pos.get(evt.player).unwrap();
+		let &pos = try_get!(evt.player, data.pos);
 
 		data.channel.single_write(PlayerDespawn {
 			ty: PlayerDespawnType::Killed,

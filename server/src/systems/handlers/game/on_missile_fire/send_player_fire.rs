@@ -6,12 +6,14 @@ use types::*;
 use dispatch::SystemInfo;
 
 use component::channel::*;
+use component::event::*;
 
-use airmash_protocol::server::{PlayerFire, PlayerFireProjectile};
+use utils::{EventHandler, EventHandlerTypeProvider};
 
-pub struct SendPlayerFire {
-	reader: Option<OnMissileFireReader>,
-}
+use protocol::server::{PlayerFire, PlayerFireProjectile};
+
+#[derive(Default)]
+pub struct SendPlayerFire;
 
 #[derive(SystemData)]
 pub struct SendPlayerFireData<'a> {
@@ -28,54 +30,47 @@ pub struct SendPlayerFireData<'a> {
 	pub energy_regen: ReadStorage<'a, EnergyRegen>,
 }
 
-impl SendPlayerFire {
-	pub fn new() -> Self {
-		Self { reader: None }
-	}
+impl EventHandlerTypeProvider for SendPlayerFire {
+	type Event = MissileFire;
 }
 
-impl<'a> System<'a> for SendPlayerFire {
+impl<'a> EventHandler<'a> for SendPlayerFire {
 	type SystemData = SendPlayerFireData<'a>;
 
-	fn setup(&mut self, res: &mut Resources) {
-		Self::SystemData::setup(res);
+	fn on_event(&mut self, evt: &MissileFire, data: &mut Self::SystemData) {
+		let projectiles = evt
+			.missiles
+			.iter()
+			.filter_map(|&ent| {
+				let ty = *log_none!(ent, data.mob)?;
+				let info = data.config.mobs[ty].missile.unwrap();
 
-		self.reader = Some(res.fetch_mut::<OnMissileFire>().register_reader());
-	}
+				let vel = *log_none!(ent, data.vel)?;
+				let pos = *log_none!(ent, data.pos)?;
 
-	fn run(&mut self, data: Self::SystemData) {
-		for evt in data.channel.read(self.reader.as_mut().unwrap()) {
-			let projectiles = evt
-				.missiles
-				.iter()
-				.map(|&ent| {
-					let ty = *data.mob.get(ent).unwrap();
-					let info = data.config.mobs[ty].missile.unwrap();
+				PlayerFireProjectile {
+					id: ent.into(),
+					pos: pos,
+					speed: vel,
+					ty: ty,
+					accel: vel.normalized() * info.accel,
+					max_speed: info.max_speed,
+				}
+				.into()
+			})
+			.collect::<Vec<_>>();
 
-					let vel = *data.vel.get(ent).unwrap();
-					let pos = *data.pos.get(ent).unwrap();
+		let pos = *try_get!(evt.player, data.pos);
 
-					PlayerFireProjectile {
-						id: ent.into(),
-						pos: pos,
-						speed: vel,
-						ty: ty,
-						accel: vel.normalized() * info.accel,
-						max_speed: info.max_speed,
-					}
-				})
-				.collect::<Vec<_>>();
+		let packet = PlayerFire {
+			clock: data.clock.get(),
+			id: evt.player.into(),
+			energy: *try_get!(evt.player, data.energy),
+			energy_regen: *try_get!(evt.player, data.energy_regen),
+			projectiles,
+		};
 
-			let packet = PlayerFire {
-				clock: data.clock.get(),
-				id: evt.player.into(),
-				energy: *data.energy.get(evt.player).unwrap(),
-				energy_regen: *data.energy_regen.get(evt.player).unwrap(),
-				projectiles,
-			};
-
-			data.conns.send_to_visible(evt.player, packet);
-		}
+		data.conns.send_to_visible(pos, packet);
 	}
 }
 
@@ -87,6 +82,6 @@ impl SystemInfo for SendPlayerFire {
 	}
 
 	fn new() -> Self {
-		Self::new()
+		Self::default()
 	}
 }
