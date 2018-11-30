@@ -6,6 +6,7 @@ use types::collision::{Collision, HitCircle};
 
 const BUCKETS_X: u32 = BUCKETS_Y * 2;
 const BUCKETS_Y: u32 = 64;
+const NUM_BUCKETS: u32 = BUCKETS_X * BUCKETS_Y;
 const BOUND_X: f32 = 16384.0;
 const BOUND_Y: f32 = 8192.0;
 const BUCKET_X: f32 = (32768 / BUCKETS_X) as f32;
@@ -84,7 +85,7 @@ impl Grid {
 		circles.sort_by(spatial_sort);
 
 		let mut buckets =
-			vec![(0xFFFFFFFF as u32, 0xFFFFFFFF as u32); (BUCKETS_X * BUCKETS_Y) as usize];
+			vec![(0xFFFFFFFF as u32, 0xFFFFFFFF as u32); NUM_BUCKETS as usize];
 
 		let mut i: usize = 0;
 		let mut max_r = 0.0;
@@ -100,6 +101,8 @@ impl Grid {
 
 					i += 1;
 				}
+
+				
 
 				buckets[(y * BUCKETS_X + x) as usize] = (start as u32, (i - start) as u32);
 			}
@@ -152,11 +155,11 @@ impl Grid {
 			let ry = ((hc.rad.inner() + self.max_r + BUCKET_Y) * INV_BY) as u32;
 			let range_x = (
 				if rx > b.0 { 0 } else { b.0 - rx },
-				(rx + b.0 + 1).min(BUCKETS_X),
+				(rx + b.0 + 1).min(BUCKETS_X - 1),
 			);
 			let range_y = (
 				if ry > b.1 { 0 } else { b.1 - ry },
-				(ry + b.1 + 1).min(BUCKETS_Y),
+				(ry + b.1 + 1).min(BUCKETS_Y - 1),
 			);
 
 			for y in range_y.0..range_y.1 {
