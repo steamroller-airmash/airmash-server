@@ -5,7 +5,7 @@ use std::cmp::Ordering;
 use types::collision::{Collision, HitCircle};
 
 const BUCKETS_X: u32 = BUCKETS_Y * 2;
-const BUCKETS_Y: u32 = 512;
+const BUCKETS_Y: u32 = 128;
 const BOUND_X: f32 = 16384.0;
 const BOUND_Y: f32 = 8192.0;
 const BUCKET_X: f32 = (32768 / 512) as f32;
@@ -41,7 +41,7 @@ const INV_BY: f32 = 1.0 / BUCKET_Y;
 /// # extern crate airmash_server;
 /// # use airmash_server::types::collision::{Grid, HitCircle};
 /// # fn main() {
-/// # let circles_from_elsewhere = return;
+/// # let circles_from_elsewhere = vec![];
 /// // Hit circles from terrain, planes, etc.
 /// let circles: Vec<HitCircle> = circles_from_elsewhere;
 ///
