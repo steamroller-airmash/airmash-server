@@ -5,11 +5,11 @@ use std::cmp::Ordering;
 use types::collision::{Collision, HitCircle};
 
 const BUCKETS_X: u32 = BUCKETS_Y * 2;
-const BUCKETS_Y: u32 = 128;
+const BUCKETS_Y: u32 = 64;
 const BOUND_X: f32 = 16384.0;
 const BOUND_Y: f32 = 8192.0;
-const BUCKET_X: f32 = (32768 / 512) as f32;
-const BUCKET_Y: f32 = (16384 / 512) as f32;
+const BUCKET_X: f32 = (32768 / BUCKETS_X) as f32;
+const BUCKET_Y: f32 = (16384 / BUCKETS_Y) as f32;
 const INV_BX: f32 = 1.0 / BUCKET_X;
 const INV_BY: f32 = 1.0 / BUCKET_Y;
 
