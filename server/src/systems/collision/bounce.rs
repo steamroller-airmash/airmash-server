@@ -71,7 +71,16 @@ impl<'a> EventHandler<'a> for BounceSystem {
 			keystate: state,
 		};
 
-		data.conns.send_to_visible(*pos, packet);
+		if keystate.stealthed {
+			// Stealthed prowlers should not have position
+			// updates sent to all visible players.
+			// This should really be something like
+			// send_to_team_visible
+			data.conns.send_to_team(ent, packet);
+		}
+		else {
+			data.conns.send_to_visible(*pos, packet);
+		}
 	}
 }
 
