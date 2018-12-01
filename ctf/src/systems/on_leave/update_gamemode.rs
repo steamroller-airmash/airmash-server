@@ -35,9 +35,9 @@ impl<'a> System<'a> for UpdateGameModeOnPlayerLeave {
 			let team = data.teams.get(*ent).unwrap();
 
 			if *team == RED_TEAM {
-				data.gamemode.redteam = std::cmp::max(data.gamemode.redteam - 1, 0);
+				data.gamemode.redteam -= std::cmp::min(data.gamemode.redteam, 1);
 			} else if *team == BLUE_TEAM {
-				data.gamemode.blueteam = std::cmp::max(data.gamemode.blueteam - 1, 0);
+				data.gamemode.blueteam -= std::cmp::min(data.gamemode.blueteam, 1);
 			} else {
 				unimplemented!();
 			}
