@@ -50,7 +50,6 @@ impl<'a> EventHandler<'a> for SendPlayerRespawn {
 		let pos = *try_get!(player, data.pos);
 		let rot = *try_get!(player, data.rot);
 
-		info!("Player {:?} respawned!", player);
 		data.conns.send_to_visible(
 			pos,
 			PlayerRespawn {
