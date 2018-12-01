@@ -4,6 +4,7 @@ use types::*;
 use std::option::NoneError;
 
 use component::event::*;
+use fnv::FnvHashMap;
 use protocol::server::CommandReply;
 use protocol::CommandReplyType;
 use systems::PacketHandler;
@@ -98,6 +99,7 @@ pub enum CommandParseError<'a> {
 	PositionNotANumber(&'a str),
 	NotAnEntity(u16),
 	OutOfBounds(f32),
+	InvalidName,
 }
 
 #[derive(Copy, Clone, Debug, PartialEq)]
@@ -113,11 +115,33 @@ impl<'a> From<NoneError> for CommandParseError<'a> {
 	}
 }
 
-fn split_strs<'a, I>(mut iter: I) -> Option<[&'a str; 3]>
+fn split_strs<'a, I>(iter: I) -> Option<Vec<&'a str>>
 where
 	I: Iterator<Item = &'a str>,
 {
-	Some([iter.next()?, iter.next()?, iter.next()?])
+	let strs = iter.take(3).collect::<Vec<&str>>();
+	if strs.len() >= 2 {
+		return Some(strs);
+	}
+	return None;
+}
+
+lazy_static! {
+	pub static ref NAMED_POSITIONS: FnvHashMap<&'static str, Position> = {
+		let mut map = FnvHashMap::default();
+
+		map.insert(
+			"blue-flag",
+			Position::new(Distance::new(-9670.0), Distance::new(-1470.0)),
+		);
+
+		map.insert(
+			"red-flag",
+			Position::new(Distance::new(8600.0), Distance::new(-940.0)),
+		);
+
+		map
+	};
 }
 
 fn parse_command_data<'a>(s: &'a str) -> Result<ParsedCommand, CommandParseError<'a>> {
@@ -125,10 +149,21 @@ fn parse_command_data<'a>(s: &'a str) -> Result<ParsedCommand, CommandParseError
 
 	let strs = split_strs(s.split(" "))?;
 
-	let com = ParsedCommand {
-		id: strs[0].parse().map_err(|_| IdNotANumber(strs[0]))?,
-		pos_x: strs[1].parse().map_err(|_| PositionNotANumber(strs[1]))?,
-		pos_y: strs[2].parse().map_err(|_| PositionNotANumber(strs[2]))?,
+	let com = if strs.len() == 3 {
+		ParsedCommand {
+			id: strs[0].parse().map_err(|_| IdNotANumber(strs[0]))?,
+			pos_x: strs[1].parse().map_err(|_| PositionNotANumber(strs[1]))?,
+			pos_y: strs[2].parse().map_err(|_| PositionNotANumber(strs[2]))?,
+		}
+	} else if NAMED_POSITIONS.contains_key(strs[1]) {
+		let position = NAMED_POSITIONS.get(strs[1]).unwrap();
+		ParsedCommand {
+			id: strs[0].parse().map_err(|_| IdNotANumber(strs[0]))?,
+			pos_x: position.x.inner(),
+			pos_y: position.y.inner(),
+		}
+	} else {
+		return Err(InvalidName);
 	};
 
 	if com.pos_x < -16384.0 || com.pos_x > 16384.0 {
@@ -148,19 +183,18 @@ mod test {
 
 	#[test]
 	fn split_missing() {
-		assert_eq!(split_strs("a b".split(" ")), None);
 		assert_eq!(split_strs("a".split(" ")), None);
 		assert_eq!(split_strs("".split(" ")), None);
 	}
 
 	#[test]
 	fn split_3() {
-		assert_eq!(split_strs("a b c".split(" ")), Some(["a", "b", "c"]));
+		assert_eq!(split_strs("a b c".split(" ")), Some(vec!["a", "b", "c"]));
 	}
 
 	#[test]
 	fn split_4() {
-		assert_eq!(split_strs("a b c d".split(" ")), Some(["a", "b", "c"]));
+		assert_eq!(split_strs("a b c d".split(" ")), Some(vec!["a", "b", "c"]));
 	}
 
 	#[test]
@@ -173,6 +207,15 @@ mod test {
 				pos_y: 0.0
 			})
 		);
+
+		assert_eq!(
+			parse_command_data("1 blue-flag"),
+			Ok(ParsedCommand {
+				id: 1,
+				pos_x: -9670.0,
+				pos_y: -1470.0,
+			})
+		);
 	}
 
 	#[test]
@@ -180,6 +223,11 @@ mod test {
 		assert_eq!(parse_command_data("foo 5.0 0.0"), Err(IdNotANumber("foo")));
 		// Only return an error for the first one
 		assert_eq!(parse_command_data("foo bar baz"), Err(IdNotANumber("foo")));
+	}
+
+	#[test]
+	fn parse_invalid_name() {
+		assert_eq!(parse_command_data("0 orange-flag"), Err(InvalidName));
 	}
 
 	#[test]
