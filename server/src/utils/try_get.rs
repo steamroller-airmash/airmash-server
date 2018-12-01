@@ -9,6 +9,7 @@ macro_rules! try_get_error {
 	};
 }
 
+#[macro_export]
 macro_rules! log_none {
 	($ent:expr, $storage:expr) => {
 		match $storage.get($ent) {
@@ -31,6 +32,7 @@ macro_rules! log_none {
 }
 
 // Note: Only use with EventHandlers
+#[macro_export]
 macro_rules! try_get {
 	($ent:expr, $storage:expr) => {
 		match $storage.get($ent) {
