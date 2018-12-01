@@ -3,80 +3,60 @@ use types::*;
 
 use SystemInfo;
 
-use component::channel::*;
+use component::event::*;
 use protocol::server::PlayerNew;
 use protocol::Upgrades as ProtocolUpgrades;
+use utils::{EventHandler, EventHandlerTypeProvider};
 
 /// Send a `PlayerNew` packet to all other players when
 /// a new player joins.
-pub struct SendPlayerNew {
-	reader: Option<OnPlayerJoinReader>,
-}
+#[derive(Default)]
+pub struct SendPlayerNew;
 
 #[derive(SystemData)]
 pub struct SendPlayerNewData<'a> {
-	pub channel: Read<'a, OnPlayerJoin>,
-	pub conns: Read<'a, Connections>,
+	conns: Read<'a, Connections>,
 
-	pub pos: ReadStorage<'a, Position>,
-	pub rot: ReadStorage<'a, Rotation>,
-	pub plane: ReadStorage<'a, Plane>,
-	pub team: ReadStorage<'a, Team>,
-	pub status: ReadStorage<'a, Status>,
-	pub flag: ReadStorage<'a, FlagCode>,
-	pub upgrades: ReadStorage<'a, Upgrades>,
-	pub powerups: ReadStorage<'a, Powerups>,
-	pub name: ReadStorage<'a, Name>,
+	pos: ReadStorage<'a, Position>,
+	rot: ReadStorage<'a, Rotation>,
+	plane: ReadStorage<'a, Plane>,
+	team: ReadStorage<'a, Team>,
+	status: ReadStorage<'a, Status>,
+	flag: ReadStorage<'a, FlagCode>,
+	upgrades: ReadStorage<'a, Upgrades>,
+	powerups: ReadStorage<'a, Powerups>,
+	name: ReadStorage<'a, Name>,
 }
 
-impl<'a> System<'a> for SendPlayerNew {
+impl EventHandlerTypeProvider for SendPlayerNew {
+	type Event = PlayerJoin;
+}
+
+impl<'a> EventHandler<'a> for SendPlayerNew {
 	type SystemData = SendPlayerNewData<'a>;
 
-	fn setup(&mut self, res: &mut Resources) {
-		Self::SystemData::setup(res);
+	fn on_event(&mut self, evt: &PlayerJoin, data: &mut Self::SystemData) {
+		let powerups = data.powerups.get(evt.id);
 
-		self.reader = Some(res.fetch_mut::<OnPlayerJoin>().register_reader());
-	}
+		let upgrades = ProtocolUpgrades {
+			speed: try_get!(evt.id, data.upgrades).speed,
+			inferno: powerups.inferno(),
+			shield: powerups.shield(),
+		};
 
-	fn run(&mut self, data: Self::SystemData) {
-		let Self::SystemData {
-			channel,
-			conns,
-
-			pos,
-			rot,
-			team,
-			name,
-			plane,
-			status,
-			flag,
+		let player_new = PlayerNew {
+			id: evt.id.into(),
+			status: *try_get!(evt.id, data.status),
+			name: try_get!(evt.id, data.name).0.clone(),
+			ty: *try_get!(evt.id, data.plane),
+			team: *try_get!(evt.id, data.team),
+			pos: *try_get!(evt.id, data.pos),
+			rot: *try_get!(evt.id, data.rot),
+			flag: *try_get!(evt.id, data.flag),
 			upgrades,
-			powerups,
-		} = data;
+		};
 
-		for evt in channel.read(self.reader.as_mut().unwrap()) {
-			let powerups = powerups.get(evt.id);
-
-			let upgrades = ProtocolUpgrades {
-				speed: upgrades.get(evt.id).unwrap().speed,
-				inferno: powerups.inferno(),
-				shield: powerups.shield(),
-			};
-
-			let player_new = PlayerNew {
-				id: evt.id.into(),
-				status: *status.get(evt.id).unwrap(),
-				name: name.get(evt.id).unwrap().0.clone(),
-				ty: *plane.get(evt.id).unwrap(),
-				team: *team.get(evt.id).unwrap(),
-				pos: *pos.get(evt.id).unwrap(),
-				rot: *rot.get(evt.id).unwrap(),
-				flag: *flag.get(evt.id).unwrap(),
-				upgrades,
-			};
-
-			conns.send_to_others(evt.id, player_new);
-		}
+		data.conns.send_to_others(evt.id, player_new);
 	}
 }
 
@@ -95,6 +75,6 @@ impl SystemInfo for SendPlayerNew {
 	}
 
 	fn new() -> Self {
-		Self { reader: None }
+		Self::default()
 	}
 }

@@ -3,37 +3,31 @@ use specs::*;
 use systems::handlers::packet::LoginHandler;
 use SystemInfo;
 
-use component::channel::*;
 use component::counter::PlayersGame;
+use component::event::*;
 use consts::NUM_PLAYERS;
+use utils::{EventHandler, EventHandlerTypeProvider};
 
 use std::sync::atomic::Ordering::Relaxed;
 
-pub struct UpdatePlayersGame {
-	reader: Option<OnPlayerJoinReader>,
-}
+#[derive(Default)]
+pub struct UpdatePlayersGame;
 
 #[derive(SystemData)]
 pub struct UpdatePlayersGameData<'a> {
-	pub channel: Read<'a, OnPlayerJoin>,
-
-	pub playersgame: Write<'a, PlayersGame>,
+	playersgame: Write<'a, PlayersGame>,
 }
 
-impl<'a> System<'a> for UpdatePlayersGame {
+impl EventHandlerTypeProvider for UpdatePlayersGame {
+	type Event = PlayerJoin;
+}
+
+impl<'a> EventHandler<'a> for UpdatePlayersGame {
 	type SystemData = UpdatePlayersGameData<'a>;
 
-	fn setup(&mut self, res: &mut Resources) {
-		Self::SystemData::setup(res);
-
-		self.reader = Some(res.fetch_mut::<OnPlayerJoin>().register_reader());
-	}
-
-	fn run(&mut self, mut data: Self::SystemData) {
-		for _ in data.channel.read(self.reader.as_mut().unwrap()) {
-			data.playersgame.0 += 1;
-			NUM_PLAYERS.fetch_add(1, Relaxed);
-		}
+	fn on_event(&mut self, _: &PlayerJoin, data: &mut Self::SystemData) {
+		data.playersgame.0 += 1;
+		NUM_PLAYERS.fetch_add(1, Relaxed);
 	}
 }
 
@@ -45,6 +39,6 @@ impl SystemInfo for UpdatePlayersGame {
 	}
 
 	fn new() -> Self {
-		Self { reader: None }
+		Self::default()
 	}
 }

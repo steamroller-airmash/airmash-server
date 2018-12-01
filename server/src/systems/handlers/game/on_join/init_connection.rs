@@ -4,39 +4,32 @@ use types::*;
 
 use SystemInfo;
 
+use component::event::PlayerJoin;
 use systems::handlers::packet::LoginHandler;
+use utils::{EventHandler, EventHandlerTypeProvider};
 
-use component::channel::*;
-
-pub struct InitConnection {
-	reader: Option<OnPlayerJoinReader>,
-}
+#[derive(Default)]
+pub struct InitConnection;
 
 #[derive(SystemData)]
 pub struct InitConnectionData<'a> {
-	pub channel: Read<'a, OnPlayerJoin>,
-
 	pub conns: Write<'a, Connections>,
 	pub associated: WriteStorage<'a, AssociatedConnection>,
 }
 
-impl<'a> System<'a> for InitConnection {
+impl EventHandlerTypeProvider for InitConnection {
+	type Event = PlayerJoin;
+}
+
+impl<'a> EventHandler<'a> for InitConnection {
 	type SystemData = InitConnectionData<'a>;
 
-	fn setup(&mut self, res: &mut Resources) {
-		Self::SystemData::setup(res);
-
-		self.reader = Some(res.fetch_mut::<OnPlayerJoin>().register_reader());
-	}
-
-	fn run(&mut self, mut data: Self::SystemData) {
-		for evt in data.channel.read(self.reader.as_mut().unwrap()) {
-			data.conns
-				.associate(evt.conn, evt.id, ConnectionType::Primary);
-			data.associated
-				.insert(evt.id, AssociatedConnection(evt.conn))
-				.unwrap();
-		}
+	fn on_event(&mut self, evt: &PlayerJoin, data: &mut Self::SystemData) {
+		data.conns
+			.associate(evt.conn, evt.id, ConnectionType::Primary);
+		data.associated
+			.insert(evt.id, AssociatedConnection(evt.conn))
+			.unwrap();
 	}
 }
 
@@ -48,6 +41,6 @@ impl SystemInfo for InitConnection {
 	}
 
 	fn new() -> Self {
-		Self { reader: None }
+		Self::default()
 	}
 }

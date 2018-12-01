@@ -84,8 +84,7 @@ impl Grid {
 	pub fn new(mut circles: Vec<HitCircle>) -> Self {
 		circles.sort_by(spatial_sort);
 
-		let mut buckets =
-			vec![(0xFFFFFFFF as u32, 0xFFFFFFFF as u32); NUM_BUCKETS as usize];
+		let mut buckets = vec![(0xFFFFFFFF as u32, 0xFFFFFFFF as u32); NUM_BUCKETS as usize];
 
 		let mut i: usize = 0;
 		let mut max_r = 0.0;
@@ -101,8 +100,6 @@ impl Grid {
 
 					i += 1;
 				}
-
-				
 
 				buckets[(y * BUCKETS_X + x) as usize] = (start as u32, (i - start) as u32);
 			}

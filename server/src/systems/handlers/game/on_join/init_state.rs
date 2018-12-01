@@ -6,49 +6,43 @@ use SystemInfo;
 
 use super::InitTraits;
 
-use component::channel::*;
+use component::event::*;
+use utils::{EventHandler, EventHandlerTypeProvider};
 
-pub struct InitState {
-	reader: Option<OnPlayerJoinReader>,
-}
+#[derive(Default)]
+pub struct InitState;
 
 #[derive(SystemData)]
 pub struct InitStateData<'a> {
-	pub channel: Read<'a, OnPlayerJoin>,
-	pub config: Read<'a, Config>,
+	config: Read<'a, Config>,
 
-	pub plane: ReadStorage<'a, Plane>,
-	pub energy: WriteStorage<'a, Energy>,
-	pub health: WriteStorage<'a, Health>,
-	pub keystate: WriteStorage<'a, KeyState>,
-	pub powerups: WriteStorage<'a, Powerups>,
-	pub upgrades: WriteStorage<'a, Upgrades>,
-	pub energy_regen: WriteStorage<'a, EnergyRegen>,
-	pub health_regen: WriteStorage<'a, HealthRegen>,
+	plane: ReadStorage<'a, Plane>,
+	energy: WriteStorage<'a, Energy>,
+	health: WriteStorage<'a, Health>,
+	keystate: WriteStorage<'a, KeyState>,
+	upgrades: WriteStorage<'a, Upgrades>,
+	energy_regen: WriteStorage<'a, EnergyRegen>,
+	health_regen: WriteStorage<'a, HealthRegen>,
 }
 
-impl<'a> System<'a> for InitState {
+impl EventHandlerTypeProvider for InitState {
+	type Event = PlayerJoin;
+}
+
+impl<'a> EventHandler<'a> for InitState {
 	type SystemData = InitStateData<'a>;
 
-	fn setup(&mut self, res: &mut Resources) {
-		Self::SystemData::setup(res);
+	fn on_event(&mut self, evt: &PlayerJoin, data: &mut Self::SystemData) {
+		let ref info = data.config.planes[*data.plane.get(evt.id).unwrap()];
+		let energy_regen = info.energy_regen;
+		let health_regen = info.health_regen;
 
-		self.reader = Some(res.fetch_mut::<OnPlayerJoin>().register_reader());
-	}
-
-	fn run(&mut self, mut data: Self::SystemData) {
-		for evt in data.channel.read(self.reader.as_mut().unwrap()) {
-			let ref info = data.config.planes[*data.plane.get(evt.id).unwrap()];
-			let energy_regen = info.energy_regen;
-			let health_regen = info.health_regen;
-
-			data.energy.insert(evt.id, Energy::new(1.0)).unwrap();
-			data.health.insert(evt.id, Health::new(1.0)).unwrap();
-			data.keystate.insert(evt.id, KeyState::default()).unwrap();
-			data.upgrades.insert(evt.id, Upgrades::default()).unwrap();
-			data.energy_regen.insert(evt.id, energy_regen).unwrap();
-			data.health_regen.insert(evt.id, health_regen).unwrap();
-		}
+		data.energy.insert(evt.id, Energy::new(1.0)).unwrap();
+		data.health.insert(evt.id, Health::new(1.0)).unwrap();
+		data.keystate.insert(evt.id, KeyState::default()).unwrap();
+		data.upgrades.insert(evt.id, Upgrades::default()).unwrap();
+		data.energy_regen.insert(evt.id, energy_regen).unwrap();
+		data.health_regen.insert(evt.id, health_regen).unwrap();
 	}
 }
 
@@ -60,6 +54,6 @@ impl SystemInfo for InitState {
 	}
 
 	fn new() -> Self {
-		Self { reader: None }
+		Self::default()
 	}
 }

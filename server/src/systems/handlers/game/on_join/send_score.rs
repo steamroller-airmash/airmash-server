@@ -5,66 +5,50 @@ use super::*;
 
 use SystemInfo;
 
-use component::channel::*;
 use component::counter::*;
+use component::event::*;
+use utils::{EventHandler, EventHandlerTypeProvider};
 
 use protocol::server::ScoreUpdate;
 
-pub struct SendScoreUpdate {
-	reader: Option<OnPlayerJoinReader>,
-}
+#[derive(Default)]
+pub struct SendScoreUpdate;
 
 #[derive(SystemData)]
 pub struct SendScoreUpdateData<'a> {
-	pub channel: Read<'a, OnPlayerJoin>,
-	pub conns: Read<'a, Connections>,
+	conns: Read<'a, Connections>,
 
-	pub score: ReadStorage<'a, Score>,
-	pub earnings: ReadStorage<'a, Earnings>,
-	pub upgrades: ReadStorage<'a, Upgrades>,
-	pub total_kills: ReadStorage<'a, TotalKills>,
-	pub total_deaths: ReadStorage<'a, TotalDeaths>,
+	score: ReadStorage<'a, Score>,
+	earnings: ReadStorage<'a, Earnings>,
+	upgrades: ReadStorage<'a, Upgrades>,
+	total_kills: ReadStorage<'a, TotalKills>,
+	total_deaths: ReadStorage<'a, TotalDeaths>,
 }
 
-impl<'a> System<'a> for SendScoreUpdate {
+impl EventHandlerTypeProvider for SendScoreUpdate {
+	type Event = PlayerJoin;
+}
+
+impl<'a> EventHandler<'a> for SendScoreUpdate {
 	type SystemData = SendScoreUpdateData<'a>;
 
-	fn setup(&mut self, res: &mut Resources) {
-		Self::SystemData::setup(res);
+	fn on_event(&mut self, evt: &PlayerJoin, data: &mut Self::SystemData) {
+		let score = try_get!(evt.id, data.score);
+		let earnings = try_get!(evt.id, data.earnings);
+		let upgrades = try_get!(evt.id, data.upgrades);
+		let total_kills = try_get!(evt.id, data.total_kills);
+		let total_deaths = try_get!(evt.id, data.total_deaths);
 
-		self.reader = Some(res.fetch_mut::<OnPlayerJoin>().register_reader());
-	}
+		let packet = ScoreUpdate {
+			id: evt.id.into(),
+			score: *score,
+			earnings: earnings.0,
+			upgrades: upgrades.unused,
+			total_kills: total_kills.0,
+			total_deaths: total_deaths.0,
+		};
 
-	fn run(&mut self, data: Self::SystemData) {
-		let Self::SystemData {
-			channel,
-			conns,
-
-			score,
-			earnings,
-			upgrades,
-			total_kills,
-			total_deaths,
-		} = data;
-
-		for evt in channel.read(self.reader.as_mut().unwrap()) {
-			let score = score.get(evt.id).unwrap();
-			let earnings = earnings.get(evt.id).unwrap();
-			let upgrades = upgrades.get(evt.id).unwrap();
-			let total_kills = total_kills.get(evt.id).unwrap();
-			let total_deaths = total_deaths.get(evt.id).unwrap();
-
-			let packet = ScoreUpdate {
-				id: evt.id.into(),
-				score: *score,
-				earnings: earnings.0,
-				upgrades: upgrades.unused,
-				total_kills: total_kills.0,
-				total_deaths: total_deaths.0,
-			};
-
-			conns.send_to_all(packet);
-		}
+		data.conns.send_to_all(packet);
 	}
 }
 
@@ -83,6 +67,6 @@ impl SystemInfo for SendScoreUpdate {
 	}
 
 	fn new() -> Self {
-		Self { reader: None }
+		Self::default()
 	}
 }

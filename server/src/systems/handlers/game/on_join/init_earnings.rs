@@ -6,33 +6,27 @@ use SystemInfo;
 
 use systems::handlers::packet::LoginHandler;
 
-use component::channel::*;
 use component::counter::*;
+use component::event::*;
+use utils::{EventHandler, EventHandlerTypeProvider};
 
-pub struct InitEarnings {
-	reader: Option<OnPlayerJoinReader>,
-}
+#[derive(Default)]
+pub struct InitEarnings;
 
 #[derive(SystemData)]
 pub struct InitEarningsData<'a> {
-	pub channel: Read<'a, OnPlayerJoin>,
-
 	pub earnings: WriteStorage<'a, Earnings>,
 }
 
-impl<'a> System<'a> for InitEarnings {
+impl EventHandlerTypeProvider for InitEarnings {
+	type Event = PlayerJoin;
+}
+
+impl<'a> EventHandler<'a> for InitEarnings {
 	type SystemData = InitEarningsData<'a>;
 
-	fn setup(&mut self, res: &mut Resources) {
-		Self::SystemData::setup(res);
-
-		self.reader = Some(res.fetch_mut::<OnPlayerJoin>().register_reader());
-	}
-
-	fn run(&mut self, mut data: Self::SystemData) {
-		for evt in data.channel.read(self.reader.as_mut().unwrap()) {
-			data.earnings.insert(evt.id, Earnings(Score(0))).unwrap();
-		}
+	fn on_event(&mut self, evt: &PlayerJoin, data: &mut Self::SystemData) {
+		data.earnings.insert(evt.id, Earnings(Score(0))).unwrap();
 	}
 }
 
@@ -44,6 +38,6 @@ impl SystemInfo for InitEarnings {
 	}
 
 	fn new() -> Self {
-		Self { reader: None }
+		Self::default()
 	}
 }

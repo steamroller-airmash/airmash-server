@@ -5,48 +5,34 @@ use GameMode;
 use GameModeWriter;
 use SystemInfo;
 
-use component::channel::*;
+use component::event::*;
+use utils::{EventHandler, EventHandlerTypeProvider};
 
-pub struct InitTransform {
-	reader: Option<OnPlayerJoinReader>,
-}
+#[derive(Default)]
+pub struct InitTransform;
 
 #[derive(SystemData)]
 pub struct InitTransformData<'a> {
-	pub channel: Read<'a, OnPlayerJoin>,
-	pub gamemode: GameModeWriter<'a, GameMode>,
+	gamemode: GameModeWriter<'a, GameMode>,
 
-	pub pos: WriteStorage<'a, Position>,
-	pub rot: WriteStorage<'a, Rotation>,
-	pub vel: WriteStorage<'a, Velocity>,
+	pos: WriteStorage<'a, Position>,
+	rot: WriteStorage<'a, Rotation>,
+	vel: WriteStorage<'a, Velocity>,
 }
 
-impl<'a> System<'a> for InitTransform {
+impl EventHandlerTypeProvider for InitTransform {
+	type Event = PlayerJoin;
+}
+
+impl<'a> EventHandler<'a> for InitTransform {
 	type SystemData = InitTransformData<'a>;
 
-	fn setup(&mut self, res: &mut Resources) {
-		Self::SystemData::setup(res);
+	fn on_event(&mut self, evt: &PlayerJoin, data: &mut Self::SystemData) {
+		let player_pos = data.gamemode.get_mut().spawn_pos(evt.id, evt.team);
 
-		self.reader = Some(res.fetch_mut::<OnPlayerJoin>().register_reader());
-	}
-
-	fn run(&mut self, data: Self::SystemData) {
-		let Self::SystemData {
-			channel,
-			mut gamemode,
-
-			mut pos,
-			mut rot,
-			mut vel,
-		} = data;
-
-		for evt in channel.read(self.reader.as_mut().unwrap()) {
-			let player_pos = gamemode.get_mut().spawn_pos(evt.id, evt.team);
-
-			pos.insert(evt.id, player_pos).unwrap();
-			rot.insert(evt.id, Rotation::default()).unwrap();
-			vel.insert(evt.id, Velocity::default()).unwrap();
-		}
+		data.pos.insert(evt.id, player_pos).unwrap();
+		data.rot.insert(evt.id, Rotation::default()).unwrap();
+		data.vel.insert(evt.id, Velocity::default()).unwrap();
 	}
 }
 
@@ -58,6 +44,6 @@ impl SystemInfo for InitTransform {
 	}
 
 	fn new() -> Self {
-		Self { reader: None }
+		Self::default()
 	}
 }

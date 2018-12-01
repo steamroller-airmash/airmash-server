@@ -6,34 +6,31 @@ use GameMode;
 use GameModeWriter;
 use SystemInfo;
 
-use component::channel::*;
+use component::event::*;
 use protocol::server::{Login, LoginPlayer};
 use protocol::Upgrades as ProtocolUpgrades;
+use utils::{EventHandler, EventHandlerTypeProvider};
 
-pub struct SendLogin {
-	reader: Option<OnPlayerJoinReader>,
-}
+#[derive(Default)]
+pub struct SendLogin;
 
 #[derive(SystemData)]
 pub struct SendLoginData<'a> {
-	pub channel: Read<'a, OnPlayerJoin>,
-	pub conns: Read<'a, Connections>,
-	pub entities: Entities<'a>,
-	pub gamemode: GameModeWriter<'a, GameMode>,
-	pub clock: ReadClock<'a>,
+	conns: Read<'a, Connections>,
+	entities: Entities<'a>,
+	gamemode: GameModeWriter<'a, GameMode>,
+	clock: ReadClock<'a>,
 
-	pub pos: ReadStorage<'a, Position>,
-	pub rot: ReadStorage<'a, Rotation>,
-	pub vel: ReadStorage<'a, Velocity>,
-	pub plane: ReadStorage<'a, Plane>,
-	pub team: ReadStorage<'a, Team>,
-	pub status: ReadStorage<'a, Status>,
-	pub flag: ReadStorage<'a, FlagCode>,
-	pub upgrades: ReadStorage<'a, Upgrades>,
-	pub powerups: ReadStorage<'a, Powerups>,
-	pub name: ReadStorage<'a, Name>,
-	pub level: ReadStorage<'a, Level>,
-	pub session: ReadStorage<'a, Session>,
+	pos: ReadStorage<'a, Position>,
+	rot: ReadStorage<'a, Rotation>,
+	plane: ReadStorage<'a, Plane>,
+	team: ReadStorage<'a, Team>,
+	status: ReadStorage<'a, Status>,
+	flag: ReadStorage<'a, FlagCode>,
+	upgrades: ReadStorage<'a, Upgrades>,
+	powerups: ReadStorage<'a, Powerups>,
+	name: ReadStorage<'a, Name>,
+	level: ReadStorage<'a, Level>,
 }
 
 impl SendLogin {
@@ -78,32 +75,30 @@ impl SendLogin {
 	}
 }
 
-impl<'a> System<'a> for SendLogin {
+impl EventHandlerTypeProvider for SendLogin {
+	type Event = PlayerJoin;
+}
+
+impl<'a> EventHandler<'a> for SendLogin {
 	type SystemData = SendLoginData<'a>;
 
-	fn setup(&mut self, res: &mut Resources) {
-		Self::SystemData::setup(res);
+	fn on_event(&mut self, evt: &PlayerJoin, data: &mut Self::SystemData) {
+		let player_data = Self::get_player_data(&data);
 
-		self.reader = Some(res.fetch_mut::<OnPlayerJoin>().register_reader());
-	}
+		let gamemode = data.gamemode.get();
 
-	fn run(&mut self, data: Self::SystemData) {
-		for evt in data.channel.read(self.reader.as_mut().unwrap()) {
-			let player_data = Self::get_player_data(&data);
+		let packet = Login {
+			clock: data.clock.get(),
+			id: evt.id.into(),
+			room: gamemode.room(),
+			success: true,
+			token: "none".to_owned(),
+			team: *try_get!(evt.id, data.team),
+			ty: gamemode.gametype(),
+			players: player_data,
+		};
 
-			let packet = Login {
-				clock: data.clock.get(),
-				id: evt.id.into(),
-				room: data.gamemode.get().room(),
-				success: true,
-				token: "none".to_owned(),
-				team: *data.team.get(evt.id).unwrap(),
-				ty: data.gamemode.get().gametype(),
-				players: player_data,
-			};
-
-			data.conns.send_to_player(evt.id, packet);
-		}
+		data.conns.send_to_player(evt.id, packet);
 	}
 }
 
@@ -115,6 +110,6 @@ impl SystemInfo for SendLogin {
 	}
 
 	fn new() -> Self {
-		Self { reader: None }
+		Self::default()
 	}
 }

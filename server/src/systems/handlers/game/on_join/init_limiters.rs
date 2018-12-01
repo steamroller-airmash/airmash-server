@@ -6,8 +6,9 @@ use SystemInfo;
 
 use systems::handlers::packet::LoginHandler;
 
-use component::channel::*;
+use component::event::*;
 use component::ratelimit::*;
+use utils::{EventHandler, EventHandlerTypeProvider};
 
 use std::time::Duration;
 
@@ -19,43 +20,36 @@ lazy_static! {
 	static ref MUTE_PERIOD: Duration = Duration::from_secs(60);
 }
 
-pub struct InitLimiters {
-	reader: Option<OnPlayerJoinReader>,
-}
+#[derive(Default)]
+pub struct InitLimiters;
 
 #[derive(SystemData)]
 pub struct InitLimitersData<'a> {
-	pub channel: Read<'a, OnPlayerJoin>,
-
-	pub mute: WriteStorage<'a, ChatMuteLimiter>,
-	pub throttle: WriteStorage<'a, ChatThrottleLimiter>,
+	mute: WriteStorage<'a, ChatMuteLimiter>,
+	throttle: WriteStorage<'a, ChatThrottleLimiter>,
 }
 
-impl<'a> System<'a> for InitLimiters {
+impl EventHandlerTypeProvider for InitLimiters {
+	type Event = PlayerJoin;
+}
+
+impl<'a> EventHandler<'a> for InitLimiters {
 	type SystemData = InitLimitersData<'a>;
 
-	fn setup(&mut self, res: &mut Resources) {
-		Self::SystemData::setup(res);
+	fn on_event(&mut self, evt: &PlayerJoin, data: &mut Self::SystemData) {
+		data.mute
+			.insert(
+				evt.id,
+				ChatMuteLimiter(RateLimiter::new(MUTE_LIMIT, *MUTE_PERIOD)),
+			)
+			.unwrap();
 
-		self.reader = Some(res.fetch_mut::<OnPlayerJoin>().register_reader());
-	}
-
-	fn run(&mut self, mut data: Self::SystemData) {
-		for evt in data.channel.read(self.reader.as_mut().unwrap()) {
-			data.mute
-				.insert(
-					evt.id,
-					ChatMuteLimiter(RateLimiter::new(MUTE_LIMIT, *MUTE_PERIOD)),
-				)
-				.unwrap();
-
-			data.throttle
-				.insert(
-					evt.id,
-					ChatThrottleLimiter(RateLimiter::new(THROTTLE_LIMIT, *THROTTLE_PERIOD)),
-				)
-				.unwrap();
-		}
+		data.throttle
+			.insert(
+				evt.id,
+				ChatThrottleLimiter(RateLimiter::new(THROTTLE_LIMIT, *THROTTLE_PERIOD)),
+			)
+			.unwrap();
 	}
 }
 
@@ -67,6 +61,6 @@ impl SystemInfo for InitLimiters {
 	}
 
 	fn new() -> Self {
-		Self { reader: None }
+		Self::default()
 	}
 }
