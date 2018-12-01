@@ -2,51 +2,38 @@ use specs::*;
 
 use component::*;
 
+use server::utils::*;
 use server::*;
 
-pub struct UpdateCaptures {
-	reader: Option<OnFlagReader>,
-}
+#[derive(Default)]
+pub struct UpdateCaptures;
 
 #[derive(SystemData)]
 pub struct UpdateCapturesData<'a> {
-	pub channel: Read<'a, OnFlag>,
-	pub conns: Read<'a, Connections>,
-
-	pub entities: Entities<'a>,
-	pub captures: WriteStorage<'a, Captures>,
+	entities: Entities<'a>,
+	captures: WriteStorage<'a, Captures>,
 }
 
-impl UpdateCaptures {
-	pub fn new() -> Self {
-		Self { reader: None }
-	}
+impl EventHandlerTypeProvider for UpdateCaptures {
+	type Event = FlagEvent;
 }
 
-impl<'a> System<'a> for UpdateCaptures {
+impl<'a> EventHandler<'a> for UpdateCaptures {
 	type SystemData = UpdateCapturesData<'a>;
 
-	fn setup(&mut self, res: &mut Resources) {
-		Self::SystemData::setup(res);
+	fn on_event(&mut self, evt: &FlagEvent, data: &mut Self::SystemData) {
+		match evt.ty {
+			FlagEventType::Capture => (),
+			_ => return,
+		};
 
-		self.reader = Some(res.fetch_mut::<OnFlag>().register_reader());
-	}
+		let player = evt.player.unwrap();
 
-	fn run(&mut self, mut data: Self::SystemData) {
-		for evt in data.channel.read(self.reader.as_mut().unwrap()) {
-			match evt.ty {
-				FlagEventType::Capture => (),
-				_ => continue,
-			};
-
-			let player = evt.player.unwrap();
-
-			if !data.entities.is_alive(player) {
-				continue;
-			}
-
-			data.captures.get_mut(player).unwrap().0 += 1;
+		if !data.entities.is_alive(player) {
+			return;
 		}
+
+		try_get!(player, mut data.captures).0 += 1;
 	}
 }
 
@@ -60,6 +47,6 @@ impl SystemInfo for UpdateCaptures {
 	}
 
 	fn new() -> Self {
-		Self::new()
+		Self::default()
 	}
 }

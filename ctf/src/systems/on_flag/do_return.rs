@@ -10,6 +10,7 @@ use server::protocol::FlagUpdateType;
 
 use server::utils::{EventHandler, EventHandlerTypeProvider};
 
+#[derive(Default)]
 pub struct DoReturn;
 
 #[derive(SystemData)]
@@ -39,7 +40,7 @@ impl<'a> EventHandler<'a> for DoReturn {
 			return;
 		}
 
-		let flag_pos = pos.get_mut(evt.flag).unwrap();
+		let flag_pos = try_get!(evt.flag, mut pos);
 
 		let team;
 		if evt.flag == flags.red {
@@ -51,7 +52,7 @@ impl<'a> EventHandler<'a> for DoReturn {
 		let pos = (*FLAG_HOME_POS)[&team];
 		*flag_pos = pos;
 
-		data.carriers.get_mut(evt.flag).unwrap().0 = None;
+		try_get!(evt.flag, mut data.carriers).0 = None;
 
 		let packet = GameFlag {
 			ty: FlagUpdateType::Position,
@@ -76,6 +77,6 @@ impl SystemInfo for DoReturn {
 	}
 
 	fn new() -> Self {
-		Self {}
+		Self::default()
 	}
 }

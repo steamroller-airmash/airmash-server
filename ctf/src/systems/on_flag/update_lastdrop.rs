@@ -3,46 +3,39 @@ use specs::*;
 use component::*;
 
 use server::component::time::ThisFrame;
+use server::utils::*;
 use server::*;
 
 #[derive(Default)]
-pub struct UpdateLastDrop {
-	reader: Option<OnFlagReader>,
-}
+pub struct UpdateLastDrop;
 
 #[derive(SystemData)]
 pub struct UpdateLastDropData<'a> {
-	pub channel: Read<'a, OnFlag>,
-
-	pub lastdrop: WriteStorage<'a, LastDrop>,
-	pub this_frame: Read<'a, ThisFrame>,
+	lastdrop: WriteStorage<'a, LastDrop>,
+	this_frame: Read<'a, ThisFrame>,
 }
 
-impl<'a> System<'a> for UpdateLastDrop {
+impl EventHandlerTypeProvider for UpdateLastDrop {
+	type Event = FlagEvent;
+}
+
+impl<'a> EventHandler<'a> for UpdateLastDrop {
 	type SystemData = UpdateLastDropData<'a>;
 
-	fn setup(&mut self, res: &mut Resources) {
-		Self::SystemData::setup(res);
+	fn on_event(&mut self, evt: &FlagEvent, data: &mut Self::SystemData) {
+		let player = match evt.ty {
+			FlagEventType::Capture => None,
+			FlagEventType::Drop => evt.player,
+			FlagEventType::Return => None,
+			_ => return,
+		};
 
-		self.reader = Some(res.fetch_mut::<OnFlag>().register_reader());
-	}
+		let lastdrop = try_get!(evt.flag, mut data.lastdrop);
 
-	fn run(&mut self, mut data: Self::SystemData) {
-		for evt in data.channel.read(self.reader.as_mut().unwrap()) {
-			let player = match evt.ty {
-				FlagEventType::Capture => None,
-				FlagEventType::Drop => evt.player,
-				FlagEventType::Return => None,
-				_ => continue,
-			};
-
-			let lastdrop = data.lastdrop.get_mut(evt.flag).unwrap();
-
-			*lastdrop = LastDrop {
-				player: player,
-				time: data.this_frame.0,
-			};
-		}
+		*lastdrop = LastDrop {
+			player: player,
+			time: data.this_frame.0,
+		};
 	}
 }
 

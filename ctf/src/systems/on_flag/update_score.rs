@@ -7,69 +7,58 @@ use config as ctfconfig;
 use server::component::counter::*;
 use server::protocol::server::ScoreUpdate;
 use server::types::*;
+use server::utils::*;
 
-pub struct UpdateScore {
-	reader: Option<OnFlagReader>,
-}
+#[derive(Default)]
+pub struct UpdateScore;
 
 #[derive(SystemData)]
 pub struct UpdateScoreData<'a> {
-	pub channel: Read<'a, OnFlag>,
-	pub conns: Read<'a, Connections>,
-	pub players_game: Read<'a, PlayersGame>,
+	conns: Read<'a, Connections>,
+	players_game: Read<'a, PlayersGame>,
 
-	pub scores: WriteStorage<'a, Score>,
-	pub earnings: WriteStorage<'a, Earnings>,
-	pub kills: ReadStorage<'a, TotalKills>,
-	pub deaths: ReadStorage<'a, TotalDeaths>,
-	pub upgrades: ReadStorage<'a, Upgrades>,
+	scores: WriteStorage<'a, Score>,
+	earnings: WriteStorage<'a, Earnings>,
+	kills: ReadStorage<'a, TotalKills>,
+	deaths: ReadStorage<'a, TotalDeaths>,
+	upgrades: ReadStorage<'a, Upgrades>,
 }
 
-impl UpdateScore {
-	pub fn new() -> Self {
-		Self { reader: None }
-	}
+impl EventHandlerTypeProvider for UpdateScore {
+	type Event = FlagEvent;
 }
 
-impl<'a> System<'a> for UpdateScore {
+impl<'a> EventHandler<'a> for UpdateScore {
 	type SystemData = UpdateScoreData<'a>;
 
-	fn setup(&mut self, res: &mut Resources) {
-		Self::SystemData::setup(res);
+	fn on_event(&mut self, evt: &FlagEvent, data: &mut Self::SystemData) {
+		match evt.ty {
+			FlagEventType::Capture => (),
+			_ => return,
+		};
 
-		self.reader = Some(res.fetch_mut::<OnFlag>().register_reader());
-	}
+		let player = evt.player.unwrap();
+		let players_game = data.players_game.0;
+		let score_increase = ctfconfig::FLAG_CAP_BOUNTY_BASE.0 * players_game.min(10);
 
-	fn run(&mut self, mut data: Self::SystemData) {
-		for evt in data.channel.read(self.reader.as_mut().unwrap()) {
-			match evt.ty {
-				FlagEventType::Capture => (),
-				_ => continue,
-			};
+		let ref mut earnings = try_get!(player, mut data.earnings).0;
+		let score = try_get!(player, mut data.scores);
 
-			let player = evt.player.unwrap();
-			let players_game = data.players_game.0;
-			let score_increase = ctfconfig::FLAG_CAP_BOUNTY_BASE.0 * players_game.min(10);
+		score.0 += score_increase;
+		earnings.0 += score_increase;
 
-			let ref mut earnings = data.earnings.get_mut(player).unwrap().0;
-			let score = data.scores.get_mut(player).unwrap();
+		let packet = ScoreUpdate {
+			id: player.into(),
+			score: *score,
+			earnings: *earnings,
 
-			score.0 += score_increase;
-			earnings.0 += score_increase;
+			total_kills: try_get!(player, data.kills).0,
+			total_deaths: try_get!(player, data.deaths).0,
 
-			let packet = ScoreUpdate {
-				id: player.into(),
-				score: *score,
-				earnings: *earnings,
+			upgrades: try_get!(player, data.upgrades).unused,
+		};
 
-				total_kills: data.kills.get(player).unwrap().0,
-				total_deaths: data.deaths.get(player).unwrap().0,
-
-				upgrades: data.upgrades.get(player).unwrap().unused,
-			};
-
-			data.conns.send_to_all(packet);
-		}
+		data.conns.send_to_all(packet);
 	}
 }
 
@@ -83,6 +72,6 @@ impl SystemInfo for UpdateScore {
 	}
 
 	fn new() -> Self {
-		Self::new()
+		Self::default()
 	}
 }

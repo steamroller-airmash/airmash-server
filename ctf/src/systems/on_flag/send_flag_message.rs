@@ -4,101 +4,90 @@ use specs::*;
 use component::*;
 use server::protocol::server::GameFlag;
 use server::protocol::FlagUpdateType;
+use server::utils::*;
 
 use BLUE_TEAM;
 use RED_TEAM;
 
-pub struct SendFlagMessageSystem {
-	reader: Option<OnFlagReader>,
-}
-
-impl SendFlagMessageSystem {
-	pub fn new() -> Self {
-		Self { reader: None }
-	}
-}
+#[derive(Default)]
+pub struct SendFlagMessageSystem;
 
 #[derive(SystemData)]
 pub struct SendFlagMessageSystemData<'a> {
-	pub conns: Read<'a, Connections>,
-	pub channel: Read<'a, OnFlag>,
-	pub scores: Write<'a, GameScores>,
-	pub flags: ReadExpect<'a, Flags>,
+	conns: Read<'a, Connections>,
+	scores: Write<'a, GameScores>,
+	flags: ReadExpect<'a, Flags>,
 
-	pub team: ReadStorage<'a, Team>,
-	pub pos: ReadStorage<'a, Position>,
-	pub carrier: ReadStorage<'a, FlagCarrier>,
+	team: ReadStorage<'a, Team>,
+	pos: ReadStorage<'a, Position>,
+	carrier: ReadStorage<'a, FlagCarrier>,
 }
 
-impl<'a> System<'a> for SendFlagMessageSystem {
+impl EventHandlerTypeProvider for SendFlagMessageSystem {
+	type Event = FlagEvent;
+}
+
+impl<'a> EventHandler<'a> for SendFlagMessageSystem {
 	type SystemData = SendFlagMessageSystemData<'a>;
 
-	fn setup(&mut self, res: &mut Resources) {
-		Self::SystemData::setup(res);
+	fn on_event(&mut self, evt: &FlagEvent, data: &mut Self::SystemData) {
+		let ty = match evt.ty {
+			FlagEventType::PickUp => FlagUpdateType::Carrier,
+			_ => FlagUpdateType::Position,
+		};
 
-		self.reader = Some(res.fetch_mut::<OnFlag>().register_reader());
-	}
+		let team = try_get!(evt.flag, data.team);
 
-	fn run(&mut self, mut data: Self::SystemData) {
-		for evt in data.channel.read(self.reader.as_mut().unwrap()) {
-			let ty = match evt.ty {
-				FlagEventType::PickUp => FlagUpdateType::Carrier,
-				_ => FlagUpdateType::Position,
-			};
-
-			let team = data.team.get(evt.flag).unwrap();
-
-			if evt.ty == FlagEventType::Capture {
-				let other;
-				if *team == RED_TEAM {
-					data.scores.blueteam += 1;
-					other = data.flags.blue;
-				} else if *team == BLUE_TEAM {
-					data.scores.redteam += 1;
-					other = data.flags.red;
-				} else {
-					// Other flags are not implemented for CTF
-					// if you are using this code as a base,
-					// support for other flags will need to be
-					// implemented.
-					unimplemented!();
-				}
-
-				let flag = Flag(*data.team.get(other).unwrap());
-
-				if data.carrier.get(other).unwrap().0.is_none() {
-					let pos = *data.pos.get(other).unwrap();
-					data.conns.send_to_all(GameFlag {
-						ty,
-						flag,
-						pos: pos,
-						id: None,
-						blueteam: data.scores.blueteam,
-						redteam: data.scores.redteam,
-					});
-				} else {
-					let carrier = data.carrier.get(other).unwrap().0.map(|x| x.into());
-
-					data.conns.send_to_all(GameFlag {
-						ty: FlagUpdateType::Carrier,
-						flag,
-						pos: Position::default(),
-						id: carrier,
-						blueteam: data.scores.blueteam,
-						redteam: data.scores.redteam,
-					})
-				}
+		if evt.ty == FlagEventType::Capture {
+			let other;
+			if *team == RED_TEAM {
+				data.scores.blueteam += 1;
+				other = data.flags.blue;
+			} else if *team == BLUE_TEAM {
+				data.scores.redteam += 1;
+				other = data.flags.red;
+			} else {
+				// Other flags are not implemented for CTF
+				// if you are using this code as a base,
+				// support for other flags will need to be
+				// implemented.
+				unimplemented!();
 			}
 
-			data.conns.send_to_all(GameFlag {
-				ty,
-				flag: Flag(*team),
-				pos: *data.pos.get(evt.flag).unwrap(),
-				id: evt.player.map(Into::into),
-				blueteam: data.scores.blueteam,
-				redteam: data.scores.redteam,
-			});
+			let flag = Flag(*try_get!(other, data.team));
+
+			if try_get!(other, data.carrier).0.is_none() {
+				let pos = *try_get!(other, data.pos);
+				data.conns.send_to_all(GameFlag {
+					ty,
+					flag,
+					pos: pos,
+					id: None,
+					blueteam: data.scores.blueteam,
+					redteam: data.scores.redteam,
+				});
+			} else {
+				let carrier = try_get!(other, data.carrier).0.map(|x| x.into());
+
+				data.conns.send_to_all(GameFlag {
+					ty: FlagUpdateType::Carrier,
+					flag,
+					pos: Position::default(),
+					id: carrier,
+					blueteam: data.scores.blueteam,
+					redteam: data.scores.redteam,
+				})
+			}
 		}
+
+		data.conns.send_to_all(GameFlag {
+			ty,
+			flag: Flag(*team),
+			pos: *try_get!(evt.flag, data.pos),
+			id: evt.player.map(Into::into),
+			blueteam: data.scores.blueteam,
+			redteam: data.scores.redteam,
+		});
 	}
 }
 
@@ -112,6 +101,6 @@ impl SystemInfo for SendFlagMessageSystem {
 	}
 
 	fn new() -> Self {
-		Self::new()
+		Self::default()
 	}
 }

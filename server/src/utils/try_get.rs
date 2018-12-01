@@ -1,3 +1,5 @@
+#[doc(hidden)]
+#[macro_export]
 macro_rules! try_get_error {
 	($ent:expr, $storage:expr) => {
 		error!(
