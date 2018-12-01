@@ -2,7 +2,9 @@ use specs::*;
 use types::*;
 
 use component::event::*;
+use component::flag::ForcePlayerUpdate;
 use systems::missile::MissileFireHandler;
+use systems::PositionUpdate;
 use SystemInfo;
 
 use utils::{EventHandler, EventHandlerTypeProvider};
@@ -20,6 +22,7 @@ pub struct DestealthOnFireData<'a> {
 	plane: ReadStorage<'a, Plane>,
 	energy: ReadStorage<'a, Energy>,
 	energy_regen: ReadStorage<'a, EnergyRegen>,
+	force: WriteStorage<'a, ForcePlayerUpdate>,
 }
 
 impl EventHandlerTypeProvider for DestealthOnFire {
@@ -35,6 +38,7 @@ impl<'a> EventHandler<'a> for DestealthOnFire {
 		}
 
 		try_get!(evt.player, mut data.keystate).stealthed = false;
+		data.force.insert(evt.player, ForcePlayerUpdate).unwrap();
 
 		let packet = EventStealth {
 			id: evt.player.into(),
@@ -48,7 +52,10 @@ impl<'a> EventHandler<'a> for DestealthOnFire {
 }
 
 impl SystemInfo for DestealthOnFire {
-	type Dependencies = MissileFireHandler;
+	type Dependencies = (
+		MissileFireHandler,
+		PositionUpdate
+	);
 
 	fn name() -> &'static str {
 		concat!(module_path!(), "::", line!())

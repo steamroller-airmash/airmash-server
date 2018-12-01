@@ -5,6 +5,7 @@ use types::*;
 use protocol::client::Key;
 use protocol::KeyCode;
 
+use component::flag::ForcePlayerUpdate;
 use component::time::{LastKeyTime, ThisFrame};
 
 pub struct KeyHandler {
@@ -23,6 +24,7 @@ pub struct KeyHandlerData<'a> {
 	conns: Read<'a, Connections>,
 	this_frame: Read<'a, ThisFrame>,
 
+	force: WriteStorage<'a, ForcePlayerUpdate>,
 	keystate: WriteStorage<'a, KeyState>,
 	last_key: WriteStorage<'a, LastKeyTime>,
 }
@@ -57,6 +59,9 @@ impl<'a> System<'a> for KeyHandler {
 
 				data.last_key
 					.insert(player, LastKeyTime(data.this_frame.0))
+					.unwrap();
+				data.force
+					.insert(player, ForcePlayerUpdate)
 					.unwrap();
 
 				match evt.1.key {

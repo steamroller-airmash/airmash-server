@@ -1,6 +1,7 @@
 use specs::*;
 
 use component::event::*;
+use component::flag::IsDead;
 use types::*;
 use SystemInfo;
 
@@ -31,6 +32,7 @@ pub struct SetTraitsData<'a> {
 	rot: WriteStorage<'a, Rotation>,
 	health: WriteStorage<'a, Health>,
 	energy: WriteStorage<'a, Energy>,
+	is_dead: WriteStorage<'a, IsDead>,
 
 	gamemode: GameModeWriter<'a, GameMode>,
 }
@@ -53,6 +55,7 @@ impl<'a> EventHandler<'a> for SetTraits {
 		let team = *try_get!(player, data.team);
 		let pos = gamemode.spawn_pos(player, team);
 
+		data.is_dead.remove(player);
 		data.pos.insert(player, pos).unwrap();
 		data.vel.insert(player, Velocity::default()).unwrap();
 		data.rot.insert(player, Rotation::default()).unwrap();
