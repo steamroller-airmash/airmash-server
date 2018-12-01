@@ -40,14 +40,21 @@ impl<'a> System<'a> for FlagSpeedSystem {
 		} = data;
 
 		for evt in channel.read(self.reader.as_mut().unwrap()) {
+			let player = evt.player.unwrap();
+			let keystate = keystate.get_mut(player);
+
+			if keystate.is_none() {
+				continue;
+			}
+
+			let keystate = keystate.unwrap();
+
 			match evt.ty {
 				FlagEventType::Capture | FlagEventType::Drop => {
-					let player = evt.player.unwrap();
-					keystate.get_mut(player).unwrap().flagspeed = false;
+					keystate.flagspeed = false;
 				}
 				FlagEventType::PickUp => {
-					let player = evt.player.unwrap();
-					keystate.get_mut(player).unwrap().flagspeed = true;
+					keystate.flagspeed = true;
 				}
 				_ => (),
 			}

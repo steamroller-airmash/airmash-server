@@ -54,7 +54,13 @@ impl<'a> System<'a> for PickupMessageSystem {
 			}
 
 			let flag_team = data.teams.get(evt.flag).unwrap();
-			let name = data.names.get(evt.player.unwrap()).unwrap();
+			let name = data.names.get(evt.player.unwrap());
+
+			if name.is_none() {
+				continue;
+			}
+
+			let name = name.unwrap();
 
 			let msg = format!(
 				"<span class=\"info inline\"><span class=\"{}\"></span></span>{} by {}",
