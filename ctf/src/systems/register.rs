@@ -47,8 +47,8 @@ pub fn register<'a, 'b>(world: &mut World, disp: Builder<'a, 'b>) -> Builder<'a,
 		.with::<on_leave::UpdateGameMode>()
 		.with::<on_leave::Drop>()
 		// On Join Events
-		.with::<on_join::InitCaptures>()
-		.with::<on_join::SendFlagPosition>()
+		.with_handler::<on_join::InitCaptures>()
+		.with_handler::<on_join::SendFlagPosition>()
 		// Needs to happen after SendFlagPosition
 		.with::<PickupFlagSystem>()
 		.with::<DropSystem>()

@@ -2,40 +2,32 @@ use specs::*;
 
 use component::*;
 
-use server::component::channel::*;
+use server::component::event::*;
+use server::utils::*;
 use server::*;
 
-pub struct InitCaptures {
-	reader: Option<OnPlayerJoinReader>,
-}
+#[derive(Default)]
+pub struct InitCaptures;
 
 #[derive(SystemData)]
 pub struct InitCapturesData<'a> {
-	pub channel: Read<'a, OnPlayerJoin>,
-	pub conns: Read<'a, Connections>,
-
-	pub captures: WriteStorage<'a, Captures>,
+	entities: Entities<'a>,
+	captures: WriteStorage<'a, Captures>,
 }
 
-impl InitCaptures {
-	pub fn new() -> Self {
-		Self { reader: None }
-	}
+impl EventHandlerTypeProvider for InitCaptures {
+	type Event = PlayerJoin;
 }
 
-impl<'a> System<'a> for InitCaptures {
+impl<'a> EventHandler<'a> for InitCaptures {
 	type SystemData = InitCapturesData<'a>;
 
-	fn setup(&mut self, res: &mut Resources) {
-		Self::SystemData::setup(res);
-
-		self.reader = Some(res.fetch_mut::<OnPlayerJoin>().register_reader());
-	}
-
-	fn run(&mut self, mut data: Self::SystemData) {
-		for evt in data.channel.read(self.reader.as_mut().unwrap()) {
-			data.captures.insert(evt.id, Captures(0)).unwrap();
+	fn on_event(&mut self, evt: &PlayerJoin, data: &mut Self::SystemData) {
+		if !data.entities.is_alive(evt.id) {
+			return;
 		}
+
+		data.captures.insert(evt.id, Captures(0)).unwrap();
 	}
 }
 
@@ -49,6 +41,6 @@ impl SystemInfo for InitCaptures {
 	}
 
 	fn new() -> Self {
-		Self::new()
+		Self::default()
 	}
 }
