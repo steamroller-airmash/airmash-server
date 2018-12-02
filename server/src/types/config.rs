@@ -362,6 +362,14 @@ impl Default for MobInfos {
 			},
 		);
 
+		map.insert(
+			MobType::Upgrade,
+			MobInfo {
+				lifetime: Some(Duration::from_secs(60)),
+				missile: None,
+			},
+		);
+
 		MobInfos(map)
 	}
 }
