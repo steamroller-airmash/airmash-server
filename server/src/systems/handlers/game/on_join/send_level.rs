@@ -37,7 +37,12 @@ impl<'a> EventHandler<'a> for SendPlayerLevel {
 }
 
 impl SystemInfo for SendPlayerLevel {
-	type Dependencies = (super::InitTraits, super::SendLogin, super::InitConnection);
+	type Dependencies = (
+		super::InitTraits, 
+		super::SendLogin, 
+		super::InitConnection,
+		super::SendPlayerNew,
+	);
 
 	fn name() -> &'static str {
 		concat!(module_path!(), "::", line!())
