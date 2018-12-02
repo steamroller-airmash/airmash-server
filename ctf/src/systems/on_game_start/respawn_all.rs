@@ -6,8 +6,8 @@ use server::component::flag::*;
 use server::systems::handlers::game::on_join::AllJoinHandlers;
 use server::types::systemdata::IsAlive;
 use server::*;
+use server::utils::*;
 
-use component::*;
 use systems::timer::GameStart;
 
 use super::RespawnAllUnspec;
@@ -15,13 +15,10 @@ use super::RespawnAllUnspec;
 /// Respawn all players at the start of
 /// the game.
 #[derive(Default)]
-pub struct RespawnAll {
-	reader: Option<OnGameStartReader>,
-}
+pub struct RespawnAll;
 
 #[derive(SystemData)]
 pub struct RespawnAllData<'a> {
-	channel: Read<'a, OnGameStart>,
 	respawn_channel: Write<'a, OnPlayerRespawn>,
 
 	entities: Entities<'a>,
@@ -29,19 +26,16 @@ pub struct RespawnAllData<'a> {
 	is_alive: IsAlive<'a>,
 }
 
-impl<'a> System<'a> for RespawnAll {
+impl EventHandlerTypeProvider for RespawnAll {
+	type Event = GameStart;
+}
+
+impl<'a> EventHandler<'a> for RespawnAll {
 	type SystemData = RespawnAllData<'a>;
 
-	fn setup(&mut self, res: &mut Resources) {
-		Self::SystemData::setup(res);
-
-		self.reader = Some(res.fetch_mut::<OnGameStart>().register_reader());
-	}
-
-	fn run(&mut self, mut data: Self::SystemData) {
+	fn on_event(&mut self, _: &GameStart, data: &mut Self::SystemData) {
 		use self::PlayerRespawnPrevStatus::*;
 
-		for _ in data.channel.read(self.reader.as_mut().unwrap()) {
 			let players = (&*data.entities, data.is_player.mask())
 				.join()
 				.map(|(ent, ..)| (ent, data.is_alive.get(ent)))
@@ -52,7 +46,6 @@ impl<'a> System<'a> for RespawnAll {
 				.collect::<Vec<_>>();
 
 			data.respawn_channel.iter_write(players.into_iter());
-		}
 	}
 }
 

@@ -69,7 +69,6 @@ pub type OnGameWin = EventChannel<GameWinEvent>;
 pub type OnGameWinReader = ReaderId<GameWinEvent>;
 
 pub type OnGameStart = EventChannel<GameStartEvent>;
-pub type OnGameStartReader = ReaderId<GameStartEvent>;
 
 impl Default for GameActive {
 	fn default() -> Self {

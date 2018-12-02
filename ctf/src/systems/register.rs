@@ -81,7 +81,7 @@ pub fn register<'a, 'b>(world: &mut World, disp: Builder<'a, 'b>) -> Builder<'a,
 		.with::<timer::SetGameActive>()
 		.with::<timer::Shuffle>()
 		// Game Start events
-		.with::<on_game_start::RespawnAllUnspec>()
-		.with::<on_game_start::RespawnAll>()
-		.with::<on_game_start::ResetScore>()
+		.with_handler::<on_game_start::RespawnAllUnspec>()
+		.with_handler::<on_game_start::RespawnAll>()
+		.with_handler::<on_game_start::ResetScore>()
 }
