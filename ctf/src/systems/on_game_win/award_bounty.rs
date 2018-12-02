@@ -7,6 +7,7 @@ use server::component::flag::IsPlayer;
 use server::component::time::*;
 use server::consts::timer::SCORE_BOARD;
 use server::types::Upgrades;
+use server::utils::*;
 use server::*;
 
 use server::protocol::server::ScoreUpdate;
@@ -17,13 +18,10 @@ use systems::on_flag::CheckWin;
 
 /// Award bounty to all members of the winning team
 #[derive(Default)]
-pub struct AwardBounty {
-	reader: Option<OnGameWinReader>,
-}
+pub struct AwardBounty;
 
 #[derive(SystemData)]
 pub struct AwardBountyData<'a> {
-	channel: Read<'a, OnGameWin>,
 	players_game: Read<'a, PlayersGame>,
 	timer_channel: Write<'a, OnTimerEvent>,
 	this_frame: Read<'a, ThisFrame>,
@@ -39,58 +37,54 @@ pub struct AwardBountyData<'a> {
 	upgrades: ReadStorage<'a, Upgrades>,
 }
 
-impl<'a> System<'a> for AwardBounty {
+impl EventHandlerTypeProvider for AwardBounty {
+	type Event = GameWinEvent;
+}
+
+impl<'a> EventHandler<'a> for AwardBounty {
 	type SystemData = AwardBountyData<'a>;
 
-	fn setup(&mut self, res: &mut Resources) {
-		Self::SystemData::setup(res);
+	fn on_event(&mut self, evt: &GameWinEvent, data: &mut Self::SystemData) {
+		let ref conns = data.conns;
 
-		self.reader = Some(res.fetch_mut::<OnGameWin>().register_reader());
-	}
+		let team = evt.winning_team;
+		let bounty = data.players_game.0.min(10) * GAME_WIN_BOUNTY_BASE.0;
 
-	fn run(&mut self, mut data: Self::SystemData) {
-		let conns = data.conns;
+		(
+			&data.team,
+			&mut data.score,
+			&*data.entities,
+			&mut data.earnings,
+			&data.kills,
+			&data.deaths,
+			&data.upgrades,
+			data.is_player.mask(),
+		)
+			.join()
+			.filter(|(player_team, ..)| team == **player_team)
+			.for_each(
+				|(_, score, player, earnings, kills, deaths, upgrades, ..)| {
+					score.0 += bounty;
+					(earnings.0).0 += bounty;
 
-		for evt in data.channel.read(self.reader.as_mut().unwrap()) {
-			let team = evt.winning_team;
-			let bounty = data.players_game.0.min(10) * GAME_WIN_BOUNTY_BASE.0;
+					let packet = ScoreUpdate {
+						id: player.into(),
+						score: *score,
+						earnings: earnings.0,
+						total_deaths: deaths.0,
+						total_kills: kills.0,
+						upgrades: upgrades.unused,
+					};
 
-			(
-				&data.team,
-				&mut data.score,
-				&*data.entities,
-				&mut data.earnings,
-				&data.kills,
-				&data.deaths,
-				&data.upgrades,
-				data.is_player.mask(),
-			)
-				.join()
-				.filter(|(player_team, ..)| team == **player_team)
-				.for_each(
-					|(_, score, player, earnings, kills, deaths, upgrades, ..)| {
-						score.0 += bounty;
-						(earnings.0).0 += bounty;
+					conns.send_to_player(player, packet)
+				},
+			);
 
-						let packet = ScoreUpdate {
-							id: player.into(),
-							score: *score,
-							earnings: earnings.0,
-							total_deaths: deaths.0,
-							total_kills: kills.0,
-							upgrades: upgrades.unused,
-						};
-
-						conns.send_to_player(player, packet)
-					},
-				);
-
-			data.timer_channel.single_write(TimerEvent {
-				ty: *SCORE_BOARD,
-				instant: data.this_frame.0,
-				data: None,
-			});
-		}
+		data.timer_channel.single_write(TimerEvent {
+			ty: *SCORE_BOARD,
+			instant: data.this_frame.0,
+			data: None,
+		});
 	}
 }
 

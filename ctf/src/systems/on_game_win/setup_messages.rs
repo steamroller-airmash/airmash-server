@@ -5,6 +5,7 @@ use server::consts::timer::DELAYED_MESSAGE;
 use server::protocol::server::ServerMessage;
 use server::protocol::ServerMessageType;
 use server::types::FutureDispatcher;
+use server::utils::*;
 use server::*;
 
 use component::*;
@@ -35,43 +36,36 @@ const MESSAGES: [(u32, u64, &'static str); 9] = [
 ];
 
 #[derive(Default)]
-pub struct SetupMessages {
-	reader: Option<OnGameWinReader>,
-}
+pub struct SetupMessages;
 
 #[derive(SystemData)]
 pub struct SetupMessagesData<'a> {
-	channel: Read<'a, OnGameWin>,
 	future: ReadExpect<'a, FutureDispatcher>,
 }
 
-impl<'a> System<'a> for SetupMessages {
+impl EventHandlerTypeProvider for SetupMessages {
+	type Event = GameWinEvent;
+}
+
+impl<'a> EventHandler<'a> for SetupMessages {
 	type SystemData = SetupMessagesData<'a>;
 
-	fn setup(&mut self, res: &mut Resources) {
-		Self::SystemData::setup(res);
-
-		self.reader = Some(res.fetch_mut::<OnGameWin>().register_reader());
-	}
-
-	fn run(&mut self, data: Self::SystemData) {
-		for _ in data.channel.read(self.reader.as_mut().unwrap()) {
-			for (duration, delay, msg) in MESSAGES.iter() {
-				data.future.run_delayed(
-					*GAME_RESET_TIME - Duration::from_secs(*delay),
-					move |inst| {
-						Some(TimerEvent {
-							ty: *DELAYED_MESSAGE,
-							instant: inst,
-							data: Some(Box::new(ServerMessage {
-								ty: ServerMessageType::TimeToGameStart,
-								duration: *duration * 1000,
-								text: msg.to_string(),
-							})),
-						})
-					},
-				);
-			}
+	fn on_event(&mut self, _: &GameWinEvent, data: &mut Self::SystemData) {
+		for (duration, delay, msg) in MESSAGES.iter() {
+			data.future.run_delayed(
+				*GAME_RESET_TIME - Duration::from_secs(*delay),
+				move |inst| {
+					Some(TimerEvent {
+						ty: *DELAYED_MESSAGE,
+						instant: inst,
+						data: Some(Box::new(ServerMessage {
+							ty: ServerMessageType::TimeToGameStart,
+							duration: *duration * 1000,
+							text: msg.to_string(),
+						})),
+					})
+				},
+			);
 		}
 	}
 }

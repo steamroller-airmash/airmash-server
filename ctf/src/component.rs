@@ -66,8 +66,6 @@ pub type OnFlag = EventChannel<FlagEvent>;
 pub type OnFlagReader = ReaderId<FlagEvent>;
 
 pub type OnGameWin = EventChannel<GameWinEvent>;
-pub type OnGameWinReader = ReaderId<GameWinEvent>;
-
 pub type OnGameStart = EventChannel<GameStartEvent>;
 
 impl Default for GameActive {

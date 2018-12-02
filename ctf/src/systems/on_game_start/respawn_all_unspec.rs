@@ -1,8 +1,8 @@
 use specs::*;
 
 use server::component::flag::*;
-use server::*;
 use server::utils::*;
+use server::*;
 
 use systems::timer::GameStart;
 

@@ -5,8 +5,8 @@ use server::component::event::*;
 use server::component::flag::*;
 use server::systems::handlers::game::on_join::AllJoinHandlers;
 use server::types::systemdata::IsAlive;
-use server::*;
 use server::utils::*;
+use server::*;
 
 use systems::timer::GameStart;
 
@@ -36,16 +36,16 @@ impl<'a> EventHandler<'a> for RespawnAll {
 	fn on_event(&mut self, _: &GameStart, data: &mut Self::SystemData) {
 		use self::PlayerRespawnPrevStatus::*;
 
-			let players = (&*data.entities, data.is_player.mask())
-				.join()
-				.map(|(ent, ..)| (ent, data.is_alive.get(ent)))
-				.map(|(ent, is_alive)| PlayerRespawn {
-					player: ent,
-					prev_status: if is_alive { Alive } else { Dead },
-				})
-				.collect::<Vec<_>>();
+		let players = (&*data.entities, data.is_player.mask())
+			.join()
+			.map(|(ent, ..)| (ent, data.is_alive.get(ent)))
+			.map(|(ent, is_alive)| PlayerRespawn {
+				player: ent,
+				prev_status: if is_alive { Alive } else { Dead },
+			})
+			.collect::<Vec<_>>();
 
-			data.respawn_channel.iter_write(players.into_iter());
+		data.respawn_channel.iter_write(players.into_iter());
 	}
 }
 
