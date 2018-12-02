@@ -62,6 +62,7 @@ pub fn register<'a, 'b>(world: &mut World, disp: Builder<'a, 'b>) -> Builder<'a,
 		.with_handler::<on_flag::UpdateLastDrop>()
 		.with_handler::<on_flag::CheckWin>()
 		.with_handler::<on_flag::DoReturn>()
+		.with_handler::<on_flag::ForceUpdate>()
 		// Flag event sending systems
 		.with::<flag_event::CaptureFlag>()
 		.with::<flag_event::ReturnFlag>()

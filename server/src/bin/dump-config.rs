@@ -1,9 +1,8 @@
-
 extern crate airmash_server;
 extern crate serde_json;
 
-use std::fs::File;
 use std::error::Error;
+use std::fs::File;
 use std::io::Write;
 
 use airmash_server::types::Config;
@@ -18,4 +17,3 @@ fn main() -> Result<(), Box<Error>> {
 
 	Ok(())
 }
-

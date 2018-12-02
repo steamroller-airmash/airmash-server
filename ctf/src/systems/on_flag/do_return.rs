@@ -70,7 +70,11 @@ impl<'a> EventHandler<'a> for DoReturn {
 use systems::PickupFlagSystem;
 
 impl SystemInfo for DoReturn {
-	type Dependencies = (PickupFlagSystem, super::KnownEventSources);
+	type Dependencies = (
+		PickupFlagSystem,
+		super::KnownEventSources,
+		super::ForceUpdate,
+	);
 
 	fn name() -> &'static str {
 		concat!(module_path!(), "::", line!())
