@@ -79,10 +79,10 @@ pub fn register<'a, 'b>(world: &mut World, disp: Builder<'a, 'b>) -> Builder<'a,
 		.with_handler::<on_game_win::AwardBounty>()
 		.with_handler::<on_game_win::ResetFlags>()
 		// Timer events
-		.with::<timer::RestoreConfig>()
-		.with::<timer::GameStart>()
-		.with::<timer::SetGameActive>()
-		.with::<timer::Shuffle>()
+		.with_handler::<timer::RestoreConfig>()
+		.with_handler::<timer::GameStart>()
+		.with_handler::<timer::SetGameActive>()
+		.with_handler::<timer::Shuffle>()
 		// Game Start events
 		.with_handler::<on_game_start::RespawnAllUnspec>()
 		.with_handler::<on_game_start::RespawnAll>()
