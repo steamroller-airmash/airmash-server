@@ -15,27 +15,26 @@ pub struct PickupFlagSystem;
 
 #[derive(SystemData)]
 pub struct PickupFlagSystemData<'a> {
-	pub config: Read<'a, Config>,
-	pub entities: Entities<'a>,
-	pub channel: Write<'a, OnFlag>,
-	pub thisframe: Read<'a, ThisFrame>,
-	pub game_active: Read<'a, GameActive>,
+	entities: Entities<'a>,
+	channel: Write<'a, OnFlag>,
+	thisframe: Read<'a, ThisFrame>,
+	game_active: Read<'a, GameActive>,
 
 	// Player data
-	pub plane: ReadStorage<'a, Plane>,
-	pub is_player: ReadStorage<'a, IsPlayer>,
-	pub is_alive: IsAlive<'a>,
+	plane: ReadStorage<'a, Plane>,
+	is_player: ReadStorage<'a, IsPlayer>,
+	is_alive: IsAlive<'a>,
 
 	// These ones are for both
-	pub pos: WriteStorage<'a, Position>,
-	pub team: ReadStorage<'a, Team>,
+	pos: WriteStorage<'a, Position>,
+	team: ReadStorage<'a, Team>,
 
 	// Flag Data
-	pub is_flag: ReadStorage<'a, IsFlag>,
-	pub carrier: WriteStorage<'a, FlagCarrier>,
-	pub lastdrop: ReadStorage<'a, LastDrop>,
+	is_flag: ReadStorage<'a, IsFlag>,
+	carrier: WriteStorage<'a, FlagCarrier>,
+	lastdrop: ReadStorage<'a, LastDrop>,
 
-	pub keystate: ReadStorage<'a, KeyState>,
+	keystate: ReadStorage<'a, KeyState>,
 }
 
 impl<'a> System<'a> for PickupFlagSystem {
@@ -109,9 +108,14 @@ impl<'a> System<'a> for PickupFlagSystem {
 			}
 
 			let nearest = nearest.unwrap().0;
-			let team = *data.team.get(nearest).unwrap();
+			let team = *match log_none!(nearest, data.team) {
+				Some(x) => x,
+				None => continue,
+			};
 
-			*data.carrier.get_mut(f_ent).unwrap() = FlagCarrier(Some(nearest));
+			data.carrier
+				.insert(f_ent, FlagCarrier(Some(nearest)))
+				.unwrap();
 
 			let ty = if team == f_team {
 				FlagEventType::Return

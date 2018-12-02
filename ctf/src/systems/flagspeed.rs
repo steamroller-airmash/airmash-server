@@ -3,61 +3,40 @@ use specs::*;
 
 use component::*;
 
-use airmash_server::systems::handlers::game::on_join::AllJoinHandlers;
+use server::systems::handlers::game::on_join::AllJoinHandlers;
+use server::utils::*;
 
 use super::PickupFlagSystem;
 
-pub struct FlagSpeedSystem {
-	reader: Option<OnFlagReader>,
-}
+#[derive(Default)]
+pub struct FlagSpeedSystem;
 
 #[derive(SystemData)]
 pub struct FlagSpeedSystemData<'a> {
-	pub channel: Read<'a, OnFlag>,
-
-	pub keystate: WriteStorage<'a, KeyState>,
+	keystate: WriteStorage<'a, KeyState>,
 }
 
-impl FlagSpeedSystem {
-	pub fn new() -> Self {
-		Self { reader: None }
-	}
+impl EventHandlerTypeProvider for FlagSpeedSystem {
+	type Event = FlagEvent;
 }
 
-impl<'a> System<'a> for FlagSpeedSystem {
+impl<'a> EventHandler<'a> for FlagSpeedSystem {
 	type SystemData = FlagSpeedSystemData<'a>;
 
-	fn setup(&mut self, res: &mut Resources) {
-		Self::SystemData::setup(res);
+	fn on_event(&mut self, evt: &FlagEvent, data: &mut Self::SystemData) {
+		let ref mut keystate = data.keystate;
 
-		self.reader = Some(res.fetch_mut::<OnFlag>().register_reader());
-	}
+		let player = evt.player.unwrap();
+		let keystate = try_get!(player, mut keystate);
 
-	fn run(&mut self, data: Self::SystemData) {
-		let Self::SystemData {
-			channel,
-			mut keystate,
-		} = data;
-
-		for evt in channel.read(self.reader.as_mut().unwrap()) {
-			let player = evt.player.unwrap();
-			let keystate = keystate.get_mut(player);
-
-			if keystate.is_none() {
-				continue;
+		match evt.ty {
+			FlagEventType::Capture | FlagEventType::Drop => {
+				keystate.flagspeed = false;
 			}
-
-			let keystate = keystate.unwrap();
-
-			match evt.ty {
-				FlagEventType::Capture | FlagEventType::Drop => {
-					keystate.flagspeed = false;
-				}
-				FlagEventType::PickUp => {
-					keystate.flagspeed = true;
-				}
-				_ => (),
+			FlagEventType::PickUp => {
+				keystate.flagspeed = true;
 			}
+			_ => (),
 		}
 	}
 }
@@ -70,6 +49,6 @@ impl SystemInfo for FlagSpeedSystem {
 	}
 
 	fn new() -> Self {
-		Self::new()
+		Self::default()
 	}
 }

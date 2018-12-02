@@ -63,8 +63,6 @@ pub struct GameActive(pub bool);
 pub struct Captures(pub u32);
 
 pub type OnFlag = EventChannel<FlagEvent>;
-pub type OnFlagReader = ReaderId<FlagEvent>;
-
 pub type OnGameWin = EventChannel<GameWinEvent>;
 pub type OnGameStart = EventChannel<GameStartEvent>;
 

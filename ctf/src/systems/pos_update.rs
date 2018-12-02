@@ -4,15 +4,16 @@ use specs::*;
 use component::*;
 use server::types::systemdata::*;
 
+#[derive(Default)]
 pub struct PosUpdateSystem;
 
 #[derive(SystemData)]
 pub struct PosUpdateSystemData<'a> {
-	pub ents: Entities<'a>,
-	pub pos: WriteStorage<'a, Position>,
-	pub flag: ReadStorage<'a, IsFlag>,
-	pub carrier: ReadStorage<'a, FlagCarrier>,
-	pub is_alive: IsAlive<'a>,
+	ents: Entities<'a>,
+	pos: WriteStorage<'a, Position>,
+	flag: ReadStorage<'a, IsFlag>,
+	carrier: ReadStorage<'a, FlagCarrier>,
+	is_alive: IsAlive<'a>,
 }
 
 impl<'a> System<'a> for PosUpdateSystem {
@@ -26,7 +27,8 @@ impl<'a> System<'a> for PosUpdateSystem {
 
 		for (flag, carrier) in carriers {
 			// Update flag position to carrier position
-			*data.pos.get_mut(flag).unwrap() = *data.pos.get(carrier).unwrap();
+			let pos = *try_get!(carrier, data.pos);
+			data.pos.insert(flag, pos).unwrap();
 		}
 	}
 }

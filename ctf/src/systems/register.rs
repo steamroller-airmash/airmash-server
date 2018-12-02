@@ -54,9 +54,9 @@ pub fn register<'a, 'b>(world: &mut World, disp: Builder<'a, 'b>) -> Builder<'a,
 		.with_handler::<on_join::SendFlagPosition>()
 		// Needs to happen after SendFlagPosition
 		.with::<PickupFlagSystem>()
-		.with::<DropSystem>()
 		.with::<PosUpdateSystem>()
-		.with::<FlagSpeedSystem>()
+		.with_handler::<DropSystem>()
+		.with_handler::<FlagSpeedSystem>()
 		// On Flag Events
 		.with_handler::<on_flag::SendFlagMessage>()
 		.with_handler::<on_flag::PickupMessage>()
