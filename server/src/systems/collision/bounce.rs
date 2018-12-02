@@ -77,8 +77,7 @@ impl<'a> EventHandler<'a> for BounceSystem {
 			// This should really be something like
 			// send_to_team_visible
 			data.conns.send_to_team(ent, packet);
-		}
-		else {
+		} else {
 			data.conns.send_to_visible(*pos, packet);
 		}
 	}

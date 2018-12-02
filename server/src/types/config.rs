@@ -60,9 +60,9 @@ pub struct UpgradeInfo {
 	pub factor: [f32; 6],
 }
 
-#[derive(Clone, Debug, Serialize, Deserialize)]
+#[derive(Clone, Debug)]
 pub struct PlaneInfos(pub FnvHashMap<Plane, PlaneInfo>);
-#[derive(Clone, Debug, Serialize, Deserialize)]
+#[derive(Clone, Debug)]
 pub struct MobInfos(pub FnvHashMap<MobType, MobInfo>);
 
 #[derive(Clone, Debug, Serialize, Deserialize)]
@@ -403,6 +403,112 @@ impl Default for Config {
 			shield_duration: Duration::from_secs(10),
 			inferno_duration: Duration::from_secs(10),
 			view_radius: Distance::new(2250.0),
+		}
+	}
+}
+
+mod specs_impls {
+	use super::*;
+	use super::{MobType as Mob, PlaneType as Plane};
+	use serde::{Deserialize, Deserializer, Serialize, Serializer};
+
+	#[derive(Serialize, Deserialize)]
+	struct PlaneInfosInterface {
+		predator: PlaneInfo,
+		tornado: PlaneInfo,
+		prowler: PlaneInfo,
+		mohawk: PlaneInfo,
+		goliath: PlaneInfo,
+	}
+
+	#[derive(Serialize, Deserialize)]
+	struct MobInfosInterface {
+		predator: MobInfo,
+		tornado: MobInfo,
+		prowler: MobInfo,
+		mohawk: MobInfo,
+		goliath: MobInfo,
+		tornado_triple: MobInfo,
+		upgrade: MobInfo,
+		inferno: MobInfo,
+		shield: MobInfo,
+	}
+
+	impl Serialize for PlaneInfos {
+		fn serialize<S>(&self, ser: S) -> Result<S::Ok, S::Error>
+		where
+			S: Serializer,
+		{
+			let inner = PlaneInfosInterface {
+				predator: self[Plane::Predator].clone(),
+				tornado: self[Plane::Tornado].clone(),
+				prowler: self[Plane::Prowler].clone(),
+				mohawk: self[Plane::Mohawk].clone(),
+				goliath: self[Plane::Goliath].clone(),
+			};
+
+			inner.serialize(ser)
+		}
+	}
+	impl<'de> Deserialize<'de> for PlaneInfos {
+		fn deserialize<D>(de: D) -> Result<Self, D::Error>
+		where
+			D: Deserializer<'de>,
+		{
+			let inner = PlaneInfosInterface::deserialize(de)?;
+
+			let mut map = FnvHashMap::default();
+
+			map.insert(Plane::Predator, inner.predator);
+			map.insert(Plane::Tornado, inner.tornado);
+			map.insert(Plane::Prowler, inner.prowler);
+			map.insert(Plane::Mohawk, inner.mohawk);
+			map.insert(Plane::Goliath, inner.goliath);
+
+			Ok(PlaneInfos(map))
+		}
+	}
+
+	impl Serialize for MobInfos {
+		fn serialize<S>(&self, ser: S) -> Result<S::Ok, S::Error>
+		where
+			S: Serializer,
+		{
+			let inner = MobInfosInterface {
+				predator: self[Mob::PredatorMissile].clone(),
+				tornado: self[Mob::TornadoSingleMissile].clone(),
+				prowler: self[Mob::ProwlerMissile].clone(),
+				mohawk: self[Mob::MohawkMissile].clone(),
+				goliath: self[Mob::GoliathMissile].clone(),
+				tornado_triple: self[Mob::TornadoTripleMissile].clone(),
+				upgrade: self[Mob::Upgrade].clone(),
+				inferno: self[Mob::Inferno].clone(),
+				shield: self[Mob::Shield].clone(),
+			};
+
+			inner.serialize(ser)
+		}
+	}
+	impl<'de> Deserialize<'de> for MobInfos {
+		fn deserialize<D>(de: D) -> Result<Self, D::Error>
+		where
+			D: Deserializer<'de>,
+		{
+			let inner = MobInfosInterface::deserialize(de)?;
+
+			let mut map = FnvHashMap::default();
+
+			map.insert(Mob::PredatorMissile, inner.predator);
+			map.insert(Mob::TornadoSingleMissile, inner.tornado);
+			map.insert(Mob::ProwlerMissile, inner.prowler);
+			map.insert(Mob::MohawkMissile, inner.mohawk);
+			map.insert(Mob::GoliathMissile, inner.goliath);
+			map.insert(Mob::TornadoTripleMissile, inner.tornado_triple);
+			map.insert(Mob::Upgrade, inner.upgrade);
+			map.insert(Mob::Inferno, inner.inferno);
+			map.insert(Mob::Shield, inner.shield);
+
+			Ok(MobInfos(map))
 		}
 	}
 }

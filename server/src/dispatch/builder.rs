@@ -49,8 +49,8 @@ impl<'a, 'b> Builder<'a, 'b> {
 		T::Dependencies: SystemDeps,
 	{
 		trace!(
-			target: "airmash:builder", 
-			"{} {:?}", 
+			target: "airmash:builder",
+			"{} {:?}",
 			T::name(),
 			T::Dependencies::dependencies()
 		);

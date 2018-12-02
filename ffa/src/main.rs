@@ -23,17 +23,15 @@ use std::fs::File;
 
 use gamemode::EmptyGameMode;
 
-use airmash_server::*;
 use airmash_server::types::Config;
+use airmash_server::*;
 
 fn main() {
     let matches = clap::App::new("airmash-server-ffa")
         .version(env!("CARGO_PKG_VERSION"))
         .author("STEAMROLLER")
         .about("Airmash FFA server")
-        .args_from_usage(
-            "-c, --config=[FILE] 'Provides an alternate config file'"
-        )
+        .args_from_usage("-c, --config=[FILE] 'Provides an alternate config file'")
         .get_matches();
 
     env::set_var("RUST_BACKTRACE", "1");
@@ -55,12 +53,11 @@ fn main() {
             }
         };
 
-        let config: Config = serde_json::from_reader(file)
-            .unwrap_or_else(|e| {
-                error!("Unable to parse config file! Using default config.");
-                error!("Config file error was: {}", e);
-                Default::default()
-            });
+        let config: Config = serde_json::from_reader(file).unwrap_or_else(|e| {
+            error!("Unable to parse config file! Using default config.");
+            error!("Config file error was: {}", e);
+            Default::default()
+        });
 
         server.world.add_resource(config);
     }

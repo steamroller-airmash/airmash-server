@@ -48,7 +48,7 @@ macro_rules! impl_default {
 	}
 }
 
-impl_default!{
+impl_default! {
 	LastFrame,
 	ThisFrame,
 	StartTime,

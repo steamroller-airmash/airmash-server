@@ -60,9 +60,7 @@ impl<'a> System<'a> for KeyHandler {
 				data.last_key
 					.insert(player, LastKeyTime(data.this_frame.0))
 					.unwrap();
-				data.force
-					.insert(player, ForcePlayerUpdate)
-					.unwrap();
+				data.force.insert(player, ForcePlayerUpdate).unwrap();
 
 				match evt.1.key {
 					KeyCode::Up => keystate.up = evt.1.state,

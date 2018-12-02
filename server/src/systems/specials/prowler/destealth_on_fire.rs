@@ -52,10 +52,7 @@ impl<'a> EventHandler<'a> for DestealthOnFire {
 }
 
 impl SystemInfo for DestealthOnFire {
-	type Dependencies = (
-		MissileFireHandler,
-		PositionUpdate
-	);
+	type Dependencies = (MissileFireHandler, PositionUpdate);
 
 	fn name() -> &'static str {
 		concat!(module_path!(), "::", line!())

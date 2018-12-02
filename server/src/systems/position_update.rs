@@ -206,9 +206,7 @@ impl PositionUpdate {
 			data.force_update.mask() & data.is_alive.mask(),
 		)
 			.join()
-			.map(|x| {
-				x
-			})
+			.map(|x| x)
 			.map(
 				|(ent, pos, rot, vel, plane, keystate, upgrades, lastupdate, ..)| {
 					let powerups = data.powerups.get(ent);
