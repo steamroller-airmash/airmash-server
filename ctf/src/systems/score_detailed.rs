@@ -1,21 +1,19 @@
 use specs::*;
 
-use server::component::channel::*;
 use server::component::counter::*;
+use server::component::event::*;
 use server::component::flag::*;
 use server::protocol::server::{ScoreDetailedCTF, ScoreDetailedCTFEntry};
+use server::utils::*;
 use server::*;
 
 use component::Captures;
 
 #[derive(Default)]
-pub struct ScoreDetailed {
-	reader: Option<OnScoreDetailedReader>,
-}
+pub struct ScoreDetailed;
 
 #[derive(SystemData)]
 pub struct ScoreDetailedData<'a> {
-	channel: Read<'a, OnScoreDetailed>,
 	conns: Read<'a, Connections>,
 
 	entities: Entities<'a>,
@@ -28,47 +26,43 @@ pub struct ScoreDetailedData<'a> {
 	is_player: ReadStorage<'a, IsPlayer>,
 }
 
-impl<'a> System<'a> for ScoreDetailed {
+impl EventHandlerTypeProvider for ScoreDetailed {
+	type Event = ScoreDetailedEvent;
+}
+
+impl<'a> EventHandler<'a> for ScoreDetailed {
 	type SystemData = ScoreDetailedData<'a>;
 
-	fn setup(&mut self, res: &mut Resources) {
-		Self::SystemData::setup(res);
+	fn on_event(&mut self, evt: &ScoreDetailedEvent, data: &mut Self::SystemData) {
+		let scores = (
+			&*data.entities,
+			&data.level,
+			&data.captures,
+			&data.score,
+			&data.kills,
+			&data.deaths,
+			&data.ping,
+			data.is_player.mask(),
+		)
+			.join()
+			.map(|(ent, level, captures, score, kills, deaths, ping, ..)| {
+				ScoreDetailedCTFEntry {
+					id: ent.into(),
+					level: *level,
+					captures: captures.0 as u16,
+					score: *score,
+					kills: kills.0 as u16,
+					deaths: deaths.0 as u16,
+					// TODO: Track this
+					damage: 0.0,
+					ping: ping.0 as u16,
+				}
+			})
+			.collect();
 
-		self.reader = Some(res.fetch_mut::<OnScoreDetailed>().register_reader());
-	}
+		let packet = ScoreDetailedCTF { scores };
 
-	fn run(&mut self, data: Self::SystemData) {
-		for evt in data.channel.read(self.reader.as_mut().unwrap()) {
-			let scores = (
-				&*data.entities,
-				&data.level,
-				&data.captures,
-				&data.score,
-				&data.kills,
-				&data.deaths,
-				&data.ping,
-				data.is_player.mask(),
-			)
-				.join()
-				.map(|(ent, level, captures, score, kills, deaths, ping, ..)| {
-					ScoreDetailedCTFEntry {
-						id: ent.into(),
-						level: *level,
-						captures: captures.0 as u16,
-						score: *score,
-						kills: kills.0 as u16,
-						deaths: deaths.0 as u16,
-						// TODO: Track this
-						damage: 0.0,
-						ping: ping.0 as u16,
-					}
-				})
-				.collect();
-
-			let packet = ScoreDetailedCTF { scores };
-
-			data.conns.send_to(evt.0, packet);
-		}
+		data.conns.send_to(evt.0, packet);
 	}
 }
 

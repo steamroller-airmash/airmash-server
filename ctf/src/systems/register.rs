@@ -10,6 +10,9 @@ use super::*;
 use config;
 
 pub fn register<'a, 'b>(world: &mut World, disp: Builder<'a, 'b>) -> Builder<'a, 'b> {
+	// Normally the systems would take care of this,
+	// but these need to be registered in order to
+	// create the flag entities.
 	world.register::<Team>();
 	world.register::<Position>();
 	world.register::<IsFlag>();
@@ -42,7 +45,7 @@ pub fn register<'a, 'b>(world: &mut World, disp: Builder<'a, 'b>) -> Builder<'a,
 
 	disp.with_handler::<DropOnDespawn>()
 		.with_handler::<DropOnStealth>()
-		.with::<ScoreDetailed>()
+		.with_handler::<ScoreDetailed>()
 		// On Leave Events
 		.with_handler::<on_leave::UpdateGameMode>()
 		.with_handler::<on_leave::Drop>()
