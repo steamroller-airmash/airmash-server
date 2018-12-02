@@ -44,8 +44,8 @@ pub fn register<'a, 'b>(world: &mut World, disp: Builder<'a, 'b>) -> Builder<'a,
 		.with_handler::<DropOnStealth>()
 		.with::<ScoreDetailed>()
 		// On Leave Events
-		.with::<on_leave::UpdateGameMode>()
-		.with::<on_leave::Drop>()
+		.with_handler::<on_leave::UpdateGameMode>()
+		.with_handler::<on_leave::Drop>()
 		// On Join Events
 		.with_handler::<on_join::InitCaptures>()
 		.with_handler::<on_join::SendFlagPosition>()

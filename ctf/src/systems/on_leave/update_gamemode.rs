@@ -1,46 +1,39 @@
 use specs::*;
 
-use server::component::channel::*;
 use server::component::event::PlayerLeave;
 use server::systems::handlers::packet::OnCloseHandler;
+use server::utils::*;
 use server::*;
 
 use CTFGameMode;
 use BLUE_TEAM;
 use RED_TEAM;
 
-pub struct UpdateGameModeOnPlayerLeave {
-	reader: Option<OnPlayerLeaveReader>,
-}
+#[derive(Default)]
+pub struct UpdateGameModeOnPlayerLeave;
 
 #[derive(SystemData)]
 pub struct UpdateGameModeOnPlayerLeaveData<'a> {
-	pub gamemode: GameModeWriter<'a, CTFGameMode>,
-	pub channel: Read<'a, OnPlayerLeave>,
-
-	pub teams: ReadStorage<'a, Team>,
+	gamemode: GameModeWriter<'a, CTFGameMode>,
+	teams: ReadStorage<'a, Team>,
 }
 
-impl<'a> System<'a> for UpdateGameModeOnPlayerLeave {
+impl EventHandlerTypeProvider for UpdateGameModeOnPlayerLeave {
+	type Event = PlayerLeave;
+}
+
+impl<'a> EventHandler<'a> for UpdateGameModeOnPlayerLeave {
 	type SystemData = UpdateGameModeOnPlayerLeaveData<'a>;
 
-	fn setup(&mut self, res: &mut Resources) {
-		Self::SystemData::setup(res);
+	fn on_event(&mut self, &PlayerLeave(ent): &PlayerLeave, data: &mut Self::SystemData) {
+		let team = try_get!(ent, data.teams);
 
-		self.reader = Some(res.fetch_mut::<OnPlayerLeave>().register_reader());
-	}
-
-	fn run(&mut self, mut data: Self::SystemData) {
-		for PlayerLeave(ent) in data.channel.read(self.reader.as_mut().unwrap()) {
-			let team = data.teams.get(*ent).unwrap();
-
-			if *team == RED_TEAM {
-				data.gamemode.redteam -= std::cmp::min(data.gamemode.redteam, 1);
-			} else if *team == BLUE_TEAM {
-				data.gamemode.blueteam -= std::cmp::min(data.gamemode.blueteam, 1);
-			} else {
-				unimplemented!();
-			}
+		if *team == RED_TEAM {
+			data.gamemode.redteam -= std::cmp::min(data.gamemode.redteam, 1);
+		} else if *team == BLUE_TEAM {
+			data.gamemode.blueteam -= std::cmp::min(data.gamemode.blueteam, 1);
+		} else {
+			unimplemented!();
 		}
 	}
 }
@@ -53,6 +46,6 @@ impl SystemInfo for UpdateGameModeOnPlayerLeave {
 	}
 
 	fn new() -> Self {
-		Self { reader: None }
+		Self::default()
 	}
 }
