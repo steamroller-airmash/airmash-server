@@ -8,19 +8,20 @@ use component::*;
 use server::protocol::server::GameFlag;
 use server::protocol::FlagUpdateType;
 
+#[derive(Default)]
 pub struct CaptureFlag;
 
 #[derive(SystemData)]
 pub struct CaptureFlagData<'a> {
-	pub ents: Entities<'a>,
-	pub pos: WriteStorage<'a, Position>,
-	pub team: ReadStorage<'a, Team>,
-	pub flag: ReadStorage<'a, IsFlag>,
-	pub carrier: WriteStorage<'a, FlagCarrier>,
+	ents: Entities<'a>,
+	pos: WriteStorage<'a, Position>,
+	team: ReadStorage<'a, Team>,
+	flag: ReadStorage<'a, IsFlag>,
+	carrier: WriteStorage<'a, FlagCarrier>,
 
-	pub scores: Read<'a, GameScores>,
-	pub channel: Write<'a, OnFlag>,
-	pub conns: Read<'a, Connections>,
+	scores: Read<'a, GameScores>,
+	channel: Write<'a, OnFlag>,
+	conns: Read<'a, Connections>,
 }
 
 impl<'a> System<'a> for CaptureFlag {
@@ -98,6 +99,6 @@ impl SystemInfo for CaptureFlag {
 	}
 
 	fn new() -> Self {
-		Self {}
+		Self::default()
 	}
 }
