@@ -62,7 +62,7 @@ impl<'a> EventHandler<'a> for Teleport {
 			data.conns.send_to(
 				conn,
 				CommandReply {
-					ty: CommandReplyType::ShowInPopup,
+					ty: CommandReplyType::ShowInConsole,
 					text: format!(
 						"{}",
 						serde_json::to_string_pretty(&result.unwrap_err()).unwrap()
