@@ -24,7 +24,17 @@ impl<'a> EventHandler<'a> for ForceUpdate {
 	fn on_event(&mut self, evt: &FlagEvent, data: &mut Self::SystemData) {
 		let subject = try_get!(evt.flag, data.carriers)
 			.0
-			.unwrap_or_else(|| evt.player.unwrap());
+			.map(Some)
+			.unwrap_or(evt.player);
+
+		// In case there's still not an entity that can be
+		// found, don't force an update. This may technically
+		// be a bug, but dropping an update packet on the
+		// floor occasionally is really not that bad.
+		let subject = match subject {
+			Some(x) => x,
+			None => return,
+		};
 
 		data.force.insert(subject, ForcePlayerUpdate).unwrap();
 	}

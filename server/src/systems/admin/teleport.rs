@@ -134,10 +134,10 @@ lazy_static! {
 		map.insert("red-flag", Position::new(8600.0, -940.0));
 		map.insert("greenland-spa-and-lounge", Position::new(-5000.0, -7000.0));
 		map.insert("greenland", Position::new(-5000.0, -7000.0));
-		map.insert("crimea", Position::new(2724.0, -2321));
+		map.insert("crimea", Position::new(2724.0, -2321.0));
 		// The exact origin of how this name was
 		// determined is shrouded in mystery.
-		map.insert("mt-detect", Position::new(3550.0, -850));
+		map.insert("mt-detect", Position::new(3550.0, -850.0));
 
 		map
 	};
