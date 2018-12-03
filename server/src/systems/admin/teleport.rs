@@ -130,15 +130,9 @@ lazy_static! {
 	pub static ref NAMED_POSITIONS: FnvHashMap<&'static str, Position> = {
 		let mut map = FnvHashMap::default();
 
-		map.insert(
-			"blue-flag",
-			Position::new(Distance::new(-9670.0), Distance::new(-1470.0)),
-		);
-
-		map.insert(
-			"red-flag",
-			Position::new(Distance::new(8600.0), Distance::new(-940.0)),
-		);
+		map.insert("blue-flag", Position::new(-9670.0, -1470.0));
+		map.insert("red-flag", Position::new(8600.0, -940.0));
+		map.insert("greenland-spa-and-lounge", Position::new(-5000.0, -7000.0));
 
 		map
 	};
