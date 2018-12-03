@@ -1,6 +1,8 @@
 use hashbrown::HashSet;
 use specs::Entity;
+
 use std::cmp::Ordering;
+use std::mem;
 
 use types::collision::{Collision, HitCircle};
 
@@ -51,14 +53,29 @@ const INV_BY: f32 = 1.0 / BUCKET_Y;
 /// # }
 /// ```
 ///
-/// # Notes
-/// - Due to (current) bucket sizes no bucket will
-///   contain more than 1 terrain hitcircle.
+/// # Example
+/// Recreating a grid with a new set of hit circles while
+/// reusing the memory of the old one.
+/// ```
+/// # extern crate airmash_server;
+/// # use airmash_server::types::collision::{Grid, HitCircle};
+/// # fn main() {
+/// # let circles_from_elsewhere = vec![];
+/// // Of course normally this would be an existing
+/// // grid lying around somewhere.
+/// let mut grid = Grid::default();
+/// // Hit circles from terrain, planes, etc.
+/// // Note that this can be any iterator.
+/// let circles: Vec<HitCircle> = circles_from_elsewhere;
+///
+/// // Rebuild the grid using the new circles
+/// grid.rebuild_from(circles.into_iter());
+/// # }
+/// ```
 #[derive(Clone, Default, Debug)]
 pub struct Grid {
 	circles: Vec<HitCircle>,
 	buckets: Vec<(u32, u32)>,
-	//buckets: HashMap<(u32, u32), (u32, u32)>,
 	max_r: f32,
 }
 
@@ -80,11 +97,8 @@ fn spatial_sort(a: &HitCircle, b: &HitCircle) -> Ordering {
 }
 
 impl Grid {
-	/// Create a new `Grid` from a list of hit circles.
-	pub fn new(mut circles: Vec<HitCircle>) -> Self {
+	fn new_inner(mut circles: Vec<HitCircle>, mut buckets: Vec<(u32, u32)>) -> Self {
 		circles.sort_by(spatial_sort);
-
-		let mut buckets = vec![(0xFFFFFFFF as u32, 0xFFFFFFFF as u32); NUM_BUCKETS as usize];
 
 		let mut i: usize = 0;
 		let mut max_r = 0.0;
@@ -117,6 +131,33 @@ impl Grid {
 			buckets,
 			max_r,
 		}
+	}
+	fn create_buckets() -> Vec<(u32, u32)> {
+		vec![(0xFFFFFFFF as u32, 0xFFFFFFFF as u32); NUM_BUCKETS as usize]
+	}
+
+	/// Create a new `Grid` from a list of hit circles.
+	pub fn new(circles: Vec<HitCircle>) -> Self {
+		Self::new_inner(circles, Self::create_buckets())
+	}
+
+	/// Build a new grid by reusing the memory of an existing one.
+	pub fn rebuild_from<I>(&mut self, it: I)
+	where
+		I: IntoIterator<Item = HitCircle>,
+	{
+		self.circles.clear();
+		self.circles.extend(it);
+
+		// Only should happen if rebuilding from
+		// a default-constructed grid
+		if self.buckets.len() != NUM_BUCKETS as usize {
+			self.buckets = Self::create_buckets()
+		}
+
+		let old = mem::replace(self, Self::default());
+
+		*self = Self::new_inner(old.circles, old.buckets);
 	}
 
 	/// Collide a number of circles against all circles

@@ -9,4 +9,5 @@ pub fn register<'a, 'b>(disp: Builder<'a, 'b>) -> Builder<'a, 'b> {
 		.with_handler::<BounceSystem>()
 		.with_handler::<MissileExplodeSystem>()
 		.with::<GenPlaneGrid>()
+		.with::<GenMissileGrid>()
 }

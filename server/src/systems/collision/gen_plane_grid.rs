@@ -10,8 +10,6 @@ use component::flag::IsPlayer;
 
 use consts::config::PLANE_HIT_CIRCLES;
 
-use std::mem;
-
 #[derive(Default)]
 pub struct GenPlaneGrid;
 
@@ -56,11 +54,7 @@ impl<'a> System<'a> for GenPlaneGrid {
 			})
 			.flatten();
 
-		let mut vec = mem::replace(&mut data.grid.0, Grid::default()).into_inner();
-		vec.clear();
-		vec.extend(it);
-
-		data.grid.0 = Grid::new(vec);
+		data.grid.0.rebuild_from(it);
 	}
 }
 

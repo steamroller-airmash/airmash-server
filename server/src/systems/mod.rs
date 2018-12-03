@@ -17,6 +17,7 @@ pub mod notify;
 pub mod powerups;
 pub mod specials;
 pub mod upgrades;
+pub mod visibility;
 
 pub use self::disconnect::Disconnect;
 pub use self::energy_regen::EnergyRegenSystem;
