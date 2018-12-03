@@ -133,6 +133,7 @@ lazy_static! {
 		map.insert("blue-flag", Position::new(-9670.0, -1470.0));
 		map.insert("red-flag", Position::new(8600.0, -940.0));
 		map.insert("greenland-spa-and-lounge", Position::new(-5000.0, -7000.0));
+		map.insert("greenland", Position::new(-5000.0, -7000.0));
 
 		map
 	};
