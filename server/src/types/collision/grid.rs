@@ -11,10 +11,10 @@ const BUCKETS_Y: u32 = 64;
 const NUM_BUCKETS: u32 = BUCKETS_X * BUCKETS_Y;
 const BOUND_X: f32 = 16384.0;
 const BOUND_Y: f32 = 8192.0;
-const BUCKET_X: f32 = (32768 / BUCKETS_X) as f32;
-const BUCKET_Y: f32 = (16384 / BUCKETS_Y) as f32;
-const INV_BX: f32 = 1.0 / BUCKET_X;
-const INV_BY: f32 = 1.0 / BUCKET_Y;
+const BUCKET_SIZE_X: f32 = 32768.0 / (BUCKETS_X - 1) as f32;
+const BUCKET_SIZE_Y: f32 = 16384.0 / (BUCKETS_Y - 1) as f32;
+const INV_BX: f32 = 1.0 / BUCKET_SIZE_X;
+const INV_BY: f32 = 1.0 / BUCKET_SIZE_Y;
 
 /// Efficient spatial-index for collision checking.
 ///
@@ -189,8 +189,8 @@ impl Grid {
 			// If this is larger than it needs to be, then the algorithm
 			// will be slower, but if it's too small then collisions that
 			// are supposed to be found will be missed
-			let rx = ((hc.rad.inner() + self.max_r + BUCKET_X) * INV_BX) as u32;
-			let ry = ((hc.rad.inner() + self.max_r + BUCKET_Y) * INV_BY) as u32;
+			let rx = ((hc.rad.inner() + self.max_r + BUCKET_SIZE_X) * INV_BX) as u32;
+			let ry = ((hc.rad.inner() + self.max_r + BUCKET_SIZE_Y) * INV_BY) as u32;
 			let range_x = (
 				if rx > b.0 { 0 } else { b.0 - rx },
 				(rx + b.0 + 1).min(BUCKETS_X - 1),
@@ -227,15 +227,15 @@ impl Grid {
 		// If this is larger than it needs to be, then the algorithm
 		// will be slower, but if it's too small then collisions that
 		// are supposed to be found will be missed
-		let rx = ((hc.rad.inner() + self.max_r + BUCKET_X) * INV_BX) as u32;
-		let ry = ((hc.rad.inner() + self.max_r + BUCKET_Y) * INV_BY) as u32;
+		let rx = ((hc.rad.inner() + self.max_r + BUCKET_SIZE_X) * INV_BX) as u32;
+		let ry = ((hc.rad.inner() + self.max_r + BUCKET_SIZE_Y) * INV_BY) as u32;
 		let range_x = (
 			if rx > b.0 { 0 } else { b.0 - rx },
-			(rx + b.0 + 1).min(BUCKETS_X),
+			(rx + b.0 + 1).min(BUCKETS_X - 1),
 		);
 		let range_y = (
 			if ry > b.1 { 0 } else { b.1 - ry },
-			(ry + b.1 + 1).min(BUCKETS_Y),
+			(ry + b.1 + 1).min(BUCKETS_Y - 1),
 		);
 
 		for y in range_y.0..range_y.1 {
@@ -259,15 +259,15 @@ impl Grid {
 		// If this is larger than it needs to be, then the algorithm
 		// will be slower, but if it's too small then collisions that
 		// are supposed to be found will be missed
-		let rx = ((hc.rad.inner() + self.max_r + BUCKET_X) * INV_BX) as u32;
-		let ry = ((hc.rad.inner() + self.max_r + BUCKET_Y) * INV_BY) as u32;
+		let rx = ((hc.rad.inner() + self.max_r + BUCKET_SIZE_X) * INV_BX) as u32;
+		let ry = ((hc.rad.inner() + self.max_r + BUCKET_SIZE_Y) * INV_BY) as u32;
 		let range_x = (
 			if rx > b.0 { 0 } else { b.0 - rx },
-			(rx + b.0 + 1).min(BUCKETS_X),
+			(rx + b.0 + 1).min(BUCKETS_X - 1),
 		);
 		let range_y = (
 			if ry > b.1 { 0 } else { b.1 - ry },
-			(ry + b.1 + 1).min(BUCKETS_Y),
+			(ry + b.1 + 1).min(BUCKETS_Y - 1),
 		);
 
 		let mut result = HashSet::default();
