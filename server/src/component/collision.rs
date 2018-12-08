@@ -12,7 +12,7 @@ pub struct PlaneGrid(pub Grid);
 pub struct MissileGrid(pub Grid);
 
 /// Precomputed grid containing *only* player locations.
-/// 
+///
 /// This is primarily targeted at visiblity operations.
 /// Otherwise you want [`PlaneGrid`].
 #[derive(Debug, Default)]

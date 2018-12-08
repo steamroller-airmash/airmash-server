@@ -117,8 +117,7 @@ fn get_real_ip(shake: &Handshake) -> WsResult<(IpAddr, Option<String>)> {
 	))
 }
 
-fn acceptor<A>(addr: A, channel: Sender<ConnectionEvent>, max_connections: usize
-) -> WsResult<()>
+fn acceptor<A>(addr: A, channel: Sender<ConnectionEvent>, max_connections: usize) -> WsResult<()>
 where
 	A: ToSocketAddrs,
 {
@@ -137,7 +136,7 @@ where
 			closed: false,
 		})
 		.and_then(move |ws| ws.listen(addr))
-		.map(|_|())
+		.map(|_| ())
 }
 
 pub(crate) fn spawn_acceptor<A>(
@@ -148,7 +147,5 @@ pub(crate) fn spawn_acceptor<A>(
 where
 	A: ToSocketAddrs + Send + 'static,
 {
-	thread::spawn(move || {
-		acceptor(addrs, channel, max_connections)
-	})
+	thread::spawn(move || acceptor(addrs, channel, max_connections))
 }

@@ -2,7 +2,7 @@ use std::net::ToSocketAddrs;
 use std::sync::mpsc::{channel, Sender};
 
 use dispatch::Builder;
-use specs::{World, Builder as SpecsBuilder};
+use specs::{Builder as SpecsBuilder, World};
 
 use component::event::TimerEvent;
 use types::event::ConnectionEvent;
@@ -17,7 +17,7 @@ where
 	/// listening on once it's running.
 	pub addr: T,
 	/// Specs world, this contains all components
-	/// and all resources available to systems 
+	/// and all resources available to systems
 	/// within the server.
 	pub world: World,
 	/// System builder, register all your systems
@@ -27,7 +27,7 @@ where
 	/// that the server will accept before dropping
 	/// further ones. This is a hard limit to the
 	/// number of players that can be on a server.
-	/// 
+	///
 	/// The default is 256.
 	pub max_connections: usize,
 
@@ -41,13 +41,13 @@ where
 {
 	/// Unless you know exactly what you're doing, you
 	/// probably want [`new`][0].
-	/// 
+	///
 	/// Creates a config without adding a game mode to it.
 	/// Note that there's a few engine systems that assume
 	/// a game mode is present, so unless you're overhauling
 	/// the entire engine it is necessary to add a game mode
 	/// before starting the server.
-	/// 
+	///
 	/// [0]: #fn.new
 	pub fn new_no_gamemode(addr: T) -> Self {
 		use systems::{PacketHandler, PollComplete, TimerHandler};
@@ -82,7 +82,8 @@ where
 
 			event: event_send,
 			timer: timer_send,
-		}.with_filler_entities()
+		}
+		.with_filler_entities()
 	}
 
 	/// Creates a new server config with an address to
@@ -114,7 +115,7 @@ where
 	/// However, due to how some channels are registered
 	/// here, it is a good idea to call this before
 	/// registering any of your own systems.
-	/// 
+	///
 	/// [0]: ::systems
 	pub fn with_engine(self) -> Self {
 		use systems;
@@ -130,7 +131,7 @@ where
 	/// # Note
 	/// This can also be used to add a game mode to a world
 	/// if the world was constructed using [`new_no_gamemode`][0].
-	/// 
+	///
 	/// [0]: #method.new_no_gamemode
 	pub fn with_gamemode<G>(mut self, gamemode: G) -> Self
 	where
@@ -164,7 +165,7 @@ where
 	/// Add some dummy entities so that there are no players
 	/// with id 0, 1, or 2. This means that game modes don't
 	/// have to consider some non-obvious edge cases.
-	/// 
+	///
 	/// The edge cases are as follows:
 	/// - Having players with ids 1 or 2 in FFA causes errors
 	///   in the client (at least in StarMash) and also leads
@@ -175,7 +176,7 @@ where
 	///   through walls.
 	/// - Having players with id 0 makes all other players
 	///   using StarMash imitate the player with id 0.
-	/// 
+	///
 	/// At the moment this method is private since there isn't
 	/// really a case where it's *absolutely* necessary to be
 	/// able to create entities with these ids. It may become

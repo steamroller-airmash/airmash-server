@@ -12,8 +12,8 @@ extern crate specs_derive;
 #[macro_use]
 extern crate shred_derive;
 extern crate clap;
-extern crate serde_json;
 extern crate sentry;
+extern crate serde_json;
 
 mod components;
 mod gamemode;
@@ -27,20 +27,19 @@ use gamemode::EmptyGameMode;
 use airmash_server::*;
 
 /// NOTE: Also initializes env_logger
-fn init_sentry() -> Option<sentry::internals::ClientInitGuard>{
-	if let Ok(dsn) = env::var("SENTRY_DSN") {
-		let guard = sentry::init(&*dsn);
+fn init_sentry() -> Option<sentry::internals::ClientInitGuard> {
+    if let Ok(dsn) = env::var("SENTRY_DSN") {
+        let guard = sentry::init(&*dsn);
 
-		sentry::integrations::env_logger::init(None, Default::default());
-		sentry::integrations::panic::register_panic_handler();
+        sentry::integrations::env_logger::init(None, Default::default());
+        sentry::integrations::panic::register_panic_handler();
 
-		Some(guard)
-	}
-	else {
-		env_logger::init();
+        Some(guard)
+    } else {
+        env_logger::init();
 
-		None
-	}
+        None
+    }
 }
 
 fn main() {

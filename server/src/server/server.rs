@@ -11,11 +11,11 @@ use component::time::{LastFrame, StartTime};
 
 const FRAME_WARN_MILLIS: u64 = 60;
 
-/// Airmash server instance. 
-/// 
+/// Airmash server instance.
+///
 /// Call [`run`][0] to run the server until
 /// shutdown.
-/// 
+///
 /// [0]: #fn.run
 pub struct AirmashServer<T>
 where

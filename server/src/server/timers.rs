@@ -1,9 +1,9 @@
 use std::sync::mpsc::Sender;
 use std::time::Duration;
 
+use super::timeloop::timeloop;
 use component::event::TimerEvent;
 use consts::timer::*;
-use super::timeloop::timeloop;
 
 use tokio;
 

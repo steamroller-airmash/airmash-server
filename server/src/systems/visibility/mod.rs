@@ -2,8 +2,8 @@
 //! each player.
 //!
 
-mod register;
 mod gen_player_grid;
+mod register;
 
 pub use self::gen_player_grid::GenPlayerGrid;
 

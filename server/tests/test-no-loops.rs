@@ -1,14 +1,9 @@
 extern crate airmash_server;
 extern crate specs;
 
-use specs::Entity;
-use airmash_server::{
-	AirmashServerConfig,
-	GameMode,
-	Team,
-	Position,
-};
 use airmash_server::protocol::GameType;
+use airmash_server::{AirmashServerConfig, GameMode, Position, Team};
+use specs::Entity;
 
 struct EmptyGameMode;
 
@@ -29,8 +24,7 @@ impl GameMode for EmptyGameMode {
 
 #[test]
 fn no_system_dependency_loops() {
-	let config = AirmashServerConfig::new("0.0.0.0:3501", EmptyGameMode)
-		.with_engine();
-	
+	let config = AirmashServerConfig::new("0.0.0.0:3501", EmptyGameMode).with_engine();
+
 	config.builder.build();
 }
