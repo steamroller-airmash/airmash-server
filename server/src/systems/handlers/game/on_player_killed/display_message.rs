@@ -20,10 +20,9 @@ pub struct DisplayMessage;
 
 #[derive(SystemData)]
 pub struct DisplayMessageData<'a> {
-	pub entities: Entities<'a>,
-	pub conns: Read<'a, Connections>,
-	pub timerevent: Write<'a, EventChannel<TimerEvent>>,
-	pub thisframe: Read<'a, ThisFrame>,
+	conns: Read<'a, Connections>,
+	timerevent: Write<'a, EventChannel<TimerEvent>>,
+	thisframe: Read<'a, ThisFrame>,
 }
 
 impl EventHandlerTypeProvider for DisplayMessage {
