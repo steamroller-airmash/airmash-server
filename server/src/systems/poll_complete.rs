@@ -5,7 +5,7 @@ use types::collision::HitCircle;
 use types::connection::{Message, MessageBody, MessageInfo};
 use types::*;
 
-use component::collision::PlaneGrid;
+use component::collision::PlayerGrid;
 
 use ws::CloseCode;
 
@@ -23,7 +23,7 @@ pub struct PollComplete {
 pub struct PollCompleteData<'a> {
 	conns: Read<'a, Connections>,
 	config: Read<'a, Config>,
-	grid: Read<'a, PlaneGrid>,
+	grid: Read<'a, PlayerGrid>,
 	entities: Entities<'a>,
 
 	associated: ReadStorage<'a, AssociatedConnection>,

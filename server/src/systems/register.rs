@@ -28,4 +28,6 @@ pub fn register<'a, 'b>(disp: Builder<'a, 'b>) -> Builder<'a, 'b> {
 		.with_registrar(admin::register)
 		// Powerups
 		.with_registrar(powerups::register)
+		// Visibility
+		.with_registrar(visibility::register)
 }
