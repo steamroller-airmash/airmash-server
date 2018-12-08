@@ -24,7 +24,6 @@ use std::fs::File;
 
 use gamemode::EmptyGameMode;
 
-use airmash_server::types::Config;
 use airmash_server::*;
 
 /// NOTE: Also initializes env_logger
