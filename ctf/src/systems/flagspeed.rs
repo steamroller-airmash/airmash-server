@@ -26,7 +26,10 @@ impl<'a> EventHandler<'a> for FlagSpeedSystem {
 	fn on_event(&mut self, evt: &FlagEvent, data: &mut Self::SystemData) {
 		let ref mut keystate = data.keystate;
 
-		let player = evt.player.unwrap();
+		let player = match evt.player {
+			Some(x) => x,
+			None => return,
+		};
 		let keystate = try_get!(player, mut keystate);
 
 		match evt.ty {
