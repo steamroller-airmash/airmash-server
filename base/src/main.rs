@@ -32,8 +32,7 @@ fn main() {
 
 	env_logger::init();
 
-	AirmashServer::new("0.0.0.0:3501")
-		.with_engine()
-		.with_gamemode(EmptyGameMode)
-		.run();
+	let config = AirmashServerConfig::new("0.0.0.0:3501", EmptyGameMode).with_engine();
+
+	AirmashServer::new(config).run().unwrap();
 }

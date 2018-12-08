@@ -41,13 +41,10 @@ pub extern crate airmash_protocol as protocol;
 pub mod utils;
 
 // Modules
-mod builder;
 mod dispatch;
 mod handlers;
 mod server;
 mod status;
-mod timeloop;
-mod timers;
 
 pub mod component;
 pub mod consts;
@@ -56,7 +53,7 @@ pub mod types;
 
 use protocol as airmash_protocol;
 
-pub use builder::AirmashServer;
+pub use server::{AirmashServer, AirmashServerConfig};
 
 pub use dispatch::{Builder, SystemDeps, SystemInfo};
 

@@ -38,11 +38,9 @@ fn main() {
     env::set_var("RUST_LOG", "info");
     env_logger::init();
 
-    let mut server = AirmashServer::new("0.0.0.0:3501")
-        .with_engine()
-        .with_gamemode(EmptyGameMode);
+    let mut config = AirmashServerConfig::new("0.0.0.0:3501", EmptyGameMode).with_engine();
 
-    server.builder = systems::register(server.builder);
+    config.builder = systems::register(config.builder);
 
     if let Some(path) = matches.value_of("config") {
         let file = match File::open(path) {
@@ -53,14 +51,14 @@ fn main() {
             }
         };
 
-        let config: Config = serde_json::from_reader(file).unwrap_or_else(|e| {
+        let serverconfig: Config = serde_json::from_reader(file).unwrap_or_else(|e| {
             error!("Unable to parse config file! Using default config.");
             error!("Config file error was: {}", e);
             Default::default()
         });
 
-        server.world.add_resource(config);
+        config.world.add_resource(serverconfig);
     }
 
-    server.run();
+    AirmashServer::new(config).run().unwrap();
 }

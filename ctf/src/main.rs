@@ -28,21 +28,20 @@ mod systems;
 use std::env;
 
 use gamemode::{CTFGameMode, BLUE_TEAM, RED_TEAM};
-use server::AirmashServer;
+use server::{AirmashServer, AirmashServerConfig};
 
 fn main() {
 	env::set_var("RUST_BACKTRACE", "1");
-	env::set_var("RUST_LOG", "airmash:packet-dump=debug,airmash_server=info");
+	env::set_var("RUST_LOG", "airmash_server=info");
 
 	env_logger::init();
 
-	let mut server = AirmashServer::new("0.0.0.0:3501")
+	let mut config = AirmashServerConfig::new("0.0.0.0:3501", CTFGameMode::new())
 		.with_engine()
-		.with_gamemode(CTFGameMode::new())
 		.with_alpha_warning();
 
-	server.builder = systems::register(&mut server.world, server.builder);
-	server.world.add_resource(shuffle::get_shuffle());
+	config.builder = systems::register(&mut config.world, config.builder);
+	config.world.add_resource(shuffle::get_shuffle());
 
-	server.run();
+	AirmashServer::new(config).run().unwrap();
 }

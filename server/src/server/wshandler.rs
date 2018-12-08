@@ -1,12 +1,9 @@
-//! Loop for accepting new connections
-//! and passing on all network packets
-
 use types::event::*;
 use types::*;
 
-use std::fmt::Debug;
 use std::net::{IpAddr, Ipv4Addr, ToSocketAddrs};
 use std::sync::mpsc::Sender;
+use std::thread::{self, JoinHandle};
 
 use status;
 
@@ -22,33 +19,19 @@ struct MessageHandler {
 	closed: bool,
 }
 
-fn get_real_ip(shake: &Handshake) -> WsResult<(IpAddr, Option<String>)> {
-	let default_ipaddr = IpAddr::V4(Ipv4Addr::new(0, 0, 0, 0));
-	let ref req = shake.request;
-
-	Ok((
-		shake
-			.remote_addr()?
-			.map(|x| x.parse().unwrap_or(default_ipaddr))
-			.unwrap_or(default_ipaddr),
-		req.origin()?.map(|x| x.to_owned()),
-	))
-}
-
 impl Handler for MessageHandler {
 	fn on_shutdown(&mut self) {
 		if self.closed {
 			return;
-		};
+		}
 
 		self.channel
 			.send(ConnectionEvent::ConnectionClose(ConnectionClose {
 				conn: self.id,
 			}))
 			.map_err(|e| error!(target: "server", "Channel send error: {}", e))
-			// Swallow error since if this errors
-			// we are most likely shutting down.
-			// The error will be logged anyway.
+			// Swallow error since the only option is to panic
+			// which isn't very useful. It's been logged anyway.
 			.err();
 	}
 
@@ -121,36 +104,51 @@ impl Handler for MessageHandler {
 	}
 }
 
-pub fn run_acceptor<A>(addr: A, channel: Sender<ConnectionEvent>)
-where
-	A: ToSocketAddrs + Debug,
-{
-	info!(
-		target: "server",
-		"starting server at {:?}",
-		addr
-	);
+fn get_real_ip(shake: &Handshake) -> WsResult<(IpAddr, Option<String>)> {
+	let default_ipaddr = IpAddr::V4(Ipv4Addr::new(0, 0, 0, 0));
+	let ref req = shake.request;
 
+	Ok((
+		shake
+			.remote_addr()?
+			.map(|x| x.parse().unwrap_or(default_ipaddr))
+			.unwrap_or(default_ipaddr),
+		req.origin()?.map(|x| x.to_owned()),
+	))
+}
+
+fn acceptor<A>(addr: A, channel: Sender<ConnectionEvent>, max_connections: usize
+) -> WsResult<()>
+where
+	A: ToSocketAddrs,
+{
 	let mut builder = Builder::new();
 	builder.with_settings(Settings {
-		max_connections: 512,
+		max_connections,
 		queue_size: 10,
 		..Default::default()
 	});
 
-	let result = builder
+	builder
 		.build(move |out| MessageHandler {
 			id: ConnectionId::new(),
 			channel: channel.clone(),
 			sender: out,
 			closed: false,
 		})
-		.and_then(move |ws| ws.listen(addr));
+		.and_then(move |ws| ws.listen(addr))
+		.map(|_|())
+}
 
-	if let Err(e) = result {
-		error!("Server failed with error {}", e);
-	// TODO: Maybe force shutdown here?
-	} else {
-		info!("WS server shutting down");
-	}
+pub(crate) fn spawn_acceptor<A>(
+	addrs: A,
+	channel: Sender<ConnectionEvent>,
+	max_connections: usize,
+) -> JoinHandle<WsResult<()>>
+where
+	A: ToSocketAddrs + Send + 'static,
+{
+	thread::spawn(move || {
+		acceptor(addrs, channel, max_connections)
+	})
 }

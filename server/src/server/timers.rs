@@ -3,7 +3,7 @@ use std::time::Duration;
 
 use component::event::TimerEvent;
 use consts::timer::*;
-use timeloop::timeloop;
+use super::timeloop::timeloop;
 
 use tokio;
 
@@ -20,6 +20,7 @@ pub fn start_timer_events(channel: Sender<TimerEvent>) {
 						..Default::default()
 					})
 					.unwrap();
+				true
 			},
 			Duration::from_secs(5),
 		)
@@ -37,6 +38,7 @@ pub fn start_timer_events(channel: Sender<TimerEvent>) {
 						..Default::default()
 					})
 					.unwrap();
+				true
 			},
 			Duration::from_secs(5),
 		)
