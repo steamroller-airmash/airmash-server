@@ -13,6 +13,7 @@ extern crate specs_derive;
 extern crate shred_derive;
 extern crate clap;
 extern crate serde_json;
+extern crate sentry;
 
 mod components;
 mod gamemode;
@@ -26,6 +27,23 @@ use gamemode::EmptyGameMode;
 use airmash_server::types::Config;
 use airmash_server::*;
 
+/// NOTE: Also initializes env_logger
+fn init_sentry() -> Option<sentry::internals::ClientInitGuard>{
+	if let Ok(dsn) = env::var("SENTRY_DSN") {
+		let guard = sentry::init(&*dsn);
+
+		sentry::integrations::env_logger::init(None, Default::default());
+		sentry::integrations::panic::register_panic_handler();
+
+		Some(guard)
+	}
+	else {
+		env_logger::init();
+
+		None
+	}
+}
+
 fn main() {
     let matches = clap::App::new("airmash-server-ffa")
         .version(env!("CARGO_PKG_VERSION"))
@@ -36,7 +54,7 @@ fn main() {
 
     env::set_var("RUST_BACKTRACE", "1");
     env::set_var("RUST_LOG", "info");
-    env_logger::init();
+    let _guard = init_sentry();
 
     let mut config = AirmashServerConfig::new("0.0.0.0:3501", EmptyGameMode).with_engine();
 

@@ -10,6 +10,7 @@ repository = 'https://github.com/steamroller-airmash/airmash-server'
 specs = "*"
 shrev = "*"
 shred = { version = "*", features= ["nightly"] }
+sentry = "*"
 fnv = "*"
 log = "*"
 rand = "0.4"
