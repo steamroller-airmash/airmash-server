@@ -1,4 +1,5 @@
 use std::net::IpAddr;
+use std::time::Instant;
 use types::ConnectionId;
 
 use ws::Sender as WsSender;
@@ -18,6 +19,7 @@ pub struct ConnectionClose {
 #[derive(Clone, Debug)]
 pub struct Message {
 	pub conn: ConnectionId,
+	pub received: Instant,
 	pub msg: Vec<u8>,
 }
 

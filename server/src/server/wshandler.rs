@@ -4,6 +4,7 @@ use types::*;
 use std::net::{IpAddr, Ipv4Addr, ToSocketAddrs};
 use std::sync::mpsc::Sender;
 use std::thread::{self, JoinHandle};
+use std::time::Instant;
 
 use status;
 
@@ -59,6 +60,7 @@ impl Handler for MessageHandler {
 			.send(ConnectionEvent::Message(Message {
 				conn: self.id,
 				msg: msg.into_data(),
+				received: Instant::now(),
 			}))
 			.map_err(|e| error!(target: "server", "Channel send error: {}", e))
 			// Swallow error since if this errors
