@@ -1,8 +1,6 @@
 use specs::*;
 use types::*;
 
-use std::time::Instant;
-
 use component::channel::{OnPong, OnPongReader};
 use component::counter::{PlayerPing, PlayersGame};
 
@@ -36,10 +34,8 @@ impl<'a> System<'a> for PongHandler {
 	}
 
 	fn run(&mut self, (mut data, mut pingdata): Self::SystemData) {
-		let now = Instant::now();
-
 		for evt in data.channel.read(self.reader.as_mut().unwrap()) {
-			let player = match data.conns.associated_player(evt.0) {
+			let player = match data.conns.associated_player(evt.conn) {
 				Some(p) => p,
 				None => continue,
 			};
@@ -47,7 +43,7 @@ impl<'a> System<'a> for PongHandler {
 			let ping = match pingdata
 				.get_mut(player)
 				.unwrap()
-				.receive_ping(evt.1.num, now)
+				.receive_ping(evt.data.num, evt.received)
 			{
 				Some(ping) => ping,
 				None => continue,
@@ -63,7 +59,7 @@ impl<'a> System<'a> for PongHandler {
 				.insert(player, PlayerPing(ping.as_millis() as u32))
 				.unwrap();
 
-			data.conns.send_to(evt.0, result);
+			data.conns.send_to(evt.conn, result);
 		}
 	}
 }

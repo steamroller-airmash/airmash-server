@@ -20,13 +20,13 @@ pub struct ResetScoreData<'a> {
 }
 
 impl EventHandlerTypeProvider for ResetScore {
-	type Event = GameStart;
+	type Event = GameStartEvent;
 }
 
 impl<'a> EventHandler<'a> for ResetScore {
 	type SystemData = ResetScoreData<'a>;
 
-	fn on_event(&mut self, _: &GameStart, data: &mut Self::SystemData) {
+	fn on_event(&mut self, _: &GameStartEvent, data: &mut Self::SystemData) {
 		*data.scores = GameScores {
 			blueteam: 0,
 			redteam: 0,

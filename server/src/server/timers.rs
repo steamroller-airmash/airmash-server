@@ -25,22 +25,4 @@ pub fn start_timer_events(channel: Sender<TimerEvent>) {
 			Duration::from_secs(5),
 		)
 	});
-
-	// 5s timer for ping packets
-	tokio::spawn({
-		let channel = channel.clone();
-		timeloop(
-			move |instant| {
-				channel
-					.send(TimerEvent {
-						ty: *PING_DISPATCH,
-						instant: instant,
-						..Default::default()
-					})
-					.unwrap();
-				true
-			},
-			Duration::from_secs(5),
-		)
-	});
 }

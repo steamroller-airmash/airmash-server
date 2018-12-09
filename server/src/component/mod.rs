@@ -1,5 +1,7 @@
 //! All new components should be added here
 
+mod packet_event;
+
 pub mod channel;
 pub mod collection;
 pub mod collision;

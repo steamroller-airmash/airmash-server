@@ -6,6 +6,7 @@ use specs::*;
 use std::any::Any;
 use std::mem;
 use std::sync::mpsc::{channel, Receiver};
+use std::time::Instant;
 
 use component::channel::*;
 use component::event::*;
@@ -44,7 +45,12 @@ impl PacketHandler {
 		Self { channel }
 	}
 
-	fn dispatch<'a>(data: &mut PacketHandlerData<'a>, id: ConnectionId, packet: ClientPacket) {
+	fn dispatch<'a>(
+		data: &mut PacketHandlerData<'a>,
+		id: ConnectionId,
+		packet: ClientPacket,
+		time: Instant,
+	) {
 		match packet {
 			ClientPacket::Pong(_) => (),
 			ClientPacket::Ack => (),
@@ -55,7 +61,7 @@ impl PacketHandler {
 			ClientPacket::Login(p) => data.login.single_write((id, p)),
 			ClientPacket::Backup(p) => data.backup.single_write((id, p)),
 			ClientPacket::Horizon(p) => data.horizon.single_write((id, p)),
-			ClientPacket::Pong(p) => data.pong.single_write((id, p)),
+			ClientPacket::Pong(p) => data.pong.single_write(PongEvent::new(id, p, time)),
 			ClientPacket::Key(p) => data.key.single_write((id, p)),
 			ClientPacket::Command(p) => data.command.single_write((id, p)),
 			ClientPacket::Chat(p) => data.chat.single_write((id, p)),
@@ -93,7 +99,7 @@ impl<'a> System<'a> for PacketHandler {
 				}
 				ConnectionEvent::Message(msg) => {
 					match protocol.deserialize(&msg.msg) {
-						Ok(packet) => Self::dispatch(&mut sysdata, msg.conn, packet),
+						Ok(packet) => Self::dispatch(&mut sysdata, msg.conn, packet, msg.received),
 						Err(_) => sysdata.onbinary.single_write((msg.conn, msg.msg.clone())),
 					}
 

@@ -10,13 +10,15 @@ pub use types::event::{ConnectionClose, ConnectionOpen, Message};
 use types::*;
 pub use utils::timer::TimerEventType;
 
+pub use super::packet_event::PacketEvent;
+
 pub type BinaryEvent = (ConnectionId, Vec<u8>);
 pub type LoginEvent = (ConnectionId, Login);
 pub type BackupEvent = (ConnectionId, Backup);
 pub type CommandEvent = (ConnectionId, Command);
 pub type HorizonEvent = (ConnectionId, Horizon);
 pub type KeyEvent = (ConnectionId, Key);
-pub type PongEvent = (ConnectionId, Pong);
+pub type PongEvent = PacketEvent<Pong>;
 pub type ChatEvent = (ConnectionId, Chat);
 pub type SayEvent = (ConnectionId, Say);
 pub type TeamChatEvent = (ConnectionId, TeamChat);
