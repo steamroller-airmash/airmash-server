@@ -41,9 +41,16 @@ where
 		let now = _now;
 
 		world.add_resource(ThisFrame(now));
+
+		// A quick note on ordering here, world.maintain is called
+		// before running thread local systems since ping packets
+		// are setup during world.maintain. If this becomes a problem
+		// then it'll be necessary to either redesign something or
+		// to pull PollComplete and run it separately.
 		dispatcher.dispatch_seq(&mut world.res);
-		dispatcher.dispatch_thread_local(&mut world.res);
 		world.maintain();
+		dispatcher.dispatch_thread_local(&mut world.res);
+
 		world.add_resource(LastFrame(now));
 
 		let duration = Instant::now() - now;
