@@ -8,6 +8,7 @@ use server::types::systemdata::IsAlive;
 use server::utils::*;
 use server::*;
 
+use component::*;
 use systems::timer::GameStart;
 
 use super::RespawnAllUnspec;
@@ -27,13 +28,13 @@ pub struct RespawnAllData<'a> {
 }
 
 impl EventHandlerTypeProvider for RespawnAll {
-	type Event = GameStart;
+	type Event = GameStartEvent;
 }
 
 impl<'a> EventHandler<'a> for RespawnAll {
 	type SystemData = RespawnAllData<'a>;
 
-	fn on_event(&mut self, _: &GameStart, data: &mut Self::SystemData) {
+	fn on_event(&mut self, _: &GameStartEvent, data: &mut Self::SystemData) {
 		use self::PlayerRespawnPrevStatus::*;
 
 		let players = (&*data.entities, data.is_player.mask())

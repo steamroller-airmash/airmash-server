@@ -4,6 +4,7 @@ use server::component::flag::*;
 use server::utils::*;
 use server::*;
 
+use component::*;
 use systems::timer::GameStart;
 
 /// Drops all players out of spec on
@@ -27,13 +28,13 @@ pub struct RespawnAllUnspecData<'a> {
 }
 
 impl EventHandlerTypeProvider for RespawnAllUnspec {
-	type Event = GameStart;
+	type Event = GameStartEvent;
 }
 
 impl<'a> EventHandler<'a> for RespawnAllUnspec {
 	type SystemData = RespawnAllUnspecData<'a>;
 
-	fn on_event(&mut self, _: &GameStart, data: &mut Self::SystemData) {
+	fn on_event(&mut self, _: &GameStartEvent, data: &mut Self::SystemData) {
 		let ref mut is_spec = data.is_spec;
 
 		(&*data.entities, data.is_player.mask())
