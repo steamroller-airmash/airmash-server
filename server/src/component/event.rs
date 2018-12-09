@@ -10,6 +10,13 @@ pub use types::event::{ConnectionClose, ConnectionOpen, Message};
 use types::*;
 pub use utils::timer::TimerEventType;
 
+#[derive(Copy, Clone, Debug)]
+pub struct PacketEvent<T> {
+	pub data: T,
+	pub received: Instant,
+	pub conn: ConnectionId
+}
+
 pub type BinaryEvent = (ConnectionId, Vec<u8>);
 pub type LoginEvent = (ConnectionId, Login);
 pub type BackupEvent = (ConnectionId, Backup);
