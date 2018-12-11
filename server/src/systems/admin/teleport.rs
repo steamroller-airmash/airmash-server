@@ -138,6 +138,8 @@ lazy_static! {
 		// The exact origin of how this name was
 		// determined is shrouded in mystery.
 		map.insert("mt-detect", Position::new(3550.0, -850.0));
+		map.insert("red-spawn", Position::new(8600.0, -960.0));
+		map.insert("blue-spawn", Position::new(-9670.0, -1470.0));
 
 		map
 	};
