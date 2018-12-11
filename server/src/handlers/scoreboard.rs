@@ -122,9 +122,10 @@ impl<'a> System<'a> for ScoreBoardTimerHandler {
 
 use dispatch::SystemInfo;
 use systems::TimerHandler;
+use systems::handlers::game::on_join::SendLogin;
 
 impl SystemInfo for ScoreBoardTimerHandler {
-	type Dependencies = (TimerHandler);
+	type Dependencies = (TimerHandler, SendLogin);
 
 	fn new() -> Self {
 		Self::default()
