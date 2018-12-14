@@ -61,41 +61,24 @@ macro_rules! register_reader {
 impl TrackVisible {
 	/// Get rid of the entries for the players that
 	/// have just left the game.
-	/// TODO: Figure out if returning which entities
-	///       were removed is actually useful here
-	fn remove_players_left<'a>(&mut self, data: &TrackVisibleData<'a>) -> Vec<Entity> {
-		let mut result = vec![];
-
+	fn remove_players_left<'a>(&mut self, data: &TrackVisibleData<'a>) {
 		for evt in data.player_leave.read(&mut *self.player_leave) {
 			self.visible.remove(&evt.0);
 
 			for set in self.visible.values_mut() {
-				let removed = set.remove(&VisibleEntry {
+				set.remove(&VisibleEntry {
 					ty: EntityType::Player,
 					ent: evt.0,
 				});
-
-				if removed {
-					result.push(evt.0);
-				}
 			}
 		}
-
-		result
 	}
 
 	/// Add entries for players that just joined.
-	/// TODO: If returning the entities that joined
-	///       is not useful, then it should be removed
-	fn add_players_join<'a>(&mut self, data: &TrackVisibleData<'a>) -> Vec<Entity> {
-		let mut result = vec![];
-
+	fn add_players_join<'a>(&mut self, data: &TrackVisibleData<'a>) {
 		for evt in data.player_join.read(&mut *self.player_join) {
 			self.visible.insert(evt.id, HashSet::default());
-			result.push(evt.id);
 		}
-
-		result
 	}
 
 	/// Add entries for missiles which have just been
