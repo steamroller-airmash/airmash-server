@@ -2,6 +2,7 @@ use hashbrown::{HashMap, HashSet};
 use shrev::*;
 use specs::*;
 
+use component::channel::*;
 use component::collision::*;
 use component::event::*;
 use component::flag::*;
@@ -27,6 +28,7 @@ pub struct TrackVisible {
 	player_leave: MaybeInit<ReaderId<PlayerLeave>>,
 	player_fire: MaybeInit<ReaderId<MissileFire>>,
 	player_despawn: MaybeInit<ReaderId<PlayerDespawn>>,
+	player_respawn: MaybeInit<ReaderId<PlayerRespawn>>,
 }
 
 #[derive(SystemData)]
@@ -40,13 +42,15 @@ pub struct TrackVisibleData<'a> {
 
 	// Various event channels that will introduce/remove
 	// visible players (the client already knows about these)
-	player_join: Read<'a, EventChannel<PlayerJoin>>,
-	player_leave: Read<'a, EventChannel<PlayerLeave>>,
-	player_fire: Read<'a, EventChannel<MissileFire>>,
-	player_despawn: Read<'a, EventChannel<PlayerDespawn>>,
 	// TODO: Add upgrades
-	leave_horizon: Write<'a, EventChannel<LeaveHorizon>>,
-	enter_horizon: Write<'a, EventChannel<EnterHorizon>>,
+	player_join: Read<'a, OnPlayerJoin>,
+	player_leave: Read<'a, OnPlayerLeave>,
+	player_fire: Read<'a, OnMissileFire>,
+	player_despawn: Read<'a, OnPlayerDespawn>,
+	player_respawn: Read<'a, OnPlayerRespawn>,
+
+	leave_horizon: Write<'a, OnLeaveHorizon>,
+	enter_horizon: Write<'a, OnEnterHorizon>,
 
 	pos: ReadStorage<'a, Position>,
 	is_player: ReadStorage<'a, IsPlayer>,
@@ -114,10 +118,35 @@ impl TrackVisible {
 	/// Remove player who have despawned (for various reasons).
 	fn remove_players_despawned<'a>(&mut self, data: &TrackVisibleData<'a>) {
 		for evt in data.player_despawn.read(&mut *self.player_despawn) {
-			self.visible.remove(&evt.player);
-
+			// Only remove their IDs from the visible lists
+			// of other players
 			for set in self.visible.values_mut() {
 				set.remove(&VisibleEntry {
+					ent: evt.player,
+					ty: EntityType::Player,
+				});
+			}
+		}
+	}
+
+	fn add_players_respawned<'a>(&mut self, data: &TrackVisibleData<'a>) {
+		for evt in data.player_respawn.read(&mut *self.player_respawn) {
+			let pos = match log_none!(evt.player, data.pos) {
+				Some(x) => *x,
+				None => continue,
+			};
+
+			let viewed = data.players.0.rough_collide(HitCircle {
+				pos: pos,
+				rad: data.config.view_radius.into(),
+				ent: evt.player,
+				layer: 0,
+			});
+
+			for ent in viewed {
+				let set = self.visible.get_mut(&ent).unwrap();
+
+				set.insert(VisibleEntry {
 					ent: evt.player,
 					ty: EntityType::Player,
 				});
@@ -210,12 +239,15 @@ impl<'a> System<'a> for TrackVisible {
 		self.player_leave = register_reader!(res, PlayerLeave);
 		self.player_fire = register_reader!(res, MissileFire);
 		self.player_despawn = register_reader!(res, PlayerDespawn);
+		self.player_respawn = register_reader!(res, PlayerRespawn);
 	}
 
 	fn run(&mut self, mut data: Self::SystemData) {
 		// TODO: Deal with upgrades
+		// Note: Adds before removes
 		self.add_players_join(&data);
 		self.add_fired_missiles(&data);
+		self.add_players_respawned(&data);
 		self.remove_players_despawned(&data);
 		self.remove_players_left(&data);
 
@@ -230,6 +262,7 @@ impl SystemInfo for TrackVisible {
 		systems::handlers::game::on_player_despawn::KnownEventSources,
 		systems::handlers::game::on_leave::KnownEventSources,
 		systems::handlers::game::on_missile_fire::KnownEventSources,
+		systems::handlers::game::on_player_respawn::KnownEventSources,
 	);
 
 	fn name() -> &'static str {
