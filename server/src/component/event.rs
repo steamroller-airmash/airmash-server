@@ -187,6 +187,45 @@ pub struct PlayerDespawn {
 	pub pos: Position,
 }
 
+#[derive(Copy, Clone, Debug)]
+pub enum MissileDespawnType {
+	HitPlayer,
+	HitTerrain,
+	LifetimeEnded,
+}
+
+#[derive(Copy, Clone, Debug)]
+pub struct MissileDespawn {
+	pub missile: Entity,
+	pub ty: MissileDespawnType,
+	pub pos: Position,
+}
+
+#[derive(Copy, Clone, Debug, Eq, Hash, PartialEq)]
+pub enum EntityType {
+	Player,
+	Missile,
+	Upgrade,
+}
+
+#[derive(Copy, Clone, Debug)]
+pub struct LeaveHorizon {
+	/// The player who previously had the other entity
+	/// within their horizon.
+	pub player: Entity,
+	/// The entity that is now outside the horizon
+	/// of `player`.
+	pub left: Entity,
+	pub left_ty: EntityType,
+}
+
+#[derive(Copy, Clone, Debug)]
+pub struct EnterHorizon {
+	pub player: Entity,
+	pub entered: Entity,
+	pub entered_ty: EntityType,
+}
+
 impl Default for TimerEvent {
 	fn default() -> Self {
 		use consts::timer::INVALID;

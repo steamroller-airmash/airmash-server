@@ -121,8 +121,8 @@ impl<'a> System<'a> for ScoreBoardTimerHandler {
 }
 
 use dispatch::SystemInfo;
-use systems::TimerHandler;
 use systems::handlers::game::on_join::SendLogin;
+use systems::TimerHandler;
 
 impl SystemInfo for ScoreBoardTimerHandler {
 	type Dependencies = (TimerHandler, SendLogin);
