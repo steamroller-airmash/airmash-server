@@ -3,7 +3,7 @@ use specs::*;
 use component::*;
 
 use server::component::event::*;
-use server::systems::handlers::game::on_despawn::KnownEventSources;
+use server::systems::handlers::game::on_player_despawn::KnownEventSources;
 use server::utils::{EventHandler, EventHandlerTypeProvider};
 use server::*;
 

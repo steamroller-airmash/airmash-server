@@ -3,6 +3,7 @@ use specs::*;
 use types::collision::Collision;
 use types::*;
 
+use component::channel::OnMissileDespawn;
 use component::event::*;
 use component::flag::IsMissile;
 use component::reference::PlayerRef;
@@ -23,6 +24,7 @@ pub struct MissileExplodeSystemData<'a> {
 
 	types: ReadStorage<'a, Mob>,
 	pos: ReadStorage<'a, Position>,
+	channel: Write<'a, OnMissileDespawn>,
 }
 
 impl EventHandlerTypeProvider for MissileExplodeSystem {
@@ -69,6 +71,12 @@ impl<'a> EventHandler<'a> for MissileExplodeSystem {
 		};
 
 		data.conns.send_to_visible(pos, packet);
+
+		data.channel.single_write(MissileDespawn {
+			missile: missile_ent,
+			pos,
+			ty: MissileDespawnType::HitTerrain,
+		});
 	}
 }
 

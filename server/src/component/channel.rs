@@ -43,6 +43,9 @@ pub type OnPlayerHit = EventChannel<PlayerHit>;
 pub type OnPowerupExpired = EventChannel<PowerupExpired>;
 pub type OnPlayerPowerup = EventChannel<PlayerPowerup>;
 pub type OnPlayerDespawn = EventChannel<PlayerDespawn>;
+pub type OnMissileDespawn = EventChannel<MissileDespawn>;
+pub type OnLeaveHorizon = EventChannel<LeaveHorizon>;
+pub type OnEnterHorizon = EventChannel<EnterHorizon>;
 
 // Upgrade Events
 pub type OnUpgradeSpawn = EventChannel<UpgradeSpawnEvent>;

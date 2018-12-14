@@ -3,10 +3,11 @@
 mod register;
 
 pub mod on_chat_throttled;
-pub mod on_despawn;
 pub mod on_join;
 pub mod on_leave;
+pub mod on_missile_despawn;
 pub mod on_missile_fire;
+pub mod on_player_despawn;
 pub mod on_player_hit;
 pub mod on_player_killed;
 pub mod on_player_powerup;

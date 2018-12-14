@@ -177,7 +177,15 @@ impl TrackVisible {
 				let missiles = Self::rough_collide(*pos, ent, &missiles.0, &*config);
 
 				let union: HashSet<_> = players.chain(missiles).collect();
-				let old = self.visible.get_mut(&ent).unwrap();
+
+				let old;
+				if self.visible.contains_key(&ent) {
+					old = self.visible.get_mut(&ent).unwrap();
+				} else {
+					error!("Visible was missing an entry for {:?}, creating one.", ent);
+					self.visible.insert(ent, HashSet::default());
+					old = self.visible.get_mut(&ent).unwrap();
+				}
 
 				{
 					let added = HashSet::difference(&old, &union);
@@ -235,7 +243,8 @@ impl<'a> System<'a> for TrackVisible {
 impl SystemInfo for TrackVisible {
 	type Dependencies = (
 		systems::handlers::game::on_join::AllJoinHandlers,
-		systems::handlers::game::on_despawn::KnownEventSources,
+		systems::handlers::game::on_missile_despawn::KnownEventSources,
+		systems::handlers::game::on_player_despawn::KnownEventSources,
 		systems::handlers::game::on_leave::KnownEventSources,
 		systems::handlers::game::on_missile_fire::KnownEventSources,
 	);
