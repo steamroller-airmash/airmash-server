@@ -42,10 +42,13 @@ impl<'a> System<'a> for GenMissileGrid {
 	}
 }
 
-use systems::PositionUpdate;
+use systems;
 
 impl SystemInfo for GenMissileGrid {
-	type Dependencies = PositionUpdate;
+	type Dependencies = (
+		systems::PositionUpdate,
+		systems::handlers::game::on_missile_despawn::KnownEventSources,
+	);
 
 	fn name() -> &'static str {
 		concat!(module_path!(), "::", line!())

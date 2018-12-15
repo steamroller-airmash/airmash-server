@@ -10,7 +10,7 @@ use consts::missile::ID_REUSE_TIME;
 use consts::timer::DELETE_ENTITY;
 use dispatch::SystemInfo;
 
-use airmash_protocol::server::MobDespawn;
+use protocol::server::MobDespawn;
 
 pub struct MissileCull;
 

@@ -4,6 +4,10 @@
 debug = true
 #lto = true
 
+[patch.crates-io]
+airmash-protocol = { git = "https://github.com/steamroller-airmash/airmash-protocol-rs" }
+airmash-protocol-v5 = { git = "https://github.com/steamroller-airmash/airmash-protocol-v5" }
+
 [workspace]
 members = [
 	"server",

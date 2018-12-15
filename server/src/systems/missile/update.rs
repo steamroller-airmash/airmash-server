@@ -32,7 +32,7 @@ impl<'a> System<'a> for MissileUpdate {
 		(&mut data.pos, &mut data.vel, &data.mob, &data.flag)
 			.join()
 			.for_each(move |(pos, vel, mob, _)| {
-				let info = config.mobs[*mob].missile.unwrap();
+				let ref info = config.mobs[*mob].missile.unwrap();
 
 				let accel = info.accel;
 				let speed = *vel;

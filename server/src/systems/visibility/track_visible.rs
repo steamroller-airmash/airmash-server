@@ -29,6 +29,7 @@ pub struct TrackVisible {
 	player_fire: MaybeInit<ReaderId<MissileFire>>,
 	player_despawn: MaybeInit<ReaderId<PlayerDespawn>>,
 	player_respawn: MaybeInit<ReaderId<PlayerRespawn>>,
+	missile_despawn: MaybeInit<ReaderId<MissileDespawn>>,
 }
 
 #[derive(SystemData)]
@@ -48,6 +49,7 @@ pub struct TrackVisibleData<'a> {
 	player_fire: Read<'a, OnMissileFire>,
 	player_despawn: Read<'a, OnPlayerDespawn>,
 	player_respawn: Read<'a, OnPlayerRespawn>,
+	missile_despawn: Read<'a, OnMissileDespawn>,
 
 	leave_horizon: Write<'a, OnLeaveHorizon>,
 	enter_horizon: Write<'a, OnEnterHorizon>,
@@ -154,11 +156,25 @@ impl TrackVisible {
 		}
 	}
 
+	fn remove_missiles_despawned<'a>(&mut self, data: &TrackVisibleData<'a>) {
+		for evt in data.missile_despawn.read(&mut *self.missile_despawn) {
+			// Only remove their IDs from the visible lists
+			// of other players
+			for set in self.visible.values_mut() {
+				set.remove(&VisibleEntry {
+					ent: evt.missile,
+					ty: EntityType::Missile,
+				});
+			}
+		}
+	}
+
 	fn rough_collide(
 		pos: Position,
 		ent: Entity,
 		grid: &Grid,
 		config: &Config,
+		ty: EntityType,
 	) -> impl Iterator<Item = VisibleEntry> {
 		grid.rough_collide(HitCircle {
 			pos: pos,
@@ -167,10 +183,7 @@ impl TrackVisible {
 			layer: 0,
 		})
 		.into_iter()
-		.map(|x| VisibleEntry {
-			ent: x,
-			ty: EntityType::Player,
-		})
+		.map(move |ent| VisibleEntry { ent, ty })
 	}
 
 	fn send_events<'a>(&mut self, data: &mut TrackVisibleData<'a>) {
@@ -185,8 +198,10 @@ impl TrackVisible {
 			.join()
 			.for_each(|(ent, pos, ..)| {
 				// TODO: Add support for upgrades
-				let players = Self::rough_collide(*pos, ent, &players.0, &*config);
-				let missiles = Self::rough_collide(*pos, ent, &missiles.0, &*config);
+				let players =
+					Self::rough_collide(*pos, ent, &players.0, &*config, EntityType::Player);
+				let missiles =
+					Self::rough_collide(*pos, ent, &missiles.0, &*config, EntityType::Missile);
 
 				let union: HashSet<_> = players.chain(missiles).collect();
 
@@ -200,8 +215,8 @@ impl TrackVisible {
 				}
 
 				{
-					let added = HashSet::difference(&old, &union);
-					let removed = HashSet::difference(&union, &old);
+					let removed: HashSet<_> = HashSet::difference(&old, &union).collect();
+					let added: HashSet<_> = HashSet::difference(&union, &old).collect();
 
 					for x in added {
 						let evt = EnterHorizon {
@@ -240,6 +255,7 @@ impl<'a> System<'a> for TrackVisible {
 		self.player_fire = register_reader!(res, MissileFire);
 		self.player_despawn = register_reader!(res, PlayerDespawn);
 		self.player_respawn = register_reader!(res, PlayerRespawn);
+		self.missile_despawn = register_reader!(res, MissileDespawn);
 
 		// These channels need higher limits due to the
 		// number of events going through them
@@ -254,9 +270,14 @@ impl<'a> System<'a> for TrackVisible {
 		self.add_fired_missiles(&data);
 		self.add_players_respawned(&data);
 		self.remove_players_despawned(&data);
-		self.remove_players_left(&data);
 
 		self.send_events(&mut data);
+
+		// These are actually removing entries for
+		// planes, so they should happen after the
+		// update.
+		self.remove_missiles_despawned(&data);
+		self.remove_players_left(&data);
 	}
 }
 
@@ -268,6 +289,8 @@ impl SystemInfo for TrackVisible {
 		systems::handlers::game::on_leave::KnownEventSources,
 		systems::handlers::game::on_missile_fire::KnownEventSources,
 		systems::handlers::game::on_player_respawn::KnownEventSources,
+		systems::collision::GenMissileGrid,
+		systems::collision::GenPlaneGrid,
 	);
 
 	fn name() -> &'static str {
