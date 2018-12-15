@@ -92,7 +92,7 @@ impl<'a> System<'a> for PickupFlagSystem {
 					} else {
 						// Comparing squared distances has the same
 						// properties as using the actual distance
-						Some((p_ent, dst - rad * rad))
+						Some((p_ent, rad * rad))
 					}
 				})
 				.min_by(|a, b| {

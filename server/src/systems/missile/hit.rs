@@ -4,8 +4,7 @@ use types::FutureDispatcher;
 use types::*;
 
 use component::channel::*;
-use component::event::PlayerHit;
-use component::event::TimerEvent;
+use component::event::*;
 use component::flag::*;
 use component::reference::PlayerRef;
 
@@ -26,6 +25,8 @@ pub struct MissileHitSystemData<'a> {
 	player_flag: ReadStorage<'a, IsPlayer>,
 	entities: Entities<'a>,
 	hitmarker: WriteStorage<'a, HitMarker>,
+
+	despawn: Write<'a, OnMissileDespawn>,
 }
 
 impl MissileHitSystem {
@@ -92,6 +93,12 @@ impl<'a> System<'a> for MissileHitSystem {
 			data.hit_channel.single_write(PlayerHit {
 				player: player.ent,
 				missile: missile.ent,
+			});
+
+			data.despawn.single_write(MissileDespawn {
+				missile: missile.ent,
+				pos: missile.pos,
+				ty: MissileDespawnType::HitPlayer,
 			});
 		}
 	}

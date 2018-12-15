@@ -2,7 +2,7 @@ use specs::*;
 
 use component::*;
 use server::component::event::PlayerStealth;
-use server::systems::handlers::game::on_despawn::KnownEventSources;
+use server::systems::handlers::game::on_player_despawn::KnownEventSources;
 use server::utils::event_handler::{EventHandler, EventHandlerTypeProvider};
 use server::*;
 
@@ -51,7 +51,11 @@ impl<'a> EventHandler<'a> for DropOnStealth {
 }
 
 impl SystemInfo for DropOnStealth {
-	type Dependencies = (KnownEventSources, super::PickupFlagSystem);
+	type Dependencies = (
+		// FIXME: I don't think this is necessary, need to investigate more
+		KnownEventSources,
+		super::PickupFlagSystem,
+	);
 
 	fn name() -> &'static str {
 		concat!(module_path!(), "::", line!())

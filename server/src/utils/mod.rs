@@ -11,3 +11,4 @@ pub mod maybe_init;
 pub mod timer;
 
 pub use self::event_handler::{EventHandler, EventHandlerTypeProvider};
+pub use self::maybe_init::MaybeInit;
