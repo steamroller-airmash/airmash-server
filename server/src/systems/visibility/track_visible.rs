@@ -240,6 +240,11 @@ impl<'a> System<'a> for TrackVisible {
 		self.player_fire = register_reader!(res, MissileFire);
 		self.player_despawn = register_reader!(res, PlayerDespawn);
 		self.player_respawn = register_reader!(res, PlayerRespawn);
+
+		// These channels need higher limits due to the
+		// number of events going through them
+		res.insert(OnEnterHorizon::with_capacity(1000));
+		res.insert(OnLeaveHorizon::with_capacity(1000));
 	}
 
 	fn run(&mut self, mut data: Self::SystemData) {
