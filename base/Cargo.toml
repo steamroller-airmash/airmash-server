@@ -13,3 +13,5 @@ specs = "*"
 airmash-server = { path='../server' }
 log = "*"
 env_logger = "*"
+clap = "*"
+serde_json = "*" 
