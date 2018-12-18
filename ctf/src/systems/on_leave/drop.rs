@@ -5,6 +5,7 @@ use server::component::event::*;
 use server::component::time::ThisFrame;
 use server::protocol::server::GameFlag;
 use server::protocol::FlagUpdateType;
+use server::types::systemdata::*;
 use server::utils::*;
 
 use component::*;
@@ -15,7 +16,7 @@ pub struct Drop;
 #[derive(SystemData)]
 pub struct DropData<'a> {
 	entities: Entities<'a>,
-	conns: Read<'a, Connections>,
+	conns: SendToAll<'a>,
 	pos: WriteStorage<'a, Position>,
 	is_flag: ReadStorage<'a, IsFlag>,
 	carrier: WriteStorage<'a, FlagCarrier>,
