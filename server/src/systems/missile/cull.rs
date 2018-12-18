@@ -65,10 +65,13 @@ impl<'a> System<'a> for MissileCull {
 					data: Some(Box::new(ent)),
 				});
 
-				conns.send_to_visible(pos, MobDespawn {
-					id: ent.into(),
-					ty: mob,
-				});
+				conns.send_to_visible(
+					pos,
+					MobDespawn {
+						id: ent.into(),
+						ty: mob,
+					},
+				);
 
 				channel.single_write(MissileDespawn {
 					missile: ent,

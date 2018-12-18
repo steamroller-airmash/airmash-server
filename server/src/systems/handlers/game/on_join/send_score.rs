@@ -4,10 +4,10 @@ use super::*;
 
 use SystemInfo;
 
-use types::systemdata::*;
-use types::*;
 use component::counter::*;
 use component::event::*;
+use types::systemdata::*;
+use types::*;
 use utils::{EventHandler, EventHandlerTypeProvider};
 
 use protocol::server::ScoreUpdate;
