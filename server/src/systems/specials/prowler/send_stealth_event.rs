@@ -6,8 +6,8 @@ use types::*;
 use systems::specials::prowler::SetStealth;
 use SystemInfo;
 
-use component::flag::ForcePlayerUpdate;
 use component::event::*;
+use component::flag::ForcePlayerUpdate;
 use utils::{EventHandler, EventHandlerTypeProvider};
 
 use protocol::server::EventStealth;

@@ -8,7 +8,7 @@ use std::net::IpAddr;
 use std::sync::mpsc::Sender;
 use std::sync::Mutex;
 
-use protocol::{ServerPacket, Protocol};
+use protocol::{Protocol, ServerPacket};
 use protocol_v5::ProtocolV5;
 
 use ws::{self, Sender as WsSender};
@@ -148,12 +148,12 @@ impl Connections {
 		self.send_to(*conn.unwrap().0, msg);
 	}
 
-	pub fn send_to<I>(&self, id: ConnectionId, msg: I) 
+	pub fn send_to<I>(&self, id: ConnectionId, msg: I)
 	where
-		I: Into<ServerPacket>
+		I: Into<ServerPacket>,
 	{
 		self.send_to_ref(id, &msg.into())
-	} 
+	}
 	pub fn send_to_ref(&self, id: ConnectionId, msg: &ServerPacket) {
 		// FIXME: Send errors back up to the caller
 		trace!(
@@ -180,7 +180,10 @@ impl Connections {
 		let serialized = match protocol.serialize_server(&msg) {
 			Ok(x) => x,
 			Err(e) => {
-				warn!("Serialization error while sending a packet:\n{}\nPacket data was:\n{:#?}", e, msg);
+				warn!(
+					"Serialization error while sending a packet:\n{}\nPacket data was:\n{:#?}",
+					e, msg
+				);
 				return;
 			}
 		};

@@ -6,7 +6,7 @@ pub fn register<'a, 'b>(builder: Builder<'a, 'b>) -> Builder<'a, 'b> {
 	builder
 		// Add handlers here
 		.with::<OnOpenHandler>()
-		.with::<OnCloseHandler>()
+		.with_handler::<OnCloseHandler>()
 		.with::<LoginHandler>()
 		.with::<KeyHandler>()
 		.with::<ChatHandler>()

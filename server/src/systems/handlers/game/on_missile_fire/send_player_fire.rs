@@ -3,8 +3,8 @@ use specs::*;
 use types::systemdata::*;
 use types::*;
 
-use SystemInfo;
 use component::event::*;
+use SystemInfo;
 
 use utils::{EventHandler, EventHandlerTypeProvider};
 

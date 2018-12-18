@@ -1,5 +1,6 @@
 use shrev::*;
 use specs::*;
+use types::systemdata::*;
 use types::*;
 
 use protocol::client::Chat;
@@ -15,7 +16,7 @@ pub struct ChatHandler {
 #[derive(SystemData)]
 pub struct ChatHandlerData<'a> {
 	channel: Read<'a, EventChannel<(ConnectionId, Chat)>>,
-	conns: Read<'a, Connections>,
+	conns: SendToAll<'a>,
 
 	throttled: ReadStorage<'a, IsChatThrottled>,
 	muted: ReadStorage<'a, IsChatMuted>,
@@ -41,7 +42,7 @@ impl<'a> System<'a> for ChatHandler {
 
 	fn run(&mut self, data: Self::SystemData) {
 		for evt in data.channel.read(self.reader.as_mut().unwrap()) {
-			let player = match data.conns.associated_player(evt.0) {
+			let player = match data.conns.conns.associated_player(evt.0) {
 				Some(player) => player,
 				None => continue,
 			};

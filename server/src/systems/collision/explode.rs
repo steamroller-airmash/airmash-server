@@ -1,8 +1,8 @@
 use specs::*;
 
 use types::collision::Collision;
-use types::*;
 use types::systemdata::*;
+use types::*;
 
 use component::channel::OnMissileDespawn;
 use component::event::*;

@@ -2,8 +2,8 @@ use specs::*;
 
 use component::event::PlayerRespawn as EvtPlayerRespawn;
 use component::flag::*;
-use types::*;
 use types::systemdata::SendToVisible;
+use types::*;
 use SystemInfo;
 
 use protocol::server::PlayerRespawn;
