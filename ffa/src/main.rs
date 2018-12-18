@@ -19,6 +19,9 @@ mod components;
 mod gamemode;
 mod systems;
 
+#[cfg(test)]
+mod tests;
+
 use std::env;
 use std::fs::File;
 
