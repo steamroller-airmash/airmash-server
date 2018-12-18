@@ -1,4 +1,6 @@
 use specs::*;
+
+use types::systemdata::*;
 use types::*;
 
 use component::channel::OnMissileDespawn;
@@ -20,7 +22,7 @@ pub struct MissileCullData<'a> {
 	missile_trajectory: ReadStorage<'a, MissileTrajectory>,
 	pos: ReadStorage<'a, Position>,
 	mob: ReadStorage<'a, Mob>,
-	conns: Read<'a, Connections>,
+	conns: SendToVisible<'a>,
 	lazy: Read<'a, LazyUpdate>,
 	dispatch: ReadExpect<'a, FutureDispatcher>,
 	channel: Write<'a, OnMissileDespawn>,
@@ -63,12 +65,10 @@ impl<'a> System<'a> for MissileCull {
 					data: Some(Box::new(ent)),
 				});
 
-				let packet = MobDespawn {
+				conns.send_to_visible(pos, MobDespawn {
 					id: ent.into(),
 					ty: mob,
-				};
-
-				conns.send_to_all(packet);
+				});
 
 				channel.single_write(MissileDespawn {
 					missile: ent,
