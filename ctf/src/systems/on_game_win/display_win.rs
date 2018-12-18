@@ -8,6 +8,7 @@ use systems::on_flag::CheckWin;
 use server::component::counter::PlayersGame;
 use server::protocol::server::ServerCustom;
 use server::protocol::ServerCustomType;
+use server::types::systemdata::*;
 use server::utils::*;
 
 #[derive(Default)]
@@ -15,7 +16,7 @@ pub struct DisplayWin;
 
 #[derive(SystemData)]
 pub struct DisplayWinData<'a> {
-	conns: Read<'a, Connections>,
+	conns: SendToAll<'a>,
 	players_game: Read<'a, PlayersGame>,
 }
 
