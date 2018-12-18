@@ -1,4 +1,6 @@
 use specs::*;
+
+use types::systemdata::*;
 use types::*;
 
 use std::convert::TryFrom;
@@ -29,7 +31,7 @@ pub struct RespawnData<'a> {
 	is_dead: WriteStorage<'a, IsDead>,
 	last_key: ReadStorage<'a, LastKeyTime>,
 
-	conns: Read<'a, Connections>,
+	conns: SendToAll<'a>,
 	channel: Write<'a, OnPlayerRespawn>,
 	this_frame: Read<'a, ThisFrame>,
 }
