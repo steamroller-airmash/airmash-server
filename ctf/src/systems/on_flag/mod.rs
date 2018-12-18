@@ -30,7 +30,7 @@ use systems;
 pub type KnownEventSources = (
 	systems::flag_event::ReturnFlag,
 	systems::flag_event::CaptureFlag,
-	// don't set this, it causes a dependenty loop
+	// don't set this, it causes a dependency loop
 	//systems::on_game_win::ResetFlags,
 	systems::PickupFlagSystem,
 	systems::DropOnDespawn,
