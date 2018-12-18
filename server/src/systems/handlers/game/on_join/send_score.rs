@@ -1,10 +1,11 @@
 use specs::*;
-use types::*;
 
 use super::*;
 
 use SystemInfo;
 
+use types::systemdata::*;
+use types::*;
 use component::counter::*;
 use component::event::*;
 use utils::{EventHandler, EventHandlerTypeProvider};
@@ -16,7 +17,7 @@ pub struct SendScoreUpdate;
 
 #[derive(SystemData)]
 pub struct SendScoreUpdateData<'a> {
-	conns: Read<'a, Connections>,
+	conns: SendToAll<'a>,
 
 	score: ReadStorage<'a, Score>,
 	earnings: ReadStorage<'a, Earnings>,
