@@ -1,9 +1,9 @@
-use consts::SHUTDOWN;
 use specs::*;
-use types::*;
 
+use consts::SHUTDOWN;
 use std::sync::atomic::Ordering;
 use std::time::{Duration, Instant};
+use types::systemdata::*;
 
 use protocol::server::ServerMessage;
 use protocol::ServerMessageType;
@@ -16,7 +16,7 @@ pub struct SignalHandler {
 }
 
 impl<'a> System<'a> for SignalHandler {
-	type SystemData = Read<'a, Connections>;
+	type SystemData = SendToAll<'a>;
 
 	fn run(&mut self, data: Self::SystemData) {
 		if SHUTDOWN.swap(false, Ordering::Relaxed) {
