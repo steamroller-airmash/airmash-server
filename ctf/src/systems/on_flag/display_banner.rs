@@ -8,6 +8,7 @@ use htmlescape;
 
 use server::protocol::server::ServerMessage;
 use server::protocol::ServerMessageType;
+use server::types::systemdata::*;
 use server::utils::*;
 
 #[derive(Default)]
@@ -15,7 +16,7 @@ pub struct PickupMessageSystem;
 
 #[derive(SystemData)]
 pub struct PickupMessageSystemData<'a> {
-	conns: Read<'a, Connections>,
+	conns: SendToAll<'a>,
 
 	names: ReadStorage<'a, Name>,
 	teams: ReadStorage<'a, Team>,
