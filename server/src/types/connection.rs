@@ -190,6 +190,7 @@ impl Connections {
 		}
 	}
 
+	#[deprecated]
 	pub fn send_to_all<I>(&self, msg: I)
 	where
 		I: Into<ServerPacket>,
@@ -244,6 +245,7 @@ impl Connections {
 			});
 	}
 
+	#[deprecated]
 	pub fn send_to_team<I>(&self, player: Entity, msg: I)
 	where
 		I: Into<ServerPacket>,

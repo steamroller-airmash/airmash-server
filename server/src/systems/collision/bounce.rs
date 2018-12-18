@@ -1,5 +1,6 @@
 use specs::*;
 use types::*;
+use types::systemdata::*;
 
 use component::event::*;
 use component::time::{StartTime, ThisFrame};
@@ -16,9 +17,10 @@ pub struct BounceSystemData<'a> {
 	vel: WriteStorage<'a, Velocity>,
 	pos: ReadStorage<'a, Position>,
 	rot: ReadStorage<'a, Rotation>,
+	team: ReadStorage<'a, Team>,
 	plane: ReadStorage<'a, Plane>,
 	keystate: ReadStorage<'a, KeyState>,
-	conns: Read<'a, Connections>,
+	conns: SendToTeamVisible<'a>,
 	thisframe: Read<'a, ThisFrame>,
 	starttime: Read<'a, StartTime>,
 }
@@ -72,11 +74,12 @@ impl<'a> EventHandler<'a> for BounceSystem {
 		};
 
 		if keystate.stealthed {
+			let team = *try_get!(ent, data.team);
 			// Stealthed prowlers should not have position
 			// updates sent to all visible players.
 			// This should really be something like
 			// send_to_team_visible
-			data.conns.send_to_team(ent, packet);
+			data.conns.send_to_team_visible(*pos, team, packet);
 		} else {
 			data.conns.send_to_visible(*pos, packet);
 		}

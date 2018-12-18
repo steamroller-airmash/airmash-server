@@ -39,6 +39,7 @@ pub struct PositionUpdateData<'a> {
 	pos: WriteStorage<'a, Position>,
 	rot: WriteStorage<'a, Rotation>,
 	vel: WriteStorage<'a, Velocity>,
+	team: ReadStorage<'a, Team>,
 	keystate: ReadStorage<'a, KeyState>,
 	upgrades: ReadStorage<'a, Upgrades>,
 	powerups: ReadStorage<'a, Powerups>,
@@ -49,7 +50,7 @@ pub struct PositionUpdateData<'a> {
 	lastframe: Read<'a, LastFrame>,
 	thisframe: Read<'a, ThisFrame>,
 	entities: Entities<'a>,
-	conns: Read<'a, Connections>,
+	conns: SendToTeamVisible<'a>,
 	is_alive: IsAlive<'a>,
 	clock: ReadClock<'a>,
 }
@@ -242,7 +243,8 @@ impl PositionUpdate {
 					if !keystate.stealthed {
 						data.conns.send_to_visible(packet.pos, packet);
 					} else {
-						data.conns.send_to_team(ent, packet);
+						let team = *try_get!(ent, data.team);
+						data.conns.send_to_team(team, packet);
 					}
 				},
 			)
@@ -303,7 +305,8 @@ impl PositionUpdate {
 					if !keystate.stealthed {
 						data.conns.send_to_visible(*pos, packet);
 					} else {
-						data.conns.send_to_team(ent, packet);
+						let team = *try_get!(ent, data.team);
+						data.conns.send_to_team(team, packet);
 					}
 				},
 			)
