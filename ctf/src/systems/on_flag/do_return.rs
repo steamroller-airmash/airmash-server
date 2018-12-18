@@ -7,6 +7,7 @@ use component::*;
 
 use server::protocol::server::GameFlag;
 use server::protocol::FlagUpdateType;
+use server::types::systemdata::*;
 
 use server::utils::{EventHandler, EventHandlerTypeProvider};
 
@@ -19,7 +20,7 @@ pub struct DoReturnData<'a> {
 	flags: ReadExpect<'a, Flags>,
 
 	scores: Read<'a, GameScores>,
-	conns: Read<'a, Connections>,
+	conns: SendToAll<'a>,
 	carriers: WriteStorage<'a, FlagCarrier>,
 }
 

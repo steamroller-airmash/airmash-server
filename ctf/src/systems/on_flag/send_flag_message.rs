@@ -4,6 +4,7 @@ use specs::*;
 use component::*;
 use server::protocol::server::GameFlag;
 use server::protocol::FlagUpdateType;
+use server::types::systemdata::*;
 use server::utils::*;
 
 use BLUE_TEAM;
@@ -14,7 +15,7 @@ pub struct SendFlagMessageSystem;
 
 #[derive(SystemData)]
 pub struct SendFlagMessageSystemData<'a> {
-	conns: Read<'a, Connections>,
+	conns: SendToAll<'a>,
 	scores: Write<'a, GameScores>,
 	flags: ReadExpect<'a, Flags>,
 
