@@ -3,9 +3,7 @@ use specs::*;
 use types::systemdata::*;
 use types::*;
 
-use dispatch::SystemInfo;
-
-use component::channel::*;
+use SystemInfo;
 use component::event::*;
 
 use utils::{EventHandler, EventHandlerTypeProvider};
@@ -17,17 +15,15 @@ pub struct SendPlayerFire;
 
 #[derive(SystemData)]
 pub struct SendPlayerFireData<'a> {
-	pub entities: Entities<'a>,
-	pub channel: Read<'a, OnMissileFire>,
-	pub conns: Read<'a, Connections>,
-	pub config: Read<'a, Config>,
-	pub clock: ReadClock<'a>,
+	conns: SendToVisible<'a>,
+	config: Read<'a, Config>,
+	clock: ReadClock<'a>,
 
-	pub mob: ReadStorage<'a, Mob>,
-	pub pos: ReadStorage<'a, Position>,
-	pub vel: ReadStorage<'a, Velocity>,
-	pub energy: ReadStorage<'a, Energy>,
-	pub energy_regen: ReadStorage<'a, EnergyRegen>,
+	mob: ReadStorage<'a, Mob>,
+	pos: ReadStorage<'a, Position>,
+	vel: ReadStorage<'a, Velocity>,
+	energy: ReadStorage<'a, Energy>,
+	energy_regen: ReadStorage<'a, EnergyRegen>,
 }
 
 impl EventHandlerTypeProvider for SendPlayerFire {
