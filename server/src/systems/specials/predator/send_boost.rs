@@ -23,7 +23,7 @@ pub struct SendEventBoost {
 #[derive(SystemData)]
 pub struct SendEventBoostData<'a> {
 	entities: Entities<'a>,
-	conns: Read<'a, Connections>,
+	conns: SendToVisible<'a>,
 
 	boosting: ReadStorage<'a, IsBoosting>,
 	pos: ReadStorage<'a, Position>,
