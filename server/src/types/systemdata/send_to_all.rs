@@ -22,6 +22,24 @@ impl<'a> SendToAll<'a> {
 		self.conns.send_to(conn, msg);
 	}
 
+	pub fn send_to_ref(&self, conn: ConnectionId, msg: &ServerPacket) {
+		self.conns.send_to_ref(conn, msg);
+	}
+
+	pub fn send_to_player<I>(&self, player: Entity, msg: I)
+	where
+		I: Into<ServerPacket>,
+	{
+		if let Some(conn) = self.associated.get(player) {
+			self.conns.send_to(conn.0, msg);
+		} else {
+			warn!(
+				"Tried to send message to player {:?} with no associated connection!",
+				player
+			);
+		}
+	}
+
 	pub fn send_to_all<I>(&self, msg: I)
 	where
 		I: Into<ServerPacket>,

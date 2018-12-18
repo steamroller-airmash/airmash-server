@@ -3,11 +3,11 @@ use specs::prelude::*;
 use component::collision::PlayerGrid;
 use protocol::ServerPacket;
 use types::collision::HitCircle;
-use types::{AssociatedConnection, Config, Connections, Position};
+use types::{AssociatedConnection, Config, ConnectionId, Position};
 
 #[derive(SystemData)]
 pub struct SendToVisible<'a> {
-	pub conns: Read<'a, Connections>,
+	pub conns: super::SendToAll<'a>,
 	pub config: Read<'a, Config>,
 	pub associated: ReadStorage<'a, AssociatedConnection>,
 	pub entities: Entities<'a>,
@@ -15,18 +15,26 @@ pub struct SendToVisible<'a> {
 }
 
 impl<'a> SendToVisible<'a> {
+	pub fn associated_player(&self, conn: ConnectionId) -> Option<Entity> {
+		self.conns.associated_player(conn)
+	}
+
+	pub fn send_to<I>(&self, conn: ConnectionId, msg: I)
+	where
+		I: Into<ServerPacket>,
+	{
+		self.conns.send_to(conn, msg);
+	}
+
+	pub fn send_to_ref(&self, conn: ConnectionId, msg: &ServerPacket) {
+		self.conns.send_to_ref(conn, msg);
+	}
+
 	pub fn send_to_player<I>(&self, player: Entity, msg: I)
 	where
 		I: Into<ServerPacket>,
 	{
-		if let Some(conn) = self.associated.get(player) {
-			self.conns.send_to(conn.0, msg);
-		} else {
-			warn!(
-				"Tried to send message to player {:?} with no associated connection!",
-				player
-			);
-		}
+		self.conns.send_to_player(player, msg)
 	}
 
 	pub fn send_to_visible<I>(&self, pos: Position, msg: I)
@@ -47,7 +55,7 @@ impl<'a> SendToVisible<'a> {
 			.into_iter()
 			.filter_map(|x| self.associated.get(x))
 			.for_each(|associated| {
-				self.conns.send_to_ref(associated.0, &msg);
+				self.send_to_ref(associated.0, &msg);
 			});
 	}
 }
