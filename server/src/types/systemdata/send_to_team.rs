@@ -1,17 +1,32 @@
 use specs::prelude::*;
 
 use protocol::ServerPacket;
-use types::{AssociatedConnection, Connections, Team};
+use types::{AssociatedConnection, ConnectionId, Team};
 
 #[derive(SystemData)]
 pub struct SendToTeam<'a> {
-	pub conns: Read<'a, Connections>,
+	pub conns: super::SendToAll<'a>,
 	pub associated: ReadStorage<'a, AssociatedConnection>,
 	pub entities: Entities<'a>,
 	pub team: ReadStorage<'a, Team>,
 }
 
 impl<'a> SendToTeam<'a> {
+	pub fn associated_player(&self, conn: ConnectionId) -> Option<Entity> {
+		self.conns.associated_player(conn)
+	}
+
+	pub fn send_to<I>(&self, conn: ConnectionId, msg: I)
+	where
+		I: Into<ServerPacket>,
+	{
+		self.conns.send_to(conn, msg);
+	}
+
+	pub fn send_to_ref(&self, conn: ConnectionId, msg: &ServerPacket) {
+		self.conns.send_to_ref(conn, msg);
+	}
+
 	pub fn send_to_player<I>(&self, player: Entity, msg: I)
 	where
 		I: Into<ServerPacket>,

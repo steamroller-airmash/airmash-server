@@ -1,4 +1,6 @@
 use specs::*;
+
+use types::systemdata::*;
 use types::*;
 
 use protocol::client::TeamChat;
@@ -14,10 +16,11 @@ pub struct TeamChatHandler;
 
 #[derive(SystemData)]
 pub struct TeamChatHandlerData<'a> {
-	conns: Read<'a, Connections>,
+	conns: SendToTeam<'a>,
 
 	throttled: ReadStorage<'a, IsChatThrottled>,
 	muted: ReadStorage<'a, IsChatMuted>,
+	team: ReadStorage<'a, Team>,
 }
 
 impl EventHandlerTypeProvider for TeamChatHandler {
@@ -46,8 +49,10 @@ impl<'a> EventHandler<'a> for TeamChatHandler {
 			return;
 		}
 
+		let team = *try_get!(player, data.team);
+
 		data.conns.send_to_team(
-			player,
+			team,
 			ChatTeam {
 				id: player.into(),
 				text: evt.1.text.clone(),
