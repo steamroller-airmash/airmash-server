@@ -51,7 +51,7 @@ fn main() {
         .get_matches();
 
     env::set_var("RUST_BACKTRACE", "1");
-    //env::set_var("RUST_LOG", "info");
+    env::set_var("RUST_LOG", "info");
     let _guard = init_sentry();
 
     let mut config = AirmashServerConfig::new("0.0.0.0:3501", EmptyGameMode).with_engine();

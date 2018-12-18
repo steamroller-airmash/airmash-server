@@ -51,7 +51,7 @@ fn init_sentry() -> Option<sentry::internals::ClientInitGuard> {
 
 fn main() {
 	env::set_var("RUST_BACKTRACE", "1");
-	//env::set_var("RUST_LOG", "airmash_server=info");
+	env::set_var("RUST_LOG", "airmash_server=info");
 
 	let matches = clap::App::new("airmash-server-ctf")
 		.version(env!("CARGO_PKG_VERSION"))
