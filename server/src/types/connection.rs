@@ -8,7 +8,8 @@ use std::net::IpAddr;
 use std::sync::mpsc::Sender;
 use std::sync::Mutex;
 
-use protocol::ServerPacket;
+use protocol::{ServerPacket, Protocol};
+use protocol_v5::ProtocolV5;
 
 use ws::{self, Sender as WsSender};
 
@@ -147,25 +148,46 @@ impl Connections {
 		self.send_to(*conn.unwrap().0, msg);
 	}
 
-	pub fn send_to<I>(&self, id: ConnectionId, msg: I)
+	pub fn send_to<I>(&self, id: ConnectionId, msg: I) 
 	where
-		I: Into<ServerPacket>,
+		I: Into<ServerPacket>
 	{
-		let msg = msg.into();
+		self.send_to_ref(id, &msg.into())
+	} 
+	pub fn send_to_ref(&self, id: ConnectionId, msg: &ServerPacket) {
+		// FIXME: Send errors back up to the caller
 		trace!(
 			target: "server",
 			"Sent message to {:?}: {:?}",
 			id, msg
 		);
 
-		self.lock
-			.lock()
-			.unwrap()
-			.send(Message {
-				info: MessageInfo::ToConnection(id),
-				msg: MessageBody::Packet(msg),
-			})
-			.unwrap();
+		let mut conn = match self.conns.get(&id).map(|ref x| x.sink.clone()) {
+			Some(conn) => conn,
+			None => {
+				// The connection probably closed, do nothing
+				trace!(
+					target: "server",
+					"Tried to send message to closed connection {:?}",
+					id
+				);
+				return;
+			}
+		};
+
+		let protocol = ProtocolV5 {};
+
+		let serialized = match protocol.serialize_server(&msg) {
+			Ok(x) => x,
+			Err(e) => {
+				warn!("Serialization error while sending a packet:\n{}\nPacket data was:\n{:#?}", e, msg);
+				return;
+			}
+		};
+
+		for data in serialized {
+			Self::send_sink(&mut conn, ws::Message::Binary(data));
+		}
 	}
 
 	pub fn send_to_all<I>(&self, msg: I)
@@ -236,6 +258,7 @@ impl Connections {
 			.unwrap();
 	}
 
+	#[deprecated]
 	pub fn send_to_visible<I>(&self, pos: Position, msg: I)
 	where
 		I: Into<ServerPacket>,
