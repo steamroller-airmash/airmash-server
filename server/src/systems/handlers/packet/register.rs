@@ -10,7 +10,7 @@ pub fn register<'a, 'b>(builder: Builder<'a, 'b>) -> Builder<'a, 'b> {
 		.with::<LoginHandler>()
 		.with::<KeyHandler>()
 		.with::<ChatHandler>()
-		.with::<SayHandler>()
+		.with_handler::<SayHandler>()
 		.with::<PongHandler>()
 		.with::<ScoreBoardTimerHandler>()
 		.with::<PingTimerHandler>()
