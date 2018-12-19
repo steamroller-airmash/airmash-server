@@ -192,7 +192,7 @@ impl PositionUpdate {
 		lastupdate: &mut WriteStorage<'a, LastUpdate>,
 	) {
 		let clock = data.clock.get();
-		let thisframe = data.clock.frame.0;
+		let thisframe = data.thisframe.0;
 
 		(
 			&*data.entities,
