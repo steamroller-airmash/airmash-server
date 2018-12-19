@@ -27,14 +27,14 @@ pub struct MissileFireInfo {
 
 #[derive(SystemData)]
 pub struct FireMissiles<'a> {
-	pub entities: Entities<'a>,
-	pub this_frame: Read<'a, ThisFrame>,
-	pub channel: Write<'a, OnMissileFire>,
-	pub config: Read<'a, Config>,
+	entities: Entities<'a>,
+	this_frame: Read<'a, ThisFrame>,
+	channel: Write<'a, OnMissileFire>,
+	config: Read<'a, Config>,
 
-	pub is_player: ReadStorage<'a, IsPlayer>,
-	pub is_alive: IsAlive<'a>,
-	pub upgrades: ReadStorage<'a, Upgrades>,
+	is_player: ReadStorage<'a, IsPlayer>,
+	is_alive: IsAlive<'a>,
+	upgrades: ReadStorage<'a, Upgrades>,
 
 	pub team: WriteStorage<'a, Team>,
 	pub pos: WriteStorage<'a, Position>,

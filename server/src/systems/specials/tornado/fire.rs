@@ -10,10 +10,14 @@ pub struct Fire;
 
 #[derive(SystemData)]
 pub struct FireData<'a> {
-	pub fire_missile: FireMissiles<'a>,
-	pub plane: ReadStorage<'a, Plane>,
-	pub keystate: ReadStorage<'a, KeyState>,
-	pub energy: WriteStorage<'a, Energy>,
+	plane: ReadStorage<'a, Plane>,
+	keystate: ReadStorage<'a, KeyState>,
+
+	energy: WriteStorage<'a, Energy>,
+
+	fire_missile: FireMissiles<'a>,
+	is_alive: IsAlive<'a>,
+	entities: Entities<'a>,
 }
 
 impl<'a> System<'a> for Fire {
@@ -21,11 +25,11 @@ impl<'a> System<'a> for Fire {
 
 	fn run(&mut self, mut data: Self::SystemData) {
 		let missiles = (
-			&*data.fire_missile.entities,
+			&*data.entities,
 			&data.keystate,
 			&mut data.energy,
 			&data.plane,
-			data.fire_missile.is_alive.mask(),
+			data.is_alive.mask(),
 		)
 			.join()
 			.filter(|(_, _, _, plane, ..)| **plane == Plane::Tornado)
