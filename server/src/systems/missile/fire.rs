@@ -14,7 +14,7 @@ pub struct MissileFireHandlerData<'a> {
 	lastshot: ReadStorage<'a, LastShotTime>,
 
 	energy: WriteStorage<'a, Energy>,
-	
+
 	config: Read<'a, Config>,
 	this_frame: Read<'a, ThisFrame>,
 	is_alive: IsAlive<'a>,

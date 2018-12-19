@@ -57,12 +57,12 @@ impl<'a> FireMissiles<'a> {
 			panic!("Entity firing a missile was not alive");
 		}
 
-		let rot = *self.rot.get(owner).unwrap();
-		let vel = *self.vel.get(owner).unwrap();
-		let pos = *self.pos.get(owner).unwrap();
-		let team = *self.team.get(owner).unwrap();
+		let rot = *try_get!(owner, self.rot);
+		let vel = *try_get!(owner, self.vel);
+		let pos = *try_get!(owner, self.pos);
+		let team = *try_get!(owner, self.team);
 		let upg_factor =
-			self.config.upgrades.missile.factor[self.upgrades.get(owner).unwrap().missile as usize];
+			self.config.upgrades.missile.factor[try_get!(owner, self.upgrades).missile as usize];
 		let speed = vel.length();
 		let spawn_time = MobSpawnTime(self.this_frame.0);
 
