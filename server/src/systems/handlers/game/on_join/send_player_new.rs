@@ -6,6 +6,7 @@ use SystemInfo;
 use component::event::*;
 use protocol::server::PlayerNew;
 use protocol::Upgrades as ProtocolUpgrades;
+use types::systemdata::*;
 use utils::{EventHandler, EventHandlerTypeProvider};
 
 /// Send a `PlayerNew` packet to all other players when
@@ -15,7 +16,7 @@ pub struct SendPlayerNew;
 
 #[derive(SystemData)]
 pub struct SendPlayerNewData<'a> {
-	conns: Read<'a, Connections>,
+	conns: SendToAll<'a>,
 
 	pos: ReadStorage<'a, Position>,
 	rot: ReadStorage<'a, Rotation>,
