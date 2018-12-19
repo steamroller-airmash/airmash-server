@@ -194,33 +194,6 @@ impl Connections {
 	}
 
 	#[deprecated]
-	pub fn send_to_all<I>(&self, msg: I)
-	where
-		I: Into<ServerPacket>,
-	{
-		let msg = msg.into();
-		self.conns
-			.iter()
-			.filter_map(|(id, ref conn)| {
-				if conn.player.is_some() {
-					if conn.ty == ConnectionType::Primary {
-						return Some(id);
-					}
-				}
-				None
-			})
-			.for_each(|id| {
-				self.lock
-					.lock()
-					.unwrap()
-					.send(Message {
-						info: MessageInfo::ToConnection(*id),
-						msg: MessageBody::Packet(msg.clone()),
-					})
-					.unwrap();
-			});
-	}
-
 	pub fn send_to_others<I>(&self, player: Entity, msg: I)
 	where
 		I: Into<ServerPacket>,
@@ -246,36 +219,6 @@ impl Connections {
 					})
 					.unwrap()
 			});
-	}
-
-	#[deprecated]
-	pub fn send_to_team<I>(&self, player: Entity, msg: I)
-	where
-		I: Into<ServerPacket>,
-	{
-		self.lock
-			.lock()
-			.unwrap()
-			.send(Message {
-				info: MessageInfo::ToTeam(player),
-				msg: MessageBody::Packet(msg.into()),
-			})
-			.unwrap();
-	}
-
-	#[deprecated]
-	pub fn send_to_visible<I>(&self, pos: Position, msg: I)
-	where
-		I: Into<ServerPacket>,
-	{
-		self.lock
-			.lock()
-			.unwrap()
-			.send(Message {
-				info: MessageInfo::ToVisible(pos),
-				msg: MessageBody::Packet(msg.into()),
-			})
-			.unwrap();
 	}
 
 	pub fn close(&self, conn: ConnectionId) {
