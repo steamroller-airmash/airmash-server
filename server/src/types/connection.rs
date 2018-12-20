@@ -55,7 +55,6 @@ pub struct Message {
 
 pub struct Connections {
 	pub conns: FnvHashMap<ConnectionId, ConnectionData>,
-	lock: Mutex<Sender<Message>>,
 }
 
 impl Default for Connections {
@@ -68,7 +67,7 @@ impl Connections {
 	pub fn new(channel: Sender<Message>) -> Self {
 		Connections {
 			conns: FnvHashMap::default(),
-			lock: Mutex::new(channel),
+			//lock: Mutex::new(channel),
 		}
 	}
 
@@ -193,43 +192,22 @@ impl Connections {
 		}
 	}
 
-	#[deprecated]
-	pub fn send_to_others<I>(&self, player: Entity, msg: I)
-	where
-		I: Into<ServerPacket>,
-	{
-		let msg = msg.into();
-		self.conns
-			.iter()
-			.filter_map(|(id, ref conn)| {
-				if let Some(ent) = conn.player {
-					if conn.ty == ConnectionType::Primary && ent != player {
-						return Some(id);
-					}
-				}
-				None
-			})
-			.for_each(|id| {
-				self.lock
-					.lock()
-					.unwrap()
-					.send(Message {
-						info: MessageInfo::ToConnection(*id),
-						msg: MessageBody::Packet(msg.clone()),
-					})
-					.unwrap()
-			});
-	}
+	pub fn close(&self, id: ConnectionId) {
+		use ws::CloseCode;
 
-	pub fn close(&self, conn: ConnectionId) {
-		self.lock
-			.lock()
-			.unwrap()
-			.send(Message {
-				info: MessageInfo::ToConnection(conn),
-				msg: MessageBody::Close,
-			})
-			.unwrap();
+		let conn = match self.conns.get(&id).map(|x| x.sink.clone()) {
+			Some(conn) => conn,
+			None => {
+				trace!(
+					target: "server",
+					"Tried to close an already closed connection: {:?}",
+					id
+				);
+				return;
+			}
+		};
+
+		conn.close(CloseCode::Normal).unwrap();
 	}
 
 	pub fn iter<'a>(&'a self) -> impl Iterator<Item = &'a ConnectionData> {
