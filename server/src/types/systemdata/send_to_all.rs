@@ -59,7 +59,7 @@ impl<'a> SendToAll<'a> {
 
 		(&*self.entities, &self.associated)
 			.join()
-			.filter(|(ent, _)| *ent == player)
+			.filter(|(ent, _)| *ent != player)
 			.for_each(|(_, assoc)| {
 				self.conns.send_to_ref(assoc.0, &msg);
 			});
