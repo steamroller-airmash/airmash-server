@@ -50,19 +50,17 @@ where
 	///
 	/// [0]: #fn.new
 	pub fn new_no_gamemode(addr: T) -> Self {
-		use systems::{PacketHandler, PollComplete, TimerHandler};
+		use systems::{PacketHandler, TimerHandler};
 		use types::{Connections, FutureDispatcher};
 
 		let (event_send, event_recv) = channel();
 		let (timer_send, timer_recv) = channel();
-		let (msg_send, msg_recv) = channel();
 
 		// Nothing in the engine will work without these 3 systems,
 		// so they need to be registered now.
 		let builder = Builder::new()
 			.with_args::<PacketHandler, _>(event_recv)
-			.with_args::<TimerHandler, _>(timer_recv)
-			.with_thread_local_args::<PollComplete, _>(msg_recv);
+			.with_args::<TimerHandler, _>(timer_recv);
 
 		let mut world = World::new();
 
@@ -71,7 +69,7 @@ where
 		// them here to avoid having an awkward system where it
 		// is necessary to pass Option<Sender<_>> all the way
 		// through the config struct.
-		world.add_resource(Connections::new(msg_send));
+		world.add_resource(Connections::new());
 		world.add_resource(FutureDispatcher::new(timer_send.clone()));
 
 		Self {

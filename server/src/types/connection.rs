@@ -64,10 +64,9 @@ impl Default for Connections {
 }
 
 impl Connections {
-	pub fn new(channel: Sender<Message>) -> Self {
+	pub fn new() -> Self {
 		Connections {
 			conns: FnvHashMap::default(),
-			//lock: Mutex::new(channel),
 		}
 	}
 
