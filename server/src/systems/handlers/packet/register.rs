@@ -6,13 +6,13 @@ pub fn register<'a, 'b>(builder: Builder<'a, 'b>) -> Builder<'a, 'b> {
 	builder
 		// Add handlers here
 		.with::<OnOpenHandler>()
-		.with::<OnCloseHandler>()
+		.with_handler::<OnCloseHandler>()
 		.with::<LoginHandler>()
 		.with::<KeyHandler>()
 		.with::<ChatHandler>()
-		.with::<SayHandler>()
+		.with_handler::<SayHandler>()
 		.with::<PongHandler>()
-		.with::<ScoreBoardTimerHandler>()
+		.with_handler::<ScoreBoardTimerHandler>()
 		.with::<PingTimerHandler>()
 		.with::<SignalHandler>()
 		.with::<WhisperHandler>()

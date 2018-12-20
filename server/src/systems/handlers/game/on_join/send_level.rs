@@ -6,6 +6,7 @@ use SystemInfo;
 use component::event::*;
 use protocol::server::PlayerLevel;
 use protocol::PlayerLevelType;
+use types::systemdata::SendToAll;
 use utils::{EventHandler, EventHandlerTypeProvider};
 
 #[derive(Default)]
@@ -13,7 +14,7 @@ pub struct SendPlayerLevel;
 
 #[derive(SystemData)]
 pub struct SendPlayerLevelData<'a> {
-	conns: Read<'a, Connections>,
+	conns: SendToAll<'a>,
 
 	level: ReadStorage<'a, Level>,
 }

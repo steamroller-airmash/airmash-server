@@ -5,6 +5,7 @@ use server::component::event::*;
 use server::component::time::ThisFrame;
 use server::protocol::server::GameFlag;
 use server::protocol::FlagUpdateType;
+use server::types::systemdata::SendToAll;
 use server::utils::*;
 
 use component::*;
@@ -14,7 +15,7 @@ pub struct DropSystem;
 
 #[derive(SystemData)]
 pub struct DropSystemData<'a> {
-	conns: Read<'a, Connections>,
+	conns: SendToAll<'a>,
 	thisframe: Read<'a, ThisFrame>,
 
 	entities: Entities<'a>,

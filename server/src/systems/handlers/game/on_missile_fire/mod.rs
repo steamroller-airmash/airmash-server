@@ -8,4 +8,7 @@ pub type AllFireHandlers = (SendPlayerFire, SetLastShot);
 
 use systems;
 
-pub type KnownEventSources = (systems::missile::MissileFireHandler);
+pub type KnownEventSources = (
+	systems::missile::MissileFireHandler,
+	systems::specials::tornado::Fire,
+);

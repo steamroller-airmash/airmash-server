@@ -1,4 +1,5 @@
 use specs::*;
+use types::systemdata::*;
 use types::*;
 
 use SystemInfo;
@@ -14,7 +15,7 @@ pub struct DespawnMissile;
 
 #[derive(SystemData)]
 pub struct DespawnMissileData<'a> {
-	conns: Read<'a, Connections>,
+	conns: SendToVisible<'a>,
 	is_dead: WriteStorage<'a, IsDead>,
 	mob: ReadStorage<'a, Mob>,
 }

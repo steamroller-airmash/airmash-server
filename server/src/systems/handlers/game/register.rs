@@ -39,6 +39,7 @@ pub fn register<'a, 'b>(builder: Builder<'a, 'b>) -> Builder<'a, 'b> {
 		.with::<on_leave::FreeName>()
 		.with::<on_leave::UpdatePlayersGame>()
 		.with_handler::<on_leave::CreateDespawnEvent>()
+		.with_handler::<on_leave::SendPlayerLeave>()
 		// On missile fire
 		.with_handler::<on_missile_fire::SendPlayerFire>()
 		.with_handler::<on_missile_fire::SetLastShot>()

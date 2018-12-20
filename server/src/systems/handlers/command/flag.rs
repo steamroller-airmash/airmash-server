@@ -1,9 +1,9 @@
 use specs::*;
-use types::*;
 
 use component::event::*;
 use protocol::server::PlayerFlag;
 use protocol::FlagCode;
+use types::systemdata::*;
 
 use systems::PacketHandler;
 use utils::{EventHandler, EventHandlerTypeProvider};
@@ -20,8 +20,8 @@ pub struct Flag;
 
 #[derive(SystemData)]
 pub struct FlagData<'a> {
-	pub conns: Read<'a, Connections>,
-	pub flags: WriteStorage<'a, FlagCode>,
+	conns: SendToAll<'a>,
+	flags: WriteStorage<'a, FlagCode>,
 }
 
 impl EventHandlerTypeProvider for Flag {

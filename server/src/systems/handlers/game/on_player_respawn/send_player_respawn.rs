@@ -2,6 +2,7 @@ use specs::*;
 
 use component::event::PlayerRespawn as EvtPlayerRespawn;
 use component::flag::*;
+use types::systemdata::SendToVisible;
 use types::*;
 use SystemInfo;
 
@@ -23,7 +24,7 @@ pub struct SendPlayerRespawn;
 #[derive(SystemData)]
 pub struct SendPlayerRespawnData<'a> {
 	entities: Entities<'a>,
-	conns: Read<'a, Connections>,
+	conns: SendToVisible<'a>,
 
 	is_spec: ReadStorage<'a, IsSpectating>,
 	pos: ReadStorage<'a, Position>,

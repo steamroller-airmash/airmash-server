@@ -1,14 +1,11 @@
-use types::ConnectionId;
-use types::Position;
-
 use fnv::FnvHashMap;
 use specs::Entity;
 
 use std::net::IpAddr;
-use std::sync::mpsc::Sender;
-use std::sync::Mutex;
 
-use protocol::ServerPacket;
+use protocol::{Protocol, ServerPacket};
+use protocol_v5::ProtocolV5;
+use types::ConnectionId;
 
 use ws::{self, Sender as WsSender};
 
@@ -33,41 +30,20 @@ pub enum ConnectionType {
 	Inactive,
 }
 
-#[derive(Debug)]
-pub enum MessageInfo {
-	ToConnection(ConnectionId),
-	ToTeam(Entity),
-	ToVisible(Position),
-}
-
-#[derive(Debug)]
-pub enum MessageBody {
-	Packet(ServerPacket),
-	Binary(Vec<u8>),
-	Close,
-}
-
-pub struct Message {
-	pub info: MessageInfo,
-	pub msg: MessageBody,
-}
-
 pub struct Connections {
 	pub conns: FnvHashMap<ConnectionId, ConnectionData>,
-	lock: Mutex<Sender<Message>>,
 }
 
 impl Default for Connections {
 	fn default() -> Self {
-		panic!("No default for connections");
+		Connections::new()
 	}
 }
 
 impl Connections {
-	pub fn new(channel: Sender<Message>) -> Self {
+	pub fn new() -> Self {
 		Connections {
 			conns: FnvHashMap::default(),
-			lock: Mutex::new(channel),
 		}
 	}
 
@@ -151,114 +127,63 @@ impl Connections {
 	where
 		I: Into<ServerPacket>,
 	{
-		let msg = msg.into();
+		self.send_to_ref(id, &msg.into())
+	}
+	pub fn send_to_ref(&self, id: ConnectionId, msg: &ServerPacket) {
+		// FIXME: Send errors back up to the caller
 		trace!(
 			target: "server",
 			"Sent message to {:?}: {:?}",
 			id, msg
 		);
 
-		self.lock
-			.lock()
-			.unwrap()
-			.send(Message {
-				info: MessageInfo::ToConnection(id),
-				msg: MessageBody::Packet(msg),
-			})
-			.unwrap();
+		let mut conn = match self.conns.get(&id).map(|ref x| x.sink.clone()) {
+			Some(conn) => conn,
+			None => {
+				// The connection probably closed, do nothing
+				trace!(
+					target: "server",
+					"Tried to send message to closed connection {:?}",
+					id
+				);
+				return;
+			}
+		};
+
+		let protocol = ProtocolV5 {};
+
+		let serialized = match protocol.serialize_server(&msg) {
+			Ok(x) => x,
+			Err(e) => {
+				warn!(
+					"Serialization error while sending a packet:\n{}\nPacket data was:\n{:#?}",
+					e, msg
+				);
+				return;
+			}
+		};
+
+		for data in serialized {
+			Self::send_sink(&mut conn, ws::Message::Binary(data));
+		}
 	}
 
-	pub fn send_to_all<I>(&self, msg: I)
-	where
-		I: Into<ServerPacket>,
-	{
-		let msg = msg.into();
-		self.conns
-			.iter()
-			.filter_map(|(id, ref conn)| {
-				if conn.player.is_some() {
-					if conn.ty == ConnectionType::Primary {
-						return Some(id);
-					}
-				}
-				None
-			})
-			.for_each(|id| {
-				self.lock
-					.lock()
-					.unwrap()
-					.send(Message {
-						info: MessageInfo::ToConnection(*id),
-						msg: MessageBody::Packet(msg.clone()),
-					})
-					.unwrap();
-			});
-	}
+	pub fn close(&self, id: ConnectionId) {
+		use ws::CloseCode;
 
-	pub fn send_to_others<I>(&self, player: Entity, msg: I)
-	where
-		I: Into<ServerPacket>,
-	{
-		let msg = msg.into();
-		self.conns
-			.iter()
-			.filter_map(|(id, ref conn)| {
-				if let Some(ent) = conn.player {
-					if conn.ty == ConnectionType::Primary && ent != player {
-						return Some(id);
-					}
-				}
-				None
-			})
-			.for_each(|id| {
-				self.lock
-					.lock()
-					.unwrap()
-					.send(Message {
-						info: MessageInfo::ToConnection(*id),
-						msg: MessageBody::Packet(msg.clone()),
-					})
-					.unwrap()
-			});
-	}
+		let conn = match self.conns.get(&id).map(|x| x.sink.clone()) {
+			Some(conn) => conn,
+			None => {
+				trace!(
+					target: "server",
+					"Tried to close an already closed connection: {:?}",
+					id
+				);
+				return;
+			}
+		};
 
-	pub fn send_to_team<I>(&self, player: Entity, msg: I)
-	where
-		I: Into<ServerPacket>,
-	{
-		self.lock
-			.lock()
-			.unwrap()
-			.send(Message {
-				info: MessageInfo::ToTeam(player),
-				msg: MessageBody::Packet(msg.into()),
-			})
-			.unwrap();
-	}
-
-	pub fn send_to_visible<I>(&self, pos: Position, msg: I)
-	where
-		I: Into<ServerPacket>,
-	{
-		self.lock
-			.lock()
-			.unwrap()
-			.send(Message {
-				info: MessageInfo::ToVisible(pos),
-				msg: MessageBody::Packet(msg.into()),
-			})
-			.unwrap();
-	}
-
-	pub fn close(&self, conn: ConnectionId) {
-		self.lock
-			.lock()
-			.unwrap()
-			.send(Message {
-				info: MessageInfo::ToConnection(conn),
-				msg: MessageBody::Close,
-			})
-			.unwrap();
+		conn.close(CloseCode::Normal).unwrap();
 	}
 
 	pub fn iter<'a>(&'a self) -> impl Iterator<Item = &'a ConnectionData> {

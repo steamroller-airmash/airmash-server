@@ -6,6 +6,7 @@ use config as ctfconfig;
 
 use server::component::counter::*;
 use server::protocol::server::ScoreUpdate;
+use server::types::systemdata::*;
 use server::types::*;
 use server::utils::*;
 
@@ -14,7 +15,7 @@ pub struct UpdateScore;
 
 #[derive(SystemData)]
 pub struct UpdateScoreData<'a> {
-	conns: Read<'a, Connections>,
+	conns: SendToAll<'a>,
 	players_game: Read<'a, PlayersGame>,
 
 	scores: WriteStorage<'a, Score>,

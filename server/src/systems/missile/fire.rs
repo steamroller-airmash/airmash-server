@@ -8,13 +8,17 @@ pub struct MissileFireHandler;
 
 #[derive(SystemData)]
 pub struct MissileFireHandlerData<'a> {
-	pub fire_missile: FireMissiles<'a>,
-	pub plane: ReadStorage<'a, Plane>,
-	pub keystate: ReadStorage<'a, KeyState>,
-	pub energy: WriteStorage<'a, Energy>,
-	pub config: Read<'a, Config>,
-	pub this_frame: Read<'a, ThisFrame>,
-	pub lastshot: ReadStorage<'a, LastShotTime>,
+	fire_missile: FireMissiles<'a>,
+	plane: ReadStorage<'a, Plane>,
+	keystate: ReadStorage<'a, KeyState>,
+	lastshot: ReadStorage<'a, LastShotTime>,
+
+	energy: WriteStorage<'a, Energy>,
+
+	config: Read<'a, Config>,
+	this_frame: Read<'a, ThisFrame>,
+	is_alive: IsAlive<'a>,
+	entities: Entities<'a>,
 }
 
 impl<'a> System<'a> for MissileFireHandler {
@@ -25,12 +29,12 @@ impl<'a> System<'a> for MissileFireHandler {
 		let config = data.config;
 
 		let missiles = (
-			&*data.fire_missile.entities,
+			&*data.entities,
 			&data.plane,
 			&data.keystate,
 			&mut data.energy,
 			&data.lastshot,
-			data.fire_missile.is_alive.mask(),
+			data.is_alive.mask(),
 		)
 			.join()
 			.filter(|(_, _, keystate, ..)| keystate.fire)

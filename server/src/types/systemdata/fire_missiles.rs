@@ -27,14 +27,14 @@ pub struct MissileFireInfo {
 
 #[derive(SystemData)]
 pub struct FireMissiles<'a> {
-	pub entities: Entities<'a>,
-	pub this_frame: Read<'a, ThisFrame>,
-	pub channel: Write<'a, OnMissileFire>,
-	pub config: Read<'a, Config>,
+	entities: Entities<'a>,
+	this_frame: Read<'a, ThisFrame>,
+	channel: Write<'a, OnMissileFire>,
+	config: Read<'a, Config>,
 
-	pub is_player: ReadStorage<'a, IsPlayer>,
-	pub is_alive: IsAlive<'a>,
-	pub upgrades: ReadStorage<'a, Upgrades>,
+	is_player: ReadStorage<'a, IsPlayer>,
+	is_alive: IsAlive<'a>,
+	upgrades: ReadStorage<'a, Upgrades>,
 
 	pub team: WriteStorage<'a, Team>,
 	pub pos: WriteStorage<'a, Position>,
@@ -57,12 +57,12 @@ impl<'a> FireMissiles<'a> {
 			panic!("Entity firing a missile was not alive");
 		}
 
-		let rot = *self.rot.get(owner).unwrap();
-		let vel = *self.vel.get(owner).unwrap();
-		let pos = *self.pos.get(owner).unwrap();
-		let team = *self.team.get(owner).unwrap();
+		let rot = *try_get!(owner, self.rot);
+		let vel = *try_get!(owner, self.vel);
+		let pos = *try_get!(owner, self.pos);
+		let team = *try_get!(owner, self.team);
 		let upg_factor =
-			self.config.upgrades.missile.factor[self.upgrades.get(owner).unwrap().missile as usize];
+			self.config.upgrades.missile.factor[try_get!(owner, self.upgrades).missile as usize];
 		let speed = vel.length();
 		let spawn_time = MobSpawnTime(self.this_frame.0);
 

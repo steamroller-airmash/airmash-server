@@ -5,7 +5,7 @@ use types::*;
 use component::flag::*;
 use protocol::client::Whisper;
 use protocol::server::{ChatWhisper, Error};
-use protocol::{ErrorType, ServerPacket};
+use protocol::ErrorType;
 
 use component::flag::IsPlayer;
 
@@ -81,9 +81,9 @@ impl<'a> System<'a> for WhisperHandler {
 				text: evt.1.text.clone(),
 			};
 
-			let packet = ServerPacket::ChatWhisper(chat);
+			let packet = chat.into();
 
-			data.conns.send_to(evt.0, packet.clone());
+			data.conns.send_to_ref(evt.0, &packet);
 
 			data.conns.send_to_player(to, packet);
 		}

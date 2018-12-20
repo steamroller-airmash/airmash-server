@@ -1,17 +1,23 @@
 use specs::*;
 
+use std::time::Instant;
+
+use component::time::StartTime;
 use types::ToClock;
 
-use component::time::{StartTime, ThisFrame};
-
+/// Get the number of clock ticks between
+/// the start of the game and now.
+///
+/// This component adapter reads [`StartTime`][0].
+///
+/// [0]: ::component::time::StartTime
 #[derive(SystemData)]
 pub struct ReadClock<'a> {
-	pub start: Read<'a, StartTime>,
-	pub frame: Read<'a, ThisFrame>,
+	start: Read<'a, StartTime>,
 }
 
 impl<'a> ReadClock<'a> {
 	pub fn get(&self) -> u32 {
-		(self.frame.0 - self.start.0).to_clock()
+		(Instant::now() - self.start.0).to_clock()
 	}
 }

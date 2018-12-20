@@ -7,6 +7,7 @@ use component::*;
 
 use server::protocol::server::GameFlag;
 use server::protocol::FlagUpdateType;
+use server::types::systemdata::*;
 
 #[derive(Default)]
 pub struct CaptureFlag;
@@ -21,7 +22,7 @@ pub struct CaptureFlagData<'a> {
 
 	scores: Read<'a, GameScores>,
 	channel: Write<'a, OnFlag>,
-	conns: Read<'a, Connections>,
+	conns: SendToAll<'a>,
 }
 
 impl<'a> System<'a> for CaptureFlag {

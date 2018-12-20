@@ -3,6 +3,7 @@ use specs::*;
 use server::component::counter::*;
 use server::component::event::*;
 use server::component::flag::*;
+use server::types::systemdata::*;
 use server::types::GameModeWriter;
 use server::utils::*;
 use server::*;
@@ -21,7 +22,7 @@ pub struct Shuffle;
 #[derive(SystemData)]
 pub struct ShuffleData<'a> {
 	shuffler: ReadExpect<'a, Box<ShuffleProvider + Sync + Send>>,
-	conns: Read<'a, Connections>,
+	conns: SendToAll<'a>,
 	entities: Entities<'a>,
 	gamemode: GameModeWriter<'a, CTFGameMode>,
 

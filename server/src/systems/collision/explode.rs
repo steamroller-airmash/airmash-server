@@ -1,6 +1,7 @@
 use specs::*;
 
 use types::collision::Collision;
+use types::systemdata::*;
 use types::*;
 
 use component::channel::OnMissileDespawn;
@@ -18,7 +19,7 @@ pub struct MissileExplodeSystem;
 
 #[derive(SystemData)]
 pub struct MissileExplodeSystemData<'a> {
-	conns: Read<'a, Connections>,
+	conns: SendToVisible<'a>,
 	dispatch: ReadExpect<'a, FutureDispatcher>,
 	lazy: Read<'a, LazyUpdate>,
 

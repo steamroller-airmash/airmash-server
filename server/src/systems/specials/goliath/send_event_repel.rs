@@ -22,7 +22,7 @@ pub struct SendEventRepel;
 
 #[derive(SystemData)]
 pub struct SendEventRepelData<'a> {
-	conns: Read<'a, Connections>,
+	conns: SendToVisible<'a>,
 	config: Read<'a, Config>,
 	entities: Entities<'a>,
 	clock: ReadClock<'a>,

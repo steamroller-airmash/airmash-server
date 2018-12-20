@@ -1,5 +1,6 @@
 use shrev::*;
 use specs::*;
+use types::systemdata::*;
 use types::*;
 
 use protocol::client::Chat;
@@ -15,7 +16,7 @@ pub struct ChatHandler {
 #[derive(SystemData)]
 pub struct ChatHandlerData<'a> {
 	channel: Read<'a, EventChannel<(ConnectionId, Chat)>>,
-	conns: Read<'a, Connections>,
+	conns: SendToAll<'a>,
 
 	throttled: ReadStorage<'a, IsChatThrottled>,
 	muted: ReadStorage<'a, IsChatMuted>,

@@ -1,7 +1,7 @@
 use shrev::*;
 use specs::*;
 
-use types::*;
+use types::systemdata::*;
 
 use consts::timer::SCORE_BOARD;
 use dispatch::SystemInfo;
@@ -20,7 +20,7 @@ pub struct DisplayMessage;
 
 #[derive(SystemData)]
 pub struct DisplayMessageData<'a> {
-	conns: Read<'a, Connections>,
+	conns: SendToVisible<'a>,
 	timerevent: Write<'a, EventChannel<TimerEvent>>,
 	thisframe: Read<'a, ThisFrame>,
 }

@@ -1,4 +1,5 @@
 use specs::*;
+use types::systemdata::*;
 use types::*;
 
 use component::channel::*;
@@ -13,19 +14,17 @@ pub struct SendPacket {
 
 #[derive(SystemData)]
 pub struct SendPacketData<'a> {
-	pub channel: Read<'a, OnPlayerHit>,
-	pub config: Read<'a, Config>,
-	pub conns: Read<'a, Connections>,
+	channel: Read<'a, OnPlayerHit>,
+	config: Read<'a, Config>,
+	conns: SendToVisible<'a>,
 
-	pub health: ReadStorage<'a, Health>,
-	pub plane: ReadStorage<'a, Plane>,
-	pub upgrades: ReadStorage<'a, Upgrades>,
-	pub owner: ReadStorage<'a, PlayerRef>,
-	pub player_flag: ReadStorage<'a, IsPlayer>,
+	health: ReadStorage<'a, Health>,
+	plane: ReadStorage<'a, Plane>,
+	owner: ReadStorage<'a, PlayerRef>,
 
-	pub mob: ReadStorage<'a, Mob>,
-	pub pos: ReadStorage<'a, Position>,
-	pub is_missile: ReadStorage<'a, IsMissile>,
+	mob: ReadStorage<'a, Mob>,
+	pos: ReadStorage<'a, Position>,
+	is_missile: ReadStorage<'a, IsMissile>,
 }
 
 impl SendPacket {

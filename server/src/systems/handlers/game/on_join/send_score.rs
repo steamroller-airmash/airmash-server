@@ -1,5 +1,4 @@
 use specs::*;
-use types::*;
 
 use super::*;
 
@@ -7,6 +6,8 @@ use SystemInfo;
 
 use component::counter::*;
 use component::event::*;
+use types::systemdata::*;
+use types::*;
 use utils::{EventHandler, EventHandlerTypeProvider};
 
 use protocol::server::ScoreUpdate;
@@ -16,7 +17,7 @@ pub struct SendScoreUpdate;
 
 #[derive(SystemData)]
 pub struct SendScoreUpdateData<'a> {
-	conns: Read<'a, Connections>,
+	conns: SendToAll<'a>,
 
 	score: ReadStorage<'a, Score>,
 	earnings: ReadStorage<'a, Earnings>,
