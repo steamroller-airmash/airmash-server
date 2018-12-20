@@ -1,15 +1,11 @@
-use types::ConnectionId;
-use types::Position;
-
 use fnv::FnvHashMap;
 use specs::Entity;
 
 use std::net::IpAddr;
-use std::sync::mpsc::Sender;
-use std::sync::Mutex;
 
 use protocol::{Protocol, ServerPacket};
 use protocol_v5::ProtocolV5;
+use types::ConnectionId;
 
 use ws::{self, Sender as WsSender};
 
@@ -34,32 +30,13 @@ pub enum ConnectionType {
 	Inactive,
 }
 
-#[derive(Debug)]
-pub enum MessageInfo {
-	ToConnection(ConnectionId),
-	ToTeam(Entity),
-	ToVisible(Position),
-}
-
-#[derive(Debug)]
-pub enum MessageBody {
-	Packet(ServerPacket),
-	Binary(Vec<u8>),
-	Close,
-}
-
-pub struct Message {
-	pub info: MessageInfo,
-	pub msg: MessageBody,
-}
-
 pub struct Connections {
 	pub conns: FnvHashMap<ConnectionId, ConnectionData>,
 }
 
 impl Default for Connections {
 	fn default() -> Self {
-		panic!("No default for connections");
+		Connections::new()
 	}
 }
 
