@@ -15,12 +15,12 @@ lazy_static! {
 
 #[derive(SystemData)]
 pub struct MissileUpdateSystemData<'a> {
-	pub pos: WriteStorage<'a, Position>,
-	pub vel: WriteStorage<'a, Velocity>,
-	pub mob: ReadStorage<'a, Mob>,
-	pub flag: ReadStorage<'a, IsMissile>,
-	pub thisframe: Read<'a, ThisFrame>,
-	pub lastframe: Read<'a, LastFrame>,
+	pos: WriteStorage<'a, Position>,
+	vel: WriteStorage<'a, Velocity>,
+	mob: ReadStorage<'a, Mob>,
+	flag: ReadStorage<'a, IsMissile>,
+	thisframe: Read<'a, ThisFrame>,
+	lastframe: Read<'a, LastFrame>,
 }
 
 impl<'a> System<'a> for MissileUpdate {
