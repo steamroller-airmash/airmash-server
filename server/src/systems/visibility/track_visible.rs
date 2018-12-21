@@ -106,7 +106,10 @@ impl TrackVisible {
 				});
 
 				for player in viewed {
-					let ref mut entry = self.visible.get_mut(&player).unwrap();
+					let entry = match self.visible.get_mut(&player) {
+						Some(e) => e,
+						None => continue,
+					};
 
 					entry.insert(VisibleEntry {
 						ent: missile,
@@ -146,7 +149,10 @@ impl TrackVisible {
 			});
 
 			for ent in viewed {
-				let set = self.visible.get_mut(&ent).unwrap();
+				let set = match self.visible.get_mut(&ent) {
+					Some(e) => e,
+					None => continue,
+				};
 
 				set.insert(VisibleEntry {
 					ent: evt.player,
