@@ -14,7 +14,7 @@ dependencies = [
 [[package]]
 name = "airmash-protocol"
 version = "0.2.6"
-source = "git+https://github.com/steamroller-airmash/airmash-protocol-rs#f86a330e409fee3fb29a1b048f919e6502843333"
+source = "git+https://github.com/steamroller-airmash/airmash-protocol-rs#3bce806a737a18f42b7f591f903e9e0e776473f9"
 dependencies = [
  "derive_more 0.13.0 (registry+https://github.com/rust-lang/crates.io-index)",
  "dimensioned 0.7.0 (registry+https://github.com/rust-lang/crates.io-index)",
@@ -29,7 +29,7 @@ dependencies = [
 [[package]]
 name = "airmash-protocol-v5"
 version = "0.0.4"
-source = "git+https://github.com/steamroller-airmash/airmash-protocol-v5#0017b897b08238bbe6d70dc160c4736a255044ba"
+source = "git+https://github.com/steamroller-airmash/airmash-protocol-v5#a58712a51800dc00c96aa596b52b2ce758eb7c20"
 dependencies = [
  "airmash-protocol 0.2.6 (git+https://github.com/steamroller-airmash/airmash-protocol-rs)",
 ]
