@@ -32,7 +32,7 @@ impl<'a> EventHandler<'a> for DespawnMissile {
 
 		let despawn_packet = MobDespawnCoords {
 			id: evt.missile.into(),
-			ty: *try_get!(evt.missile, data.mob),
+			ty: (*try_get!(evt.missile, data.mob)).into(),
 			pos: evt.pos,
 		};
 

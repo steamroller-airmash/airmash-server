@@ -69,7 +69,7 @@ impl<'a> System<'a> for MissileCull {
 					pos,
 					MobDespawn {
 						id: ent.into(),
-						ty: mob,
+						ty: mob.into(),
 					},
 				);
 

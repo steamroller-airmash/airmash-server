@@ -67,7 +67,7 @@ impl<'a> EventHandler<'a> for MissileExplodeSystem {
 
 		let packet = MobDespawnCoords {
 			id: missile_ent.into(),
-			ty: *try_get!(missile_ent, data.types),
+			ty: (*try_get!(missile_ent, data.types)).into(),
 			pos,
 		};
 
