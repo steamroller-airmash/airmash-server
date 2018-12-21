@@ -1,7 +1,6 @@
 use specs::*;
 
 use types::collision::Collision;
-use types::systemdata::*;
 use types::*;
 
 use component::channel::OnMissileDespawn;
@@ -12,18 +11,16 @@ use utils::{EventHandler, EventHandlerTypeProvider};
 
 use consts::missile::ID_REUSE_TIME;
 use consts::timer::DELETE_ENTITY;
-use protocol::server::MobDespawnCoords;
 
 #[derive(Default)]
 pub struct MissileExplodeSystem;
 
 #[derive(SystemData)]
 pub struct MissileExplodeSystemData<'a> {
-	conns: SendToVisible<'a>,
 	dispatch: ReadExpect<'a, FutureDispatcher>,
 	lazy: Read<'a, LazyUpdate>,
 
-	types: ReadStorage<'a, Mob>,
+	mob: ReadStorage<'a, Mob>,
 	pos: ReadStorage<'a, Position>,
 	channel: Write<'a, OnMissileDespawn>,
 }
@@ -63,19 +60,10 @@ impl<'a> EventHandler<'a> for MissileExplodeSystem {
 				data: Some(Box::new(missile_ent)),
 			});
 
-		let pos = *try_get!(missile_ent, data.pos);
-
-		let packet = MobDespawnCoords {
-			id: missile_ent.into(),
-			ty: (*try_get!(missile_ent, data.types)).into(),
-			pos,
-		};
-
-		data.conns.send_to_visible(pos, packet);
-
 		data.channel.single_write(MissileDespawn {
 			missile: missile_ent,
-			pos,
+			pos: *try_get!(missile_ent, data.pos),
+			mob: *try_get!(missile_ent, data.mob),
 			ty: MissileDespawnType::HitTerrain,
 		});
 	}

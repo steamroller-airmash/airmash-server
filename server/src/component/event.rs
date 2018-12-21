@@ -124,7 +124,7 @@ pub struct PlayerThrottle {
 	pub player: Entity,
 }
 
-#[derive(Clone, Debug)]
+#[derive(Clone, Debug, Eq, Hash, PartialEq)]
 pub enum ChatEventType {
 	Public,
 	Whisper(u16),
@@ -172,7 +172,7 @@ pub struct PlayerPowerup {
 
 /// All the different reasons a player could
 /// have for despawning.
-#[derive(Copy, Clone, Debug)]
+#[derive(Copy, Clone, Debug, Eq, Hash, PartialEq)]
 pub enum PlayerDespawnType {
 	Disconnect,
 	Killed,
@@ -187,7 +187,7 @@ pub struct PlayerDespawn {
 	pub pos: Position,
 }
 
-#[derive(Copy, Clone, Debug)]
+#[derive(Copy, Clone, Debug, Eq, Hash, PartialEq)]
 pub enum MissileDespawnType {
 	HitPlayer,
 	HitTerrain,
@@ -199,6 +199,7 @@ pub struct MissileDespawn {
 	pub missile: Entity,
 	pub ty: MissileDespawnType,
 	pub pos: Position,
+	pub mob: Mob,
 }
 
 #[derive(Copy, Clone, Debug, Eq, Hash, PartialEq)]

@@ -16,7 +16,6 @@ pub fn register<'a, 'b>(builder: Builder<'a, 'b>) -> Builder<'a, 'b> {
 		.with_handler::<on_player_killed::DisplayMessage>()
 		.with_handler::<on_player_killed::UpdateScore>()
 		.with_handler::<on_player_killed::CreateDespawnEvent>()
-		.with_handler::<on_player_killed::DespawnMissile>()
 		// On player joined
 		.with_handler::<on_join::InitConnection>()
 		.with_handler::<on_join::InitKillCounters>()
@@ -64,4 +63,7 @@ pub fn register<'a, 'b>(builder: Builder<'a, 'b>) -> Builder<'a, 'b> {
 		.with_handler::<on_enter_horizon::SendMissileUpdate>()
 		// Leave Horizon
 		.with_handler::<on_leave_horizon::SendLeaveHorizon>()
+		// Missile Despawn
+		.with_handler::<on_missile_despawn::SendMobDespawn>()
+		.with_handler::<on_missile_despawn::SendMobDespawnCoords>()
 }

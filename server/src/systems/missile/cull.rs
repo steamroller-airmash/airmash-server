@@ -1,8 +1,5 @@
 use specs::*;
 
-use types::systemdata::*;
-use types::*;
-
 use component::channel::OnMissileDespawn;
 use component::event::{MissileDespawn, MissileDespawnType, TimerEvent};
 use component::flag::IsMissile;
@@ -11,9 +8,7 @@ use component::reference::PlayerRef;
 use consts::missile::ID_REUSE_TIME;
 use consts::timer::DELETE_ENTITY;
 use dispatch::SystemInfo;
-
-use protocol::server::MobDespawn;
-use protocol::DespawnType;
+use types::*;
 
 pub struct MissileCull;
 
@@ -21,9 +16,9 @@ pub struct MissileCull;
 pub struct MissileCullData<'a> {
 	ents: Entities<'a>,
 	missile_trajectory: ReadStorage<'a, MissileTrajectory>,
+	mob: ReadStorage<'a, Mob>,
 	pos: ReadStorage<'a, Position>,
 	is_missile: ReadStorage<'a, IsMissile>,
-	conns: SendToVisible<'a>,
 	lazy: Read<'a, LazyUpdate>,
 	dispatch: ReadExpect<'a, FutureDispatcher>,
 	channel: Write<'a, OnMissileDespawn>,
@@ -36,25 +31,25 @@ impl<'a> System<'a> for MissileCull {
 		let ref mut channel = data.channel;
 		let ref lazy = data.lazy;
 		let ref dispatch = data.dispatch;
-		let ref conns = data.conns;
 
 		(
 			&*data.ents,
 			&data.pos,
+			&data.mob,
 			&data.missile_trajectory,
 			data.is_missile.mask(),
 		)
 			.join()
-			.filter_map(|(ent, pos, missile_trajectory, ..)| {
+			.filter_map(|(ent, pos, mob, missile_trajectory, ..)| {
 				let distance_traveled = (*pos - missile_trajectory.0).length();
 				let end_distance = missile_trajectory.1;
 				if distance_traveled > end_distance {
-					Some((ent, *pos))
+					Some((ent, *mob, *pos))
 				} else {
 					None
 				}
 			})
-			.for_each(|(ent, pos)| {
+			.for_each(|(ent, mob, pos)| {
 				// Remove a bunch of components that are used to
 				// recognize missiles lazily (they will get
 				// removed at the end of the frame)
@@ -71,18 +66,11 @@ impl<'a> System<'a> for MissileCull {
 					data: Some(Box::new(ent)),
 				});
 
-				conns.send_to_visible(
-					pos,
-					MobDespawn {
-						id: ent.into(),
-						ty: DespawnType::LifetimeEnded,
-					},
-				);
-
 				channel.single_write(MissileDespawn {
+					ty: MissileDespawnType::LifetimeEnded,
 					missile: ent,
 					pos,
-					ty: MissileDespawnType::LifetimeEnded,
+					mob,
 				});
 			});
 	}

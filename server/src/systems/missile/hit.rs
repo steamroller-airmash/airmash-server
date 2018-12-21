@@ -22,6 +22,7 @@ pub struct MissileHitSystemData<'a> {
 	dispatch: ReadExpect<'a, FutureDispatcher>,
 	lazy: Read<'a, LazyUpdate>,
 
+	mob: ReadStorage<'a, Mob>,
 	player_flag: ReadStorage<'a, IsPlayer>,
 	entities: Entities<'a>,
 	hitmarker: WriteStorage<'a, HitMarker>,
@@ -98,6 +99,7 @@ impl<'a> System<'a> for MissileHitSystem {
 			data.despawn.single_write(MissileDespawn {
 				missile: missile.ent,
 				pos: missile.pos,
+				mob: *try_get!(missile.ent, data.mob),
 				ty: MissileDespawnType::HitPlayer,
 			});
 		}
