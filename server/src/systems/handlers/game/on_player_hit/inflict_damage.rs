@@ -18,22 +18,20 @@ pub struct InflictDamage;
 
 #[derive(SystemData)]
 pub struct InflictDamageData<'a> {
-	pub entities: Entities<'a>,
-	pub channel: Read<'a, OnPlayerHit>,
-	pub kill_channel: Write<'a, OnPlayerKilled>,
-	pub conns: Read<'a, Connections>,
-	pub config: Read<'a, Config>,
+	entities: Entities<'a>,
+	kill_channel: Write<'a, OnPlayerKilled>,
+	config: Read<'a, Config>,
 
-	pub health: WriteStorage<'a, Health>,
-	pub plane: ReadStorage<'a, Plane>,
-	pub upgrades: ReadStorage<'a, Upgrades>,
-	pub owner: ReadStorage<'a, PlayerRef>,
-	pub player_flag: ReadStorage<'a, IsPlayer>,
-	pub powerups: ReadStorage<'a, Powerups>,
+	health: WriteStorage<'a, Health>,
+	plane: ReadStorage<'a, Plane>,
+	upgrades: ReadStorage<'a, Upgrades>,
+	owner: ReadStorage<'a, PlayerRef>,
+	powerups: ReadStorage<'a, Powerups>,
+	is_dead: WriteStorage<'a, IsDead>,
 
-	pub mob: ReadStorage<'a, Mob>,
-	pub pos: ReadStorage<'a, Position>,
-	pub is_missile: ReadStorage<'a, IsMissile>,
+	mob: ReadStorage<'a, Mob>,
+	pos: ReadStorage<'a, Position>,
+	is_missile: ReadStorage<'a, IsMissile>,
 }
 
 impl EventHandlerTypeProvider for InflictDamage {
@@ -46,6 +44,12 @@ impl<'a> EventHandler<'a> for InflictDamage {
 	fn on_event(&mut self, evt: &PlayerHit, data: &mut Self::SystemData) {
 		// Ignore dead missiles that get queued up
 		if !data.is_missile.get(evt.missile).is_some() {
+			return;
+		}
+		if data.is_dead.get(evt.player).is_some() {
+			return;
+		}
+		if !data.entities.is_alive(evt.missile) || !data.entities.is_alive(evt.player) {
 			return;
 		}
 
@@ -71,6 +75,7 @@ impl<'a> EventHandler<'a> for InflictDamage {
 			/ upgconf.defense.factor[upgrades.defense as usize];
 
 		if health.inner() <= 0.0 {
+			data.is_dead.insert(evt.player, IsDead).unwrap();
 			data.kill_channel.single_write(PlayerKilled {
 				missile: evt.missile,
 				player: evt.player,
