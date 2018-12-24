@@ -155,7 +155,7 @@ where
 		use systems::notify::*;
 
 		Self {
-			builder: self.builder.with::<NotifyAlpha>(),
+			builder: self.builder.with_handler::<NotifyAlpha>(),
 			..self
 		}
 	}

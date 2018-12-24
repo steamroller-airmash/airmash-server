@@ -16,3 +16,5 @@ pub use self::send_to_all::SendToAll;
 pub use self::send_to_team::SendToTeam;
 pub use self::send_to_team_visible::SendToTeamVisible;
 pub use self::send_to_visible::SendToVisible;
+
+pub type SendToPlayer<'a> = SendToAll<'a>;

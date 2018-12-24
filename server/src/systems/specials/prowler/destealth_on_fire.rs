@@ -1,10 +1,11 @@
 use specs::*;
-use types::*;
 
 use component::event::*;
 use component::flag::ForcePlayerUpdate;
 use systems::missile::MissileFireHandler;
 use systems::PositionUpdate;
+use types::systemdata::*;
+use types::*;
 use SystemInfo;
 
 use utils::{EventHandler, EventHandlerTypeProvider};
@@ -16,7 +17,7 @@ pub struct DestealthOnFire;
 
 #[derive(SystemData)]
 pub struct DestealthOnFireData<'a> {
-	conns: Read<'a, Connections>,
+	conns: SendToPlayer<'a>,
 
 	keystate: WriteStorage<'a, KeyState>,
 	plane: ReadStorage<'a, Plane>,

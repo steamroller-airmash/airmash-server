@@ -1,45 +1,38 @@
-use specs::*;
-use types::*;
-
 use SystemInfo;
 
 use std::time::Duration;
 
-use component::channel::*;
+use component::event::PlayerJoin;
 use protocol::server::ServerMessage;
 use protocol::ServerMessageType;
+use types::systemdata::*;
+use utils::*;
 
 pub struct NotifyAlpha {
-	reader: Option<OnPlayerJoinReader>,
 	duration: Duration,
 	message: String,
 }
 
 #[derive(SystemData)]
 pub struct NotifyAlphaData<'a> {
-	pub channel: Read<'a, OnPlayerJoin>,
-	pub conns: Read<'a, Connections>,
+	conns: SendToPlayer<'a>,
 }
 
-impl<'a> System<'a> for NotifyAlpha {
+impl EventHandlerTypeProvider for NotifyAlpha {
+	type Event = PlayerJoin;
+}
+
+impl<'a> EventHandler<'a> for NotifyAlpha {
 	type SystemData = NotifyAlphaData<'a>;
 
-	fn setup(&mut self, res: &mut Resources) {
-		Self::SystemData::setup(res);
+	fn on_event(&mut self, evt: &PlayerJoin, data: &mut Self::SystemData) {
+		let packet = ServerMessage {
+			ty: ServerMessageType::Banner,
+			text: self.message.clone(),
+			duration: (self.duration.as_secs() * 1000) as u32 + self.duration.subsec_millis(),
+		};
 
-		self.reader = Some(res.fetch_mut::<OnPlayerJoin>().register_reader());
-	}
-
-	fn run(&mut self, data: Self::SystemData) {
-		for evt in data.channel.read(self.reader.as_mut().unwrap()) {
-			let packet = ServerMessage {
-				ty: ServerMessageType::Banner,
-				text: self.message.clone(),
-				duration: (self.duration.as_secs() * 1000) as u32 + self.duration.subsec_millis(),
-			};
-
-			data.conns.send_to_player(evt.id, packet);
-		}
+		data.conns.send_to_player(evt.id, packet);
 	}
 }
 
@@ -52,7 +45,6 @@ impl SystemInfo for NotifyAlpha {
 
 	fn new() -> Self {
 		Self {
-			reader: None,
 			// Note: don't set this to a duration above approximately
 			// 49.7 weeks so that the number of milliseconds does not
 			// overflow a u32

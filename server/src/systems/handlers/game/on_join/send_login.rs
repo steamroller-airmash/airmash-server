@@ -16,7 +16,7 @@ pub struct SendLogin;
 
 #[derive(SystemData)]
 pub struct SendLoginData<'a> {
-	conns: Read<'a, Connections>,
+	conns: SendToPlayer<'a>,
 	entities: Entities<'a>,
 	gamemode: GameModeWriter<'a, GameMode>,
 	clock: ReadClock<'a>,

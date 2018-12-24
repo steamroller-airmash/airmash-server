@@ -6,6 +6,7 @@ use server::component::event::*;
 use server::component::flag::IsPlayer;
 use server::component::time::*;
 use server::consts::timer::SCORE_BOARD;
+use server::types::systemdata::SendToPlayer;
 use server::types::Upgrades;
 use server::utils::*;
 use server::*;
@@ -25,7 +26,7 @@ pub struct AwardBountyData<'a> {
 	players_game: Read<'a, PlayersGame>,
 	timer_channel: Write<'a, OnTimerEvent>,
 	this_frame: Read<'a, ThisFrame>,
-	conns: Read<'a, Connections>,
+	conns: SendToPlayer<'a>,
 
 	entities: Entities<'a>,
 	is_player: ReadStorage<'a, IsPlayer>,

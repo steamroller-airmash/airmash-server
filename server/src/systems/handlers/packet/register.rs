@@ -15,7 +15,7 @@ pub fn register<'a, 'b>(builder: Builder<'a, 'b>) -> Builder<'a, 'b> {
 		.with_handler::<ScoreBoardTimerHandler>()
 		.with::<PingTimerHandler>()
 		.with::<SignalHandler>()
-		.with::<WhisperHandler>()
+		.with_handler::<WhisperHandler>()
 		.with::<ChatEventHandler>()
 		.with_handler::<TeamChatHandler>()
 }

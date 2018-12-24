@@ -1,9 +1,7 @@
-use specs::*;
-
 use component::event::*;
 use protocol::server::EventLeaveHorizon;
 use protocol::LeaveHorizonType;
-use types::*;
+use types::systemdata::*;
 use utils::*;
 use SystemInfo;
 
@@ -12,7 +10,7 @@ pub struct SendLeaveHorizon;
 
 #[derive(SystemData)]
 pub struct SendLeaveHorizonData<'a> {
-	conns: Read<'a, Connections>,
+	conns: SendToPlayer<'a>,
 }
 
 impl EventHandlerTypeProvider for SendLeaveHorizon {

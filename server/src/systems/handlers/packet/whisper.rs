@@ -1,22 +1,21 @@
-use shrev::*;
 use specs::*;
-use types::*;
 
+use component::event::WhisperEvent;
 use component::flag::*;
-use protocol::client::Whisper;
 use protocol::server::{ChatWhisper, Error};
 use protocol::ErrorType;
+use types::systemdata::SendToPlayer;
+
+use utils::*;
 
 use component::flag::IsPlayer;
 
-pub struct WhisperHandler {
-	reader: Option<ReaderId<(ConnectionId, Whisper)>>,
-}
+#[derive(Default)]
+pub struct WhisperHandler;
 
 #[derive(SystemData)]
 pub struct WhisperHandlerData<'a> {
-	channel: Read<'a, EventChannel<(ConnectionId, Whisper)>>,
-	conns: Read<'a, Connections>,
+	conns: SendToPlayer<'a>,
 
 	throttled: ReadStorage<'a, IsChatThrottled>,
 	muted: ReadStorage<'a, IsChatMuted>,
@@ -25,68 +24,55 @@ pub struct WhisperHandlerData<'a> {
 	is_player: ReadStorage<'a, IsPlayer>,
 }
 
-impl WhisperHandler {
-	pub fn new() -> Self {
-		Self { reader: None }
-	}
+impl EventHandlerTypeProvider for WhisperHandler {
+	type Event = WhisperEvent;
 }
 
-impl<'a> System<'a> for WhisperHandler {
+impl<'a> EventHandler<'a> for WhisperHandler {
 	type SystemData = WhisperHandlerData<'a>;
 
-	fn setup(&mut self, res: &mut Resources) {
-		Self::SystemData::setup(res);
+	fn on_event(&mut self, evt: &WhisperEvent, data: &mut Self::SystemData) {
+		info!("{:?}", evt);
+		let player = match data.conns.associated_player(evt.0) {
+			Some(player) => player,
+			None => return,
+		};
 
-		self.reader = Some(
-			res.fetch_mut::<EventChannel<(ConnectionId, Whisper)>>()
-				.register_reader(),
-		);
-	}
-
-	fn run(&mut self, data: Self::SystemData) {
-		for evt in data.channel.read(self.reader.as_mut().unwrap()) {
-			info!("{:?}", evt);
-			let player = match data.conns.associated_player(evt.0) {
-				Some(player) => player,
-				None => continue,
-			};
-
-			if data.muted.get(player).is_some() {
-				continue;
-			}
-			if data.throttled.get(player).is_some() {
-				data.conns.send_to(
-					evt.0,
-					Error {
-						error: ErrorType::ChatThrottled,
-					},
-				);
-				continue;
-			}
-
-			let to = data.entities.entity(evt.1.id.0 as u32);
-
-			if !data.entities.is_alive(to) {
-				// The player doesn't exist
-				continue;
-			}
-			if data.is_player.get(to).is_none() {
-				// Entity is not a player
-				continue;
-			}
-
-			let chat = ChatWhisper {
-				from: player.into(),
-				to: to.into(),
-				text: evt.1.text.clone(),
-			};
-
-			let packet = chat.into();
-
-			data.conns.send_to_ref(evt.0, &packet);
-
-			data.conns.send_to_player(to, packet);
+		if data.muted.get(player).is_some() {
+			return;
 		}
+		if data.throttled.get(player).is_some() {
+			data.conns.send_to(
+				evt.0,
+				Error {
+					error: ErrorType::ChatThrottled,
+				},
+			);
+			return;
+		}
+
+		let to = data.entities.entity(evt.1.id.0 as u32);
+
+		if !data.entities.is_alive(to) {
+			// The player doesn't exist
+			return;
+		}
+		if data.is_player.get(to).is_none() {
+			// Entity is not a player
+			return;
+		}
+
+		let chat = ChatWhisper {
+			from: player.into(),
+			to: to.into(),
+			text: evt.1.text.clone(),
+		};
+
+		let packet = chat.into();
+
+		data.conns.send_to_ref(evt.0, &packet);
+
+		data.conns.send_to_player(to, packet);
 	}
 }
 
@@ -97,7 +83,7 @@ impl SystemInfo for WhisperHandler {
 	type Dependencies = OnCloseHandler;
 
 	fn new() -> Self {
-		Self::new()
+		Self::default()
 	}
 
 	fn name() -> &'static str {

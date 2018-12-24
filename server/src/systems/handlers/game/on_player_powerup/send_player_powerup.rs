@@ -1,12 +1,10 @@
-use specs::*;
-
 use SystemInfo;
 
 use component::event::PlayerPowerup;
 use protocol::server::PlayerPowerup as ServerPlayerPowerup;
 use protocol::PowerupType;
 
-use types::Connections;
+use types::systemdata::*;
 use utils::event_handler::{EventHandler, EventHandlerTypeProvider};
 
 /// Add the initial 2s shield when a player joins
@@ -16,7 +14,7 @@ pub struct SendPlayerPowerup;
 
 #[derive(SystemData)]
 pub struct SendPlayerPowerupData<'a> {
-	conns: Read<'a, Connections>,
+	conns: SendToPlayer<'a>,
 }
 
 impl EventHandlerTypeProvider for SendPlayerPowerup {

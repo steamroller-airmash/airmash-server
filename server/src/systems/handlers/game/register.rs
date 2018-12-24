@@ -5,8 +5,8 @@ pub fn register<'a, 'b>(builder: Builder<'a, 'b>) -> Builder<'a, 'b> {
 	builder
 		// Spectate events
 		.with::<on_spectate_event::SetSpectateFlag>()
-		.with::<on_spectate_event::SendKillPacket>()
-		.with::<on_spectate_event::SendSpectatePacket>()
+		.with_handler::<on_spectate_event::SendKillPacket>()
+		.with_handler::<on_spectate_event::SendSpectatePacket>()
 		.with::<on_spectate_event::SendTimerEvent>()
 		.with::<on_spectate_event::SetSpectateTarget>()
 		.with_handler::<on_spectate_event::CreateDespawnEvent>()

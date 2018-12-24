@@ -3,6 +3,7 @@ use specs::*;
 use component::event::*;
 use protocol::server::MobUpdate;
 use types::systemdata::ReadClock;
+use types::systemdata::*;
 use types::*;
 use utils::*;
 use SystemInfo;
@@ -12,7 +13,7 @@ pub struct SendMissileUpdate;
 
 #[derive(SystemData)]
 pub struct SendMissileUpdateData<'a> {
-	conns: Read<'a, Connections>,
+	conns: SendToPlayer<'a>,
 	config: Read<'a, Config>,
 	clock: ReadClock<'a>,
 

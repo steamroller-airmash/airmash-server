@@ -4,6 +4,7 @@ use server::component::event::*;
 use server::protocol::server::GameFlag;
 use server::protocol::FlagUpdateType;
 use server::systems::handlers::game::on_join::SendLogin;
+use server::types::systemdata::SendToPlayer;
 use server::utils::*;
 use server::*;
 
@@ -14,7 +15,7 @@ pub struct SendFlagPosition;
 
 #[derive(SystemData)]
 pub struct SendFlagPositionData<'a> {
-	conns: Read<'a, Connections>,
+	conns: SendToPlayer<'a>,
 	scores: Read<'a, GameScores>,
 
 	// These ones are for both

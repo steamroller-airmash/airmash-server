@@ -102,6 +102,7 @@ impl Connections {
 		conn.send(msg).unwrap();
 	}
 
+	#[deprecated]
 	pub fn send_to_player<I>(&self, player: Entity, msg: I)
 	where
 		I: Into<ServerPacket>,

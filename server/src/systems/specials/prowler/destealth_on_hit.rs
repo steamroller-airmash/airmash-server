@@ -15,7 +15,7 @@ pub struct DestealthOnHit;
 
 #[derive(SystemData)]
 pub struct DestealthOnHitData<'a> {
-	conns: Read<'a, Connections>,
+	conns: SendToPlayer<'a>,
 
 	keystate: WriteStorage<'a, KeyState>,
 	plane: ReadStorage<'a, Plane>,
