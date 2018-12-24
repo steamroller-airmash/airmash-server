@@ -20,9 +20,9 @@ pub struct Teleport;
 
 #[derive(SystemData)]
 pub struct TeleportData<'a> {
-	pub entities: Entities<'a>,
-	pub pos: WriteStorage<'a, Position>,
-	pub conns: Read<'a, Connections>,
+	entities: Entities<'a>,
+	pos: WriteStorage<'a, Position>,
+	conns: Read<'a, Connections>,
 }
 
 impl EventHandlerTypeProvider for Teleport {
