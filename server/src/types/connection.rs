@@ -102,28 +102,6 @@ impl Connections {
 		conn.send(msg).unwrap();
 	}
 
-	#[deprecated]
-	pub fn send_to_player<I>(&self, player: Entity, msg: I)
-	where
-		I: Into<ServerPacket>,
-	{
-		let conn = self.conns.iter().find(|(_, c)| {
-			c.player.is_some() && c.ty == ConnectionType::Primary && c.player.unwrap() == player
-		});
-
-		if conn.is_none() {
-			warn!(
-				target: "server",
-				"Attempted to send message to nonexistent player {:?}",
-				player
-			);
-
-			return;
-		}
-
-		self.send_to(*conn.unwrap().0, msg);
-	}
-
 	pub fn send_to<I>(&self, id: ConnectionId, msg: I)
 	where
 		I: Into<ServerPacket>,
