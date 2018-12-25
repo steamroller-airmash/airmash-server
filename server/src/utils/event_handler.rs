@@ -50,7 +50,7 @@ pub trait EventHandler<'a>: EventHandlerTypeProvider + Send {
 
 /// This is the type that actually implements
 /// the `System` trait for all `EventHandlers`.
-/// 
+///
 /// There should be no need to ever have to
 /// use this directly (except within `dispatch`).
 pub(crate) struct EventHandlerWrapper<T>

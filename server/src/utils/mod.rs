@@ -1,7 +1,7 @@
 //! Various utility types and macros.
-//! 
+//!
 //! These are mainly utility types that remove
-//! boilerplate throughout the rest of the codebase 
+//! boilerplate throughout the rest of the codebase
 //! but don't have (too) much in the way of dependencies
 //! on the rest of the engine.
 
