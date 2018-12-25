@@ -8,7 +8,7 @@ use component::event::{PlayerHit, PlayerKilled};
 use component::flag::*;
 use component::reference::PlayerRef;
 
-use utils::event_handler::{EventHandler, EventHandlerTypeProvider};
+use utils::{EventHandler, EventHandlerTypeProvider};
 
 use systems::handlers::game::on_missile_fire::KnownEventSources;
 use systems::missile::MissileHit;

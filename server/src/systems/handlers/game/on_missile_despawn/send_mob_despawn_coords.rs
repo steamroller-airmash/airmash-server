@@ -7,7 +7,7 @@ use protocol::server::MobDespawnCoords;
 
 use types::systemdata::*;
 use types::Mob;
-use utils::event_handler::{EventHandler, EventHandlerTypeProvider};
+use utils::{EventHandler, EventHandlerTypeProvider};
 
 /// Add the initial 2s shield when a player joins
 /// and send that packet to all visible players.

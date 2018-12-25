@@ -3,7 +3,7 @@ use types::systemdata::*;
 
 use SystemInfo;
 
-use utils::event_handler::{EventHandler, EventHandlerTypeProvider};
+use utils::{EventHandler, EventHandlerTypeProvider};
 
 use component::event::PowerupExpired;
 use component::time::{LastUpdate, StartTime};

@@ -1,7 +1,7 @@
 use specs::*;
 use types::*;
 
-use utils::event_handler::{EventHandler, EventHandlerTypeProvider};
+use utils::{EventHandler, EventHandlerTypeProvider};
 use SystemInfo;
 
 use component::channel::OnPlayerPowerup;

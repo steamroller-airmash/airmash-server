@@ -2,18 +2,13 @@ use specs::*;
 
 use SystemInfo;
 
-use types::*;
-use utils::maybe_init::MaybeInit;
-
 use component::channel::*;
 use component::event::*;
-
-use utils::event_handler::*;
+use types::*;
+use utils::*;
 
 #[derive(Default)]
-pub struct SpawnUpgrade {
-	reader: MaybeInit<OnCommandReader>,
-}
+pub struct SpawnUpgrade;
 
 #[derive(SystemData)]
 pub struct SpawnUpgradeData<'a> {
@@ -40,12 +35,6 @@ fn unwrap_all<T, E>(iter: impl Iterator<Item = Result<T, E>>) -> Result<Vec<T>, 
 
 impl<'a> EventHandler<'a> for SpawnUpgrade {
 	type SystemData = SpawnUpgradeData<'a>;
-
-	fn setup(&mut self, res: &mut Resources) {
-		Self::SystemData::setup(res);
-
-		self.reader = MaybeInit::new(res.fetch_mut::<OnCommand>().register_reader());
-	}
 
 	fn on_event(&mut self, evt: &Self::Event, data: &mut Self::SystemData) {
 		let (_, cmd) = evt;

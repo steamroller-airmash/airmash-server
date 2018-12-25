@@ -9,7 +9,7 @@ use log::Level::Debug;
 use dispatch::sysbuilder::*;
 use dispatch::sysinfo::*;
 
-use utils::event_handler::{EventHandler, EventHandlerTypeProvider};
+use utils::{EventHandler, EventHandlerTypeProvider};
 
 pub struct Builder<'a, 'b> {
 	builder: DispatcherBuilder<'a, 'b>,
@@ -73,7 +73,7 @@ impl<'a, 'b> Builder<'a, 'b> {
 		T: for<'c> EventHandler<'c> + EventHandlerTypeProvider + Send + Sync + SystemInfo + 'static,
 		T::Event: Send + Sync,
 	{
-		use utils::event_handler::EventHandlerWrapper;
+		use utils::EventHandlerWrapper;
 		self.with_args::<EventHandlerWrapper<T>, U>(args)
 	}
 

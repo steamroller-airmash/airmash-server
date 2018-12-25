@@ -6,13 +6,15 @@
 mod try_get;
 mod tuple_array;
 
-pub mod event_handler;
+mod event_handler;
 pub mod maybe_init;
 pub mod timer;
 
-#[allow(deprecated)]
 pub use self::event_handler::{EventHandler, EventHandlerTypeProvider};
 pub use self::maybe_init::MaybeInit;
+
+// Needed within dispatch
+pub(crate) use self::event_handler::EventHandlerWrapper;
 
 // Internal logging hook
 #[cfg(features = "sentry")]

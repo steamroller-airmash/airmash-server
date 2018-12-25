@@ -3,7 +3,7 @@ use specs::*;
 use component::*;
 use server::component::event::PlayerStealth;
 use server::systems::handlers::game::on_player_despawn::KnownEventSources;
-use server::utils::event_handler::{EventHandler, EventHandlerTypeProvider};
+use server::utils::{EventHandler, EventHandlerTypeProvider};
 use server::*;
 
 #[derive(Default)]

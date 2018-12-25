@@ -3,7 +3,7 @@ use specs::*;
 use component::*;
 use systems::on_flag::AllFlagSystems;
 
-use server::utils::event_handler::{EventHandler, EventHandlerTypeProvider};
+use server::utils::{EventHandler, EventHandlerTypeProvider};
 use server::SystemInfo;
 
 #[derive(Default)]

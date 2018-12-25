@@ -9,7 +9,7 @@ use component::event::PlayerPowerup;
 use protocol::PowerupType;
 
 use types::Config;
-use utils::event_handler::{EventHandler, EventHandlerTypeProvider};
+use utils::{EventHandler, EventHandlerTypeProvider};
 
 /// Give the newly joined player an initial 2s shield.
 #[derive(Default)]
