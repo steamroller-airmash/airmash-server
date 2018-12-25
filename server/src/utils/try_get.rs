@@ -2,13 +2,46 @@
 #[macro_export]
 macro_rules! try_get_error {
 	($ent:expr, $storage:expr) => {
+		let ent = $ent;
+
 		error!(
 			"Unable to fetch component from {} for {:?} (line {})",
 			stringify!($storage),
-			$ent,
+			ent,
 			line!()
-		);
+			);
+
+		#[cfg(features = "sentry")]
+		::airmash_server::utils::_internal_log_sentry_error(
+			module_path!(),
+			line!(),
+			stringify!($storage),
+			ent,
+			);
 	};
+}
+
+/// Internal sentry logging hook for use with `try_get!`
+/// and `log_none!`. Don't use this yourself.
+#[doc(hidden)]
+#[cfg(features = "sentry")]
+pub fn _internal_log_sentry_error(
+	module: &'static str,
+	line: u32,
+	stmt: &'static str,
+	ent: ::specs::Entity,
+) {
+	use sentry::*;
+
+	Hub::with_active(|hub| {
+		hub.capture_message(
+			&*format!(
+				"[{}, line {}] Unable to fetch component from {} for entity {:?}",
+				module, line, stmt, ent
+			),
+			Level::Error,
+		);
+	})
 }
 
 #[macro_export]

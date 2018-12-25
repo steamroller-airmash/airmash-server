@@ -52,10 +52,7 @@ impl<'a> EventHandler<'a> for Crash {
 		// servers on purpose.
 		let name = try_get!(player, data.name);
 
-		panic!(
-			"Server Debug Crash! (Triggered by {})",
-			name.0
-		);
+		panic!("Server Debug Crash! (Triggered by {})", name.0);
 	}
 }
 

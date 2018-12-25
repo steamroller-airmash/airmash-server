@@ -8,6 +8,9 @@ repository = 'https://github.com/steamroller-airmash/airmash-server'
 
 
 [features]
+# Have logging on by default, it doesn't do anything
+# unless the environment variable is on
+default = [ "sentry" ]
 # If enabled, set TCP_NODELAY on incoming connections
 nodelay = []
 # Enable looking for the X-Forwarded-For header
@@ -40,6 +43,10 @@ ws = "*"
 futures = "*"
 hyper = "0.10"
 hashbrown = "*"
+
+[dependencies.sentry]
+optional = true
+version = "*"
 
 [dependencies.airmash-protocol]
 version = "0.2"

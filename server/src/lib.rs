@@ -24,6 +24,8 @@ extern crate htmlescape;
 extern crate hyper;
 extern crate rand;
 extern crate rayon;
+#[cfg(features = "sentry")]
+extern crate sentry;
 extern crate serde_json;
 extern crate shred;
 extern crate shrev;
@@ -35,6 +37,14 @@ extern crate ws;
 
 // Public dependencies
 pub extern crate airmash_protocol as protocol;
+
+// Needed since it's used within the try_get! and log_none!
+// macros. This means that everything within the server
+// namespace can be accessed by doing ::airmash_server.
+#[allow(unused)]
+mod airmash_server {
+	pub use *;
+}
 
 // Needs to be first because of macros
 #[macro_use]
