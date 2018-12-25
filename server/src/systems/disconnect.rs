@@ -8,7 +8,7 @@ use component::channel::*;
 use component::time::ThisFrame;
 use types::event::ConnectionClose;
 use types::ConnectionId;
-use utils::maybe_init::MaybeInit;
+use utils::MaybeInit;
 use SystemInfo;
 
 use systems::PacketHandler;

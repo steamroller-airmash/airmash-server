@@ -7,7 +7,7 @@ mod try_get;
 mod tuple_array;
 
 mod event_handler;
-pub mod maybe_init;
+mod maybe_init;
 pub mod timer;
 
 pub use self::event_handler::{EventHandler, EventHandlerTypeProvider};

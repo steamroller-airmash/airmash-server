@@ -4,7 +4,7 @@ use specs::*;
 
 use types::systemdata::*;
 use types::*;
-use utils::maybe_init::MaybeInit;
+use utils::MaybeInit;
 
 use systems::specials::predator::SetBoostingFlag;
 use SystemInfo;
