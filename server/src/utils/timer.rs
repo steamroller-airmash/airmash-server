@@ -1,3 +1,5 @@
+//! `TimerEventType`
+
 use std::sync::atomic::{AtomicUsize, Ordering, ATOMIC_USIZE_INIT};
 
 static TIMER_EVENT_TYPE_COUNTER: AtomicUsize = ATOMIC_USIZE_INIT;

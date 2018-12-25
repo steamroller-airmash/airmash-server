@@ -1,6 +1,9 @@
-//! This module contains various interfaces that
-//! don't really belong anywhere specific.
-//! (not a system, handler, component, or type)
+//! Various utility types and macros.
+//! 
+//! These are mainly utility types that remove
+//! boilerplate throughout the rest of the codebase 
+//! but don't have (too) much in the way of dependencies
+//! on the rest of the engine.
 
 #[macro_use]
 mod try_get;
