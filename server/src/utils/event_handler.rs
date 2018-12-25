@@ -43,7 +43,8 @@ pub trait EventHandler<'a>: EventHandlerTypeProvider + Send {
 		Self::SystemData::setup(res);
 	}
 
-	/// Handle an event.
+	/// Handle an event. All processing for the event
+	/// should happen here.
 	fn on_event(&mut self, evt: &Self::Event, data: &mut Self::SystemData);
 }
 
