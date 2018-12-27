@@ -1,3 +1,5 @@
+//! All systems used within the main airmash engine.
+
 mod disconnect;
 mod energy_regen;
 mod health_regen;
