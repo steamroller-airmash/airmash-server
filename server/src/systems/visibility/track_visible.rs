@@ -345,8 +345,8 @@ system_info! {
 			systems::handlers::game::on_powerup_despawn::KnownEventSources,
 			systems::collision::GenMissileGrid,
 			systems::collision::GenPlaneGrid,
+			systems::collision::GenPowerupGrid,
 			systems::visibility::GenPlayerGrid,
-			systems::visibility::GenPowerupGrid,
 		);
 	}
 }
