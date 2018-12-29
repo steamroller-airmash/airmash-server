@@ -22,11 +22,7 @@ impl<'a> System<'a> for GenPowerupGrid {
 	type SystemData = GenPowerupGridData<'a>;
 
 	fn run(&mut self, mut data: Self::SystemData) {
-		let it = (
-			&*data.entities,
-			&data.pos,
-			data.is_powerup.mask(),
-		)
+		let it = (&*data.entities, &data.pos, data.is_powerup.mask())
 			.join()
 			.map(|(ent, pos, ..)| HitCircle {
 				pos: *pos,

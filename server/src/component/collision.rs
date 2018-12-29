@@ -11,13 +11,13 @@ macro_rules! impl_newtype_deref_grid {
 				&self.0
 			}
 		}
-		
+
 		impl DerefMut for $name {
 			fn deref_mut(&mut self) -> &mut Grid {
 				&mut self.0
 			}
 		}
-	}
+	};
 }
 
 /// Precomputed grid for collision applications.

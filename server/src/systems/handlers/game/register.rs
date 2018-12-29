@@ -61,6 +61,7 @@ pub fn register<'a, 'b>(builder: Builder<'a, 'b>) -> Builder<'a, 'b> {
 		.with_registrar(on_player_powerup::register)
 		// Enter Horizon
 		.with_handler::<on_enter_horizon::SendMissileUpdate>()
+		.with_handler::<on_enter_horizon::SendPowerupUpdate>()
 		// Leave Horizon
 		.with_handler::<on_leave_horizon::SendLeaveHorizon>()
 		// Missile Despawn

@@ -130,21 +130,20 @@ impl TrackVisible {
 				pos: evt.pos,
 				rad: 0.0.into(),
 				ent: evt.mob,
-				layer: 0
+				layer: 0,
 			});
 
-			
-				for player in viewed {
-					let entry = match self.visible.get_mut(&player) {
-						Some(e) => e,
-						None => continue,
-					};
+			for player in viewed {
+				let entry = match self.visible.get_mut(&player) {
+					Some(e) => e,
+					None => continue,
+				};
 
-					entry.insert(VisibleEntry {
-						ent: evt.mob,
-						ty: EntityType::Powerup,
-					});
-				}
+				entry.insert(VisibleEntry {
+					ent: evt.mob,
+					ty: EntityType::Powerup,
+				});
+			}
 		}
 	}
 
@@ -153,7 +152,7 @@ impl TrackVisible {
 			for set in self.visible.values_mut() {
 				set.remove(&VisibleEntry {
 					ent: evt.mob,
-					ty: EntityType::Powerup
+					ty: EntityType::Powerup,
 				});
 			}
 		}
@@ -248,7 +247,7 @@ impl TrackVisible {
 					Self::rough_collide(*pos, ent, &players.0, &*config, EntityType::Player);
 				let missiles =
 					Self::rough_collide(*pos, ent, &missiles.0, &*config, EntityType::Missile);
-				let powerups = 
+				let powerups =
 					Self::rough_collide(*pos, ent, &powerups.0, &*config, EntityType::Powerup);
 
 				let union: HashSet<_> = players.chain(missiles).chain(powerups).collect();

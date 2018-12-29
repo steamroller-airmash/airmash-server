@@ -2,8 +2,8 @@ use specs::*;
 
 use component::channel::OnPowerupSpawn;
 use component::event::PowerupSpawnEvent;
-use component::time::MobDespawnTime;
 use component::flag::IsPowerup;
+use component::time::MobDespawnTime;
 use consts::config::MAP_SIZE;
 use types::*;
 
