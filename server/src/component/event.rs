@@ -215,7 +215,7 @@ pub struct MissileDespawn {
 pub enum EntityType {
 	Player,
 	Missile,
-	Upgrade,
+	Powerup,
 }
 
 #[derive(Copy, Clone, Debug)]

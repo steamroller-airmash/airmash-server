@@ -9,7 +9,6 @@ use component::flag::*;
 use types::collision::{Grid, HitCircle};
 use types::{Config, Position};
 use utils::MaybeInit;
-use SystemInfo;
 
 use systems;
 
@@ -30,6 +29,8 @@ pub struct TrackVisible {
 	player_despawn: MaybeInit<ReaderId<PlayerDespawn>>,
 	player_respawn: MaybeInit<ReaderId<PlayerRespawn>>,
 	missile_despawn: MaybeInit<ReaderId<MissileDespawn>>,
+	powerup_spawn: MaybeInit<ReaderId<PowerupSpawnEvent>>,
+	powerup_despawn: MaybeInit<ReaderId<PowerupDespawnEvent>>,
 }
 
 #[derive(SystemData)]
@@ -40,6 +41,7 @@ pub struct TrackVisibleData<'a> {
 	// FIXME: Add grid for upgrades
 	players: Read<'a, PlayerGrid>,
 	missiles: Read<'a, MissileGrid>,
+	powerups: Read<'a, PowerupGrid>,
 
 	// Various event channels that will introduce/remove
 	// visible players (the client already knows about these)
@@ -50,6 +52,8 @@ pub struct TrackVisibleData<'a> {
 	player_despawn: Read<'a, OnPlayerDespawn>,
 	player_respawn: Read<'a, OnPlayerRespawn>,
 	missile_despawn: Read<'a, OnMissileDespawn>,
+	powerup_spawn: Read<'a, OnPowerupSpawn>,
+	powerup_despawn: Read<'a, OnPowerupDespawn>,
 
 	leave_horizon: Write<'a, OnLeaveHorizon>,
 	enter_horizon: Write<'a, OnEnterHorizon>,
@@ -98,7 +102,7 @@ impl TrackVisible {
 					None => continue,
 				};
 
-				let viewed = data.players.0.rough_collide(HitCircle {
+				let viewed = data.players.rough_collide(HitCircle {
 					pos: pos,
 					rad: data.config.view_radius.into(),
 					ent: missile,
@@ -116,6 +120,41 @@ impl TrackVisible {
 						ty: EntityType::Missile,
 					});
 				}
+			}
+		}
+	}
+
+	fn add_powerups_spawned<'a>(&mut self, data: &TrackVisibleData<'a>) {
+		for evt in data.powerup_spawn.read(&mut self.powerup_spawn) {
+			let viewed = data.players.rough_collide(HitCircle {
+				pos: evt.pos,
+				rad: 0.0.into(),
+				ent: evt.mob,
+				layer: 0
+			});
+
+			
+				for player in viewed {
+					let entry = match self.visible.get_mut(&player) {
+						Some(e) => e,
+						None => continue,
+					};
+
+					entry.insert(VisibleEntry {
+						ent: evt.mob,
+						ty: EntityType::Powerup,
+					});
+				}
+		}
+	}
+
+	fn remove_powerups_despawned<'a>(&mut self, data: &TrackVisibleData<'a>) {
+		for evt in data.powerup_despawn.read(&mut self.powerup_despawn) {
+			for set in self.visible.values_mut() {
+				set.remove(&VisibleEntry {
+					ent: evt.mob,
+					ty: EntityType::Powerup
+				});
 			}
 		}
 	}
@@ -198,6 +237,7 @@ impl TrackVisible {
 
 		let ref players = data.players;
 		let ref missiles = data.missiles;
+		let ref powerups = data.powerups;
 		let ref config = data.config;
 
 		(&*data.entities, &data.pos, data.is_player.mask())
@@ -208,8 +248,10 @@ impl TrackVisible {
 					Self::rough_collide(*pos, ent, &players.0, &*config, EntityType::Player);
 				let missiles =
 					Self::rough_collide(*pos, ent, &missiles.0, &*config, EntityType::Missile);
+				let powerups = 
+					Self::rough_collide(*pos, ent, &powerups.0, &*config, EntityType::Powerup);
 
-				let union: HashSet<_> = players.chain(missiles).collect();
+				let union: HashSet<_> = players.chain(missiles).chain(powerups).collect();
 
 				let old;
 				if self.visible.contains_key(&ent) {
@@ -262,6 +304,8 @@ impl<'a> System<'a> for TrackVisible {
 		self.player_despawn = register_reader!(res, PlayerDespawn);
 		self.player_respawn = register_reader!(res, PlayerRespawn);
 		self.missile_despawn = register_reader!(res, MissileDespawn);
+		self.powerup_spawn = register_reader!(res, PowerupSpawnEvent);
+		self.powerup_despawn = register_reader!(res, PowerupDespawnEvent);
 
 		// These channels need higher limits due to the
 		// number of events going through them
@@ -274,8 +318,10 @@ impl<'a> System<'a> for TrackVisible {
 		// Note: Adds before removes
 		self.add_players_join(&data);
 		self.add_fired_missiles(&data);
+		self.add_powerups_spawned(&data);
 		self.add_players_respawned(&data);
 		self.remove_players_despawned(&data);
+		self.remove_powerups_despawned(&data);
 
 		self.send_events(&mut data);
 
@@ -287,23 +333,21 @@ impl<'a> System<'a> for TrackVisible {
 	}
 }
 
-impl SystemInfo for TrackVisible {
-	type Dependencies = (
-		systems::handlers::game::on_join::AllJoinHandlers,
-		systems::handlers::game::on_missile_despawn::KnownEventSources,
-		systems::handlers::game::on_player_despawn::KnownEventSources,
-		systems::handlers::game::on_leave::KnownEventSources,
-		systems::handlers::game::on_missile_fire::KnownEventSources,
-		systems::handlers::game::on_player_respawn::KnownEventSources,
-		systems::collision::GenMissileGrid,
-		systems::collision::GenPlaneGrid,
-	);
-
-	fn name() -> &'static str {
-		concat!(module_path!(), "::", line!())
-	}
-
-	fn new() -> Self {
-		Self::default()
+system_info! {
+	impl SystemInfo for TrackVisible {
+		type Dependencies = (
+			systems::handlers::game::on_join::AllJoinHandlers,
+			systems::handlers::game::on_missile_despawn::KnownEventSources,
+			systems::handlers::game::on_player_despawn::KnownEventSources,
+			systems::handlers::game::on_leave::KnownEventSources,
+			systems::handlers::game::on_missile_fire::KnownEventSources,
+			systems::handlers::game::on_player_respawn::KnownEventSources,
+			systems::handlers::game::on_powerup_spawn::KnownEventSources,
+			systems::handlers::game::on_powerup_despawn::KnownEventSources,
+			systems::collision::GenMissileGrid,
+			systems::collision::GenPlaneGrid,
+			systems::visibility::GenPlayerGrid,
+			systems::visibility::GenPowerupGrid,
+		);
 	}
 }
