@@ -140,20 +140,23 @@ pub struct AnyChatEvent {
 }
 
 #[derive(Copy, Clone, Debug)]
-pub struct UpgradePickupEvent {
+pub struct PowerupPickupEvent {
 	pub pos: Position,
 	pub upgrade: Entity,
 	pub player: Entity,
 }
 
+// Note: Includes upgrades
 #[derive(Copy, Clone, Debug)]
-pub struct UpgradeSpawnEvent {
-	pub upgrade: Entity,
+pub struct PowerupSpawnEvent {
+	pub mob: Entity,
+	pub ty: Mob,
 	pub pos: Position,
+	pub despawn: Instant,
 }
 
 #[derive(Copy, Clone, Debug)]
-pub struct UpgradeDespawnEvent {
+pub struct PowerupDespawnEvent {
 	pub upgrade: Entity,
 }
 

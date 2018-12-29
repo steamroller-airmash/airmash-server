@@ -20,6 +20,9 @@ pub struct LastShotTime(pub Instant);
 pub struct MobSpawnTime(pub Instant);
 
 #[derive(Clone, Debug, Copy, Component)]
+pub struct MobDespawnTime(pub Instant);
+
+#[derive(Clone, Debug, Copy, Component)]
 pub struct SpectateStartTime(pub Instant);
 
 #[derive(Clone, Debug, Copy, Component)]

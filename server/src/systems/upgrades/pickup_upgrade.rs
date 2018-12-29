@@ -19,7 +19,7 @@ pub struct PickupUpgrade {
 #[derive(SystemData)]
 pub struct PickupUpgradeData<'a> {
 	channel: Read<'a, OnPlayerUpgradeCollision>,
-	upgrade_channel: Write<'a, OnUpgradePickup>,
+	upgrade_channel: Write<'a, OnPowerupPickup>,
 	entities: Entities<'a>,
 
 	upgrades: WriteStorage<'a, Upgrades>,
@@ -53,7 +53,7 @@ impl<'a> System<'a> for PickupUpgrade {
 
 			data.upgrades.get_mut(player.ent).unwrap().unused += 1;
 
-			data.upgrade_channel.single_write(UpgradePickupEvent {
+			data.upgrade_channel.single_write(PowerupPickupEvent {
 				pos: upgrade.pos,
 				upgrade: upgrade.ent,
 				player: player.ent,
