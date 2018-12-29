@@ -3,6 +3,7 @@ use specs::*;
 use component::channel::OnPowerupSpawn;
 use component::event::PowerupSpawnEvent;
 use component::time::MobDespawnTime;
+use component::flag::IsPowerup;
 use consts::config::MAP_SIZE;
 use types::*;
 
@@ -23,6 +24,7 @@ pub struct SpawnShieldData<'a> {
 	mob: WriteStorage<'a, Mob>,
 	despawn_time: WriteStorage<'a, MobDespawnTime>,
 	pos: WriteStorage<'a, Position>,
+	is_powerup: WriteStorage<'a, IsPowerup>,
 
 	channel: Write<'a, OnPowerupSpawn>,
 }
@@ -46,6 +48,7 @@ impl<'a> System<'a> for SpawnShield {
 			.with(Position::new(x, y), &mut data.pos)
 			.with(Mob::Shield, &mut data.mob)
 			.with(MobDespawnTime(despawn), &mut data.despawn_time)
+			.with(IsPowerup, &mut data.is_powerup)
 			.build();
 
 		data.channel.single_write(PowerupSpawnEvent {
