@@ -72,11 +72,17 @@ const INV_BY: f32 = 1.0 / BUCKET_SIZE_Y;
 /// grid.rebuild_from(circles.into_iter());
 /// # }
 /// ```
-#[derive(Clone, Default, Debug)]
+#[derive(Clone, Debug)]
 pub struct Grid {
 	circles: Vec<HitCircle>,
 	buckets: Vec<(u32, u32)>,
 	max_r: f32,
+}
+
+impl Default for Grid {
+	fn default() -> Self {
+		Self::new(vec![])
+	}
 }
 
 fn bucket(a: &HitCircle) -> (u32, u32) {

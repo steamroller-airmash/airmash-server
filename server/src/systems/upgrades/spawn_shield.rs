@@ -5,14 +5,13 @@ use component::event::PowerupSpawnEvent;
 use component::time::MobDespawnTime;
 use consts::config::MAP_SIZE;
 use types::*;
-use SystemInfo;
 
 use std::time::{Duration, Instant};
 
 use rand::{self, Open01};
 
 // Chance that a shield will spawn on the map each frame.
-const SPAWN_CHANCE: f32 = 0.05;
+const SPAWN_CHANCE: f32 = 1.0; //0.05;
 const SHIELD_LIFETIME: u64 = 60;
 
 #[derive(Default)]
@@ -58,14 +57,8 @@ impl<'a> System<'a> for SpawnShield {
 	}
 }
 
-impl SystemInfo for SpawnShield {
-	type Dependencies = ();
-
-	fn name() -> &'static str {
-		concat!(module_path!(), "::", line!())
-	}
-
-	fn new() -> Self {
-		Self::default()
+system_info! {
+	impl SystemInfo for SpawnShield {
+		type Dependencies = ();
 	}
 }
