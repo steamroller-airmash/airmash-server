@@ -66,4 +66,6 @@ pub fn register<'a, 'b>(builder: Builder<'a, 'b>) -> Builder<'a, 'b> {
 		// Missile Despawn
 		.with_handler::<on_missile_despawn::SendMobDespawn>()
 		.with_handler::<on_missile_despawn::SendMobDespawnCoords>()
+		// Powerup Spawn
+		.with_handler::<on_powerup_spawn::SendPacket>()
 }

@@ -7,6 +7,8 @@
 
 #[macro_use]
 mod try_get;
+#[macro_use]
+mod system_info;
 mod tuple_array;
 
 mod event_handler;
