@@ -20,6 +20,7 @@ impl<'a> EventHandler<'a> for SendPacket {
 	type SystemData = SendPacketData<'a>;
 
 	fn on_event(&mut self, evt: &PowerupSpawnEvent, data: &mut Self::SystemData) {
+		info!("Shield spawned at {:?}", evt.pos);
 		data.conns.send_to_visible(
 			evt.pos,
 			MobUpdateStationary {

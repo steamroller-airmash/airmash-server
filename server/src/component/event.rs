@@ -146,7 +146,7 @@ pub struct PowerupPickupEvent {
 	pub player: Entity,
 }
 
-// Note: Includes upgrades
+/// Note: Includes upgrades
 #[derive(Copy, Clone, Debug)]
 pub struct PowerupSpawnEvent {
 	pub mob: Entity,
@@ -155,9 +155,15 @@ pub struct PowerupSpawnEvent {
 	pub despawn: Instant,
 }
 
+/// Note: Includes upgrades
 #[derive(Copy, Clone, Debug)]
 pub struct PowerupDespawnEvent {
-	pub upgrade: Entity,
+	pub mob: Entity,
+	pub ty: Mob,
+	pub pos: Position,
+	/// The player that picked up this powerup
+	/// (if it was picked up by a player)
+	pub player: Option<Entity>,
 }
 
 #[derive(Copy, Clone, Debug)]
