@@ -2,6 +2,7 @@ use specs::*;
 
 use types::collision::*;
 use types::*;
+use consts::config::POWERUP_RADIUS;
 
 use component::collision::PowerupGrid;
 use component::flag::IsPowerup;
@@ -26,7 +27,7 @@ impl<'a> System<'a> for GenPowerupGrid {
 			.join()
 			.map(|(ent, pos, ..)| HitCircle {
 				pos: *pos,
-				rad: Distance::new(0.0),
+				rad: Distance::new(POWERUP_RADIUS),
 				ent: ent,
 				layer: 0,
 			});
