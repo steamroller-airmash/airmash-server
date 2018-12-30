@@ -1,8 +1,8 @@
 use specs::*;
 
+use consts::config::POWERUP_RADIUS;
 use types::collision::*;
 use types::*;
-use consts::config::POWERUP_RADIUS;
 
 use component::collision::PowerupGrid;
 use component::flag::IsPowerup;
@@ -27,7 +27,7 @@ impl<'a> System<'a> for GenPowerupGrid {
 			.join()
 			.map(|(ent, pos, ..)| HitCircle {
 				pos: *pos,
-				rad: Distance::new(POWERUP_RADIUS),
+				rad: Distance::new(POWERUP_RADIUS.inner()),
 				ent: ent,
 				layer: 0,
 			});

@@ -3,7 +3,7 @@ mod explode;
 mod missile;
 mod plane;
 mod player_missile;
-mod upgrade;
+mod player_powerup;
 
 mod gen_missile_grid;
 mod gen_plane_grid;
@@ -21,4 +21,4 @@ pub use self::gen_powerup_grid::GenPowerupGrid;
 pub use self::missile::MissileTerrainCollisionSystem;
 pub use self::plane::PlaneCollisionSystem;
 pub use self::player_missile::PlayerMissileCollisionSystem;
-pub use self::upgrade::PlayerUpgradeCollisionSystem;
+pub use self::player_powerup::PlayerPowerupCollisionSystem;

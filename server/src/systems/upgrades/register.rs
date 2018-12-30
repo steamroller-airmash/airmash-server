@@ -4,7 +4,7 @@ use super::*;
 
 pub fn register<'a, 'b>(builder: Builder<'a, 'b>) -> Builder<'a, 'b> {
 	builder
-		.with::<Pickup>()
+		.with_handler::<Pickup>()
 		.with::<SpawnShield>()
 		.with::<Despawn>()
 }
