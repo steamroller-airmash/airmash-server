@@ -5,6 +5,7 @@ use std::cmp::Ordering;
 use std::mem;
 
 use types::collision::{Collision, HitCircle};
+use types::{Distance, Position};
 
 const BUCKETS_X: u32 = BUCKETS_Y * 2;
 const BUCKETS_Y: u32 = 64;
@@ -72,23 +73,29 @@ const INV_BY: f32 = 1.0 / BUCKET_SIZE_Y;
 /// grid.rebuild_from(circles.into_iter());
 /// # }
 /// ```
-#[derive(Clone, Default, Debug)]
+#[derive(Clone, Debug)]
 pub struct Grid {
 	circles: Vec<HitCircle>,
 	buckets: Vec<(u32, u32)>,
 	max_r: f32,
 }
 
-fn bucket(a: &HitCircle) -> (u32, u32) {
-	let x = a.pos.x.inner().min(BOUND_X).max(-BOUND_X) + BOUND_X;
-	let y = a.pos.y.inner().min(BOUND_Y).max(-BOUND_Y) + BOUND_Y;
+impl Default for Grid {
+	fn default() -> Self {
+		Self::new(vec![])
+	}
+}
+
+fn bucket(pos: Position) -> (u32, u32) {
+	let x = pos.x.inner().min(BOUND_X).max(-BOUND_X) + BOUND_X;
+	let y = pos.y.inner().min(BOUND_Y).max(-BOUND_Y) + BOUND_Y;
 
 	((x * INV_BX) as u32, (y * INV_BY) as u32)
 }
 
 fn spatial_sort(a: &HitCircle, b: &HitCircle) -> Ordering {
-	let bounds_a = bucket(a);
-	let bounds_b = bucket(b);
+	let bounds_a = bucket(a.pos);
+	let bounds_b = bucket(b.pos);
 
 	match bounds_a.1.cmp(&bounds_b.1) {
 		Ordering::Equal => bounds_a.0.cmp(&bounds_b.0),
@@ -107,7 +114,7 @@ impl Grid {
 			for x in 0..BUCKETS_X {
 				let start = i;
 
-				while i < circles.len() && (x, y) == bucket(&circles[i]) {
+				while i < circles.len() && (x, y) == bucket(circles[i].pos) {
 					if circles[i].rad.inner() > max_r {
 						max_r = circles[i].rad.inner();
 					}
@@ -183,7 +190,7 @@ impl Grid {
 		I: Iterator<Item = HitCircle>,
 	{
 		for hc in b {
-			let b = bucket(&hc);
+			let b = bucket(hc.pos);
 
 			// Largest radii that need to be checked in each direction.
 			// If this is larger than it needs to be, then the algorithm
@@ -217,11 +224,50 @@ impl Grid {
 		}
 	}
 
+	/// Test whether the hit circle defined by the given
+	/// position and radius collides. This method doesn't
+	/// check the layer of the hit circle.
+	pub fn does_collide(&self, pos: Position, rad: Distance) -> bool {
+		let b = bucket(pos);
+
+		// Largest radii that need to be checked in each direction.
+		// If this is larger than it needs to be, then the algorithm
+		// will be slower, but if it's too small then collisions that
+		// are supposed to be found will be missed
+		let rx = ((rad.inner() + self.max_r + BUCKET_SIZE_X) * INV_BX) as u32;
+		let ry = ((rad.inner() + self.max_r + BUCKET_SIZE_Y) * INV_BY) as u32;
+		let range_x = (
+			if rx > b.0 { 0 } else { b.0 - rx },
+			(rx + b.0 + 1).min(BUCKETS_X - 1),
+		);
+		let range_y = (
+			if ry > b.1 { 0 } else { b.1 - ry },
+			(ry + b.1 + 1).min(BUCKETS_Y - 1),
+		);
+
+		for y in range_y.0..range_y.1 {
+			let (start, _) = self.buckets[(y * BUCKETS_X + range_x.0) as usize];
+			let (end, endlen) = self.buckets[(y * BUCKETS_X + range_x.1) as usize];
+			let end = end + endlen;
+			for i in start..end {
+				let hc = self.circles[i as usize];
+				let r = hc.rad + rad;
+				let dist2 = (pos - hc.pos).length2();
+
+				if dist2 < r * r {
+					return true;
+				}
+			}
+		}
+
+		false
+	}
+
 	/// Indicate whether a hit circle collides with
 	/// any circles within the grid. (This is only
 	/// an approximation.)
 	pub fn test_collide(&self, hc: HitCircle) -> bool {
-		let b = bucket(&hc);
+		let b = bucket(hc.pos);
 
 		// Largest radii that need to be checked in each direction.
 		// If this is larger than it needs to be, then the algorithm
@@ -253,7 +299,7 @@ impl Grid {
 	/// Get all entities that the hit circle could potentially
 	/// collide with
 	pub fn rough_collide(&self, hc: HitCircle) -> HashSet<Entity> {
-		let b = bucket(&hc);
+		let b = bucket(hc.pos);
 
 		// Largest radii that need to be checked in each direction.
 		// If this is larger than it needs to be, then the algorithm

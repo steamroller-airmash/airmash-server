@@ -49,7 +49,7 @@ impl<'a> System<'a> for KeyHandler {
 					None => continue,
 				};
 
-				let keystate = data.keystate.get_mut(player).unwrap();
+				let keystate = try_get!(player, mut data.keystate);
 
 				debug!(
 					target: "server",

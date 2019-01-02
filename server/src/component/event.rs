@@ -89,8 +89,6 @@ pub struct PlayerMissileCollision(pub Collision);
 pub struct MissileTerrainCollision(pub Collision);
 #[derive(Copy, Clone, Debug, Hash, PartialEq, Eq)]
 pub struct PlayerPowerupCollision(pub Collision);
-#[derive(Copy, Clone, Debug, Hash, PartialEq, Eq)]
-pub struct PlayerUpgradeCollision(pub Collision);
 
 pub struct TimerEvent {
 	pub ty: TimerEventType,
@@ -140,21 +138,30 @@ pub struct AnyChatEvent {
 }
 
 #[derive(Copy, Clone, Debug)]
-pub struct UpgradePickupEvent {
+pub struct PowerupPickupEvent {
 	pub pos: Position,
 	pub upgrade: Entity,
 	pub player: Entity,
 }
 
+/// Note: Includes upgrades
 #[derive(Copy, Clone, Debug)]
-pub struct UpgradeSpawnEvent {
-	pub upgrade: Entity,
+pub struct PowerupSpawnEvent {
+	pub mob: Entity,
+	pub ty: Mob,
 	pub pos: Position,
+	pub despawn: Instant,
 }
 
+/// Note: Includes upgrades
 #[derive(Copy, Clone, Debug)]
-pub struct UpgradeDespawnEvent {
-	pub upgrade: Entity,
+pub struct PowerupDespawnEvent {
+	pub mob: Entity,
+	pub ty: Mob,
+	pub pos: Position,
+	/// The player that picked up this powerup
+	/// (if it was picked up by a player)
+	pub player: Option<Entity>,
 }
 
 #[derive(Copy, Clone, Debug)]
@@ -206,7 +213,7 @@ pub struct MissileDespawn {
 pub enum EntityType {
 	Player,
 	Missile,
-	Upgrade,
+	Powerup,
 }
 
 #[derive(Copy, Clone, Debug)]

@@ -48,16 +48,15 @@ pub type OnLeaveHorizon = EventChannel<LeaveHorizon>;
 pub type OnEnterHorizon = EventChannel<EnterHorizon>;
 
 // Upgrade Events
-pub type OnUpgradeSpawn = EventChannel<UpgradeSpawnEvent>;
-pub type OnUpgradePickup = EventChannel<UpgradePickupEvent>;
-pub type OnUpgradeDespawn = EventChannel<UpgradeDespawnEvent>;
+pub type OnPowerupSpawn = EventChannel<PowerupSpawnEvent>;
+pub type OnPowerupPickup = EventChannel<PowerupPickupEvent>;
+pub type OnPowerupDespawn = EventChannel<PowerupDespawnEvent>;
 
 // Collision events
 pub type OnPlayerTerrainCollision = EventChannel<PlayerTerrainCollision>;
 pub type OnPlayerMissileCollision = EventChannel<PlayerMissileCollision>;
 pub type OnPlayerPowerupCollision = EventChannel<PlayerPowerupCollision>;
 pub type OnMissileTerrainCollision = EventChannel<MissileTerrainCollision>;
-pub type OnPlayerUpgradeCollision = EventChannel<PlayerUpgradeCollision>;
 
 // Internal events
 pub(crate) type OnMessage = EventChannel<Message>;
@@ -101,15 +100,11 @@ pub type OnPowerupExpiredReader = ReaderId<PowerupExpired>;
 pub type OnPlayerPowerupReader = ReaderId<PlayerPowerup>;
 pub type OnPlayerDespawnReader = ReaderId<PlayerDespawn>;
 
-// Upgrade Events
-pub type OnUpgradePickupReader = ReaderId<UpgradePickupEvent>;
-
 // Collision events
 pub type OnPlayerMissileCollisionReader = ReaderId<PlayerMissileCollision>;
 pub type OnPlayerTerrainCollisionReader = ReaderId<PlayerTerrainCollision>;
 pub type OnPlayerPowerupCollisionReader = ReaderId<PlayerPowerupCollision>;
 pub type OnMissileTerrainCollisionReader = ReaderId<MissileTerrainCollision>;
-pub type OnPlayerUpgradeCollisionReader = ReaderId<PlayerUpgradeCollision>;
 
 // Internal events
 pub(crate) type OnMessageReader = ReaderId<Message>;

@@ -37,7 +37,7 @@ impl<'a> System<'a> for CheckExpired {
 
 		let mut ents = vec![];
 
-		(&*entities, &mut powerups, is_alive.mask())
+		(&*entities, &powerups, is_alive.mask())
 			.join()
 			.filter(|(_, powerup, ..)| powerup.end_time < this_frame.0)
 			.map(|(ent, powerup, ..)| {
