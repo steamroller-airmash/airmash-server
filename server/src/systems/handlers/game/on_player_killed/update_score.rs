@@ -68,9 +68,7 @@ impl<'a> EventHandler<'a> for UpdateScore {
 		{
 			let kills = try_get!(evt.killer, mut data.total_kills);
 			let deaths = try_get!(evt.player, mut data.total_deaths);
-
-			//FIXME: Figure out proper bounty transfer formula
-			let transfer = (try_get!(evt.player, mut data.score).0 + 3) / 4;
+			let transfer = (try_get!(evt.player, mut data.score).0 + 4) / 5;
 
 			try_get!(evt.player, mut data.score).0 -= transfer;
 			try_get!(evt.killer, mut data.score).0 += transfer + 25;
