@@ -1,12 +1,12 @@
 use specs::prelude::*;
 use specs::world::EntitiesRes;
 
-use types::collision::*;
-use types::*;
-
 use component::channel::OnMissileTerrainCollision;
 use component::event::MissileTerrainCollision;
 use component::flag::IsMissile;
+use systems;
+use types::collision::*;
+use types::*;
 
 #[derive(Default)]
 pub struct MissileTerrainCollisionSystem {
@@ -15,13 +15,13 @@ pub struct MissileTerrainCollisionSystem {
 
 #[derive(SystemData)]
 pub struct MissileTerrainCollisionSystemData<'a> {
-	pub entities: Entities<'a>,
-	pub channel: Write<'a, OnMissileTerrainCollision>,
+	entities: Entities<'a>,
+	channel: Write<'a, OnMissileTerrainCollision>,
 
-	pub pos: ReadStorage<'a, Position>,
-	pub mob: ReadStorage<'a, Mob>,
-	pub team: ReadStorage<'a, Team>,
-	pub flag: ReadStorage<'a, IsMissile>,
+	pos: ReadStorage<'a, Position>,
+	mob: ReadStorage<'a, Mob>,
+	team: ReadStorage<'a, Team>,
+	flag: ReadStorage<'a, IsMissile>,
 }
 
 impl MissileTerrainCollisionSystem {
@@ -74,17 +74,8 @@ impl<'a> System<'a> for MissileTerrainCollisionSystem {
 	}
 }
 
-use dispatch::SystemInfo;
-use systems::PositionUpdate;
-
-impl SystemInfo for MissileTerrainCollisionSystem {
-	type Dependencies = PositionUpdate;
-
-	fn name() -> &'static str {
-		concat!(module_path!(), "::", line!())
-	}
-
-	fn new() -> Self {
-		Self::new()
+system_info! {
+	impl SystemInfo for MissileTerrainCollisionSystem {
+		type Dependencies = systems::PositionUpdate;
 	}
 }
