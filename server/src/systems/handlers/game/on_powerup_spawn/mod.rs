@@ -6,4 +6,4 @@ use systems;
 
 pub type AllPowerupSpawnHandlers = (SendPacket);
 
-pub type KnownEventSources = (systems::upgrades::SpawnShield);
+pub type KnownEventSources = (systems::powerups::SpawnShield);
