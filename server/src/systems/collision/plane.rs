@@ -18,12 +18,12 @@ pub struct PlaneCollisionSystem {
 
 #[derive(SystemData)]
 pub struct PlaneCollisionSystemData<'a> {
-	pub entities: Entities<'a>,
-	pub collisions: Write<'a, OnPlayerTerrainCollision>,
-	pub pos: ReadStorage<'a, Position>,
-	pub rot: ReadStorage<'a, Rotation>,
-	pub planes: ReadStorage<'a, Plane>,
-	pub teams: ReadStorage<'a, Team>,
+	entities: Entities<'a>,
+	collisions: Write<'a, OnPlayerTerrainCollision>,
+	pos: ReadStorage<'a, Position>,
+	rot: ReadStorage<'a, Rotation>,
+	planes: ReadStorage<'a, Plane>,
+	teams: ReadStorage<'a, Team>,
 }
 
 impl PlaneCollisionSystem {
