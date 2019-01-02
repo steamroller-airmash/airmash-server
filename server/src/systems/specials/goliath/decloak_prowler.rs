@@ -9,6 +9,7 @@ use component::flag::IsPlayer;
 use component::time::{LastStealthTime, ThisFrame};
 use systems::specials::config::*;
 
+use protocol::server::EventStealth;
 use utils::{EventHandler, EventHandlerTypeProvider};
 
 /// Send [`EventRepel`][0] when a goliath uses it's special.
@@ -25,6 +26,7 @@ pub struct DecloakProwler;
 pub struct DecloakProwlerData<'a> {
 	entities: Entities<'a>,
 	this_frame: Read<'a, ThisFrame>,
+	conns: SendToAll<'a>,
 
 	pos: ReadStorage<'a, Position>,
 	team: WriteStorage<'a, Team>,
@@ -32,6 +34,9 @@ pub struct DecloakProwlerData<'a> {
 	last_stealth: WriteStorage<'a, LastStealthTime>,
 	is_alive: IsAlive<'a>,
 	is_player: ReadStorage<'a, IsPlayer>,
+
+	energy: ReadStorage<'a, Energy>,
+	energy_regen: ReadStorage<'a, EnergyRegen>,
 }
 
 impl EventHandlerTypeProvider for DecloakProwler {
@@ -76,6 +81,16 @@ impl<'a> EventHandler<'a> for DecloakProwler {
 			data.last_stealth
 				.insert(player, LastStealthTime(data.this_frame.0))
 				.unwrap();
+
+			data.conns.send_to_player(
+				player,
+				EventStealth {
+					id: player.into(),
+					energy: *try_get!(player, data.energy),
+					energy_regen: *try_get!(player, data.energy_regen),
+					state: false,
+				},
+			);
 		}
 	}
 }
