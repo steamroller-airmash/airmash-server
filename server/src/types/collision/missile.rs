@@ -18,11 +18,7 @@ lazy_static! {
 			MobType::ProwlerMissile,
 		];
 
-		let powerups = [
-			MobType::Upgrade,
-			MobType::Shield,
-			MobType::Inferno,
-		];
+		let powerups = [MobType::Upgrade, MobType::Shield, MobType::Inferno];
 
 		for val in missiles.into_iter() {
 			map.insert(*val, vec![(Position::default(), Distance::new(1.0))]);

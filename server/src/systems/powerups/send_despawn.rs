@@ -45,8 +45,8 @@ impl<'a> EventHandler<'a> for SendDespawn {
 			upgrade.pos,
 			MobDespawn {
 				id: upgrade.ent.into(),
-				ty: DespawnType::Collided
-			}
+				ty: DespawnType::Collided,
+			},
 		);
 	}
 }

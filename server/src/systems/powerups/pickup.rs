@@ -6,9 +6,9 @@ use types::*;
 use component::channel::*;
 use component::event::*;
 use component::flag::*;
+use protocol::PowerupType;
 use systems;
 use utils::*;
-use protocol::PowerupType;
 
 use std::time::Instant;
 
@@ -48,23 +48,25 @@ impl<'a> EventHandler<'a> for Pickup {
 		let (duration, ty) = match *try_get!(upgrade.ent, data.mobs) {
 			Mob::Shield => (data.config.shield_duration, PowerupType::Shield),
 			Mob::Inferno => (data.config.inferno_duration, PowerupType::Inferno),
-			_ => return
+			_ => return,
 		};
 
-		data.powerups.insert(
-			player.ent,
-			Powerups {
-				end_time: Instant::now() + duration,
-				ty
-			}
-		).unwrap();
+		data.powerups
+			.insert(
+				player.ent,
+				Powerups {
+					end_time: Instant::now() + duration,
+					ty,
+				},
+			)
+			.unwrap();
 
 		data.entities.delete(upgrade.ent).unwrap();
 
 		data.upgrade_channel.single_write(PlayerPowerup {
 			player: player.ent,
 			duration,
-			ty
+			ty,
 		})
 	}
 }

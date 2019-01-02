@@ -32,12 +32,7 @@ impl<'a> System<'a> for PlayerPowerupCollisionSystem {
 		let mut channel = data.channel;
 		let grid = &data.grid.0;
 
-		let collisions = (
-			&*data.ent,
-			&data.pos,
-			&data.mob,
-			data.is_powerup.mask(),
-		)
+		let collisions = (&*data.ent, &data.pos, &data.mob, data.is_powerup.mask())
 			.par_join()
 			.map(|(ent, pos, mob, ..)| {
 				let it = COLLIDERS[mob].iter().map(|(offset, rad)| HitCircle {
