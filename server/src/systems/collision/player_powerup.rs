@@ -21,8 +21,6 @@ pub struct PlayerPowerupCollisionSystemData<'a> {
 	grid: Read<'a, PlaneGrid>,
 
 	pos: ReadStorage<'a, Position>,
-	team: ReadStorage<'a, Team>,
-
 	mob: ReadStorage<'a, Mob>,
 	is_powerup: ReadStorage<'a, IsPowerup>,
 }
@@ -37,16 +35,15 @@ impl<'a> System<'a> for PlayerPowerupCollisionSystem {
 		let collisions = (
 			&*data.ent,
 			&data.pos,
-			&data.team,
 			&data.mob,
 			data.is_powerup.mask(),
 		)
 			.par_join()
-			.map(|(ent, pos, team, mob, ..)| {
+			.map(|(ent, pos, mob, ..)| {
 				let it = COLLIDERS[mob].iter().map(|(offset, rad)| HitCircle {
 					pos: *pos + *offset,
 					rad: *rad,
-					layer: team.0,
+					layer: 0,
 					ent: ent,
 				});
 
