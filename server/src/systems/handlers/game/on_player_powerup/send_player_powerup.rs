@@ -31,7 +31,7 @@ impl<'a> EventHandler<'a> for SendPlayerPowerup {
 			evt.player,
 			ServerPlayerPowerup {
 				duration: duration as u32,
-				ty: PowerupType::Shield,
+				ty: evt.ty,
 			},
 		);
 	}
