@@ -52,7 +52,7 @@ impl<'a> System<'a> for MissileTerrainCollisionSystem {
 			&data.team,
 			&data.flag,
 		)
-			.par_join()
+			.join()
 			.map(|(ent, pos, mob, team, _)| {
 				let it = COLLIDERS[mob].iter().map(|(offset, rad)| HitCircle {
 					pos: *pos + *offset,
