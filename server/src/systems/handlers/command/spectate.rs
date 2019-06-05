@@ -36,6 +36,7 @@ pub struct SpectateData<'a> {
 	pub entities: Entities<'a>,
 	pub health: ReadStorage<'a, Health>,
 	pub last_key: ReadStorage<'a, LastKeyTime>,
+	pub velocity: ReadStorage<'a, Velocity>,
 }
 
 impl EventHandlerTypeProvider for Spectate {
@@ -60,6 +61,7 @@ impl<'a> EventHandler<'a> for Spectate {
 			spec_target,
 			health,
 			last_key,
+			velocity,
 		} = data;
 
 		let &(conn, ref packet) = evt;
@@ -78,10 +80,11 @@ impl<'a> EventHandler<'a> for Spectate {
 			Err(_) => return,
 		};
 
-		let allowed = !check_allowed(
+		let allowed = check_allowed(
 			is_spec.get(player).is_some(),
 			health.get(player).unwrap(),
 			last_key.get(player).unwrap(),
+			velocity.get(player).unwrap(),
 			&*this_frame,
 		);
 
@@ -209,6 +212,7 @@ fn check_allowed(
 	is_spec: bool,
 	health: &Health,
 	last_key: &LastKeyTime,
+	velocity: &Vector2<Speed>,
 	this_frame: &ThisFrame,
 ) -> bool {
 	// Note to my future self and maintainers:
@@ -222,17 +226,36 @@ fn check_allowed(
 	// at any time. Note that is_dead will prevent respawning
 	// during the first 2 seconds after going into spec.
 	if is_spec {
+		println!("spectate allowed, already speccing");
 		return true;
+	}
+
+	let smin = Speed::new(-0.1);
+	let smax = Speed::new(0.1);
+	if !(smin < velocity.x && smax > velocity.x) {
+		println!("spectate denied, xvel too high X {} {}", velocity.x, velocity.y);
+		return false;
+	}
+
+	if !(smin < velocity.y && smax > velocity.y) {
+		println!("spectate denied, yvel too high {} {}", velocity.x, velocity.y);
+		return false;
 	}
 
 	// Players that don't have full health may not respawn
 	if *health < Health::new(1.0) {
+		println!("spectate denied, not 100% health");
 		return false;
 	}
 
 	// Players that have not pressed a key within the last
 	// 2 seconds may not respawn.
-	!(this_frame.0 - last_key.0 > Duration::from_secs(2))
+	if (this_frame.0 - last_key.0) < Duration::from_secs(2) {
+		println!("spectate denied, pressed key too recently");
+		return false;
+	}
+
+	true
 }
 
 fn parse_spectate_data<'a>(s: &'a str) -> Result<SpectateTarget, ()> {
