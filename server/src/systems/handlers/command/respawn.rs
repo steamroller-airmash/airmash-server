@@ -133,20 +133,20 @@ fn check_allowed(
 	//  fashion. This is a lot more clear and I'd prefer
 	//  if it stayed that way.
 
-	// A player may not respawn during the 2s cooldown
-	// period after dying (this is represented by the
-	// IsDead flag)
-	if is_dead {
-		println!("respawn denied - 2s cooldown after death");
-		return false;
-	}
-
 	// If the player is spectating then they may respawn
 	// at any time. Note that is_dead will prevent respawning
 	// during the first 2 seconds after going into spec.
 	if is_spec {
 		println!("respawn allowed - is speccing");
 		return true;
+	}
+
+	// A player may not respawn during the 2s cooldown
+	// period after dying (this is represented by the
+	// IsDead flag)
+	if is_dead {
+		println!("respawn denied - 2s cooldown after death");
+		return false;
 	}
 
 	let smin = Speed::new(-0.1);
