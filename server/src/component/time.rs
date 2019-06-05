@@ -38,6 +38,9 @@ pub struct LastStealthTime(pub Instant);
 pub struct LastRepelTime(pub Instant);
 
 #[derive(Clone, Debug, Copy, Component)]
+pub struct LastRespawnTime(pub Instant);
+
+#[derive(Clone, Debug, Copy, Component)]
 pub struct LastScoreBoardTime(pub Instant);
 
 macro_rules! impl_default {

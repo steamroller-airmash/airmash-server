@@ -27,6 +27,7 @@ pub struct Respawn;
 pub struct RespawnData<'a> {
 	health: WriteStorage<'a, Health>,
 	planes: WriteStorage<'a, Plane>,
+	last_respawn: WriteStorage<'a, LastRespawnTime>,
 	is_spec: WriteStorage<'a, IsSpectating>,
 	is_dead: WriteStorage<'a, IsDead>,
 	last_key: ReadStorage<'a, LastKeyTime>,
@@ -68,6 +69,7 @@ impl<'a> EventHandler<'a> for Respawn {
 			data.health.get(player).unwrap(),
 			data.last_key.get(player).unwrap(),
 			data.velocity.get(player).unwrap(),
+			data.last_respawn.get(player),
 			&*data.this_frame,
 		);
 
@@ -90,6 +92,9 @@ impl<'a> EventHandler<'a> for Respawn {
 
 		data.planes.insert(player, plane).unwrap();
 		data.is_spec.remove(player);
+		data.last_respawn.insert(player,
+			LastRespawnTime(data.this_frame.0))
+			.unwrap();
 		// Prevent updates from happening until the actual respawn
 		// process is finished.
 		data.is_dead.insert(player, IsDead).unwrap();
@@ -124,6 +129,7 @@ fn check_allowed(
 	health: &Health,
 	last_key: &LastKeyTime,
 	velocity: &Vector2<Speed>,
+	last_respawn: Option<&LastRespawnTime>,
 	this_frame: &ThisFrame,
 ) -> bool {
 	// Note to my future self and maintainers:
@@ -147,6 +153,13 @@ fn check_allowed(
 	if is_dead {
 		println!("respawn denied - 2s cooldown after death");
 		return false;
+	}
+
+	if let Some(time) = last_respawn {
+		if (this_frame.0 - time.0) < Duration::from_secs(2) {
+			println!("respawn denied - respawned too recently");
+			return false;
+		}
 	}
 
 	let smin = Speed::new(-0.1);
