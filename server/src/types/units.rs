@@ -1,4 +1,4 @@
-use std::sync::atomic::{AtomicUsize, Ordering, ATOMIC_USIZE_INIT};
+use std::sync::atomic::{AtomicUsize, Ordering};
 
 use specs::{Component, DenseVecStorage};
 
@@ -26,7 +26,7 @@ pub struct ConnectionId(pub usize);
 )]
 pub struct UpgradeCount(pub u16);
 
-static CONNECTION_ID: AtomicUsize = ATOMIC_USIZE_INIT;
+static CONNECTION_ID: AtomicUsize = AtomicUsize::new(0);
 
 impl ConnectionId {
 	pub fn new() -> Self {

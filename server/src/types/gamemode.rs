@@ -26,10 +26,10 @@ pub trait GameMode: Any + Sync + Send {
 }
 
 pub trait GameModeWrapper: Send + Sync {
-	fn as_gamemode_ref<'a>(&'a self) -> &'a GameMode;
-	fn as_gamemode_mut<'a>(&'a mut self) -> &'a mut GameMode;
-	fn as_any_ref<'a>(&'a self) -> &'a Any;
-	fn as_any_mut<'a>(&'a mut self) -> &'a mut Any;
+	fn as_gamemode_ref<'a>(&'a self) -> &'a dyn GameMode;
+	fn as_gamemode_mut<'a>(&'a mut self) -> &'a mut dyn GameMode;
+	fn as_any_ref<'a>(&'a self) -> &'a dyn Any;
+	fn as_any_mut<'a>(&'a mut self) -> &'a mut dyn Any;
 }
 
 pub struct GameModeWrapperImpl<T: GameMode + Sync + Send + 'static> {
@@ -40,33 +40,33 @@ impl<T> GameModeWrapper for GameModeWrapperImpl<T>
 where
 	T: GameMode + Sync + Send + 'static,
 {
-	fn as_gamemode_ref<'a>(&'a self) -> &'a GameMode {
+	fn as_gamemode_ref<'a>(&'a self) -> &'a dyn GameMode {
 		&self.val
 	}
-	fn as_gamemode_mut<'a>(&'a mut self) -> &'a mut GameMode {
+	fn as_gamemode_mut<'a>(&'a mut self) -> &'a mut dyn GameMode {
 		&mut self.val
 	}
 
-	fn as_any_ref<'a>(&'a self) -> &'a Any {
+	fn as_any_ref<'a>(&'a self) -> &'a dyn Any {
 		&self.val
 	}
-	fn as_any_mut<'a>(&'a mut self) -> &'a mut Any {
+	fn as_any_mut<'a>(&'a mut self) -> &'a mut dyn Any {
 		&mut self.val
 	}
 }
 
-pub struct GameModeInternal(pub Box<GameModeWrapper>);
+pub struct GameModeInternal(pub Box<dyn GameModeWrapper>);
 
 pub struct GameModeWriter<'a, T: ?Sized> {
 	inner: WriteExpect<'a, GameModeInternal>,
 	marker: PhantomData<T>,
 }
 
-impl<'a> GameModeWriter<'a, GameMode> {
-	pub fn get(&self) -> &GameMode {
+impl<'a> GameModeWriter<'a, dyn GameMode> {
+	pub fn get(&self) -> &dyn GameMode {
 		self.inner.0.as_gamemode_ref()
 	}
-	pub fn get_mut(&mut self) -> &mut GameMode {
+	pub fn get_mut(&mut self) -> &mut dyn GameMode {
 		self.inner.0.as_gamemode_mut()
 	}
 }

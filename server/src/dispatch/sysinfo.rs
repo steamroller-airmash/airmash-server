@@ -10,7 +10,7 @@ pub trait SystemInfo {
 
 	fn name() -> &'static str;
 	fn new() -> Self;
-	fn new_args(_args: Box<Any>) -> Self
+	fn new_args(_args: Box<dyn Any>) -> Self
 	where
 		Self: Sized,
 	{

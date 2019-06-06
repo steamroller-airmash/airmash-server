@@ -68,7 +68,7 @@ impl<'a> System<'a> for LoginHandler {
 			}
 
 			let upstream = self.upstream.clone();
-			let mut is_bot = conninfo.origin.is_none();
+			let is_bot = conninfo.origin.is_none();
 
 			if let Some(upstream) = upstream {
 				let url = format!("http://{}/{}", upstream, conninfo.addr);

@@ -30,4 +30,6 @@ pub fn register<'a, 'b>(disp: Builder<'a, 'b>) -> Builder<'a, 'b> {
 		.with_registrar(powerups::register)
 		// Visibility
 		.with_registrar(visibility::register)
+		// Timers
+		.with_registrar(timers::register)
 }

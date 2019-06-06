@@ -98,7 +98,7 @@ where
 		unimplemented!()
 	}
 
-	fn new_args(args: Box<Any>) -> Self {
+	fn new_args(args: Box<dyn Any>) -> Self {
 		Self {
 			reader: MaybeInit::uninit(),
 			handler: T::new_args(args),

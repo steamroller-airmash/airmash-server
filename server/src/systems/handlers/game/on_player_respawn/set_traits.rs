@@ -34,7 +34,7 @@ pub struct SetTraitsData<'a> {
 	energy: WriteStorage<'a, Energy>,
 	is_dead: WriteStorage<'a, IsDead>,
 
-	gamemode: GameModeWriter<'a, GameMode>,
+	gamemode: GameModeWriter<'a, dyn GameMode>,
 }
 
 impl EventHandlerTypeProvider for SetTraits {

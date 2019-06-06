@@ -121,7 +121,7 @@ impl SystemInfo for PacketHandler {
 		unimplemented!();
 	}
 
-	fn new_args(mut a: Box<Any>) -> Self {
+	fn new_args(mut a: Box<dyn Any>) -> Self {
 		let r = a.downcast_mut::<Receiver<ConnectionEvent>>().unwrap();
 		Self::new(mem::replace(r, channel().1))
 	}

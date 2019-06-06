@@ -27,7 +27,7 @@ pub struct LoginSystemData<'a> {
 	pub startime: Read<'a, StartTime>,
 	pub player_join: Write<'a, OnPlayerJoin>,
 	pub config: Read<'a, Config>,
-	pub gamemode: GameModeWriter<'a, GameMode>,
+	pub gamemode: GameModeWriter<'a, dyn GameMode>,
 }
 
 pub struct LoginHandler {

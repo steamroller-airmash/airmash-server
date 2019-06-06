@@ -1,4 +1,4 @@
-#![feature(try_from, try_trait)]
+#![feature(try_trait)]
 
 // Crates with macros
 #[macro_use]

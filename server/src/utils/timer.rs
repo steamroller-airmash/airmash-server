@@ -1,8 +1,8 @@
 //! `TimerEventType`
 
-use std::sync::atomic::{AtomicUsize, Ordering, ATOMIC_USIZE_INIT};
+use std::sync::atomic::{AtomicUsize, Ordering};
 
-static TIMER_EVENT_TYPE_COUNTER: AtomicUsize = ATOMIC_USIZE_INIT;
+static TIMER_EVENT_TYPE_COUNTER: AtomicUsize = AtomicUsize::new(0);
 
 /// An identifier for different types of timer events.
 #[derive(Copy, Clone, Debug, Eq, PartialEq, Hash)]

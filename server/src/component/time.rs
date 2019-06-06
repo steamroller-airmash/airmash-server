@@ -37,6 +37,9 @@ pub struct LastStealthTime(pub Instant);
 #[derive(Clone, Debug, Copy, Component)]
 pub struct LastRepelTime(pub Instant);
 
+#[derive(Clone, Debug, Copy, Component)]
+pub struct LastScoreBoardTime(pub Instant);
+
 macro_rules! impl_default {
 	{
 		$( $name:ident, )*
@@ -55,4 +58,5 @@ impl_default! {
 	LastFrame,
 	ThisFrame,
 	StartTime,
+	LastScoreBoardTime,
 }

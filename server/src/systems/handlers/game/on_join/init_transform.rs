@@ -13,7 +13,7 @@ pub struct InitTransform;
 
 #[derive(SystemData)]
 pub struct InitTransformData<'a> {
-	gamemode: GameModeWriter<'a, GameMode>,
+	gamemode: GameModeWriter<'a, dyn GameMode>,
 
 	pos: WriteStorage<'a, Position>,
 	rot: WriteStorage<'a, Rotation>,

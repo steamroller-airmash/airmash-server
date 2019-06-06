@@ -18,7 +18,7 @@ pub struct SendLogin;
 pub struct SendLoginData<'a> {
 	conns: SendToPlayer<'a>,
 	entities: Entities<'a>,
-	gamemode: GameModeWriter<'a, GameMode>,
+	gamemode: GameModeWriter<'a, dyn GameMode>,
 	clock: ReadClock<'a>,
 
 	pos: ReadStorage<'a, Position>,

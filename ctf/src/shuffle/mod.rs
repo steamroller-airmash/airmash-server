@@ -15,6 +15,6 @@ pub trait ShuffleProvider {
 	fn shuffle(&self, infos: Vec<PlayerShuffleInfo>) -> Vec<TeamChangeEntry>;
 }
 
-pub fn get_shuffle() -> Box<ShuffleProvider + Sync + Send> {
+pub fn get_shuffle() -> Box<dyn ShuffleProvider + Sync + Send> {
 	Box::new(AlternatingShuffle)
 }

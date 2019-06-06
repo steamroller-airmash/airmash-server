@@ -18,7 +18,7 @@ pub trait AbstractThreadLocalBuilder<'b> {
 }
 
 pub struct SystemBuilder<T> {
-	args: Box<Any>,
+	args: Box<dyn Any>,
 	marker: PhantomData<T>,
 }
 

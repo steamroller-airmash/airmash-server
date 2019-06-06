@@ -9,7 +9,7 @@ use component::event::TimerEvent;
 
 struct Task {
 	pub time: Instant,
-	pub func: Box<FnMut(Instant) -> Option<TimerEvent> + Send>,
+	pub func: Box<dyn FnMut(Instant) -> Option<TimerEvent> + Send>,
 }
 
 impl PartialEq for Task {

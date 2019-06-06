@@ -29,7 +29,7 @@ where
 	T: ToSocketAddrs + Send + 'static,
 {
 	fn game_loop(now: Instant, world: &mut World, dispatcher: &mut Dispatcher) -> bool {
-		use component::time::{LastFrame, ThisFrame};
+		use component::time::ThisFrame;
 
 		let _now = Instant::now();
 
@@ -63,7 +63,7 @@ where
 		true
 	}
 
-	pub fn run(self) -> Result<(), Box<Error>> {
+	pub fn run(self) -> Result<(), Box<dyn Error>> {
 		let wshandler = spawn_acceptor(
 			self.config.addr,
 			self.config.event,

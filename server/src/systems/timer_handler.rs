@@ -47,7 +47,7 @@ impl SystemInfo for TimerHandler {
 		unimplemented!();
 	}
 
-	fn new_args(mut a: Box<Any>) -> Self {
+	fn new_args(mut a: Box<dyn Any>) -> Self {
 		let r = a.downcast_mut::<Receiver<TimerEvent>>().unwrap();
 		// Replace the channel within the box with a
 		// dummy one, which will be dropped immediately

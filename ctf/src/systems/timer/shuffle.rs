@@ -21,7 +21,7 @@ pub struct Shuffle;
 
 #[derive(SystemData)]
 pub struct ShuffleData<'a> {
-	shuffler: ReadExpect<'a, Box<ShuffleProvider + Sync + Send>>,
+	shuffler: ReadExpect<'a, Box<dyn ShuffleProvider + Sync + Send>>,
 	conns: SendToAll<'a>,
 	entities: Entities<'a>,
 	gamemode: GameModeWriter<'a, CTFGameMode>,

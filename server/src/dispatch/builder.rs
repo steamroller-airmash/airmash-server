@@ -4,8 +4,6 @@ use std::any::Any;
 use std::collections::{HashMap, HashSet};
 use std::mem;
 
-use log::Level::Debug;
-
 use dispatch::sysbuilder::*;
 use dispatch::sysinfo::*;
 
@@ -13,7 +11,7 @@ use utils::{EventHandler, EventHandlerTypeProvider};
 
 pub struct Builder<'a, 'b> {
 	builder: DispatcherBuilder<'a, 'b>,
-	sysmap: HashMap<&'static str, Box<AbstractBuilder>>,
+	sysmap: HashMap<&'static str, Box<dyn AbstractBuilder>>,
 }
 
 impl<'a, 'b> Builder<'a, 'b> {
@@ -114,7 +112,7 @@ impl<'a, 'b> Builder<'a, 'b> {
 		let systems = self.system_toposort();
 		let builder = mem::replace(&mut self.builder, DispatcherBuilder::new());
 
-		if log_enabled!(Debug) {
+		if log_enabled!(log::Level::Debug) {
 			for sys in &systems {
 				debug!(
 					target: "airmash:builder",
@@ -168,7 +166,7 @@ impl<'a, 'b> Builder<'a, 'b> {
 	///
 	/// It is probably horrendously inefficient but it is
 	/// only run once at startup so it most likely doesn't matter.
-	fn system_toposort(&mut self) -> Vec<Box<AbstractBuilder>> {
+	fn system_toposort(&mut self) -> Vec<Box<dyn AbstractBuilder>> {
 		let mut result = vec![];
 
 		while !self.sysmap.is_empty() {
