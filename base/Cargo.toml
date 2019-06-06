@@ -9,7 +9,7 @@ repository = 'https://github.com/steamroller-airmash/airmash-server'
 
 
 [dependencies]
-specs = "*"
+specs = { version = "0.14.3", features = ["nightly"] }
 airmash-server = { path='../server' }
 log = "*"
 env_logger = "*"

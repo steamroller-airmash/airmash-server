@@ -1,4 +1,4 @@
-use specs::*;
+use specs::prelude::*;
 use types::*;
 
 use GameMode;

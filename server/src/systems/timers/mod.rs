@@ -1,4 +1,3 @@
-
 mod score_board;
 
 pub use self::score_board::ScoreBoardTimer;

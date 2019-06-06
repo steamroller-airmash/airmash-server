@@ -3,8 +3,8 @@
 //! head until it lets us do what we want
 //! safely.
 
-use shred::{ResourceId, SystemData};
-use specs::*;
+use shred::ResourceId;
+use specs::prelude::*;
 
 use types::*;
 

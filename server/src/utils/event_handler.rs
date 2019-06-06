@@ -1,6 +1,5 @@
-use shred::SystemData;
 use shrev::*;
-use specs::*;
+use specs::prelude::*;
 
 use std::any::Any;
 
