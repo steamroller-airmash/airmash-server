@@ -16,6 +16,7 @@ pub struct Crash;
 #[derive(SystemData)]
 pub struct CrashData<'a> {
 	name: ReadStorage<'a, Name>,
+	config: Read<'a, Config>,
 	conns: Read<'a, Connections>,
 }
 
@@ -28,6 +29,10 @@ impl<'a> EventHandler<'a> for Crash {
 
 	fn on_event(&mut self, evt: &CommandEvent, data: &mut Self::SystemData) {
 		let &(conn, ref packet) = evt;
+
+		if !data.config.admin_enabled {
+			return;
+		}
 
 		let player = match data.conns.associated_player(conn) {
 			Some(p) => p,
