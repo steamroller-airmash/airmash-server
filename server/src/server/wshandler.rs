@@ -39,6 +39,10 @@ impl Handler for MessageHandler {
 	fn on_open(&mut self, shake: Handshake) -> WsResult<()> {
 		let (realaddr, origin) = get_real_ip(&shake)?;
 		info!("Websocket open for {:?}, real address {:?}", self.id, realaddr);
+		info!("Request headers:");
+		for (name, value) in shake.request.headers() {
+			info!("  {}: {:?}", name, unsafe { std::str::from_utf8_unchecked(value) });
+		}
 
 		self.channel
 			.send(ConnectionEvent::ConnectionOpen(ConnectionOpen {
