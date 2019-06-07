@@ -56,6 +56,12 @@ impl LoginHandler {
 			conn, login.name, entity.id()
 		);
 
+		info!(
+			target: "server",
+			"{:?} flag {:?} horizon_x {} horizon_y {}",
+			conn, login.flag, login.horizon_x, login.horizon_y
+		);
+
 		let flag = {
 			let flag_str: &str = &login.flag;
 			FlagCode::try_from(flag_str).unwrap_or(FlagCode::UnitedNations)

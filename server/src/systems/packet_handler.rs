@@ -60,7 +60,10 @@ impl PacketHandler {
 		match packet {
 			ClientPacket::Login(p) => data.login.single_write((id, p)),
 			ClientPacket::Backup(p) => data.backup.single_write((id, p)),
-			ClientPacket::Horizon(p) => data.horizon.single_write((id, p)),
+			ClientPacket::Horizon(p) => {
+				info!("{:?} {:?}", id, p);
+				data.horizon.single_write((id, p));
+			}
 			ClientPacket::Pong(p) => data.pong.single_write(PongEvent::new(id, p, time)),
 			ClientPacket::Key(p) => data.key.single_write((id, p)),
 			ClientPacket::Command(p) => data.command.single_write((id, p)),
