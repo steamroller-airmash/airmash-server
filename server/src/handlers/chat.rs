@@ -42,6 +42,7 @@ impl<'a> System<'a> for ChatHandler {
 
 	fn run(&mut self, data: Self::SystemData) {
 		for evt in data.channel.read(self.reader.as_mut().unwrap()) {
+			info!("{:?}", evt);
 			let player = match data.conns.associated_player(evt.0) {
 				Some(player) => player,
 				None => continue,

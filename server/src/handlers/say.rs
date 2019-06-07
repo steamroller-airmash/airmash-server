@@ -53,6 +53,7 @@ impl<'a> EventHandler<'a> for SayHandler {
 		};
 
 		let pos = *try_get!(player, data.pos);
+		info!("{:?} {:?}", evt, pos);
 
 		data.conns.send_to_visible(pos, chat);
 	}
