@@ -73,6 +73,13 @@ impl<'a> EventHandler<'a> for UpdateScore {
 			try_get!(evt.player, mut data.score).0 -= transfer;
 			try_get!(evt.killer, mut data.score).0 += transfer + 25;
 
+			info!("{:?} awarded {} points (total {}) for kill of {:?} (total {})",
+				  evt.killer,
+				  transfer + 25,
+				  try_get!(evt.killer, data.score).0,
+				  evt.player,
+				  try_get!(evt.player, data.score).0);
+
 			kills.0 += 1;
 			deaths.0 += 1;
 		}
