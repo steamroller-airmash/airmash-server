@@ -6,7 +6,7 @@ use specs::{Dispatcher, World};
 use tokio::runtime::current_thread::Runtime;
 
 use super::timeloop::timeloop;
-use super::{spawn_acceptor, timers, AirmashServerConfig};
+use super::{spawn_acceptor, AirmashServerConfig};
 use component::time::{LastFrame, StartTime};
 
 const FRAME_WARN_MILLIS: u64 = 60;
@@ -73,7 +73,6 @@ where
 		let AirmashServerConfig {
 			mut world,
 			builder,
-			timer,
 			..
 		} = self.config;
 
@@ -84,12 +83,6 @@ where
 		dispatcher.setup(&mut world.res);
 
 		let mut runtime = Runtime::new()?;
-
-		runtime.spawn(futures::lazy(move || {
-			timers::start_timer_events(timer);
-
-			Ok(())
-		}));
 
 		runtime.spawn(timeloop(
 			move |now| Self::game_loop(now, &mut world, &mut dispatcher),

@@ -55,6 +55,8 @@ impl<'a> EventHandler<'a> for ScoreBoardTimerHandler {
 			return;
 		}
 
+		trace!("Sending SCORE_BOARD packet!");
+
 		let mut packet_data = (
 			&*data.entities,
 			&data.scores,

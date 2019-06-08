@@ -3,7 +3,6 @@
 mod config;
 mod server;
 mod timeloop;
-mod timers;
 mod wshandler;
 
 pub use self::config::AirmashServerConfig;

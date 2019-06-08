@@ -4,7 +4,6 @@ use std::sync::mpsc::{channel, Sender};
 use dispatch::Builder;
 use specs::{Builder as SpecsBuilder, World};
 
-use component::event::TimerEvent;
 use types::event::ConnectionEvent;
 use types::GameMode;
 
@@ -32,7 +31,6 @@ where
 	pub max_connections: usize,
 
 	pub(super) event: Sender<ConnectionEvent>,
-	pub(super) timer: Sender<TimerEvent>,
 }
 
 impl<T> AirmashServerConfig<T>
@@ -70,7 +68,7 @@ where
 		// is necessary to pass Option<Sender<_>> all the way
 		// through the config struct.
 		world.add_resource(Connections::new());
-		world.add_resource(FutureDispatcher::new(timer_send.clone()));
+		world.add_resource(FutureDispatcher::new(timer_send));
 
 		Self {
 			addr,
@@ -79,7 +77,6 @@ where
 			max_connections: 256,
 
 			event: event_send,
-			timer: timer_send,
 		}
 		.with_filler_entities()
 	}
