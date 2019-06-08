@@ -82,14 +82,30 @@ where
 		let mut dispatcher = builder.build();
 		dispatcher.setup(&mut world.res);
 
-		let mut runtime = Runtime::new()?;
+		let frame_time = Duration::from_nanos(16666667);
+		let mut next_frame = Instant::now();
 
-		runtime.spawn(timeloop(
-			move |now| Self::game_loop(now, &mut world, &mut dispatcher),
-			Duration::from_nanos(16666667),
-		));
+		loop {
+			let now = Instant::now();
+			if now >= next_frame {
+				// Actually run the game loop
+				if !Self::game_loop(next_frame, &mut world, &mut dispatcher) {
+					break;
+				}
+				next_frame += frame_time;
+			}
+			else {
+				let wait_time = next_frame - now;
 
-		runtime.run()?;
+				if wait_time < Duration::from_millis(1) {
+					// Do a spin loop for low sleep durations
+				} else {
+					std::thread::sleep(wait_time - Duration::from_millis(1));
+				}
+			}
+		}
+
+		info!("Shutting down airmash server");
 
 		// FIXME: Somehow handle the case where the thread
 		//        join fails and pass it on up to the caller
