@@ -3,9 +3,7 @@ use std::net::ToSocketAddrs;
 use std::time::{Duration, Instant};
 
 use specs::{Dispatcher, World};
-use tokio::runtime::current_thread::Runtime;
 
-use super::timeloop::timeloop;
 use super::{spawn_acceptor, AirmashServerConfig};
 use component::time::{LastFrame, StartTime};
 
