@@ -1,5 +1,5 @@
 use airmash_protocol::{MobType, PlaneType};
-use fnv::FnvHashMap;
+use hashbrown::HashMap;
 use std::ops::Index;
 use std::time::Duration;
 
@@ -61,9 +61,9 @@ pub struct UpgradeInfo {
 }
 
 #[derive(Clone, Debug)]
-pub struct PlaneInfos(pub FnvHashMap<Plane, PlaneInfo>);
+pub struct PlaneInfos(pub HashMap<Plane, PlaneInfo>);
 #[derive(Clone, Debug)]
-pub struct MobInfos(pub FnvHashMap<MobType, MobInfo>);
+pub struct MobInfos(pub HashMap<MobType, MobInfo>);
 
 #[derive(Clone, Debug, Serialize, Deserialize)]
 pub struct UpgradeInfos {
@@ -103,7 +103,7 @@ impl Index<Mob> for MobInfos {
 
 impl Default for PlaneInfos {
 	fn default() -> Self {
-		let mut map = FnvHashMap::default();
+		let mut map = HashMap::default();
 
 		map.insert(
 			PlaneType::Predator,
@@ -247,7 +247,7 @@ impl Default for PlaneInfos {
 
 impl Default for MobInfos {
 	fn default() -> Self {
-		let mut map = FnvHashMap::default();
+		let mut map = HashMap::default();
 
 		// Notes:
 		//   - Damage is normalized to the amount of
@@ -465,7 +465,7 @@ mod specs_impls {
 		{
 			let inner = PlaneInfosInterface::deserialize(de)?;
 
-			let mut map = FnvHashMap::default();
+			let mut map = HashMap::default();
 
 			map.insert(Plane::Predator, inner.predator);
 			map.insert(Plane::Tornado, inner.tornado);
@@ -504,7 +504,7 @@ mod specs_impls {
 		{
 			let inner = MobInfosInterface::deserialize(de)?;
 
-			let mut map = FnvHashMap::default();
+			let mut map = HashMap::default();
 
 			map.insert(Mob::PredatorMissile, inner.predator);
 			map.insert(Mob::TornadoSingleMissile, inner.tornado);

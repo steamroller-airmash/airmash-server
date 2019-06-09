@@ -1,4 +1,4 @@
-use fnv::FnvHashSet;
+use hashbrown::HashSet;
 use specs::prelude::*;
 
 use types::collision::*;
@@ -48,7 +48,7 @@ impl<'a> System<'a> for PlayerMissileCollisionSystem {
 		let grid = &grid.0;
 
 		let collisions = (&*ent, &pos, &team, &mob, &missile_flag)
-			.par_join()
+			.join()
 			.map(|(ent, &pos, &team, &mob, _)| {
 				let it = COLLIDERS[&mob].iter().map(move |(offset, rad)| HitCircle {
 					pos: pos + *offset,
@@ -61,7 +61,7 @@ impl<'a> System<'a> for PlayerMissileCollisionSystem {
 			})
 			.flatten()
 			.map(|x| PlayerMissileCollision(x))
-			.collect::<FnvHashSet<PlayerMissileCollision>>();
+			.collect::<HashSet<PlayerMissileCollision>>();
 
 		channel.iter_write(collisions.into_iter());
 	}

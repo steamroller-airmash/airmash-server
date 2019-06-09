@@ -4,7 +4,7 @@ use types::*;
 use std::option::NoneError;
 
 use component::event::*;
-use fnv::FnvHashMap;
+use hashbrown::HashMap;
 use protocol::server::CommandReply;
 use protocol::CommandReplyType;
 use systems::PacketHandler;
@@ -127,8 +127,8 @@ where
 }
 
 lazy_static! {
-	pub static ref NAMED_POSITIONS: FnvHashMap<&'static str, Position> = {
-		let mut map = FnvHashMap::default();
+	pub static ref NAMED_POSITIONS: HashMap<&'static str, Position> = {
+		let mut map = HashMap::default();
 
 		map.insert("blue-flag", Position::new(-9670.0, -1470.0));
 		map.insert("red-flag", Position::new(8600.0, -940.0));

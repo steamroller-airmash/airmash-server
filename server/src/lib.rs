@@ -16,12 +16,11 @@ extern crate serde;
 extern crate airmash_protocol_v5 as protocol_v5;
 extern crate bounded_queue;
 extern crate dimensioned;
-extern crate fnv;
+//extern crate fnv;
 extern crate futures;
 extern crate hashbrown;
 extern crate hibitset;
 extern crate htmlescape;
-extern crate hyper;
 extern crate rand;
 extern crate rayon;
 #[cfg(features = "sentry")]
@@ -31,7 +30,6 @@ extern crate shred;
 extern crate shrev;
 extern crate special_map;
 extern crate specs;
-extern crate tokio;
 extern crate uuid;
 extern crate ws;
 

@@ -1,4 +1,4 @@
-use fnv::FnvHashMap;
+use hashbrown::HashMap;
 
 use {Distance, Plane, Position};
 
@@ -83,10 +83,10 @@ const PROWLER_HC: &'static [HitCircle] = &[
 ];
 
 lazy_static! {
-	pub static ref PLANE_HIT_CIRCLES: FnvHashMap<Plane, &'static [HitCircle]> = {
+	pub static ref PLANE_HIT_CIRCLES: HashMap<Plane, &'static [HitCircle]> = {
 		use Plane::*;
 
-		let mut map = FnvHashMap::default();
+		let mut map = HashMap::default();
 
 		map.insert(Predator, PRED_HC);
 		map.insert(Goliath, GOLI_HC);

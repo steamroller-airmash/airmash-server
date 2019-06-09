@@ -31,7 +31,6 @@ lazy_static = "*"
 fnv = "*"
 rand = "0.4"
 shrev = "*"
-tokio = "*"
 rayon = "1.0"
 htmlescape = "*"
 hibitset = "*"
@@ -42,7 +41,6 @@ serde = { version = "1.0", features = ["derive"] }
 serde_json = "1.0"
 ws = "*"
 futures = "*"
-hyper = "0.10"
 hashbrown = "*"
 
 [dependencies.sentry]

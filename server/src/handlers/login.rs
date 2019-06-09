@@ -5,19 +5,12 @@ use component::event::TimerEvent;
 use consts::timer::*;
 use types::*;
 
-use std::env;
-use std::io::Read as IoRead;
 use std::sync::mpsc::*;
-use std::sync::Arc;
 use std::time::Instant;
-
-use hyper::{Client, Url};
 
 pub struct LoginHandler {
 	reader: Option<OnLoginReader>,
 	channel: Option<Sender<TimerEvent>>,
-	upstream: Option<String>,
-	client: Arc<Client>,
 }
 
 impl LoginHandler {
@@ -25,14 +18,12 @@ impl LoginHandler {
 		Self {
 			reader: None,
 			channel: None,
-			upstream: env::var("IP_FILTER").ok(),
-			client: Arc::new(Client::new()),
 		}
 	}
 }
 
 impl<'a> System<'a> for LoginHandler {
-	type SystemData = (Read<'a, OnLogin>, Read<'a, Connections>);
+	type SystemData = Read<'a, OnLogin>;
 
 	fn setup(&mut self, res: &mut Resources) {
 		Self::SystemData::setup(res);
@@ -41,71 +32,17 @@ impl<'a> System<'a> for LoginHandler {
 		self.channel = Some(res.fetch_mut::<FutureDispatcher>().get_channel());
 	}
 
-	fn run(&mut self, (channel, conns): Self::SystemData) {
+	fn run(&mut self, channel: Self::SystemData) {
 		for evt in channel.read(self.reader.as_mut().unwrap()).cloned() {
-			let conn_opt = conns.conns.get(&evt.0);
-
-			let conninfo = match conn_opt {
-				Some(x) => x.info.clone(),
-				None => {
-					warn!("{:?} doesn't exist!", evt.0);
-					continue;
-				}
-			};
 			let channel = self.channel.as_ref().unwrap().clone();
 
-			let connid = evt.0;
-
-			let mut event = TimerEvent {
+			let event = TimerEvent {
 				ty: *LOGIN_PASSED,
 				instant: Instant::now(),
 				data: Some(Box::new(evt)),
 			};
 
-			if cfg!(not(features = "block-bots")) {
-				channel.send(event).unwrap();
-				continue;
-			}
-
-			let upstream = self.upstream.clone();
-			let is_bot = conninfo.origin.is_none();
-
-			if let Some(upstream) = upstream {
-				let url = format!("http://{}/{}", upstream, conninfo.addr);
-				let url = Url::parse(&url).unwrap();
-				let client = Arc::clone(&self.client);
-
-				let is_bot = is_bot
-					|| match client.get(url).send() {
-						Ok(mut v) => {
-							let mut s = "".to_owned();
-							v.read_to_string(&mut s).ok();
-
-							match s.parse() {
-								Ok(v) => v,
-								Err(_) => false,
-							}
-						}
-						Err(_) => false,
-					};
-
-				if is_bot {
-					event.ty = *LOGIN_FAILED;
-				}
-
-				channel.send(event).unwrap();
-			} else {
-				if is_bot {
-					event.ty = *LOGIN_FAILED;
-				}
-
-				channel.send(event).unwrap();
-			}
-
-			info!(
-				"{:?} with addr {:?} and origin {:?} is a bot? {:?}",
-				connid, conninfo.addr, conninfo.origin, is_bot
-			);
+			channel.send(event).unwrap();
 		}
 	}
 }

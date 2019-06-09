@@ -1,6 +1,6 @@
 use specs::*;
 
-use fnv::FnvHashMap;
+use hashbrown::HashMap;
 
 use std::time::{Duration, Instant};
 
@@ -33,7 +33,7 @@ pub struct Disconnect {
 	message: MaybeInit<OnMessageReader>,
 	close: MaybeInit<OnCloseReader>,
 
-	counts: FnvHashMap<ConnectionId, Instant>,
+	counts: HashMap<ConnectionId, Instant>,
 }
 
 #[derive(SystemData)]

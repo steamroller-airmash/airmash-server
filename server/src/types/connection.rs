@@ -1,4 +1,4 @@
-use fnv::FnvHashMap;
+use hashbrown::HashMap;
 use specs::Entity;
 
 use std::net::IpAddr;
@@ -31,7 +31,7 @@ pub enum ConnectionType {
 }
 
 pub struct Connections {
-	pub conns: FnvHashMap<ConnectionId, ConnectionData>,
+	pub conns: HashMap<ConnectionId, ConnectionData>,
 }
 
 impl Default for Connections {
@@ -43,7 +43,7 @@ impl Default for Connections {
 impl Connections {
 	pub fn new() -> Self {
 		Connections {
-			conns: FnvHashMap::default(),
+			conns: Default::default(),
 		}
 	}
 
