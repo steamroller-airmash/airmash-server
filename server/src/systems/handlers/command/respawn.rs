@@ -27,6 +27,7 @@ pub struct Respawn;
 pub struct RespawnData<'a> {
 	health: WriteStorage<'a, Health>,
 	planes: WriteStorage<'a, Plane>,
+	last_respawn: WriteStorage<'a, LastRespawnTime>,
 	is_spec: WriteStorage<'a, IsSpectating>,
 	is_dead: WriteStorage<'a, IsDead>,
 	last_key: ReadStorage<'a, LastKeyTime>,
@@ -34,6 +35,8 @@ pub struct RespawnData<'a> {
 	conns: SendToAll<'a>,
 	channel: Write<'a, OnPlayerRespawn>,
 	this_frame: Read<'a, ThisFrame>,
+
+	pub velocity: ReadStorage<'a, Velocity>,
 }
 
 impl EventHandlerTypeProvider for Respawn {
@@ -60,11 +63,13 @@ impl<'a> EventHandler<'a> for Respawn {
 			Err(_) => return,
 		};
 
-		let allowed = !check_allowed(
+		let allowed = check_allowed(
 			data.is_dead.get(player).is_some(),
 			data.is_spec.get(player).is_some(),
 			data.health.get(player).unwrap(),
 			data.last_key.get(player).unwrap(),
+			data.velocity.get(player).unwrap(),
+			data.last_respawn.get(player),
 			&*data.this_frame,
 		);
 
@@ -87,6 +92,9 @@ impl<'a> EventHandler<'a> for Respawn {
 
 		data.planes.insert(player, plane).unwrap();
 		data.is_spec.remove(player);
+		data.last_respawn.insert(player,
+			LastRespawnTime(data.this_frame.0))
+			.unwrap();
 		// Prevent updates from happening until the actual respawn
 		// process is finished.
 		data.is_dead.insert(player, IsDead).unwrap();
@@ -120,6 +128,8 @@ fn check_allowed(
 	is_dead: bool,
 	health: &Health,
 	last_key: &LastKeyTime,
+	velocity: &Vector2<Speed>,
+	last_respawn: Option<&LastRespawnTime>,
 	this_frame: &ThisFrame,
 ) -> bool {
 	// Note to my future self and maintainers:
@@ -129,28 +139,55 @@ fn check_allowed(
 	//  fashion. This is a lot more clear and I'd prefer
 	//  if it stayed that way.
 
-	// A player may not respawn during the 2s cooldown
-	// period after dying (this is represented by the
-	// IsDead flag)
-	if is_dead {
-		return false;
-	}
-
 	// If the player is spectating then they may respawn
 	// at any time. Note that is_dead will prevent respawning
 	// during the first 2 seconds after going into spec.
 	if is_spec {
+		println!("respawn allowed - is speccing");
 		return true;
+	}
+
+	// A player may not respawn during the 2s cooldown
+	// period after dying (this is represented by the
+	// IsDead flag)
+	if is_dead {
+		println!("respawn denied - 2s cooldown after death");
+		return false;
+	}
+
+	if let Some(time) = last_respawn {
+		if (this_frame.0 - time.0) < Duration::from_secs(2) {
+			println!("respawn denied - respawned too recently");
+			return false;
+		}
+	}
+
+	let smin = Speed::new(-0.1);
+	let smax = Speed::new(0.1);
+	if !(smin < velocity.x && smax > velocity.x) {
+		println!("respawn denied - xvel too high X {} {}", velocity.x, velocity.y);
+		return false;
+	}
+
+	if !(smin < velocity.y && smax > velocity.y) {
+		println!("respawn denied - yvel too high {} {}", velocity.x, velocity.y);
+		return false;
 	}
 
 	// Players that don't have full health may not respawn
 	if *health < Health::new(1.0) {
+		println!("respawn denied - poor health");
 		return false;
 	}
 
 	// Players that have not pressed a key within the last
 	// 2 seconds may not respawn.
-	!(this_frame.0 - last_key.0 > Duration::from_secs(2))
+	if (this_frame.0 - last_key.0) < Duration::from_secs(2) {
+		println!("respawn denied - pressed key too recently");
+		return false;
+	}
+
+	true
 }
 
 fn parse_plane<'a>(s: &'a str) -> Result<Plane, ()> {
