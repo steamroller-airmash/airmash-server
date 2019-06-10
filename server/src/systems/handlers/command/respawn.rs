@@ -143,7 +143,7 @@ fn check_allowed(
 	// at any time. Note that is_dead will prevent respawning
 	// during the first 2 seconds after going into spec.
 	if is_spec {
-		println!("respawn allowed - is speccing");
+		debug!("respawn allowed - is speccing");
 		return true;
 	}
 
@@ -151,13 +151,13 @@ fn check_allowed(
 	// period after dying (this is represented by the
 	// IsDead flag)
 	if is_dead {
-		println!("respawn denied - 2s cooldown after death");
+		debug!("respawn denied - 2s cooldown after death");
 		return false;
 	}
 
 	if let Some(time) = last_respawn {
 		if (this_frame.0 - time.0) < Duration::from_secs(2) {
-			println!("respawn denied - respawned too recently");
+			debug!("respawn denied - respawned too recently");
 			return false;
 		}
 	}
@@ -165,25 +165,25 @@ fn check_allowed(
 	let smin = Speed::new(-0.1);
 	let smax = Speed::new(0.1);
 	if !(smin < velocity.x && smax > velocity.x) {
-		println!("respawn denied - xvel too high X {} {}", velocity.x, velocity.y);
+		debug!("respawn denied - xvel too high X {} {}", velocity.x, velocity.y);
 		return false;
 	}
 
 	if !(smin < velocity.y && smax > velocity.y) {
-		println!("respawn denied - yvel too high {} {}", velocity.x, velocity.y);
+		debug!("respawn denied - yvel too high {} {}", velocity.x, velocity.y);
 		return false;
 	}
 
 	// Players that don't have full health may not respawn
 	if *health < Health::new(1.0) {
-		println!("respawn denied - poor health");
+		debug!("respawn denied - poor health");
 		return false;
 	}
 
 	// Players that have not pressed a key within the last
 	// 2 seconds may not respawn.
 	if (this_frame.0 - last_key.0) < Duration::from_secs(2) {
-		println!("respawn denied - pressed key too recently");
+		debug!("respawn denied - pressed key too recently");
 		return false;
 	}
 

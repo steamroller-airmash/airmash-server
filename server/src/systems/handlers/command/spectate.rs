@@ -226,32 +226,32 @@ fn check_allowed(
 	// at any time. Note that is_dead will prevent respawning
 	// during the first 2 seconds after going into spec.
 	if is_spec {
-		println!("spectate allowed, already speccing");
+		debug!("spectate allowed, already speccing");
 		return true;
 	}
 
 	let smin = Speed::new(-0.1);
 	let smax = Speed::new(0.1);
 	if !(smin < velocity.x && smax > velocity.x) {
-		println!("spectate denied, xvel too high X {} {}", velocity.x, velocity.y);
+		debug!("spectate denied, xvel too high X {} {}", velocity.x, velocity.y);
 		return false;
 	}
 
 	if !(smin < velocity.y && smax > velocity.y) {
-		println!("spectate denied, yvel too high {} {}", velocity.x, velocity.y);
+		debug!("spectate denied, yvel too high {} {}", velocity.x, velocity.y);
 		return false;
 	}
 
 	// Players that don't have full health may not respawn
 	if *health < Health::new(1.0) {
-		println!("spectate denied, not 100% health");
+		debug!("spectate denied, not 100% health");
 		return false;
 	}
 
 	// Players that have not pressed a key within the last
 	// 2 seconds may not respawn.
 	if (this_frame.0 - last_key.0) < Duration::from_secs(2) {
-		println!("spectate denied, pressed key too recently");
+		debug!("spectate denied, pressed key too recently");
 		return false;
 	}
 
