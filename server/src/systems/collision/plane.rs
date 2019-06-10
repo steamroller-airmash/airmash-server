@@ -54,7 +54,7 @@ impl<'a> System<'a> for PlaneCollisionSystem {
 			&data.planes,
 			&data.teams,
 		)
-			.par_join()
+			.join()
 			.map(|(ent, pos, rot, plane, team)| {
 				let it = (*PLANE_HIT_CIRCLES)[plane].iter().map(|hc| {
 					let offset = hc.offset.rotate(*rot);

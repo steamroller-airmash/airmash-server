@@ -45,6 +45,13 @@ fn init_sentry() -> Option<sentry::internals::ClientInitGuard> {
     }
 }
 
+fn set_default_var(name: &str, value: &str)
+{
+    if None == env::var_os(name) {
+        env::set_var(name, value);
+    }
+}
+
 fn main() {
     let matches = clap::App::new("airmash-server-ffa")
         .version(env!("CARGO_PKG_VERSION"))
@@ -53,8 +60,9 @@ fn main() {
         .args_from_usage("-c, --config=[FILE] 'Provides an alternate config file'")
         .get_matches();
 
-    env::set_var("RUST_BACKTRACE", "1");
-    env::set_var("RUST_LOG", "info");
+    set_default_var("RUST_BACKTRACE", "1");
+    set_default_var("RUST_LOG", "info");
+    set_default_var("RAYON_NUM_THREADS", "1");
     let _guard = init_sentry();
 
     let mut config = AirmashServerConfig::new("0.0.0.0:3501", EmptyGameMode).with_engine();
