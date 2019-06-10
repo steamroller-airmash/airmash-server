@@ -92,8 +92,8 @@ impl<'a> EventHandler<'a> for Respawn {
 
 		data.planes.insert(player, plane).unwrap();
 		data.is_spec.remove(player);
-		data.last_respawn.insert(player,
-			LastRespawnTime(data.this_frame.0))
+		data.last_respawn
+			.insert(player, LastRespawnTime(data.this_frame.0))
 			.unwrap();
 		// Prevent updates from happening until the actual respawn
 		// process is finished.
@@ -165,12 +165,18 @@ fn check_allowed(
 	let smin = Speed::new(-0.1);
 	let smax = Speed::new(0.1);
 	if !(smin < velocity.x && smax > velocity.x) {
-		debug!("respawn denied - xvel too high X {} {}", velocity.x, velocity.y);
+		debug!(
+			"respawn denied - xvel too high X {} {}",
+			velocity.x, velocity.y
+		);
 		return false;
 	}
 
 	if !(smin < velocity.y && smax > velocity.y) {
-		debug!("respawn denied - yvel too high {} {}", velocity.x, velocity.y);
+		debug!(
+			"respawn denied - yvel too high {} {}",
+			velocity.x, velocity.y
+		);
 		return false;
 	}
 
