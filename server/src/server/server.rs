@@ -69,9 +69,7 @@ where
 		);
 
 		let AirmashServerConfig {
-			mut world,
-			builder,
-			..
+			mut world, builder, ..
 		} = self.config;
 
 		world.add_resource(StartTime(Instant::now()));
@@ -91,8 +89,7 @@ where
 					break;
 				}
 				next_frame += frame_time;
-			}
-			else {
+			} else {
 				let wait_time = next_frame - now;
 
 				if wait_time < Duration::from_millis(1) {

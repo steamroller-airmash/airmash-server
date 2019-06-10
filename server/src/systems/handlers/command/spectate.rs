@@ -233,12 +233,18 @@ fn check_allowed(
 	let smin = Speed::new(-0.1);
 	let smax = Speed::new(0.1);
 	if !(smin < velocity.x && smax > velocity.x) {
-		debug!("spectate denied, xvel too high X {} {}", velocity.x, velocity.y);
+		debug!(
+			"spectate denied, xvel too high X {} {}",
+			velocity.x, velocity.y
+		);
 		return false;
 	}
 
 	if !(smin < velocity.y && smax > velocity.y) {
-		debug!("spectate denied, yvel too high {} {}", velocity.x, velocity.y);
+		debug!(
+			"spectate denied, yvel too high {} {}",
+			velocity.x, velocity.y
+		);
 		return false;
 	}
 

@@ -14,7 +14,7 @@ pub struct DisplayMessage;
 
 #[derive(SystemData)]
 pub struct DisplayMessageData<'a> {
-	conns: SendToVisible<'a>
+	conns: SendToVisible<'a>,
 }
 
 impl EventHandlerTypeProvider for DisplayMessage {
