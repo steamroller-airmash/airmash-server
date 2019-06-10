@@ -1,15 +1,9 @@
-use shrev::*;
-use specs::*;
-
 use types::systemdata::*;
 
-use consts::timer::SCORE_BOARD;
 use dispatch::SystemInfo;
 use systems::handlers::game::on_player_hit::AllPlayerHitSystems;
 
-use component::event::TimerEvent;
 use component::event::*;
-use component::time::ThisFrame;
 
 use utils::{EventHandler, EventHandlerTypeProvider};
 
@@ -20,9 +14,7 @@ pub struct DisplayMessage;
 
 #[derive(SystemData)]
 pub struct DisplayMessageData<'a> {
-	conns: SendToVisible<'a>,
-	timerevent: Write<'a, EventChannel<TimerEvent>>,
-	thisframe: Read<'a, ThisFrame>,
+	conns: SendToVisible<'a>
 }
 
 impl EventHandlerTypeProvider for DisplayMessage {
@@ -44,12 +36,6 @@ impl<'a> EventHandler<'a> for DisplayMessage {
 		}
 
 		data.conns.send_to_visible(evt.pos, packet);
-
-		data.timerevent.single_write(TimerEvent {
-			ty: *SCORE_BOARD,
-			instant: data.thisframe.0,
-			..Default::default()
-		});
 	}
 }
 
