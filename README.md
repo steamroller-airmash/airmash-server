@@ -11,7 +11,7 @@ servers.
 ## Building the server
 
 The quickest way to start a test server is using 
-docker. To do this run
+Docker. To do this run
 ```
 docker-compose up
 ```
@@ -28,7 +28,17 @@ To run a basic server locally, do
 ```
 cargo run
 ```
-within the `base` folder. Note that rust nightly is required.
+within the `base` folder.
+
+
+### Compiler Version
+
+Note that rust nightly is required. Current `master` builds using:
+
+```
+rustc 1.37.0-nightly (400b409ef 2019-06-09)
+```
+
 
 ## Logging in to the server
 
@@ -45,6 +55,7 @@ Licensed under either of
  * MIT license ([LICENSE-MIT](LICENSE-MIT) or http://opensource.org/licenses/MIT)
 
 at your option.
+
 
 ### Contribution
 
