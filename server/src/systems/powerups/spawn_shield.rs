@@ -12,7 +12,7 @@ use rand::{random, Open01};
 use std::time::{Duration, Instant};
 
 // Chance that a shield will spawn on the map each frame.
-const SPAWN_CHANCE: f32 = 0.02;
+const SPAWN_CHANCE: f32 = 0.01;
 const SHIELD_LIFETIME: u64 = 60;
 
 #[derive(Default)]
