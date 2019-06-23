@@ -1,3 +1,4 @@
+use specs::world::EntitiesRes;
 use specs::*;
 
 use component::channel::OnPowerupSpawn;
@@ -33,6 +34,12 @@ pub struct SpawnShieldData<'a> {
 
 impl<'a> System<'a> for SpawnShield {
 	type SystemData = SpawnShieldData<'a>;
+
+	fn setup(&mut self, res: &mut Resources) {
+		Self::SystemData::setup(res);
+
+		self.terrain = Terrain::from_default(&*res.fetch::<EntitiesRes>());
+	}
 
 	fn run(&mut self, mut data: Self::SystemData) {
 		if random::<Open01<f32>>().0 > SPAWN_CHANCE {
