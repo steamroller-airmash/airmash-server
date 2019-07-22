@@ -12,17 +12,17 @@ use crate::types::*;
 use rand::{random, Open01};
 use std::time::{Duration, Instant};
 
-// Chance that a shield will spawn on the map each frame.
-const SPAWN_CHANCE: f32 = 1.0; // for testing
-const SHIELD_LIFETIME: u64 = 60;
+// Chance that a powerup will spawn on the map each frame.
+const SPAWN_CHANCE: f32 = 0.01;
+const POWERUP_LIFETIME: u64 = 60;
 
 #[derive(Default)]
-pub struct SpawnShield {
+pub struct SpawnPowerup {
 	terrain: Terrain,
 }
 
 #[derive(SystemData)]
-pub struct SpawnShieldData<'a> {
+pub struct SpawnPowerupData<'a> {
 	entities: Entities<'a>,
 	mob: WriteStorage<'a, Mob>,
 	despawn_time: WriteStorage<'a, MobDespawnTime>,
@@ -32,8 +32,8 @@ pub struct SpawnShieldData<'a> {
 	channel: Write<'a, OnPowerupSpawn>,
 }
 
-impl<'a> System<'a> for SpawnShield {
-	type SystemData = SpawnShieldData<'a>;
+impl<'a> System<'a> for SpawnPowerup {
+	type SystemData = SpawnPowerupData<'a>;
 
 	fn setup(&mut self, res: &mut Resources) {
 		Self::SystemData::setup(res);
@@ -46,8 +46,12 @@ impl<'a> System<'a> for SpawnShield {
 			return;
 		}
 
-		// for testing
-		let powerup_type = if random::<Open01<f32>>().0 > 0.5 { Mob::Inferno } else { Mob::Shield };
+		// equal chance of powerup being shield or inferno
+		let powerup_type = if random::<Open01<f32>>().0 > 0.5 { 
+			Mob::Shield
+		} else { 
+			Mob::Inferno 
+		};
 
 		let coords = Vector2::<f32>::new(random::<Open01<f32>>().0, random::<Open01<f32>>().0);
 		let pos = coords * MAP_SIZE - MAP_SIZE * 0.5;
@@ -57,7 +61,7 @@ impl<'a> System<'a> for SpawnShield {
 			return;
 		}
 
-		let despawn = Instant::now() + Duration::from_secs(SHIELD_LIFETIME);
+		let despawn = Instant::now() + Duration::from_secs(POWERUP_LIFETIME);
 
 		let mob = data
 			.entities
@@ -78,7 +82,7 @@ impl<'a> System<'a> for SpawnShield {
 }
 
 system_info! {
-	impl SystemInfo for SpawnShield {
+	impl SystemInfo for SpawnPowerup {
 		type Dependencies = ();
 	}
 }
