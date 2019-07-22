@@ -54,9 +54,7 @@ impl<'a> System<'a> for Fire {
 
 				if inferno {
 					(ent, &*TORNADO_INFERNO_MISSILE_DETAILS)
-				}
-				else
-				{
+				} else {
 					(ent, &*TORNADO_MISSILE_DETAILS)
 				}
 			})

@@ -47,10 +47,10 @@ impl<'a> System<'a> for SpawnPowerup {
 		}
 
 		// equal chance of powerup being shield or inferno
-		let powerup_type = if random::<Open01<f32>>().0 > 0.5 { 
+		let powerup_type = if random::<Open01<f32>>().0 > 0.5 {
 			Mob::Shield
-		} else { 
-			Mob::Inferno 
+		} else {
+			Mob::Inferno
 		};
 
 		let coords = Vector2::<f32>::new(random::<Open01<f32>>().0, random::<Open01<f32>>().0);

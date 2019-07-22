@@ -62,7 +62,10 @@ impl<'a> System<'a> for MissileFireHandler {
 				let fire_info = if inferno {
 					vec![
 						MissileFireInfo {
-							pos_offset: Position::new(info.missile_inferno_offset_x, info.missile_inferno_offset_y),
+							pos_offset: Position::new(
+								info.missile_inferno_offset_x,
+								info.missile_inferno_offset_y,
+							),
 							rot_offset: -info.missile_inferno_angle,
 							ty: info.missile_type,
 						},
@@ -72,21 +75,20 @@ impl<'a> System<'a> for MissileFireHandler {
 							ty: info.missile_type,
 						},
 						MissileFireInfo {
-							pos_offset: Position::new(-info.missile_inferno_offset_x, info.missile_inferno_offset_y),
+							pos_offset: Position::new(
+								-info.missile_inferno_offset_x,
+								info.missile_inferno_offset_y,
+							),
 							rot_offset: info.missile_inferno_angle,
 							ty: info.missile_type,
 						},
 					]
-				}
-				else
-				{
-					vec![
-						MissileFireInfo {
-							pos_offset: Position::new(Distance::default(), info.missile_offset),
-							rot_offset: Rotation::default(),
-							ty: info.missile_type,
-						},
-					]
+				} else {
+					vec![MissileFireInfo {
+						pos_offset: Position::new(Distance::default(), info.missile_offset),
+						rot_offset: Rotation::default(),
+						ty: info.missile_type,
+					}]
 				};
 
 				(ent, fire_info)
