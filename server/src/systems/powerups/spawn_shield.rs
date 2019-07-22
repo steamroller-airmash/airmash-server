@@ -13,7 +13,7 @@ use rand::{random, Open01};
 use std::time::{Duration, Instant};
 
 // Chance that a shield will spawn on the map each frame.
-const SPAWN_CHANCE: f32 = 0.01;
+const SPAWN_CHANCE: f32 = 1.0; // for testing
 const SHIELD_LIFETIME: u64 = 60;
 
 #[derive(Default)]
@@ -46,6 +46,9 @@ impl<'a> System<'a> for SpawnShield {
 			return;
 		}
 
+		// for testing
+		let powerup_type = if random::<Open01<f32>>().0 > 0.5 { Mob::Inferno } else { Mob::Shield };
+
 		let coords = Vector2::<f32>::new(random::<Open01<f32>>().0, random::<Open01<f32>>().0);
 		let pos = coords * MAP_SIZE - MAP_SIZE * 0.5;
 
@@ -60,7 +63,7 @@ impl<'a> System<'a> for SpawnShield {
 			.entities
 			.build_entity()
 			.with(pos, &mut data.pos)
-			.with(Mob::Shield, &mut data.mob)
+			.with(powerup_type, &mut data.mob)
 			.with(MobDespawnTime(despawn), &mut data.despawn_time)
 			.with(IsPowerup, &mut data.is_powerup)
 			.build();
@@ -69,7 +72,7 @@ impl<'a> System<'a> for SpawnShield {
 			mob,
 			pos,
 			despawn,
-			ty: Mob::Shield,
+			ty: powerup_type,
 		});
 	}
 }
