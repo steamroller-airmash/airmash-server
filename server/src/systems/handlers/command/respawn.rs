@@ -35,8 +35,6 @@ pub struct RespawnData<'a> {
 	conns: SendToAll<'a>,
 	channel: Write<'a, OnPlayerRespawn>,
 	this_frame: Read<'a, ThisFrame>,
-
-	pub velocity: ReadStorage<'a, Velocity>,
 }
 
 impl EventHandlerTypeProvider for Respawn {
@@ -68,7 +66,6 @@ impl<'a> EventHandler<'a> for Respawn {
 			data.is_spec.get(player).is_some(),
 			data.health.get(player).unwrap(),
 			data.last_key.get(player).unwrap(),
-			data.velocity.get(player).unwrap(),
 			data.last_respawn.get(player),
 			&*data.this_frame,
 		);
@@ -128,7 +125,6 @@ fn check_allowed(
 	is_dead: bool,
 	health: &Health,
 	last_key: &LastKeyTime,
-	velocity: &Vector2<Speed>,
 	last_respawn: Option<&LastRespawnTime>,
 	this_frame: &ThisFrame,
 ) -> bool {
@@ -136,8 +132,24 @@ fn check_allowed(
 	//  Originally this code was written as one big
 	//  boolean expression. This was unclear and caused
 	//  some bugs so now it's been rewritten in this
-	//  fashion. This is a lot more clear and I'd prefer
+	//  fashion. This is a lot clearer and I'd prefer
 	//  if it stayed that way.
+
+	// Another note:
+	//  This function explicitly doesn't check the velocity
+	//  of a player since respawning while moving has always
+	//  been possible in airmash. Whether this is a bug in the
+	//  original server is debatable but I'd like to stay true
+	//  to the original server if possible.
+
+	// A player may not respawn during the 2s cooldown
+	// period after dying (this is represented by the
+	// IsDead flag). This takes priority over whether
+	// a player is spectating.
+	if is_dead {
+		debug!("respawn denied - 2s cooldown after death");
+		return false;
+	}
 
 	// If the player is spectating then they may respawn
 	// at any time. Note that is_dead will prevent respawning
@@ -147,37 +159,11 @@ fn check_allowed(
 		return true;
 	}
 
-	// A player may not respawn during the 2s cooldown
-	// period after dying (this is represented by the
-	// IsDead flag)
-	if is_dead {
-		debug!("respawn denied - 2s cooldown after death");
-		return false;
-	}
-
 	if let Some(time) = last_respawn {
 		if (this_frame.0 - time.0) < Duration::from_secs(2) {
 			debug!("respawn denied - respawned too recently");
 			return false;
 		}
-	}
-
-	let smin = Speed::new(-0.1);
-	let smax = Speed::new(0.1);
-	if !(smin < velocity.x && smax > velocity.x) {
-		debug!(
-			"respawn denied - xvel too high X {} {}",
-			velocity.x, velocity.y
-		);
-		return false;
-	}
-
-	if !(smin < velocity.y && smax > velocity.y) {
-		debug!(
-			"respawn denied - yvel too high {} {}",
-			velocity.x, velocity.y
-		);
-		return false;
 	}
 
 	// Players that don't have full health may not respawn
@@ -246,6 +232,7 @@ mod test {
 			true,
 			&Health::new(1.0),
 			&LastKeyTime(Instant::now() - Duration::from_secs(4)),
+			None,
 			&ThisFrame(Instant::now())
 		));
 	}
@@ -257,6 +244,7 @@ mod test {
 			false,
 			&Health::new(1.0),
 			&LastKeyTime(Instant::now() - Duration::from_secs(5)),
+			None,
 			&ThisFrame(Instant::now())
 		));
 	}
@@ -268,6 +256,7 @@ mod test {
 			false,
 			&Health::new(0.5),
 			&LastKeyTime(Instant::now() - Duration::from_secs(10)),
+			None,
 			&ThisFrame(Instant::now())
 		));
 	}
