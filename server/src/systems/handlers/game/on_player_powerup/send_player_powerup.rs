@@ -2,7 +2,6 @@ use SystemInfo;
 
 use component::event::PlayerPowerup;
 use protocol::server::PlayerPowerup as ServerPlayerPowerup;
-use protocol::PowerupType;
 
 use types::systemdata::*;
 use utils::{EventHandler, EventHandlerTypeProvider};
