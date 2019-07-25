@@ -2,7 +2,6 @@ use SystemInfo;
 
 use component::event::PlayerPowerup;
 use protocol::server::PlayerPowerup as ServerPlayerPowerup;
-use protocol::PowerupType;
 
 use types::systemdata::*;
 use utils::{EventHandler, EventHandlerTypeProvider};
@@ -31,7 +30,7 @@ impl<'a> EventHandler<'a> for SendPlayerPowerup {
 			evt.player,
 			ServerPlayerPowerup {
 				duration: duration as u32,
-				ty: PowerupType::Shield,
+				ty: evt.ty,
 			},
 		);
 	}

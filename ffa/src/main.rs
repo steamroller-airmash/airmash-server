@@ -45,8 +45,7 @@ fn init_sentry() -> Option<sentry::internals::ClientInitGuard> {
     }
 }
 
-fn set_default_var(name: &str, value: &str)
-{
+fn set_default_var(name: &str, value: &str) {
     if None == env::var_os(name) {
         env::set_var(name, value);
     }
@@ -63,9 +62,18 @@ fn main() {
     set_default_var("RUST_BACKTRACE", "1");
     set_default_var("RUST_LOG", "info");
     set_default_var("RAYON_NUM_THREADS", "1");
+    set_default_var("FFA_LISTEN_ADDR", "0.0.0.0");
+    set_default_var("FFA_LISTEN_PORT", "3501");
+
+    let bind_addr = format!(
+        "{}:{}",
+        env::var("FFA_LISTEN_ADDR").unwrap(),
+        env::var("FFA_LISTEN_PORT").unwrap()
+    );
+
     let _guard = init_sentry();
 
-    let mut config = AirmashServerConfig::new("0.0.0.0:3501", EmptyGameMode).with_engine();
+    let mut config = AirmashServerConfig::new(bind_addr, EmptyGameMode).with_engine();
 
     config.builder = systems::register(config.builder);
 
