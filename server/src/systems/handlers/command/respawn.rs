@@ -109,10 +109,7 @@ impl<'a> EventHandler<'a> for Respawn {
 }
 
 impl SystemInfo for Respawn {
-	type Dependencies = (
-		PacketHandler,
-		//InitTraits
-	);
+	type Dependencies = (PacketHandler);
 
 	fn name() -> &'static str {
 		concat!(module_path!(), "::", line!())
@@ -124,8 +121,8 @@ impl SystemInfo for Respawn {
 }
 
 fn check_allowed(
-	is_spec: bool,
 	is_dead: bool,
+	is_spec: bool,
 	health: &Health,
 	last_key: &LastKeyTime,
 	last_respawn: Option<&LastRespawnTime>,
@@ -241,12 +238,12 @@ mod test {
 	}
 
 	#[test]
-	fn check_allowed_spec() {
+	fn check_allowed_spec_not_dead() {
 		assert!(check_allowed(
-			true,
 			false,
-			&Health::new(1.0),
-			&LastKeyTime(Instant::now() - Duration::from_secs(5)),
+			true,
+			&Health::new(0.0),
+			&LastKeyTime(Instant::now()),
 			None,
 			&ThisFrame(Instant::now())
 		));

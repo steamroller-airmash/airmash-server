@@ -20,6 +20,59 @@ use std::time::{Duration, Instant};
 use specs::world::Builder;
 use uuid::Uuid;
 
+/// Wait for the login packet and, if it arrives, perform
+/// all the state setup required.
+///
+/// It is possible for the login packet to arrive before
+/// the reader was created so this task also has an
+/// optional parameter to pass in the login packet if
+/// it has already been received.
+pub async fn new_connection(
+	mut task: TaskData,
+	id: ConnectionId,
+	mut reader: OnLoginReader,
+	packet: Option<Login>,
+) {
+	// If the client doesn't respond within a fixed time
+	// we'll drop the connection
+	let timeout = Instant::now() + Duration::from_secs(10);
+
+	// Wait for a login packet or timeout
+	// TODO: Backup packets?
+	let packet = if packet.is_some() {
+		packet
+	} else {
+		loop {
+			let read = task.read_resource::<OnLogin, _, _>(|channel| {
+				channel
+					.read(&mut reader)
+					.filter(|(conn, _)| *conn == id)
+					.map(|(_, packet)| packet.clone())
+					.next()
+			});
+
+			if let Some(packet) = read {
+				break Some(packet);
+			}
+
+			if Instant::now() > timeout {
+				break None;
+			}
+
+			task.yield_frame().await;
+		}
+	};
+
+	if let Some(login) = packet {
+		do_login(&mut task, id, login);
+	} else {
+		// TODO: Figure out if this is the right way to do this
+		task.write_resource::<OnClose, _, _>(|mut on_close| {
+			on_close.single_write(ConnectionClose { conn: id });
+		});
+	}
+}
+
 fn do_login(task: &mut TaskData, conn: ConnectionId, login: Login) {
 	let flag = FlagCode::try_from(&*login.flag).unwrap_or(FlagCode::UnitedNations);
 	let session = Uuid::from_str(&login.session).ok();
@@ -127,50 +180,4 @@ fn do_login(task: &mut TaskData, conn: ConnectionId, login: Login) {
 			conn: conn,
 		});
 	});
-}
-
-pub async fn new_connection(
-	mut task: TaskData,
-	id: ConnectionId,
-	mut reader: OnLoginReader,
-	packet: Option<Login>,
-) {
-	// If the client doesn't respond within a fixed time
-	// we'll drop the connection
-	let timeout = Instant::now() + Duration::from_secs(10);
-
-	// Wait for a login packet or timeout
-	// TODO: Backup packets?
-	let packet = if packet.is_some() {
-		packet
-	} else {
-		loop {
-			let read = task.read_resource::<OnLogin, _, _>(|channel| {
-				channel
-					.read(&mut reader)
-					.filter(|(conn, _)| *conn == id)
-					.map(|(_, packet)| packet.clone())
-					.next()
-			});
-
-			if let Some(packet) = read {
-				break Some(packet);
-			}
-
-			if Instant::now() > timeout {
-				break None;
-			}
-
-			task.yield_frame().await;
-		}
-	};
-
-	if let Some(login) = packet {
-		do_login(&mut task, id, login);
-	} else {
-		// TODO: Figure out if this is the right way to do this
-		task.write_resource::<OnClose, _, _>(|mut on_close| {
-			on_close.single_write(ConnectionClose { conn: id });
-		});
-	}
 }

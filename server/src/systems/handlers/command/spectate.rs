@@ -30,13 +30,12 @@ pub struct SpectateData<'a> {
 	pub this_frame: Read<'a, ThisFrame>,
 
 	pub is_spec: WriteStorage<'a, IsSpectating>,
-	pub is_dead: WriteStorage<'a, IsDead>,
+	pub is_dead: ReadStorage<'a, IsDead>,
 	pub is_player: ReadStorage<'a, IsPlayer>,
 	pub spec_target: ReadStorage<'a, PlayerRef>,
 	pub entities: Entities<'a>,
 	pub health: ReadStorage<'a, Health>,
 	pub last_key: ReadStorage<'a, LastKeyTime>,
-	pub velocity: ReadStorage<'a, Velocity>,
 }
 
 impl EventHandlerTypeProvider for Spectate {
@@ -61,7 +60,6 @@ impl<'a> EventHandler<'a> for Spectate {
 			spec_target,
 			health,
 			last_key,
-			velocity,
 		} = data;
 
 		let &(conn, ref packet) = evt;
@@ -84,7 +82,6 @@ impl<'a> EventHandler<'a> for Spectate {
 			is_spec.get(player).is_some(),
 			health.get(player).unwrap(),
 			last_key.get(player).unwrap(),
-			velocity.get(player).unwrap(),
 			&*this_frame,
 		);
 
@@ -184,6 +181,8 @@ impl<'a> EventHandler<'a> for Spectate {
 			}
 		}
 
+		info!("Went into spec. is_dead: {}", spec_event.is_dead);
+
 		channel.single_write(spec_event);
 	}
 }
@@ -215,7 +214,6 @@ fn check_allowed(
 	is_spec: bool,
 	health: &Health,
 	last_key: &LastKeyTime,
-	velocity: &Vector2<Speed>,
 	this_frame: &ThisFrame,
 ) -> bool {
 	// Note to my future self and maintainers:
@@ -225,30 +223,19 @@ fn check_allowed(
 	//  fashion. This is a lot more clear and I'd prefer
 	//  if it stayed that way.
 
+	// Another note:
+	//  This function explicitly doesn't check the velocity
+	//  of a player since respawning while moving has always
+	//  been possible in airmash. Whether this is a bug in the
+	//  original server is debatable but I'd like to stay true
+	//  to the original server if possible.
+
 	// If the player is spectating then they may respawn
 	// at any time. Note that is_dead will prevent respawning
 	// during the first 2 seconds after going into spec.
 	if is_spec {
 		debug!("spectate allowed, already speccing");
 		return true;
-	}
-
-	let smin = Speed::new(-0.1);
-	let smax = Speed::new(0.1);
-	if !(smin < velocity.x && smax > velocity.x) {
-		debug!(
-			"spectate denied, xvel too high X {} {}",
-			velocity.x, velocity.y
-		);
-		return false;
-	}
-
-	if !(smin < velocity.y && smax > velocity.y) {
-		debug!(
-			"spectate denied, yvel too high {} {}",
-			velocity.x, velocity.y
-		);
-		return false;
 	}
 
 	// Players that don't have full health may not respawn

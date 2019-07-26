@@ -4,7 +4,7 @@ use super::*;
 
 pub fn register<'a, 'b>(builder: Builder<'a, 'b>) -> Builder<'a, 'b> {
 	builder
-		.with_handler::<PlayerRespawn>()
+		// .with_handler::<PlayerRespawn>()
 		.with::<UnthrottlePlayer>()
 		.with::<LoginFailed>()
 		.with_handler::<DelayMessage>()
