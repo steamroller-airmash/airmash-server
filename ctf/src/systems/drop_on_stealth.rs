@@ -1,10 +1,10 @@
 use specs::*;
 
-use component::*;
-use server::component::event::PlayerStealth;
-use server::systems::handlers::game::on_player_despawn::KnownEventSources;
-use server::utils::{EventHandler, EventHandlerTypeProvider};
-use server::*;
+use crate::component::*;
+use crate::server::component::event::PlayerStealth;
+use crate::server::systems::handlers::game::on_player_despawn::KnownEventSources;
+use crate::server::utils::{EventHandler, EventHandlerTypeProvider};
+use crate::server::*;
 
 #[derive(Default)]
 pub struct DropOnStealth;

@@ -1,15 +1,15 @@
-use component::{FlagCarrier, Flags, IsFlag, LastDrop};
+use crate::component::{FlagCarrier, Flags, IsFlag, LastDrop};
 
-use airmash_server::protocol::MobType;
-use server::{Builder, Distance, Position, Team};
+use crate::server::protocol::MobType;
+use crate::server::{Builder, Position, Team};
 use specs::Builder as SpecsBuilder;
 use specs::*;
 
 use std::time::{Duration, Instant};
 
 use super::*;
-use airmash_server::types::*;
-use config;
+use crate::server::::types::*;
+use crate::config;
 
 pub fn register<'a, 'b>(world: &mut World, disp: Builder<'a, 'b>) -> Builder<'a, 'b> {
 	// Normally the systems would take care of this,

@@ -1,5 +1,5 @@
-use config::{BLUE_TEAM, RED_TEAM};
-use server::{Score, Team};
+use crate::config::{BLUE_TEAM, RED_TEAM};
+use crate::server::{Score, Team};
 use specs::Entity;
 
 pub struct PlayerShuffleInfo {

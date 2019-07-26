@@ -1,10 +1,10 @@
 use specs::*;
 
-use component::*;
+use crate::component::*;
 
-use server::component::time::ThisFrame;
-use server::utils::*;
-use server::*;
+use crate::server::component::time::ThisFrame;
+use crate::server::utils::*;
+use crate::server::*;
 
 #[derive(Default)]
 pub struct UpdateLastDrop;

@@ -25,7 +25,7 @@ pub type AllFlagSystems = (
 	UpdateScore,
 );
 
-use systems;
+use crate::systems;
 
 pub type KnownEventSources = (
 	systems::flag_event::ReturnFlag,

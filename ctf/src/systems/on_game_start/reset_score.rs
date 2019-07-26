@@ -1,10 +1,10 @@
 use specs::*;
 
-use server::utils::*;
-use server::*;
+use crate::server::utils::*;
+use crate::server::*;
 
-use component::*;
-use systems::timer::GameStart;
+use crate::component::*;
+use crate::systems::timer::GameStart;
 
 /// Resets game score to 0-0 when the
 /// game starts.

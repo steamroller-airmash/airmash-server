@@ -1,8 +1,8 @@
-use server::*;
+use crate::server::*;
 use specs::*;
 
-use component::*;
-use server::types::systemdata::*;
+use crate::component::*;
+use crate::server::types::systemdata::*;
 
 #[derive(Default)]
 pub struct PosUpdateSystem;

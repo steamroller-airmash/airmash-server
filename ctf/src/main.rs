@@ -33,8 +33,8 @@ mod tests;
 use std::env;
 use std::fs::File;
 
-use gamemode::{CTFGameMode, BLUE_TEAM, RED_TEAM};
-use server::{AirmashServer, AirmashServerConfig, Config};
+use crate::gamemode::{CTFGameMode, BLUE_TEAM, RED_TEAM};
+use crate::server::{AirmashServer, AirmashServerConfig, Config};
 
 /// NOTE: Also initializes env_logger
 fn init_sentry() -> Option<sentry::internals::ClientInitGuard> {

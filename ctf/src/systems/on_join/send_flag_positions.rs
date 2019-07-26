@@ -1,14 +1,14 @@
 use specs::*;
 
-use server::component::event::*;
-use server::protocol::server::GameFlag;
-use server::protocol::FlagUpdateType;
-use server::systems::handlers::game::on_join::SendLogin;
-use server::types::systemdata::SendToPlayer;
-use server::utils::*;
-use server::*;
+use crate::server::component::event::*;
+use crate::server::protocol::server::GameFlag;
+use crate::server::protocol::FlagUpdateType;
+use crate::server::systems::handlers::game::on_join::SendLogin;
+use crate::server::types::systemdata::SendToPlayer;
+use crate::server::utils::*;
+use crate::server::*;
 
-use component::*;
+use crate::component::*;
 
 #[derive(Default)]
 pub struct SendFlagPosition;

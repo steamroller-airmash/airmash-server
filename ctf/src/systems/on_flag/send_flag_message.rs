@@ -1,14 +1,14 @@
-use server::*;
+use crate::server::*;
 use specs::*;
 
-use component::*;
-use server::protocol::server::GameFlag;
-use server::protocol::FlagUpdateType;
-use server::types::systemdata::*;
-use server::utils::*;
+use crate::component::*;
+use crate::server::protocol::server::GameFlag;
+use crate::server::protocol::FlagUpdateType;
+use crate::server::types::systemdata::*;
+use crate::server::utils::*;
 
-use BLUE_TEAM;
-use RED_TEAM;
+use crate::BLUE_TEAM;
+use crate::RED_TEAM;
 
 #[derive(Default)]
 pub struct SendFlagMessageSystem;
@@ -92,7 +92,7 @@ impl<'a> EventHandler<'a> for SendFlagMessageSystem {
 	}
 }
 
-use systems::PickupFlagSystem;
+use crate::systems::PickupFlagSystem;
 
 impl SystemInfo for SendFlagMessageSystem {
 	type Dependencies = PickupFlagSystem;

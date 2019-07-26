@@ -1,13 +1,13 @@
 use specs::*;
 
-use server::component::event::PlayerLeave;
-use server::systems::handlers::packet::OnCloseHandler;
-use server::utils::*;
-use server::*;
+use crate::server::component::event::PlayerLeave;
+use crate::server::systems::handlers::packet::OnCloseHandler;
+use crate::server::utils::*;
+use crate::server::*;
 
-use CTFGameMode;
-use BLUE_TEAM;
-use RED_TEAM;
+use crate::CTFGameMode;
+use crate::BLUE_TEAM;
+use crate::RED_TEAM;
 
 #[derive(Default)]
 pub struct UpdateGameModeOnPlayerLeave;

@@ -1,13 +1,13 @@
 use specs::*;
 
-use server::component::counter::*;
-use server::component::event::*;
-use server::component::flag::*;
-use server::protocol::server::{ScoreDetailedCTF, ScoreDetailedCTFEntry};
-use server::utils::*;
-use server::*;
+use crate::server::component::counter::*;
+use crate::server::component::event::*;
+use crate::server::component::flag::*;
+use crate::server::protocol::server::{ScoreDetailedCTF, ScoreDetailedCTFEntry};
+use crate::server::utils::*;
+use crate::server::*;
 
-use component::Captures;
+use crate::component::Captures;
 
 #[derive(Default)]
 pub struct ScoreDetailed;

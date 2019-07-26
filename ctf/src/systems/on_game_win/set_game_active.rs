@@ -1,14 +1,14 @@
 use specs::*;
 
-use server::component::event::*;
-use server::types::FutureDispatcher;
-use server::utils::*;
-use server::*;
+use crate::server::component::event::*;
+use crate::server::types::FutureDispatcher;
+use crate::server::utils::*;
+use crate::server::*;
 
-use component::*;
-use config::*;
-use consts::*;
-use systems::on_flag::CheckWin;
+use crate::component::*;
+use crate::config::*;
+use crate::consts::*;
+use crate::systems::on_flag::CheckWin;
 
 use std::time::Duration;
 

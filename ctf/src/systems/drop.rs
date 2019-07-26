@@ -1,14 +1,14 @@
-use server::*;
+use crate::server::*;
 use specs::*;
 
-use server::component::event::*;
-use server::component::time::ThisFrame;
-use server::protocol::server::GameFlag;
-use server::protocol::FlagUpdateType;
-use server::types::systemdata::SendToAll;
-use server::utils::*;
+use crate::server::component::event::*;
+use crate::server::component::time::ThisFrame;
+use crate::server::protocol::server::GameFlag;
+use crate::server::protocol::FlagUpdateType;
+use crate::server::types::systemdata::SendToAll;
+use crate::server::utils::*;
 
-use component::*;
+use crate::component::*;
 
 #[derive(Default)]
 pub struct DropSystem;

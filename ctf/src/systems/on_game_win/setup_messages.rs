@@ -1,17 +1,17 @@
 use specs::*;
 
-use server::component::event::TimerEvent;
-use server::consts::timer::DELAYED_MESSAGE;
-use server::protocol::server::ServerMessage;
-use server::protocol::ServerMessageType;
-use server::types::FutureDispatcher;
-use server::utils::*;
-use server::*;
+use crate::server::component::event::TimerEvent;
+use crate::server::consts::timer::DELAYED_MESSAGE;
+use crate::server::protocol::server::ServerMessage;
+use crate::server::protocol::ServerMessageType;
+use crate::server::types::FutureDispatcher;
+use crate::server::utils::*;
+use crate::server::*;
 
-use component::*;
-use config::*;
+use crate::component::*;
+use crate::config::*;
+use crate::systems::on_flag::CheckWin;
 use std::time::Duration;
-use systems::on_flag::CheckWin;
 
 const MESSAGE_1_MIN: &'static str = "New game starting in 1 minute";
 const MESSAGE_30_SECONDS: &'static str = "Game starting in 30 seconds - shuffling teams";

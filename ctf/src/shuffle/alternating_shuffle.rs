@@ -1,6 +1,6 @@
 use super::*;
 
-use config::{BLUE_TEAM, RED_TEAM};
+use crate::config::{BLUE_TEAM, RED_TEAM};
 use rand::random;
 
 /// Shuffle that alternates players between red and

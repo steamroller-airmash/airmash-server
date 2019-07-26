@@ -1,9 +1,9 @@
 use specs::*;
 
-use component::*;
+use crate::component::*;
 
-use server::utils::*;
-use server::*;
+use crate::server::utils::*;
+use crate::server::*;
 
 #[derive(Default)]
 pub struct UpdateCaptures;

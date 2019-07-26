@@ -1,14 +1,14 @@
-use server::*;
+use crate::server::*;
 use specs::*;
 
-use component::*;
-use config::GAME_RESET_TIME;
-use consts::*;
-use systems::on_flag::CheckWin;
+use crate::component::*;
+use crate::config::GAME_RESET_TIME;
+use crate::consts::*;
+use crate::systems::on_flag::CheckWin;
 
-use server::component::event::TimerEvent;
-use server::types::FutureDispatcher;
-use server::utils::*;
+use crate::server::component::event::TimerEvent;
+use crate::server::types::FutureDispatcher;
+use crate::server::utils::*;
 
 /// Set missile damage to 0 in the config
 /// and dispatch a timer event to trigger

@@ -1,10 +1,10 @@
 use specs::*;
 
-use server::component::event::*;
-use server::utils::*;
-use server::*;
+use crate::server::component::event::*;
+use crate::server::utils::*;
+use crate::server::*;
 
-use consts::*;
+use crate::consts::*;
 
 #[derive(Default)]
 pub struct RestoreConfig;

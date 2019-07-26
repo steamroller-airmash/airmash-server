@@ -1,14 +1,14 @@
-use server::*;
+use crate::server::*;
 use specs::*;
 
-use component::*;
-use config as ctfconfig;
+use crate::component::*;
+use crate::config as ctfconfig;
 
-use server::component::counter::*;
-use server::protocol::server::ScoreUpdate;
-use server::types::systemdata::*;
-use server::types::*;
-use server::utils::*;
+use crate::server::component::counter::*;
+use crate::server::protocol::server::ScoreUpdate;
+use crate::server::types::systemdata::*;
+use crate::server::types::*;
+use crate::server::utils::*;
 
 #[derive(Default)]
 pub struct UpdateScore;
@@ -63,7 +63,7 @@ impl<'a> EventHandler<'a> for UpdateScore {
 	}
 }
 
-use systems::PickupFlagSystem;
+use crate::systems::PickupFlagSystem;
 
 impl SystemInfo for UpdateScore {
 	type Dependencies = PickupFlagSystem;

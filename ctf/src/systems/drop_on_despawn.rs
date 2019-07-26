@@ -1,11 +1,11 @@
 use specs::*;
 
-use component::*;
+use crate::component::*;
 
-use server::component::event::*;
-use server::systems::handlers::game::on_player_despawn::KnownEventSources;
-use server::utils::{EventHandler, EventHandlerTypeProvider};
-use server::*;
+use crate::server::component::event::*;
+use crate::server::systems::handlers::game::on_player_despawn::KnownEventSources;
+use crate::server::utils::{EventHandler, EventHandlerTypeProvider};
+use crate::server::*;
 
 /// Drop a carried flag when a player despawns.
 #[derive(Default)]

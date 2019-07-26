@@ -1,10 +1,10 @@
-use server::*;
+use crate::server::*;
 use specs::*;
 
-use component::*;
+use crate::component::*;
 
-use server::systems::handlers::game::on_join::AllJoinHandlers;
-use server::utils::*;
+use crate::server::systems::handlers::game::on_join::AllJoinHandlers;
+use crate::server::utils::*;
 
 use super::PickupFlagSystem;
 

@@ -1,13 +1,13 @@
 use specs::*;
 
-use server::component::flag::*;
-use server::component::time::ThisFrame;
-use server::types::systemdata::*;
-use server::*;
+use crate::server::component::flag::*;
+use crate::server::component::time::ThisFrame;
+use crate::server::types::systemdata::*;
+use crate::server::*;
 
-use component::*;
-use config as ctfconfig;
-use systems::on_join::SendFlagPosition;
+use crate::component::*;
+use crate::config as ctfconfig;
+use crate::systems::on_join::SendFlagPosition;
 
 use std::cmp::Ordering;
 
@@ -132,7 +132,7 @@ impl<'a> System<'a> for PickupFlagSystem {
 	}
 }
 
-use server::systems::PositionUpdate;
+use crate::server::systems::PositionUpdate;
 
 impl SystemInfo for PickupFlagSystem {
 	type Dependencies = (PositionUpdate, SendFlagPosition);

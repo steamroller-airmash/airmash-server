@@ -1,15 +1,15 @@
-use server::*;
+use crate::server::*;
 use specs::*;
 
-use config::{BLUE_TEAM, FLAG_HOME_POS, RED_TEAM};
+use crate::config::{BLUE_TEAM, FLAG_HOME_POS, RED_TEAM};
 
-use component::*;
+use crate::component::*;
 
-use server::protocol::server::GameFlag;
-use server::protocol::FlagUpdateType;
-use server::types::systemdata::*;
+use crate::server::protocol::server::GameFlag;
+use crate::server::protocol::FlagUpdateType;
+use crate::server::types::systemdata::*;
 
-use server::utils::{EventHandler, EventHandlerTypeProvider};
+use crate::server::utils::{EventHandler, EventHandlerTypeProvider};
 
 #[derive(Default)]
 pub struct DoReturn;
@@ -68,7 +68,7 @@ impl<'a> EventHandler<'a> for DoReturn {
 	}
 }
 
-use systems::PickupFlagSystem;
+use crate::systems::PickupFlagSystem;
 
 impl SystemInfo for DoReturn {
 	type Dependencies = (

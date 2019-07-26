@@ -1,13 +1,13 @@
-use server::*;
+use crate::server::*;
 use specs::*;
 
-use config as ctfconfig;
+use crate::config as ctfconfig;
 
-use component::*;
+use crate::component::*;
 
-use server::protocol::server::GameFlag;
-use server::protocol::FlagUpdateType;
-use server::types::systemdata::*;
+use crate::server::protocol::server::GameFlag;
+use crate::server::protocol::FlagUpdateType;
+use crate::server::types::systemdata::*;
 
 #[derive(Default)]
 pub struct CaptureFlag;
@@ -90,7 +90,7 @@ impl<'a> System<'a> for CaptureFlag {
 	}
 }
 
-use systems::PickupFlagSystem;
+use crate::systems::PickupFlagSystem;
 
 impl SystemInfo for CaptureFlag {
 	type Dependencies = PickupFlagSystem;

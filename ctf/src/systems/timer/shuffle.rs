@@ -1,20 +1,20 @@
 use specs::*;
 
-use server::component::counter::*;
-use server::component::event::*;
-use server::component::flag::*;
-use server::types::systemdata::*;
-use server::types::GameModeWriter;
-use server::utils::*;
-use server::*;
+use crate::server::component::counter::*;
+use crate::server::component::event::*;
+use crate::server::component::flag::*;
+use crate::server::types::systemdata::*;
+use crate::server::types::GameModeWriter;
+use crate::server::utils::*;
+use crate::server::*;
 
-use server::protocol::server::{PlayerReteam, PlayerReteamPlayer};
+use crate::server::protocol::server::{PlayerReteam, PlayerReteamPlayer};
 
-use component::*;
-use config::*;
-use consts::*;
-use gamemode::CTFGameMode;
-use shuffle::*;
+use crate::component::*;
+use crate::config::*;
+use crate::consts::*;
+use crate::gamemode::CTFGameMode;
+use crate::shuffle::*;
 
 #[derive(Default)]
 pub struct Shuffle;

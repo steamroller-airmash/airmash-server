@@ -1,15 +1,15 @@
 use specs::*;
 
-use server::component::channel::*;
-use server::component::event::*;
-use server::component::flag::*;
-use server::systems::handlers::game::on_join::AllJoinHandlers;
-use server::types::systemdata::IsAlive;
-use server::utils::*;
-use server::*;
+use crate::server::component::channel::*;
+use crate::server::component::event::*;
+use crate::server::component::flag::*;
+use crate::server::systems::handlers::game::on_join::AllJoinHandlers;
+use crate::server::types::systemdata::IsAlive;
+use crate::server::utils::*;
+use crate::server::*;
 
-use component::*;
-use systems::timer::GameStart;
+use crate::component::*;
+use crate::systems::timer::GameStart;
 
 use super::RespawnAllUnspec;
 

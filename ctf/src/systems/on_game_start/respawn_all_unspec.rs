@@ -1,11 +1,11 @@
 use specs::*;
 
-use server::component::flag::*;
-use server::utils::*;
-use server::*;
+use crate::server::component::flag::*;
+use crate::server::utils::*;
+use crate::server::*;
 
-use component::*;
-use systems::timer::GameStart;
+use crate::component::*;
+use crate::systems::timer::GameStart;
 
 /// Drops all players out of spec on
 /// the game start.

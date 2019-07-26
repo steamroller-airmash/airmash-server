@@ -1,7 +1,7 @@
 use shrev::*;
 use specs::*;
 
-use server::Team;
+use crate::server::Team;
 
 use std::time::Instant;
 

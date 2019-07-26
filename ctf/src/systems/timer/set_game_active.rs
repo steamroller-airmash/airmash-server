@@ -1,11 +1,11 @@
 use specs::*;
 
-use server::component::event::*;
-use server::utils::*;
-use server::*;
+use crate::server::component::event::*;
+use crate::server::utils::*;
+use crate::server::*;
 
-use component::*;
-use consts::*;
+use crate::component::*;
+use crate::consts::*;
 
 /// Resets game score to 0-0 when the
 /// game starts.

@@ -1,21 +1,21 @@
 use specs::*;
 
-use server::component::channel::*;
-use server::component::counter::*;
-use server::component::event::*;
-use server::component::flag::IsPlayer;
-use server::component::time::*;
-use server::consts::timer::SCORE_BOARD;
-use server::types::systemdata::SendToPlayer;
-use server::types::Upgrades;
-use server::utils::*;
-use server::*;
+use crate::server::component::channel::*;
+use crate::server::component::counter::*;
+use crate::server::component::event::*;
+use crate::server::component::flag::IsPlayer;
+use crate::server::component::time::*;
+use crate::server::consts::timer::SCORE_BOARD;
+use crate::server::types::systemdata::SendToPlayer;
+use crate::server::types::Upgrades;
+use crate::server::utils::*;
+use crate::server::*;
 
-use server::protocol::server::ScoreUpdate;
+use crate::server::protocol::server::ScoreUpdate;
 
-use component::*;
-use config::GAME_WIN_BOUNTY_BASE;
-use systems::on_flag::CheckWin;
+use crate::component::*;
+use crate::config::GAME_WIN_BOUNTY_BASE;
+use crate::systems::on_flag::CheckWin;
 
 /// Award bounty to all members of the winning team
 #[derive(Default)]

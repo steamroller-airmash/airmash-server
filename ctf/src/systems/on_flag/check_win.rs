@@ -1,9 +1,9 @@
 use specs::*;
 
-use component::*;
-use config::{BLUE_TEAM, RED_TEAM};
-use server::utils::*;
-use server::*;
+use crate::component::*;
+use crate::config::{BLUE_TEAM, RED_TEAM};
+use crate::server::utils::*;
+use crate::server::*;
 
 use super::SendFlagMessage;
 

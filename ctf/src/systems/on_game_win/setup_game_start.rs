@@ -1,14 +1,14 @@
 use specs::*;
 
-use server::component::event::TimerEvent;
-use server::types::FutureDispatcher;
-use server::utils::*;
-use server::*;
+use crate::server::component::event::TimerEvent;
+use crate::server::types::FutureDispatcher;
+use crate::server::utils::*;
+use crate::server::*;
 
-use component::*;
-use consts::GAME_START_TIMER;
+use crate::component::*;
+use crate::consts::GAME_START_TIMER;
+use crate::systems::on_flag::CheckWin;
 use std::time::Duration;
-use systems::on_flag::CheckWin;
 
 #[derive(Default)]
 pub struct SetupGameStart;

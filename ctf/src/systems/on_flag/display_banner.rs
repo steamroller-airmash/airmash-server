@@ -1,15 +1,15 @@
-use server::*;
+use crate::server::*;
 use specs::*;
 
-use component::*;
-use config as ctfconfig;
+use crate::component::*;
+use crate::config as ctfconfig;
 
 use htmlescape;
 
-use server::protocol::server::ServerMessage;
-use server::protocol::ServerMessageType;
-use server::types::systemdata::*;
-use server::utils::*;
+use crate::server::protocol::server::ServerMessage;
+use crate::server::protocol::ServerMessageType;
+use crate::server::types::systemdata::*;
+use crate::server::utils::*;
 
 #[derive(Default)]
 pub struct PickupMessageSystem;
@@ -64,7 +64,7 @@ impl<'a> EventHandler<'a> for PickupMessageSystem {
 	}
 }
 
-use systems::PickupFlagSystem;
+use crate::systems::PickupFlagSystem;
 
 impl SystemInfo for PickupMessageSystem {
 	type Dependencies = PickupFlagSystem;

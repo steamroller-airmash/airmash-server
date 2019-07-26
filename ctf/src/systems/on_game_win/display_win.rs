@@ -1,15 +1,15 @@
-use server::*;
+use crate::server::*;
 use specs::*;
 
-use component::*;
-use config::*;
-use systems::on_flag::CheckWin;
+use crate::component::*;
+use crate::config::*;
+use crate::systems::on_flag::CheckWin;
 
-use server::component::counter::PlayersGame;
-use server::protocol::server::ServerCustom;
-use server::protocol::ServerCustomType;
-use server::types::systemdata::*;
-use server::utils::*;
+use crate::server::component::counter::PlayersGame;
+use crate::server::protocol::server::ServerCustom;
+use crate::server::protocol::ServerCustomType;
+use crate::server::types::systemdata::*;
+use crate::server::utils::*;
 
 #[derive(Default)]
 pub struct DisplayWin;

@@ -1,10 +1,10 @@
 use specs::*;
 
-use component::*;
-use systems::on_flag::AllFlagSystems;
+use crate::component::*;
+use crate::systems::on_flag::AllFlagSystems;
 
-use server::utils::{EventHandler, EventHandlerTypeProvider};
-use server::SystemInfo;
+use crate::server::utils::{EventHandler, EventHandlerTypeProvider};
+use crate::server::SystemInfo;
 
 #[derive(Default)]
 pub struct ResetFlags;

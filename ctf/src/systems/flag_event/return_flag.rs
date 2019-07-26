@@ -1,14 +1,14 @@
-use server::*;
+use crate::server::*;
 use specs::*;
 
-use config as ctfconfig;
+use crate::config as ctfconfig;
 
-use component::*;
+use crate::component::*;
 
 use std::cmp::Ordering;
 
-use server::component::flag::IsPlayer;
-use server::types::systemdata::*;
+use crate::server::component::flag::IsPlayer;
+use crate::server::types::systemdata::*;
 
 pub struct ReturnFlag;
 
@@ -103,7 +103,7 @@ impl<'a> System<'a> for ReturnFlag {
 	}
 }
 
-use systems::PickupFlagSystem;
+use crate::systems::PickupFlagSystem;
 
 impl SystemInfo for ReturnFlag {
 	type Dependencies = PickupFlagSystem;

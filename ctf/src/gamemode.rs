@@ -1,5 +1,5 @@
-use server::protocol::GameType;
-use server::*;
+use crate::server::protocol::GameType;
+use crate::server::*;
 
 use rand;
 use specs::Entity;

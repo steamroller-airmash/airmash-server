@@ -1,9 +1,9 @@
-use component::*;
-use server::*;
+use crate::component::*;
+use crate::server::*;
 use specs::*;
 
-use server::component::flag::ForcePlayerUpdate;
-use server::utils::{EventHandler, EventHandlerTypeProvider};
+use crate::server::component::flag::ForcePlayerUpdate;
+use crate::server::utils::{EventHandler, EventHandlerTypeProvider};
 
 #[derive(Default)]
 pub struct ForceUpdate;
@@ -40,7 +40,7 @@ impl<'a> EventHandler<'a> for ForceUpdate {
 	}
 }
 
-use systems::PickupFlagSystem;
+use crate::systems::PickupFlagSystem;
 
 impl SystemInfo for ForceUpdate {
 	type Dependencies = (
