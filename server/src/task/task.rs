@@ -1,20 +1,19 @@
-
-use specs::{World, Component, Entity, ReadStorage, WriteStorage};
-use specs::error::WrongGeneration;
 use shred::{Fetch, FetchMut, Resource};
+use specs::error::WrongGeneration;
+use specs::{Component, Entity, ReadStorage, World, WriteStorage};
 
-use std::sync::Arc;
 use parking_lot::RwLock;
+use std::sync::Arc;
 
-use std::time::{Instant, Duration};
 use std::future::Future;
-use std::task::{Poll, Context};
 use std::pin::Pin;
+use std::task::{Context, Poll};
+use std::time::{Duration, Instant};
 
 /// This is a task's reference to the rest of the game world.
 #[derive(Clone)]
 pub struct TaskData {
-	world: Arc<RwLock<World>>
+	world: Arc<RwLock<World>>,
 }
 
 impl TaskData {
@@ -23,7 +22,7 @@ impl TaskData {
 	}
 
 	/// Fetch a component by value.
-	/// 
+	///
 	/// # Panics
 	/// Panics if `T` has not been registered as a component.
 	pub fn fetch<T: Component + Clone>(&self, id: Entity) -> Option<T> {
@@ -32,10 +31,10 @@ impl TaskData {
 
 	/// Analogous to `World::read_storage()` with the limitation
 	/// that the storage can only be accessed within the callback.
-	pub fn read_storage<T, F, R>(&self, cb: F) -> R 
+	pub fn read_storage<T, F, R>(&self, cb: F) -> R
 	where
 		T: Component,
-		F: FnOnce(ReadStorage<T>) -> R
+		F: FnOnce(ReadStorage<T>) -> R,
 	{
 		cb(self.world.read().read_storage::<T>())
 	}
@@ -45,7 +44,7 @@ impl TaskData {
 	pub fn write_storage<T, F, R>(&self, cb: F) -> R
 	where
 		T: Component,
-		F: FnOnce(WriteStorage<T>) -> R
+		F: FnOnce(WriteStorage<T>) -> R,
 	{
 		cb(self.world.read().write_storage::<T>())
 	}
@@ -55,7 +54,7 @@ impl TaskData {
 	pub fn read_resource<T, F, R>(&self, cb: F) -> R
 	where
 		T: Resource,
-		F: FnOnce(Fetch<T>) -> R
+		F: FnOnce(Fetch<T>) -> R,
 	{
 		cb(self.world.read().read_resource())
 	}
@@ -65,7 +64,7 @@ impl TaskData {
 	pub fn write_resource<T, F, R>(&self, cb: F) -> R
 	where
 		T: Resource,
-		F: FnOnce(FetchMut<T>) -> R
+		F: FnOnce(FetchMut<T>) -> R,
 	{
 		cb(self.world.read().write_resource())
 	}
@@ -74,7 +73,7 @@ impl TaskData {
 	/// that the `EntityBuilder` can only be accessed within the callback.
 	pub fn create_entity<F, R>(&mut self, cb: F) -> R
 	where
-		F: FnOnce(specs::EntityBuilder) -> R
+		F: FnOnce(specs::EntityBuilder) -> R,
 	{
 		cb(self.world.write().create_entity())
 	}
@@ -111,7 +110,7 @@ impl TaskData {
 /// to wake it at the right time.
 struct TimedFuture<'a> {
 	data: &'a TaskData,
-	end: Instant
+	end: Instant,
 }
 
 impl<'a> TimedFuture<'a> {
@@ -130,12 +129,10 @@ impl Future for TimedFuture<'_> {
 			return Poll::Ready(());
 		}
 
-		self.data.write_resource::<WakerChannel, _, _>(|mut channel| {
-			channel.single_write(WakerEvent(
-				self.end,
-				ctx.waker().clone()
-			));
-		});
+		self.data
+			.write_resource::<WakerChannel, _, _>(|mut channel| {
+				channel.single_write(WakerEvent(self.end, ctx.waker().clone()));
+			});
 
 		Poll::Pending
 	}
@@ -144,7 +141,7 @@ impl Future for TimedFuture<'_> {
 /// A future that waits once then returns `Poll::Ready`
 #[derive(Default)]
 struct InstantFuture {
-	ready: bool
+	ready: bool,
 }
 
 impl Future for InstantFuture {
@@ -160,4 +157,3 @@ impl Future for InstantFuture {
 		}
 	}
 }
-

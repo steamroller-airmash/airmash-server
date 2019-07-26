@@ -4,8 +4,8 @@
 //! making PacketEvent cleaner so I've chosen to have
 //! it in its own file.
 
+use crate::types::*;
 use std::time::Instant;
-use types::*;
 
 #[derive(Copy, Clone, Debug)]
 pub struct PacketEvent<T> {

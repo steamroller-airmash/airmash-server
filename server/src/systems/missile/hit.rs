@@ -1,16 +1,17 @@
+use crate::types::collision::*;
+use crate::types::FutureDispatcher;
+use crate::types::*;
 use specs::*;
-use types::collision::*;
-use types::FutureDispatcher;
-use types::*;
 
-use component::channel::*;
-use component::event::*;
-use component::flag::*;
-use component::reference::PlayerRef;
+use crate::component::channel::*;
+use crate::component::event::*;
+use crate::component::flag::*;
+use crate::component::reference::PlayerRef;
 
-use consts::missile::ID_REUSE_TIME;
-use consts::timer::DELETE_ENTITY;
+use crate::consts::missile::ID_REUSE_TIME;
+use crate::consts::timer::DELETE_ENTITY;
 
+#[derive(Default)]
 pub struct MissileHitSystem {
 	reader: Option<OnPlayerMissileCollisionReader>,
 }
@@ -85,7 +86,7 @@ impl<'a> System<'a> for MissileHitSystem {
 			data.lazy.remove::<PlayerRef>(missile.ent);
 
 			data.dispatch
-				.run_delayed(*ID_REUSE_TIME, move |inst| TimerEvent {
+				.run_delayed(ID_REUSE_TIME, move |inst| TimerEvent {
 					ty: *DELETE_ENTITY,
 					instant: inst,
 					data: Some(Box::new(missile.ent)),
@@ -106,17 +107,8 @@ impl<'a> System<'a> for MissileHitSystem {
 	}
 }
 
-use super::*;
-use dispatch::SystemInfo;
-
-impl SystemInfo for MissileHitSystem {
-	type Dependencies = MissileFireHandler;
-
-	fn name() -> &'static str {
-		concat!(module_path!(), "::", line!())
-	}
-
-	fn new() -> Self {
-		Self::new()
+system_info! {
+	impl SystemInfo for MissileHitSystem {
+		type Dependencies = super::MissileFireHandler;
 	}
 }

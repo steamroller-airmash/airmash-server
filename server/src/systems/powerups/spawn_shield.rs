@@ -1,13 +1,13 @@
 use specs::world::EntitiesRes;
 use specs::*;
 
-use component::channel::OnPowerupSpawn;
-use component::event::PowerupSpawnEvent;
-use component::flag::IsPowerup;
-use component::time::MobDespawnTime;
-use consts::config::{MAP_SIZE, POWERUP_RADIUS};
-use types::collision::Terrain;
-use types::*;
+use crate::component::channel::OnPowerupSpawn;
+use crate::component::event::PowerupSpawnEvent;
+use crate::component::flag::IsPowerup;
+use crate::component::time::MobDespawnTime;
+use crate::consts::config::{MAP_SIZE, POWERUP_RADIUS};
+use crate::types::collision::Terrain;
+use crate::types::*;
 
 use rand::{random, Open01};
 use std::time::{Duration, Instant};

@@ -1,6 +1,3 @@
-extern crate airmash_server;
-extern crate serde_json;
-
 use std::error::Error;
 use std::fs::File;
 use std::io::Write;

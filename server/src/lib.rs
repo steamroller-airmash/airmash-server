@@ -21,6 +21,7 @@ extern crate futures;
 extern crate hashbrown;
 extern crate hibitset;
 extern crate htmlescape;
+extern crate parking_lot;
 extern crate rand;
 extern crate rayon;
 #[cfg(features = "sentry")]
@@ -32,7 +33,6 @@ extern crate special_map;
 extern crate specs;
 extern crate uuid;
 extern crate ws;
-extern crate parking_lot;
 
 // Public dependencies
 pub extern crate airmash_protocol as protocol;
@@ -42,7 +42,7 @@ pub extern crate airmash_protocol as protocol;
 // namespace can be accessed by doing ::airmash_server.
 #[allow(unused)]
 mod airmash_server {
-	pub use *;
+	pub use crate::*;
 }
 
 // Needs to be first because of macros
@@ -58,16 +58,14 @@ mod status;
 pub mod component;
 pub mod consts;
 pub mod systems;
-pub mod types;
 pub mod task;
+pub mod types;
 
-use protocol as airmash_protocol;
+pub use crate::server::{AirmashServer, AirmashServerConfig};
 
-pub use server::{AirmashServer, AirmashServerConfig};
+pub use crate::dispatch::{Builder, SystemDeps, SystemInfo};
 
-pub use dispatch::{Builder, SystemDeps, SystemInfo};
-
-pub use types::{
+pub use crate::types::{
 	Accel, AccelScalar, Config, Connections, Distance, Energy, EnergyRegen, Flag, FutureDispatcher,
 	GameMode, GameModeWriter, Health, HealthRegen, KeyState, Level, Mob, Name, Plane, Position,
 	Score, Speed, Team, Time, Vector2, Velocity,

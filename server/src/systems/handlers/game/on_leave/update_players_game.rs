@@ -1,9 +1,9 @@
 use specs::*;
 
-use SystemInfo;
+use crate::SystemInfo;
 
-use component::channel::*;
-use consts::NUM_PLAYERS;
+use crate::component::channel::*;
+use crate::consts::NUM_PLAYERS;
 
 use std::sync::atomic::Ordering::Relaxed;
 

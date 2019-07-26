@@ -1,13 +1,13 @@
 use specs::*;
 
-use types::collision::*;
-use types::*;
+use crate::types::collision::*;
+use crate::types::*;
 
-use component::channel::*;
-use component::event::*;
-use component::flag::*;
-use systems;
-use utils::*;
+use crate::component::channel::*;
+use crate::component::event::*;
+use crate::component::flag::*;
+use crate::systems;
+use crate::utils::*;
 
 #[derive(Default)]
 pub struct PickupUpgrade;

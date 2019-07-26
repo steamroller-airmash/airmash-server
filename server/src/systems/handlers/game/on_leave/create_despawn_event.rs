@@ -1,11 +1,11 @@
+use crate::types::*;
 use specs::*;
-use types::*;
 
-use component::channel::OnPlayerDespawn;
-use component::event::{PlayerDespawn, PlayerDespawnType, PlayerLeave};
+use crate::component::channel::OnPlayerDespawn;
+use crate::component::event::{PlayerDespawn, PlayerDespawnType, PlayerLeave};
 
-use utils::{EventHandler, EventHandlerTypeProvider};
-use SystemInfo;
+use crate::utils::{EventHandler, EventHandlerTypeProvider};
+use crate::SystemInfo;
 
 /// Create a despawn event when a player leaves
 #[derive(Default)]

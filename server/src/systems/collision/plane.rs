@@ -1,15 +1,13 @@
-//! This module contains a system to
-
 use specs::prelude::*;
 use specs::world::EntitiesRes;
 
-use types::collision::*;
-use types::*;
+use crate::types::collision::*;
+use crate::types::*;
 
-use component::channel::*;
-use component::event::PlayerTerrainCollision;
+use crate::component::channel::*;
+use crate::component::event::PlayerTerrainCollision;
 
-use consts::config::PLANE_HIT_CIRCLES;
+use crate::consts::config::PLANE_HIT_CIRCLES;
 
 #[derive(Default)]
 pub struct PlaneCollisionSystem {
@@ -80,17 +78,8 @@ impl<'a> System<'a> for PlaneCollisionSystem {
 	}
 }
 
-use dispatch::SystemInfo;
-use systems::PositionUpdate;
-
-impl SystemInfo for PlaneCollisionSystem {
-	type Dependencies = PositionUpdate;
-
-	fn name() -> &'static str {
-		concat!(module_path!(), "::", line!())
-	}
-
-	fn new() -> Self {
-		Self::new()
+system_info! {
+	impl SystemInfo for PlaneCollisionSystem {
+		type Dependencies = crate::systems::PositionUpdate;
 	}
 }

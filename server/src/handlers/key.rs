@@ -1,21 +1,16 @@
+use crate::types::*;
 use shrev::*;
 use specs::*;
-use types::*;
 
-use protocol::client::Key;
-use protocol::KeyCode;
+use crate::protocol::client::Key;
+use crate::protocol::KeyCode;
 
-use component::flag::ForcePlayerUpdate;
-use component::time::{LastKeyTime, ThisFrame};
+use crate::component::flag::ForcePlayerUpdate;
+use crate::component::time::{LastKeyTime, ThisFrame};
 
+#[derive(Default)]
 pub struct KeyHandler {
 	reader: Option<ReaderId<(ConnectionId, Key)>>,
-}
-
-impl KeyHandler {
-	pub fn new() -> Self {
-		Self { reader: None }
-	}
 }
 
 #[derive(SystemData)]
@@ -75,17 +70,8 @@ impl<'a> System<'a> for KeyHandler {
 	}
 }
 
-use dispatch::SystemInfo;
-use handlers::OnCloseHandler;
-
-impl SystemInfo for KeyHandler {
-	type Dependencies = OnCloseHandler;
-
-	fn new() -> Self {
-		Self::new()
-	}
-
-	fn name() -> &'static str {
-		concat!(module_path!(), "::", line!())
+system_info! {
+	impl SystemInfo for KeyHandler {
+		type Dependencies = super::OnCloseHandler;
 	}
 }

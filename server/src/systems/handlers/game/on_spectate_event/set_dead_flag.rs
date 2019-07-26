@@ -2,12 +2,12 @@ use specs::*;
 
 use std::time::Duration;
 
-use component::event::{PlayerSpectate, TimerEvent};
-use component::flag::IsDead;
-use consts::timer::CLEAR_DEAD_FLAG;
-use types::FutureDispatcher;
-use utils::{EventHandler, EventHandlerTypeProvider};
-use SystemInfo;
+use crate::component::event::{PlayerSpectate, TimerEvent};
+use crate::component::flag::IsDead;
+use crate::consts::timer::CLEAR_DEAD_FLAG;
+use crate::types::FutureDispatcher;
+use crate::utils::{EventHandler, EventHandlerTypeProvider};
+use crate::SystemInfo;
 
 #[derive(Default)]
 pub struct SetDeadFlag;

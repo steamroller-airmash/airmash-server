@@ -1,12 +1,11 @@
 use specs::*;
 
-use SystemInfo;
+use crate::systems::handlers::packet::LoginHandler;
+use crate::SystemInfo;
 
-use systems::handlers::packet::LoginHandler;
-
-use component::event::*;
-use component::time::{LastStealthTime, StartTime};
-use utils::{EventHandler, EventHandlerTypeProvider};
+use crate::component::event::*;
+use crate::component::time::{LastStealthTime, StartTime};
+use crate::utils::{EventHandler, EventHandlerTypeProvider};
 
 #[derive(Default)]
 pub struct InitStealthTime;

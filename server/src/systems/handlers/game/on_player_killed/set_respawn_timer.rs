@@ -1,17 +1,16 @@
 use specs::*;
 
-use types::*;
-use SystemInfo;
+use crate::types::*;
+use crate::SystemInfo;
 
 use std::time::Duration;
 
-use component::channel::*;
-use component::event::*;
-use consts::timer::RESPAWN_TIME;
-use systems::handlers::game::on_player_hit::AllPlayerHitSystems;
-use systems::missile::MissileHit;
-
-use utils::{EventHandler, EventHandlerTypeProvider};
+use crate::component::channel::*;
+use crate::component::event::*;
+use crate::consts::timer::RESPAWN_TIME;
+use crate::systems::handlers::game::on_player_hit::AllPlayerHitSystems;
+use crate::systems::missile::MissileHit;
+use crate::utils::{EventHandler, EventHandlerTypeProvider};
 
 #[derive(Default)]
 pub struct SetRespawnTimer;

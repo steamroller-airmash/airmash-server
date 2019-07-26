@@ -1,13 +1,13 @@
 use specs::*;
 
-use component::event::*;
-use protocol::server::PlayerFlag;
-use protocol::FlagCode;
-use types::systemdata::*;
+use crate::component::event::*;
+use crate::protocol::server::PlayerFlag;
+use crate::protocol::FlagCode;
+use crate::types::systemdata::*;
 
-use systems::PacketHandler;
-use utils::{EventHandler, EventHandlerTypeProvider};
-use SystemInfo;
+use crate::systems::PacketHandler;
+use crate::utils::{EventHandler, EventHandlerTypeProvider};
+use crate::SystemInfo;
 
 use std::str::FromStr;
 

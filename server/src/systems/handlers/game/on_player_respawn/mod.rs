@@ -17,6 +17,4 @@ pub type AllRespawnHandlers = (
 	CreateDespawnEvent,
 );
 
-use systems;
-
-pub type KnownEventSources = (systems::handlers::command::Respawn);
+pub type KnownEventSources = (crate::systems::handlers::command::Respawn);

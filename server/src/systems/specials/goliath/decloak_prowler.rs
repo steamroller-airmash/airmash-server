@@ -1,16 +1,16 @@
+use crate::types::systemdata::*;
+use crate::types::*;
 use specs::*;
-use types::systemdata::*;
-use types::*;
 
-use SystemInfo;
+use crate::SystemInfo;
 
-use component::event::PlayerRepel;
-use component::flag::IsPlayer;
-use component::time::{LastStealthTime, ThisFrame};
-use systems::specials::config::*;
+use crate::component::event::PlayerRepel;
+use crate::component::flag::IsPlayer;
+use crate::component::time::{LastStealthTime, ThisFrame};
+use crate::systems::specials::config::*;
 
-use protocol::server::EventStealth;
-use utils::{EventHandler, EventHandlerTypeProvider};
+use crate::protocol::server::EventStealth;
+use crate::utils::{EventHandler, EventHandlerTypeProvider};
 
 /// Send [`EventRepel`][0] when a goliath uses it's special.
 ///

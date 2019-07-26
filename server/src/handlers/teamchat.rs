@@ -1,15 +1,15 @@
 use specs::*;
 
-use types::systemdata::*;
-use types::*;
+use crate::types::systemdata::*;
+use crate::types::*;
 
-use protocol::client::TeamChat;
-use protocol::server::{ChatTeam, Error};
-use protocol::ErrorType;
+use crate::protocol::client::TeamChat;
+use crate::protocol::server::{ChatTeam, Error};
+use crate::protocol::ErrorType;
 
-use component::flag::{IsChatMuted, IsChatThrottled};
+use crate::component::flag::{IsChatMuted, IsChatThrottled};
 
-use utils::{EventHandler, EventHandlerTypeProvider};
+use crate::utils::{EventHandler, EventHandlerTypeProvider};
 
 #[derive(Default)]
 pub struct TeamChatHandler;
@@ -61,17 +61,8 @@ impl<'a> EventHandler<'a> for TeamChatHandler {
 	}
 }
 
-use dispatch::SystemInfo;
-use handlers::OnCloseHandler;
-
-impl SystemInfo for TeamChatHandler {
-	type Dependencies = OnCloseHandler;
-
-	fn new() -> Self {
-		Self::default()
-	}
-
-	fn name() -> &'static str {
-		concat!(module_path!(), "::", line!())
+system_info! {
+	impl SystemInfo for TeamChatHandler {
+		type Dependencies = super::OnCloseHandler;
 	}
 }

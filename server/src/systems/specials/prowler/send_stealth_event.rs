@@ -1,16 +1,16 @@
 use specs::*;
 
-use types::systemdata::*;
-use types::*;
+use crate::types::systemdata::*;
+use crate::types::*;
 
-use systems::specials::prowler::SetStealth;
-use SystemInfo;
+use crate::systems::specials::prowler::SetStealth;
+use crate::SystemInfo;
 
-use component::event::*;
-use component::flag::ForcePlayerUpdate;
-use utils::{EventHandler, EventHandlerTypeProvider};
+use crate::component::event::*;
+use crate::component::flag::ForcePlayerUpdate;
+use crate::utils::{EventHandler, EventHandlerTypeProvider};
 
-use protocol::server::EventStealth;
+use crate::protocol::server::EventStealth;
 
 #[derive(Default)]
 pub struct SendEventStealth;

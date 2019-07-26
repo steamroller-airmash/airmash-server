@@ -1,15 +1,15 @@
 use specs::*;
 
-use SystemInfo;
+use crate::SystemInfo;
 
-use component::channel::OnPlayerPowerup;
-use component::event::PlayerJoin;
-use component::event::PlayerPowerup;
+use crate::component::channel::OnPlayerPowerup;
+use crate::component::event::PlayerJoin;
+use crate::component::event::PlayerPowerup;
 
-use protocol::PowerupType;
+use crate::protocol::PowerupType;
 
-use types::Config;
-use utils::{EventHandler, EventHandlerTypeProvider};
+use crate::types::Config;
+use crate::utils::{EventHandler, EventHandlerTypeProvider};
 
 /// Give the newly joined player an initial 2s shield.
 #[derive(Default)]

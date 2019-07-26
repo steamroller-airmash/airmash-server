@@ -1,12 +1,12 @@
 use specs::*;
 
-use systems::handlers::packet::LoginHandler;
-use SystemInfo;
+use crate::systems::handlers::packet::LoginHandler;
+use crate::SystemInfo;
 
-use component::counter::PlayersGame;
-use component::event::*;
-use consts::NUM_PLAYERS;
-use utils::{EventHandler, EventHandlerTypeProvider};
+use crate::component::counter::PlayersGame;
+use crate::component::event::*;
+use crate::consts::NUM_PLAYERS;
+use crate::utils::{EventHandler, EventHandlerTypeProvider};
 
 use std::sync::atomic::Ordering::Relaxed;
 

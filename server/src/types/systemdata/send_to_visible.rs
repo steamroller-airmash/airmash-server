@@ -1,9 +1,9 @@
 use specs::prelude::*;
 
-use component::collision::PlayerGrid;
-use protocol::ServerPacket;
-use types::collision::HitCircle;
-use types::{AssociatedConnection, Config, ConnectionId, Position};
+use crate::component::collision::PlayerGrid;
+use crate::protocol::ServerPacket;
+use crate::types::collision::HitCircle;
+use crate::types::{AssociatedConnection, Config, ConnectionId, Position};
 
 #[derive(SystemData)]
 pub struct SendToVisible<'a> {

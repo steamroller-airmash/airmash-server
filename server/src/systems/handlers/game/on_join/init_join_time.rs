@@ -1,12 +1,12 @@
 use specs::*;
 
-use SystemInfo;
+use crate::SystemInfo;
 
-use systems::handlers::packet::LoginHandler;
+use crate::systems::handlers::packet::LoginHandler;
 
-use component::event::*;
-use component::time::*;
-use utils::{EventHandler, EventHandlerTypeProvider};
+use crate::component::event::*;
+use crate::component::time::*;
+use crate::utils::{EventHandler, EventHandlerTypeProvider};
 
 #[derive(Default)]
 pub struct InitJoinTime;

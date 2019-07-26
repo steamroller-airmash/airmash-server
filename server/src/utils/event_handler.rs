@@ -3,8 +3,8 @@ use specs::prelude::*;
 
 use std::any::Any;
 
-use dispatch::SystemInfo;
-use utils::MaybeInit;
+use crate::dispatch::SystemInfo;
+use crate::utils::MaybeInit;
 
 /// Supplies the type of event that for which this
 /// system is listening. Used along with [`EventHandler`].

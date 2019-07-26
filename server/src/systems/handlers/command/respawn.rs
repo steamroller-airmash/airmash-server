@@ -1,24 +1,24 @@
 use specs::*;
 
-use types::systemdata::*;
-use types::*;
+use crate::types::systemdata::*;
+use crate::types::*;
 
 use std::convert::TryFrom;
 use std::time::Duration;
 
-use component::channel::*;
-use component::event::*;
-use component::flag::*;
-use component::time::*;
+use crate::component::channel::*;
+use crate::component::event::*;
+use crate::component::flag::*;
+use crate::component::time::*;
 
-use protocol::server::{Error, PlayerType};
-use protocol::ErrorType;
+use crate::protocol::server::{Error, PlayerType};
+use crate::protocol::ErrorType;
 
-use utils::{EventHandler, EventHandlerTypeProvider};
+use crate::utils::{EventHandler, EventHandlerTypeProvider};
 
-use systems::handlers::game::on_join::InitTraits;
-use systems::PacketHandler;
-use SystemInfo;
+use crate::systems::handlers::game::on_join::InitTraits;
+use crate::systems::PacketHandler;
+use crate::SystemInfo;
 
 #[derive(Default)]
 pub struct Respawn;

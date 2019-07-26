@@ -1,11 +1,9 @@
-use SystemInfo;
+use crate::component::event::{MissileDespawn, MissileDespawnType};
+use crate::protocol::server::MobDespawn;
+use crate::protocol::DespawnType;
 
-use component::event::{MissileDespawn, MissileDespawnType};
-use protocol::server::MobDespawn;
-use protocol::DespawnType;
-
-use types::systemdata::*;
-use utils::{EventHandler, EventHandlerTypeProvider};
+use crate::types::systemdata::*;
+use crate::utils::{EventHandler, EventHandlerTypeProvider};
 
 /// Add the initial 2s shield when a player joins
 /// and send that packet to all visible players.
@@ -41,14 +39,11 @@ impl<'a> EventHandler<'a> for SendMobDespawn {
 	}
 }
 
-impl SystemInfo for SendMobDespawn {
-	type Dependencies = (super::SendMobDespawnCoords, super::KnownEventSources);
-
-	fn name() -> &'static str {
-		concat!(module_path!(), "::", line!())
-	}
-
-	fn new() -> Self {
-		Self::default()
+system_info! {
+	impl SystemInfo for SendMobDespawn {
+		type Dependencies = (
+			super::SendMobDespawnCoords,
+			super::KnownEventSources
+		);
 	}
 }

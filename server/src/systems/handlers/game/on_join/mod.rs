@@ -54,6 +54,4 @@ pub type AllJoinHandlers = (
 	SendPlayerPowerup,
 );
 
-use systems;
-
-pub type KnownEventSources = (systems::handlers::game::timer::LoginHandler);
+pub type KnownEventSources = (crate::systems::handlers::game::timer::LoginHandler);

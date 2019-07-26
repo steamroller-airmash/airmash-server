@@ -1,12 +1,12 @@
+use crate::types::systemdata::*;
 use specs::*;
-use types::systemdata::*;
 
-use SystemInfo;
+use crate::SystemInfo;
 
-use utils::{EventHandler, EventHandlerTypeProvider};
+use crate::utils::{EventHandler, EventHandlerTypeProvider};
 
-use component::event::PowerupExpired;
-use component::time::{LastUpdate, StartTime};
+use crate::component::event::PowerupExpired;
+use crate::component::time::{LastUpdate, StartTime};
 
 #[derive(Default)]
 pub struct ForceUpdate;

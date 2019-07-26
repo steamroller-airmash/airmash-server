@@ -1,14 +1,13 @@
 use specs::*;
 
-use types::*;
+use crate::types::*;
 
-use component::channel::*;
-use component::event::TimerEvent;
-use component::time::*;
-use consts::timer::SCORE_BOARD;
+use crate::component::channel::*;
+use crate::component::event::TimerEvent;
+use crate::component::time::*;
+use crate::consts::timer::SCORE_BOARD;
 
-use SystemInfo;
-
+#[derive(Default)]
 pub struct SendTimerEvent {
 	reader: Option<OnPlayerSpectateReader>,
 }
@@ -57,14 +56,8 @@ impl<'a> System<'a> for SendTimerEvent {
 	}
 }
 
-impl SystemInfo for SendTimerEvent {
-	type Dependencies = super::KnownEventSources;
-
-	fn name() -> &'static str {
-		concat!(module_path!(), "::", line!())
-	}
-
-	fn new() -> Self {
-		Self { reader: None }
+system_info! {
+	impl SystemInfo for SendTimerEvent {
+		type Dependencies = super::KnownEventSources;
 	}
 }

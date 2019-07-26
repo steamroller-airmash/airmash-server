@@ -1,9 +1,10 @@
+use crate::types::systemdata::*;
+use crate::types::*;
 use specs::prelude::*;
-use types::systemdata::*;
-use types::*;
 
-use component::time::*;
+use crate::component::time::*;
 
+#[derive(Default)]
 pub struct MissileFireHandler;
 
 #[derive(SystemData)]
@@ -68,17 +69,8 @@ impl<'a> System<'a> for MissileFireHandler {
 	}
 }
 
-use dispatch::SystemInfo;
-use systems::PositionUpdate;
-
-impl SystemInfo for MissileFireHandler {
-	type Dependencies = PositionUpdate;
-
-	fn name() -> &'static str {
-		concat!(module_path!(), "::", line!())
-	}
-
-	fn new() -> Self {
-		Self {}
+system_info! {
+	impl SystemInfo for MissileFireHandler {
+		type Dependencies = crate::systems::PositionUpdate;
 	}
 }

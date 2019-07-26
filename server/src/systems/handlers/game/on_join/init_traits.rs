@@ -2,14 +2,14 @@ use specs::*;
 
 use std::time::Instant;
 
-use types::*;
-use SystemInfo;
+use crate::types::*;
+use crate::SystemInfo;
 
-use component::event::*;
-use component::flag::*;
-use component::time::*;
-use protocol::PlayerStatus;
-use utils::{EventHandler, EventHandlerTypeProvider};
+use crate::component::event::*;
+use crate::component::flag::*;
+use crate::component::time::*;
+use crate::protocol::PlayerStatus;
+use crate::utils::{EventHandler, EventHandlerTypeProvider};
 
 #[derive(Default)]
 pub struct InitTraits;

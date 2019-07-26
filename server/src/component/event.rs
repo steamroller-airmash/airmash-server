@@ -3,12 +3,12 @@ use specs::*;
 use std::any::Any;
 use std::time::{Duration, Instant};
 
-use protocol::client::*;
-use protocol::{FlagCode, PowerupType};
-use types::collision::Collision;
-pub use types::event::{ConnectionClose, ConnectionOpen, Message};
-use types::*;
-pub use utils::timer::TimerEventType;
+use crate::protocol::client::*;
+use crate::protocol::{FlagCode, PowerupType};
+use crate::types::collision::Collision;
+pub use crate::types::event::{ConnectionClose, ConnectionOpen, Message};
+use crate::types::*;
+pub use crate::utils::timer::TimerEventType;
 
 pub use super::packet_event::PacketEvent;
 
@@ -236,7 +236,7 @@ pub struct EnterHorizon {
 
 impl Default for TimerEvent {
 	fn default() -> Self {
-		use consts::timer::INVALID;
+		use crate::consts::timer::INVALID;
 
 		Self {
 			ty: *INVALID,

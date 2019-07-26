@@ -2,16 +2,16 @@ use shrev::*;
 use specs::prelude::ComponentEvent;
 use specs::*;
 
-use types::systemdata::*;
-use types::*;
-use utils::MaybeInit;
+use crate::types::systemdata::*;
+use crate::types::*;
+use crate::utils::MaybeInit;
 
-use systems::specials::predator::SetBoostingFlag;
-use SystemInfo;
+use crate::systems::specials::predator::SetBoostingFlag;
+use crate::SystemInfo;
 
-use component::flag::{IsBoosting, IsPlayer};
+use crate::component::flag::{IsBoosting, IsPlayer};
 
-use protocol::server::EventBoost;
+use crate::protocol::server::EventBoost;
 
 #[derive(Default)]
 pub struct SendEventBoost {

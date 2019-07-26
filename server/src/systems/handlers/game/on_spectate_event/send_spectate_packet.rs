@@ -1,9 +1,9 @@
-use component::event::PlayerSpectate;
-use protocol::server::GameSpectate;
-use types::systemdata::*;
-use utils::*;
+use crate::component::event::PlayerSpectate;
+use crate::protocol::server::GameSpectate;
+use crate::types::systemdata::*;
+use crate::utils::*;
 
-use SystemInfo;
+use crate::SystemInfo;
 
 #[derive(Default)]
 pub struct SendSpectatePacket;

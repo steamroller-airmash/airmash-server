@@ -1,14 +1,14 @@
 use specs::*;
 
-use types::*;
+use crate::types::*;
 
-use SystemInfo;
+use crate::SystemInfo;
 
-use systems::handlers::packet::LoginHandler;
+use crate::systems::handlers::packet::LoginHandler;
 
-use component::counter::*;
-use component::event::*;
-use utils::{EventHandler, EventHandlerTypeProvider};
+use crate::component::counter::*;
+use crate::component::event::*;
+use crate::utils::{EventHandler, EventHandlerTypeProvider};
 
 #[derive(Default)]
 pub struct InitEarnings;

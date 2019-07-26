@@ -1,11 +1,9 @@
 use specs::*;
 
-use dispatch::SystemInfo;
-
-use component::channel::*;
-use component::collection::PlayerNames;
-
-use systems::missile::MissileHit;
+use crate::component::channel::*;
+use crate::component::collection::PlayerNames;
+use crate::dispatch::SystemInfo;
+use crate::systems::missile::MissileHit;
 
 pub struct FreeName {
 	reader: Option<OnPlayerLeaveReader>,

@@ -1,10 +1,10 @@
 use specs::*;
 
-use component::event::*;
-use protocol::server::MobUpdateStationary;
-use types::systemdata::*;
-use types::*;
-use utils::*;
+use crate::component::event::*;
+use crate::protocol::server::MobUpdateStationary;
+use crate::types::systemdata::*;
+use crate::types::*;
+use crate::utils::*;
 
 /// Sends [`MobUpdateStationary`](protocol::server::MobUpdateStationary)
 /// when a powerup comes within viewing range of a player.

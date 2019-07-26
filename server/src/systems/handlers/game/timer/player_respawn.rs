@@ -1,14 +1,14 @@
 use specs::*;
 
-use component::channel::*;
-use component::event::*;
-use component::flag::{IsDead, IsSpectating};
-use consts::timer::*;
+use crate::component::channel::*;
+use crate::component::event::*;
+use crate::component::flag::{IsDead, IsSpectating};
+use crate::consts::timer::*;
 
-use utils::{EventHandler, EventHandlerTypeProvider};
+use crate::utils::{EventHandler, EventHandlerTypeProvider};
 
-use systems::TimerHandler;
-use SystemInfo;
+use crate::systems::TimerHandler;
+use crate::SystemInfo;
 
 #[derive(Default)]
 pub struct PlayerRespawnSystem;

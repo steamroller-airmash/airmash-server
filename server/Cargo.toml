@@ -5,7 +5,7 @@ authors = ["STEAMROLLER"]
 license = "Apache-2.0 OR MIT"
 publish = false
 repository = 'https://github.com/steamroller-airmash/airmash-server'
-
+edition = "2018"
 
 [features]
 # Have logging on by default, it doesn't do anything

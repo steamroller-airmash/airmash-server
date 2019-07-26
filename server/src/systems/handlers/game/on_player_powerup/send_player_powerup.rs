@@ -1,10 +1,10 @@
-use SystemInfo;
+use crate::SystemInfo;
 
-use component::event::PlayerPowerup;
-use protocol::server::PlayerPowerup as ServerPlayerPowerup;
+use crate::component::event::PlayerPowerup;
+use crate::protocol::server::PlayerPowerup as ServerPlayerPowerup;
 
-use types::systemdata::*;
-use utils::{EventHandler, EventHandlerTypeProvider};
+use crate::types::systemdata::*;
+use crate::utils::{EventHandler, EventHandlerTypeProvider};
 
 /// Add the initial 2s shield when a player joins
 /// and send that packet to all visible players.

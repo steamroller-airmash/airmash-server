@@ -1,15 +1,15 @@
 use hashbrown::HashSet;
 use specs::prelude::*;
 
-use Mob;
+use crate::Mob;
 
-use types::collision::*;
-use types::*;
+use crate::types::collision::*;
+use crate::types::*;
 
-use component::channel::*;
-use component::collision::PlaneGrid;
-use component::event::PlayerPowerupCollision;
-use component::flag::*;
+use crate::component::channel::*;
+use crate::component::collision::PlaneGrid;
+use crate::component::event::PlayerPowerupCollision;
+use crate::component::flag::*;
 
 #[derive(Default)]
 pub struct PlayerPowerupCollisionSystem;
@@ -53,7 +53,7 @@ impl<'a> System<'a> for PlayerPowerupCollisionSystem {
 }
 
 use super::GenPlaneGrid;
-use systems::PositionUpdate;
+use crate::systems::PositionUpdate;
 
 system_info! {
 	impl SystemInfo for PlayerPowerupCollisionSystem {

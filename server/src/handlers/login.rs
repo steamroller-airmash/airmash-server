@@ -1,25 +1,17 @@
 use specs::*;
 
-use component::channel::*;
-use component::event::TimerEvent;
-use consts::timer::*;
-use types::*;
+use crate::component::channel::*;
+use crate::component::event::TimerEvent;
+use crate::consts::timer::*;
+use crate::types::*;
 
 use std::sync::mpsc::*;
 use std::time::Instant;
 
+#[derive(Default)]
 pub struct LoginHandler {
 	reader: Option<OnLoginReader>,
 	channel: Option<Sender<TimerEvent>>,
-}
-
-impl LoginHandler {
-	pub fn new() -> Self {
-		Self {
-			reader: None,
-			channel: None,
-		}
-	}
 }
 
 impl<'a> System<'a> for LoginHandler {
@@ -47,17 +39,11 @@ impl<'a> System<'a> for LoginHandler {
 	}
 }
 
-use dispatch::SystemInfo;
-use handlers::{OnCloseHandler, OnOpenHandler};
-
-impl SystemInfo for LoginHandler {
-	type Dependencies = (OnOpenHandler, OnCloseHandler);
-
-	fn new() -> Self {
-		Self::new()
-	}
-
-	fn name() -> &'static str {
-		concat!(module_path!(), "::", line!())
+system_info! {
+	impl SystemInfo for LoginHandler {
+		type Dependencies = (
+			super::OnOpenHandler,
+			super::OnCloseHandler
+		);
 	}
 }

@@ -1,17 +1,17 @@
+use crate::types::systemdata::*;
+use crate::types::*;
 use specs::*;
-use types::systemdata::*;
-use types::*;
 
-use SystemInfo;
+use crate::SystemInfo;
 
-use component::channel::*;
-use component::event::PlayerRepel;
-use component::flag::IsPlayer;
-use component::time::{LastRepelTime, ThisFrame};
+use crate::component::channel::*;
+use crate::component::event::PlayerRepel;
+use crate::component::flag::IsPlayer;
+use crate::component::time::{LastRepelTime, ThisFrame};
 
-use systems::handlers::packet::KeyHandler;
-use systems::specials::config::*;
-use systems::EnergyRegenSystem;
+use crate::systems::handlers::packet::KeyHandler;
+use crate::systems::specials::config::*;
+use crate::systems::EnergyRegenSystem;
 
 pub struct GoliathRepel;
 

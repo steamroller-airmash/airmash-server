@@ -24,6 +24,4 @@ pub type AllSpectateEventHandlers = (
 	CreateDespawnEvent,
 );
 
-use systems;
-
-pub type KnownEventSources = (systems::handlers::command::Spectate);
+pub type KnownEventSources = (crate::systems::handlers::command::Spectate);

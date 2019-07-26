@@ -1,4 +1,4 @@
-use utils::timer::*;
+use crate::utils::timer::*;
 
 lazy_static! {
 	pub static ref INVALID: TimerEventType = TimerEventType::register();

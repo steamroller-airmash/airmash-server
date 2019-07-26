@@ -1,24 +1,21 @@
-
-use std::task::{RawWaker, RawWakerVTable};
-use std::future::Future;
-use std::sync::{Arc, Mutex};
-use std::pin::Pin;
 use hashbrown::HashMap;
+use std::future::Future;
+use std::pin::Pin;
+use std::sync::{Arc, Mutex};
+use std::task::{RawWaker, RawWakerVTable};
 
 type TaskId = u64;
 
 #[derive(Clone)]
 struct WakerData {
 	exec: Arc<Mutex<ExecutorQueue>>,
-	id: TaskId
+	id: TaskId,
 }
 
 mod waker_vtable {
 	use super::*;
 
-	pub(super) const VTABLE: RawWakerVTable = RawWakerVTable::new(
-		clone, wake, wake, drop
-	);
+	pub(super) const VTABLE: RawWakerVTable = RawWakerVTable::new(clone, wake, wake, drop);
 
 	unsafe fn clone(arcptr: *const ()) -> RawWaker {
 		let data = &*(arcptr as *const WakerData);
@@ -41,12 +38,12 @@ mod waker_vtable {
 type BoxedFuture = Box<dyn Future<Output = ()> + Send + 'static>;
 type PinnedFuture = Pin<BoxedFuture>;
 
-// Safety note: 
+// Safety note:
 // The BoxedFutures within the hash map should never
 // have their inner values moved as they are pinned.
 #[derive(Default)]
 struct ExecutorData {
-	tasks: HashMap<TaskId, PinnedFuture>
+	tasks: HashMap<TaskId, PinnedFuture>,
 }
 
 #[derive(Default)]
@@ -87,12 +84,12 @@ impl ExecutorData {
 	}
 
 	fn poll_all(&mut self, tasks: &[TaskId], queue: &Arc<Mutex<ExecutorQueue>>) {
-		use std::task::{Waker, Context, Poll};
+		use std::task::{Context, Poll, Waker};
 
 		for taskid in tasks {
-			let data = Box::into_raw(Box::new(WakerData{ 
+			let data = Box::into_raw(Box::new(WakerData {
 				exec: Arc::clone(queue),
-				id: *taskid
+				id: *taskid,
 			}));
 			let raw = RawWaker::new(data as *const (), &waker_vtable::VTABLE);
 
@@ -111,7 +108,7 @@ impl ExecutorData {
 
 			match res {
 				Poll::Ready(()) => self.delete_task(*taskid),
-				_ => ()
+				_ => (),
 			}
 		}
 	}
@@ -128,7 +125,7 @@ impl ExecutorHandle {
 	pub fn new() -> Self {
 		Self {
 			inner: Default::default(),
-			queue: Default::default()
+			queue: Default::default(),
 		}
 	}
 
@@ -137,26 +134,26 @@ impl ExecutorHandle {
 		self.queue.lock().unwrap().create_task(fut);
 	}
 	/// Spawn a new future given a future object
-	pub fn spawn_fut<F>(&mut self, fut: F) 
+	pub fn spawn_fut<F>(&mut self, fut: F)
 	where
-		F: Future<Output = ()> + Send + 'static
+		F: Future<Output = ()> + Send + 'static,
 	{
 		self.spawn_fut_dyn(Box::new(fut));
 	}
 
 	/// Poll all futures which have requested to be so polled
 	pub fn cycle(&mut self) {
-		// Implementation note: 
+		// Implementation note:
 		//  The scopes here are set up so that we are only
 		//  holding at most one lock at any given time. If
 		//  we hold both then we would deadlock if a future
-		//  calls Waker::wake() while it's being polled. 
+		//  calls Waker::wake() while it's being polled.
 
 		let (mut to_awaken, new_tasks) = {
 			let mut queue = self.queue.lock().unwrap();
 			(
 				std::mem::replace(&mut queue.to_wake, vec![]),
-				std::mem::replace(&mut queue.tasks, vec![])
+				std::mem::replace(&mut queue.tasks, vec![]),
 			)
 		};
 
@@ -181,4 +178,3 @@ impl ExecutorHandle {
 		queue.to_wake.extend_from_slice(&to_awaken);
 	}
 }
-

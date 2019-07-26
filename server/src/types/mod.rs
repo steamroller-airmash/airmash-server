@@ -5,9 +5,9 @@ mod keystate;
 mod pingdata;
 mod powerups;
 mod ratelimit;
+mod task_spawner;
 mod units;
 mod upgrades;
-mod task_spawner;
 
 mod connection_events;
 
@@ -27,12 +27,12 @@ pub use self::keystate::*;
 pub use self::pingdata::*;
 pub use self::powerups::*;
 pub use self::ratelimit::RateLimiter;
+pub use self::task_spawner::TaskSpawner;
 pub use self::units::*;
 pub use self::upgrades::*;
-pub use self::task_spawner::TaskSpawner;
 
 pub mod event {
-	pub use types::connection_events::*;
+	pub use crate::types::connection_events::*;
 }
 
 pub use self::connection::{ConnectionType, Connections};

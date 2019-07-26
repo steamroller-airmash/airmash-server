@@ -1,24 +1,24 @@
+use crate::types::*;
 use specs::*;
-use types::*;
 
 use std::time::Duration;
 
-use SystemInfo;
+use crate::SystemInfo;
 
-use component::channel::*;
-use component::event::PlayerSpectate;
-use component::event::*;
-use component::flag::{IsDead, IsPlayer, IsSpectating};
-use component::reference::PlayerRef;
-use component::time::{LastKeyTime, ThisFrame};
+use crate::component::channel::*;
+use crate::component::event::PlayerSpectate;
+use crate::component::event::*;
+use crate::component::flag::{IsDead, IsPlayer, IsSpectating};
+use crate::component::reference::PlayerRef;
+use crate::component::time::{LastKeyTime, ThisFrame};
 
-use protocol::server::Error;
-use protocol::ErrorType;
+use crate::protocol::server::Error;
+use crate::protocol::ErrorType;
 
-use utils::{EventHandler, EventHandlerTypeProvider};
+use crate::utils::{EventHandler, EventHandlerTypeProvider};
 
-use systems::handlers::game::on_join::InitTraits;
-use systems::PacketHandler;
+use crate::systems::handlers::game::on_join::InitTraits;
+use crate::systems::PacketHandler;
 
 #[derive(Default)]
 pub struct Spectate;

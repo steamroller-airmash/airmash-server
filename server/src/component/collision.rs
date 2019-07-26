@@ -1,4 +1,4 @@
-use types::collision::Grid;
+use crate::types::collision::Grid;
 
 use std::ops::{Deref, DerefMut};
 

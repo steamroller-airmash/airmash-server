@@ -2,14 +2,14 @@ use uuid::Uuid;
 
 use specs::*;
 
-use types::ConnectionId;
+use crate::types::ConnectionId;
 
 use std::time::Duration;
 
-pub use protocol::FlagCode;
-pub use protocol::MobType as Mob;
-pub use protocol::PlaneType as Plane;
-pub use protocol::PlayerStatus as Status;
+pub use crate::protocol::FlagCode;
+pub use crate::protocol::MobType as Mob;
+pub use crate::protocol::PlaneType as Plane;
+pub use crate::protocol::PlayerStatus as Status;
 
 #[derive(Clone, Debug, Default, Component, Eq, PartialEq, Hash)]
 pub struct Name(pub String);

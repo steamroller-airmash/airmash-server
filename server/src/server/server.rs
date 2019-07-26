@@ -1,8 +1,8 @@
+use parking_lot::RwLock;
 use std::error::Error;
 use std::net::ToSocketAddrs;
-use std::time::{Duration, Instant};
 use std::sync::Arc;
-use parking_lot::RwLock;
+use std::time::{Duration, Instant};
 
 use specs::{Dispatcher, World};
 
@@ -31,7 +31,7 @@ where
 	T: ToSocketAddrs + Send + 'static,
 {
 	fn game_loop(now: Instant, world: &mut World, dispatcher: &mut Dispatcher) -> bool {
-		use component::time::ThisFrame;
+		use crate::component::time::ThisFrame;
 
 		let _now = Instant::now();
 
@@ -72,14 +72,15 @@ where
 			self.config.max_connections,
 		);
 
-		let AirmashServerConfig {
-			world, builder, ..
-		} = self.config;
+		let AirmashServerConfig { world, builder, .. } = self.config;
 
 		let world = Arc::new(RwLock::new(world));
 		let mut executor = ExecutorHandle::new();
 
-		world.write().add_resource(TaskSpawner::new(TaskData::new(Arc::clone(&world)), executor.clone()));
+		world.write().add_resource(TaskSpawner::new(
+			TaskData::new(Arc::clone(&world)),
+			executor.clone(),
+		));
 		world.write().add_resource(StartTime(Instant::now()));
 		world.write().add_resource(LastFrame(Instant::now()));
 
@@ -94,7 +95,7 @@ where
 			if now >= next_frame {
 				// Poll all tasks
 				executor.cycle();
-				
+
 				// Actually run the game loop
 				if !Self::game_loop(next_frame, &mut world.write(), &mut dispatcher) {
 					break;

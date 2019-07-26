@@ -1,13 +1,13 @@
+use crate::types::*;
 use specs::*;
-use types::*;
 
 use std::env;
 
-use component::event::*;
-use systems::PacketHandler;
-use SystemInfo;
+use crate::component::event::*;
+use crate::systems::PacketHandler;
+use crate::SystemInfo;
 
-use utils::{EventHandler, EventHandlerTypeProvider};
+use crate::utils::{EventHandler, EventHandlerTypeProvider};
 
 /// Crash the server (for testing purposes)
 #[derive(Default)]

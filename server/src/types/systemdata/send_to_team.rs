@@ -1,7 +1,7 @@
 use specs::prelude::*;
 
-use protocol::ServerPacket;
-use types::{AssociatedConnection, ConnectionId, Team};
+use crate::protocol::ServerPacket;
+use crate::types::{AssociatedConnection, ConnectionId, Team};
 
 /// All the same features as [`SendToAll`][0] with the
 /// added ability to be able to send to all players on a team.

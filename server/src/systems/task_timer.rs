@@ -1,17 +1,17 @@
-use specs::{System, Read, Resources, SystemData};
 use shrev::{EventChannel, ReaderId};
+use specs::{Read, Resources, System, SystemData};
 
 use crate::component::time::ThisFrame;
 use crate::utils::MaybeInit;
 
-use std::task::Waker;
-use std::collections::BinaryHeap;
-use std::time::Instant;
 use std::cmp::{Ordering, Reverse};
+use std::collections::BinaryHeap;
+use std::task::Waker;
+use std::time::Instant;
 
 struct Task {
 	time: Instant,
-	waker: Waker
+	waker: Waker,
 }
 
 impl PartialEq for Task {
@@ -41,13 +41,13 @@ pub type WakerChannel = EventChannel<WakerEvent>;
 #[derive(SystemData)]
 pub struct TaskTimerData<'a> {
 	frame: Read<'a, ThisFrame>,
-	events: Read<'a, WakerChannel>
+	events: Read<'a, WakerChannel>,
 }
 
 #[derive(Default)]
 pub struct TaskTimerSystem {
 	queued: BinaryHeap<Task>,
-	reader: MaybeInit<ReaderId<WakerEvent>>
+	reader: MaybeInit<ReaderId<WakerEvent>>,
 }
 
 impl<'a> System<'a> for TaskTimerSystem {
@@ -57,22 +57,25 @@ impl<'a> System<'a> for TaskTimerSystem {
 		Self::SystemData::setup(res);
 		res.insert(WakerChannel::with_capacity(500));
 
-		self.reader = MaybeInit::new(
-			res.fetch_mut::<WakerChannel>().register_reader()
-		);
+		self.reader = MaybeInit::new(res.fetch_mut::<WakerChannel>().register_reader());
 	}
 
 	fn run(&mut self, data: TaskTimerData<'a>) {
 		let this_frame = data.frame.0;
 
 		for WakerEvent(time, waker) in data.events.read(&mut self.reader) {
-			self.queued.push(Task { 
-				time: *time, 
-				waker: waker.clone()
+			self.queued.push(Task {
+				time: *time,
+				waker: waker.clone(),
 			});
 		}
 
-		while self.queued.peek().map(|t| t.time < this_frame).unwrap_or(false) {
+		while self
+			.queued
+			.peek()
+			.map(|t| t.time < this_frame)
+			.unwrap_or(false)
+		{
 			let task = self.queued.pop().unwrap();
 			task.waker.wake();
 		}

@@ -1,16 +1,16 @@
 use specs::*;
 
-use types::collision::Collision;
-use types::*;
+use crate::types::collision::Collision;
+use crate::types::*;
 
-use component::channel::OnMissileDespawn;
-use component::event::*;
-use component::flag::IsMissile;
-use component::reference::PlayerRef;
-use utils::{EventHandler, EventHandlerTypeProvider};
+use crate::component::channel::OnMissileDespawn;
+use crate::component::event::*;
+use crate::component::flag::IsMissile;
+use crate::component::reference::PlayerRef;
+use crate::utils::{EventHandler, EventHandlerTypeProvider};
 
-use consts::missile::ID_REUSE_TIME;
-use consts::timer::DELETE_ENTITY;
+use crate::consts::missile::ID_REUSE_TIME;
+use crate::consts::timer::DELETE_ENTITY;
 
 #[derive(Default)]
 pub struct MissileExplodeSystem;
@@ -54,7 +54,7 @@ impl<'a> EventHandler<'a> for MissileExplodeSystem {
 		data.lazy.remove::<PlayerRef>(missile_ent);
 
 		data.dispatch
-			.run_delayed(*ID_REUSE_TIME, move |inst| TimerEvent {
+			.run_delayed(ID_REUSE_TIME, move |inst| TimerEvent {
 				ty: *DELETE_ENTITY,
 				instant: inst,
 				data: Some(Box::new(missile_ent)),
@@ -69,17 +69,8 @@ impl<'a> EventHandler<'a> for MissileExplodeSystem {
 	}
 }
 
-use super::MissileTerrainCollisionSystem;
-use dispatch::SystemInfo;
-
-impl SystemInfo for MissileExplodeSystem {
-	type Dependencies = MissileTerrainCollisionSystem;
-
-	fn name() -> &'static str {
-		concat!(module_path!(), "::", line!())
-	}
-
-	fn new() -> Self {
-		Self::default()
+system_info! {
+	impl SystemInfo for MissileExplodeSystem {
+		type Dependencies = super::MissileTerrainCollisionSystem;
 	}
 }

@@ -1,14 +1,14 @@
+use crate::types::*;
 use specs::*;
-use types::*;
 
 use std::iter::Iterator;
 
-use component::channel::OnMissileFire;
-use component::event::MissileFire;
-use component::flag::*;
-use component::missile::MissileTrajectory;
-use component::reference::PlayerRef;
-use component::time::*;
+use crate::component::channel::OnMissileFire;
+use crate::component::event::MissileFire;
+use crate::component::flag::*;
+use crate::component::missile::MissileTrajectory;
+use crate::component::reference::PlayerRef;
+use crate::component::time::*;
 
 use super::IsAlive;
 

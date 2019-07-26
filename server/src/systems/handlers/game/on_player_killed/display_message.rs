@@ -1,13 +1,9 @@
-use types::systemdata::*;
-
-use dispatch::SystemInfo;
-use systems::handlers::game::on_player_hit::AllPlayerHitSystems;
-
-use component::event::*;
-
-use utils::{EventHandler, EventHandlerTypeProvider};
-
-use protocol::server::PlayerKill;
+use crate::component::event::*;
+use crate::dispatch::SystemInfo;
+use crate::protocol::server::PlayerKill;
+use crate::systems::handlers::game::on_player_hit::AllPlayerHitSystems;
+use crate::types::systemdata::*;
+use crate::utils::{EventHandler, EventHandlerTypeProvider};
 
 #[derive(Default)]
 pub struct DisplayMessage;

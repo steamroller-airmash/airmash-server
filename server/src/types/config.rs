@@ -3,7 +3,7 @@ use hashbrown::HashMap;
 use std::ops::Index;
 use std::time::Duration;
 
-use types::*;
+use crate::types::*;
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct PlaneInfo {

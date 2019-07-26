@@ -1,6 +1,6 @@
+use crate::types::ConnectionId;
 use std::net::IpAddr;
 use std::time::Instant;
-use types::ConnectionId;
 
 use ws::Sender as WsSender;
 

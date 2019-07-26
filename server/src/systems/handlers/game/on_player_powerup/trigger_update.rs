@@ -1,9 +1,9 @@
 use specs::*;
 
-use component::event::PlayerPowerup;
-use component::flag::ForcePlayerUpdate;
-use utils::{EventHandler, EventHandlerTypeProvider};
-use SystemInfo;
+use crate::component::event::PlayerPowerup;
+use crate::component::flag::ForcePlayerUpdate;
+use crate::utils::{EventHandler, EventHandlerTypeProvider};
+use crate::SystemInfo;
 
 /// Forces a `PlayerUpdate` packet to be sent out when
 /// a player is given a powerup.

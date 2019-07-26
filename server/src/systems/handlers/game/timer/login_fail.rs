@@ -1,12 +1,12 @@
 use specs::*;
 
-use component::channel::*;
-use consts::timer::*;
-use types::*;
+use crate::component::channel::*;
+use crate::consts::timer::*;
+use crate::types::*;
 
-use protocol::client::Login;
-use protocol::server::Error;
-use protocol::ErrorType;
+use crate::protocol::client::Login;
+use crate::protocol::server::Error;
+use crate::protocol::ErrorType;
 
 // Login needs write access to just
 // about everything
@@ -15,6 +15,7 @@ pub struct LoginSystemData<'a> {
 	pub conns: Read<'a, Connections>,
 }
 
+#[derive(Default)]
 pub struct LoginFailed {
 	reader: Option<OnTimerEventReader>,
 }
@@ -59,17 +60,8 @@ impl<'a> System<'a> for LoginFailed {
 	}
 }
 
-use dispatch::SystemInfo;
-use handlers::OnCloseHandler;
-
-impl SystemInfo for LoginFailed {
-	type Dependencies = OnCloseHandler;
-
-	fn new() -> Self {
-		Self::new()
-	}
-
-	fn name() -> &'static str {
-		concat!(module_path!(), "::", line!())
+system_info! {
+	impl SystemInfo for LoginFailed {
+		type Dependencies = crate::handlers::OnCloseHandler;
 	}
 }

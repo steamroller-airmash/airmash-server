@@ -1,11 +1,11 @@
+use crate::types::*;
 use specs::*;
-use types::*;
 
-use component::flag::IsPlayer;
-use component::time::{LastFrame, ThisFrame};
+use crate::component::flag::IsPlayer;
+use crate::component::time::{LastFrame, ThisFrame};
 
-use dispatch::SystemInfo;
-use systems::missile::MissileHit;
+use crate::dispatch::SystemInfo;
+use crate::systems::missile::MissileHit;
 
 pub struct HealthRegenSystem;
 

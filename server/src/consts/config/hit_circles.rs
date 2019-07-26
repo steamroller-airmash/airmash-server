@@ -1,6 +1,6 @@
 use hashbrown::HashMap;
 
-use {Distance, Plane, Position};
+use crate::{Distance, Plane, Position};
 
 use std::marker::PhantomData;
 

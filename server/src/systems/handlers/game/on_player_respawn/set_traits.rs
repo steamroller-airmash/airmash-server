@@ -1,14 +1,14 @@
 use specs::*;
 
-use component::event::*;
-use component::flag::IsDead;
-use types::*;
-use SystemInfo;
+use crate::component::event::*;
+use crate::component::flag::IsDead;
+use crate::types::*;
+use crate::SystemInfo;
 
-use utils::{EventHandler, EventHandlerTypeProvider};
+use crate::utils::{EventHandler, EventHandlerTypeProvider};
 
-use systems::handlers::command::AllCommandHandlers;
-use systems::handlers::game::on_join::AllJoinHandlers;
+use crate::systems::handlers::command::AllCommandHandlers;
+use crate::systems::handlers::game::on_join::AllJoinHandlers;
 
 /// Set transform, health, energy and flags
 /// for a player when they respawn.

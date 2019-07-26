@@ -1,12 +1,12 @@
+use crate::types::*;
 use specs::prelude::*;
-use types::*;
 
-use GameMode;
-use GameModeWriter;
-use SystemInfo;
+use crate::GameMode;
+use crate::GameModeWriter;
+use crate::SystemInfo;
 
-use component::event::*;
-use utils::{EventHandler, EventHandlerTypeProvider};
+use crate::component::event::*;
+use crate::utils::{EventHandler, EventHandlerTypeProvider};
 
 #[derive(Default)]
 pub struct InitTransform;

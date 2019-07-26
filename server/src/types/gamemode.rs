@@ -6,13 +6,13 @@
 use shred::ResourceId;
 use specs::prelude::*;
 
-use types::*;
+use crate::types::*;
 
 use std::any::Any;
 use std::marker::PhantomData;
 use std::ops::{Deref, DerefMut};
 
-use protocol::GameType;
+use crate::protocol::GameType;
 
 pub trait GameMode: Any + Sync + Send {
 	fn assign_team(&mut self, player: Entity) -> Team;

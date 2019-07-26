@@ -1,7 +1,7 @@
 use hibitset;
 use specs::*;
 
-use component::flag::{IsDead, IsSpectating};
+use crate::component::flag::{IsDead, IsSpectating};
 
 #[derive(SystemData)]
 pub struct IsAlive<'a> {

@@ -1,10 +1,10 @@
 use specs::*;
 
-use component::event::TimerEvent;
-use consts::timer::DELETE_ENTITY;
+use crate::component::event::TimerEvent;
+use crate::consts::timer::DELETE_ENTITY;
 
-use utils::{EventHandler, EventHandlerTypeProvider};
-use SystemInfo;
+use crate::utils::{EventHandler, EventHandlerTypeProvider};
+use crate::SystemInfo;
 
 #[derive(Default)]
 pub struct DeleteEntity;

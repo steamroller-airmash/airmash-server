@@ -1,11 +1,11 @@
 use specs::*;
 
-use component::channel::OnTimerEvent;
-use component::event::TimerEvent;
-use component::time::{LastScoreBoardTime, ThisFrame};
+use crate::component::channel::OnTimerEvent;
+use crate::component::event::TimerEvent;
+use crate::component::time::{LastScoreBoardTime, ThisFrame};
 
-use consts::config::SCORE_BOARD_DURATION;
-use consts::timer::*;
+use crate::consts::config::SCORE_BOARD_DURATION;
+use crate::consts::timer::*;
 
 #[derive(Default)]
 pub struct ScoreBoardTimer;

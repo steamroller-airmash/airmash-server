@@ -1,14 +1,11 @@
 use specs::*;
 
-use types::systemdata::*;
-use types::*;
-
-use component::event::*;
-use SystemInfo;
-
-use utils::{EventHandler, EventHandlerTypeProvider};
-
-use protocol::server::{PlayerFire, PlayerFireProjectile};
+use crate::component::event::*;
+use crate::protocol::server::{PlayerFire, PlayerFireProjectile};
+use crate::types::systemdata::*;
+use crate::types::*;
+use crate::utils::{EventHandler, EventHandlerTypeProvider};
+use crate::SystemInfo;
 
 #[derive(Default)]
 pub struct SendPlayerFire;

@@ -1,9 +1,9 @@
 use specs::*;
 
-use dispatch::SystemInfo;
+use crate::dispatch::SystemInfo;
 
-use component::channel::*;
-use component::reference::PlayerRef;
+use crate::component::channel::*;
+use crate::component::reference::PlayerRef;
 
 pub struct SetSpectateTarget {
 	reader: Option<OnPlayerSpectateReader>,

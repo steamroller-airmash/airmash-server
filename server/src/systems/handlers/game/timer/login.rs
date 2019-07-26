@@ -6,30 +6,27 @@ use uuid::Uuid;
 use std::convert::TryFrom;
 use std::str::FromStr;
 
-use component::channel::*;
-use component::collection::PlayerNames;
-use component::event::PlayerJoin;
-use component::time::*;
-use consts::timer::*;
-use types::*;
+use crate::component::channel::*;
+use crate::component::collection::PlayerNames;
+use crate::component::event::PlayerJoin;
+use crate::consts::timer::*;
+use crate::types::*;
 
-use GameMode;
+use crate::GameMode;
 
 use rand;
 use rand::distributions::{IndependentSample, Range};
 
 #[derive(SystemData)]
 pub struct LoginSystemData<'a> {
-	pub entities: Entities<'a>,
-	pub conns: Read<'a, Connections>,
-	pub player_names: Write<'a, PlayerNames>,
+	entities: Entities<'a>,
+	player_names: Write<'a, PlayerNames>,
 
-	pub startime: Read<'a, StartTime>,
-	pub player_join: Write<'a, OnPlayerJoin>,
-	pub config: Read<'a, Config>,
-	pub gamemode: GameModeWriter<'a, dyn GameMode>,
+	player_join: Write<'a, OnPlayerJoin>,
+	gamemode: GameModeWriter<'a, dyn GameMode>,
 }
 
+#[derive(Default)]
 pub struct LoginHandler {
 	reader: Option<OnTimerEventReader>,
 }
@@ -124,17 +121,8 @@ impl<'a> System<'a> for LoginHandler {
 	}
 }
 
-use dispatch::SystemInfo;
-use handlers::OnCloseHandler;
-
-impl SystemInfo for LoginHandler {
-	type Dependencies = OnCloseHandler;
-
-	fn new() -> Self {
-		Self::new()
-	}
-
-	fn name() -> &'static str {
-		concat!(module_path!(), "::", line!())
+system_info! {
+	impl SystemInfo for LoginHandler {
+		type Dependencies = crate::handlers::OnCloseHandler;
 	}
 }

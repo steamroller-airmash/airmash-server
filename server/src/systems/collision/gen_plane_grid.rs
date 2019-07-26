@@ -1,14 +1,13 @@
 use specs::*;
 
-use types::collision::*;
-use types::systemdata::IsAlive;
-use types::*;
-use SystemInfo;
+use crate::types::collision::*;
+use crate::types::systemdata::IsAlive;
+use crate::types::*;
 
-use component::collision::PlaneGrid;
-use component::flag::IsPlayer;
+use crate::component::collision::PlaneGrid;
+use crate::component::flag::IsPlayer;
 
-use consts::config::PLANE_HIT_CIRCLES;
+use crate::consts::config::PLANE_HIT_CIRCLES;
 
 #[derive(Default)]
 pub struct GenPlaneGrid;
@@ -58,16 +57,8 @@ impl<'a> System<'a> for GenPlaneGrid {
 	}
 }
 
-use systems::PositionUpdate;
-
-impl SystemInfo for GenPlaneGrid {
-	type Dependencies = PositionUpdate;
-
-	fn name() -> &'static str {
-		concat!(module_path!(), "::", line!())
-	}
-
-	fn new() -> Self {
-		Self::default()
+system_info! {
+	impl SystemInfo for GenPlaneGrid {
+		type Dependencies = crate::systems::PositionUpdate;
 	}
 }

@@ -1,9 +1,9 @@
-use component::event::PowerupDespawnEvent;
-use protocol::server::MobDespawn;
-use protocol::DespawnType;
-use systems;
-use types::systemdata::SendToVisible;
-use utils::*;
+use crate::component::event::PowerupDespawnEvent;
+use crate::protocol::server::MobDespawn;
+use crate::protocol::DespawnType;
+use crate::systems;
+use crate::types::systemdata::SendToVisible;
+use crate::utils::*;
 
 #[derive(Default)]
 pub struct SendPacket;

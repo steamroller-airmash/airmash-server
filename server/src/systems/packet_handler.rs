@@ -1,5 +1,5 @@
-use protocol::{ClientPacket, ProtocolSerializationExt};
-use protocol_v5::ProtocolV5;
+use crate::protocol::{ClientPacket, ProtocolSerializationExt};
+use crate::protocol_v5::ProtocolV5;
 use shrev::EventChannel;
 use specs::*;
 
@@ -8,11 +8,11 @@ use std::mem;
 use std::sync::mpsc::{channel, Receiver};
 use std::time::Instant;
 
-use component::channel::*;
-use component::event::*;
-use dispatch::*;
-use types::event::*;
-use types::*;
+use crate::component::channel::*;
+use crate::component::event::*;
+use crate::dispatch::*;
+use crate::types::event::*;
+use crate::types::*;
 
 pub struct PacketHandler {
 	channel: Receiver<ConnectionEvent>,
@@ -20,24 +20,24 @@ pub struct PacketHandler {
 
 #[derive(SystemData)]
 pub struct PacketHandlerData<'a> {
-	pub onopen: Write<'a, OnOpen>,
-	pub onclose: Write<'a, OnClose>,
-	pub onbinary: Write<'a, OnBinary>,
-	pub login: Write<'a, OnLogin>,
-	pub backup: Write<'a, OnBackup>,
-	pub command: Write<'a, OnCommand>,
-	pub horizon: Write<'a, OnHorizon>,
-	pub key: Write<'a, OnKey>,
-	pub pong: Write<'a, OnPong>,
-	pub say: Write<'a, OnSay>,
-	pub chat: Write<'a, OnChat>,
-	pub teamchat: Write<'a, OnTeamChat>,
-	pub votemute: Write<'a, OnVotemute>,
-	pub whisper: Write<'a, OnWhisper>,
-	pub localping: Write<'a, OnLocalPing>,
-	pub scoredetailed: Write<'a, OnScoreDetailed>,
-	pub ack: Write<'a, OnAck>,
-	pub message: Write<'a, OnMessage>,
+	onopen: Write<'a, OnOpen>,
+	onclose: Write<'a, OnClose>,
+	onbinary: Write<'a, OnBinary>,
+	login: Write<'a, OnLogin>,
+	backup: Write<'a, OnBackup>,
+	command: Write<'a, OnCommand>,
+	horizon: Write<'a, OnHorizon>,
+	key: Write<'a, OnKey>,
+	pong: Write<'a, OnPong>,
+	say: Write<'a, OnSay>,
+	chat: Write<'a, OnChat>,
+	teamchat: Write<'a, OnTeamChat>,
+	votemute: Write<'a, OnVotemute>,
+	whisper: Write<'a, OnWhisper>,
+	localping: Write<'a, OnLocalPing>,
+	scoredetailed: Write<'a, OnScoreDetailed>,
+	ack: Write<'a, OnAck>,
+	message: Write<'a, OnMessage>,
 }
 
 impl PacketHandler {

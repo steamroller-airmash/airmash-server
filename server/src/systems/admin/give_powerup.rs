@@ -1,15 +1,15 @@
+use crate::types::*;
 use specs::*;
-use types::*;
 
-use utils::{EventHandler, EventHandlerTypeProvider};
-use SystemInfo;
+use crate::utils::{EventHandler, EventHandlerTypeProvider};
+use crate::SystemInfo;
 
-use component::channel::OnPlayerPowerup;
-use component::event::{CommandEvent, PlayerPowerup};
-use component::flag::IsPlayer;
-use protocol::server::CommandReply;
-use protocol::{CommandReplyType, PowerupType};
-use systems::PacketHandler;
+use crate::component::channel::OnPlayerPowerup;
+use crate::component::event::{CommandEvent, PlayerPowerup};
+use crate::component::flag::IsPlayer;
+use crate::protocol::server::CommandReply;
+use crate::protocol::{CommandReplyType, PowerupType};
+use crate::systems::PacketHandler;
 
 use std::convert::TryFrom;
 use std::option::NoneError;

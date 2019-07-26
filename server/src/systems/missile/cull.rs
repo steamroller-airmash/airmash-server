@@ -1,14 +1,14 @@
 use specs::*;
 
-use component::channel::OnMissileDespawn;
-use component::event::{MissileDespawn, MissileDespawnType, TimerEvent};
-use component::flag::IsMissile;
-use component::missile::MissileTrajectory;
-use component::reference::PlayerRef;
-use consts::missile::ID_REUSE_TIME;
-use consts::timer::DELETE_ENTITY;
-use dispatch::SystemInfo;
-use types::*;
+use crate::component::channel::OnMissileDespawn;
+use crate::component::event::{MissileDespawn, MissileDespawnType, TimerEvent};
+use crate::component::flag::IsMissile;
+use crate::component::missile::MissileTrajectory;
+use crate::component::reference::PlayerRef;
+use crate::consts::missile::ID_REUSE_TIME;
+use crate::consts::timer::DELETE_ENTITY;
+use crate::dispatch::SystemInfo;
+use crate::types::*;
 
 pub struct MissileCull;
 
@@ -60,7 +60,7 @@ impl<'a> System<'a> for MissileCull {
 				lazy.remove::<Team>(ent);
 				lazy.remove::<PlayerRef>(ent);
 
-				dispatch.run_delayed(*ID_REUSE_TIME, move |inst| TimerEvent {
+				dispatch.run_delayed(ID_REUSE_TIME, move |inst| TimerEvent {
 					ty: *DELETE_ENTITY,
 					instant: inst,
 					data: Some(Box::new(ent)),

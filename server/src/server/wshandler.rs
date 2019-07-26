@@ -1,12 +1,12 @@
-use types::event::*;
-use types::*;
+use crate::types::event::*;
+use crate::types::*;
 
 use std::net::{IpAddr, Ipv4Addr, ToSocketAddrs};
 use std::sync::mpsc::Sender;
 use std::thread::{self, JoinHandle};
 use std::time::Instant;
 
-use status;
+use crate::status;
 
 use ws::{
 	Builder, CloseCode, Handler, Handshake, Message as WsMessage, Request, Response,

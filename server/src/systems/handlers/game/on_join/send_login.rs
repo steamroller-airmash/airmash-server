@@ -1,15 +1,15 @@
+use crate::types::systemdata::*;
+use crate::types::*;
 use specs::*;
-use types::systemdata::*;
-use types::*;
 
-use GameMode;
-use GameModeWriter;
-use SystemInfo;
+use crate::GameMode;
+use crate::GameModeWriter;
+use crate::SystemInfo;
 
-use component::event::*;
-use protocol::server::{Login, LoginPlayer};
-use protocol::Upgrades as ProtocolUpgrades;
-use utils::{EventHandler, EventHandlerTypeProvider};
+use crate::component::event::*;
+use crate::protocol::server::{Login, LoginPlayer};
+use crate::protocol::Upgrades as ProtocolUpgrades;
+use crate::utils::{EventHandler, EventHandlerTypeProvider};
 
 #[derive(Default)]
 pub struct SendLogin;

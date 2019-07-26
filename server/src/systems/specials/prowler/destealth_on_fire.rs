@@ -1,16 +1,16 @@
 use specs::*;
 
-use component::event::*;
-use component::flag::ForcePlayerUpdate;
-use systems::missile::MissileFireHandler;
-use systems::PositionUpdate;
-use types::systemdata::*;
-use types::*;
-use SystemInfo;
+use crate::component::event::*;
+use crate::component::flag::ForcePlayerUpdate;
+use crate::systems::missile::MissileFireHandler;
+use crate::systems::PositionUpdate;
+use crate::types::systemdata::*;
+use crate::types::*;
+use crate::SystemInfo;
 
-use utils::{EventHandler, EventHandlerTypeProvider};
+use crate::utils::{EventHandler, EventHandlerTypeProvider};
 
-use protocol::server::EventStealth;
+use crate::protocol::server::EventStealth;
 
 #[derive(Default)]
 pub struct DestealthOnFire;

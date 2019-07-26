@@ -1,4 +1,4 @@
-use dispatch::Builder;
+use crate::dispatch::Builder;
 
 use super::*;
 

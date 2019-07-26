@@ -1,11 +1,11 @@
+use crate::types::*;
 use specs::*;
-use types::*;
 
-use SystemInfo;
+use crate::SystemInfo;
 
-use component::channel::*;
-use component::event::TimerEvent;
-use consts::timer::*;
+use crate::component::channel::*;
+use crate::component::event::TimerEvent;
+use crate::consts::timer::*;
 
 use std::time::Duration;
 
