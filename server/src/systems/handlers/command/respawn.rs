@@ -190,8 +190,8 @@ fn parse_plane<'a>(s: &'a str) -> Result<Plane, ()> {
 #[cfg(test)]
 mod test {
 	use super::*;
-	use std::time::*;
 	use crate::types::Plane::*;
+	use std::time::*;
 	#[test]
 	fn parse_valid_plane() {
 		let planes = vec![
