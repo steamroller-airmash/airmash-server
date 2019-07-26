@@ -4,14 +4,14 @@ use hashbrown::HashMap;
 
 use std::time::{Duration, Instant};
 
-use component::channel::*;
-use component::time::ThisFrame;
-use types::event::ConnectionClose;
-use types::ConnectionId;
-use utils::MaybeInit;
-use SystemInfo;
+use crate::component::channel::*;
+use crate::component::time::ThisFrame;
+use crate::types::event::ConnectionClose;
+use crate::types::ConnectionId;
+use crate::utils::MaybeInit;
+use crate::SystemInfo;
 
-use systems::PacketHandler;
+use crate::systems::PacketHandler;
 
 const NO_PACKET_TIMEOUT: Duration = Duration::from_secs(10);
 

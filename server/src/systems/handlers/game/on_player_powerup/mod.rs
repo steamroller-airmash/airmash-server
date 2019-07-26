@@ -10,12 +10,10 @@ pub use self::trigger_update::TriggerUpdate;
 
 pub use self::register::register;
 
-use systems;
-
 pub type AllPlayerPowerupSystems = (TriggerUpdate);
 
 pub type KnownEventSources = (
-	systems::admin::GivePowerup,
-	systems::handlers::game::on_player_respawn::GiveShield,
-	systems::powerups::Pickup,
+	crate::systems::admin::GivePowerup,
+	crate::systems::handlers::game::on_player_respawn::GiveShield,
+	crate::systems::powerups::Pickup,
 );

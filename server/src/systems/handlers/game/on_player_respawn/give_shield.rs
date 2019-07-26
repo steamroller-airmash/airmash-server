@@ -1,13 +1,11 @@
 use specs::*;
 
-use component::channel::*;
-use component::event::*;
-
-use protocol::PowerupType;
-
-use types::Config;
-use utils::{EventHandler, EventHandlerTypeProvider};
-use SystemInfo;
+use crate::component::channel::*;
+use crate::component::event::*;
+use crate::protocol::PowerupType;
+use crate::types::Config;
+use crate::utils::{EventHandler, EventHandlerTypeProvider};
+use crate::SystemInfo;
 
 use super::KnownEventSources;
 

@@ -1,10 +1,10 @@
 use specs::*;
 
-use component::event::PlayerPowerup;
-use component::time::ThisFrame;
-use types::Powerups;
-use utils::{EventHandler, EventHandlerTypeProvider};
-use SystemInfo;
+use crate::component::event::PlayerPowerup;
+use crate::component::time::ThisFrame;
+use crate::types::Powerups;
+use crate::utils::{EventHandler, EventHandlerTypeProvider};
+use crate::SystemInfo;
 
 #[derive(Default)]
 pub struct SetPowerupLifetime;

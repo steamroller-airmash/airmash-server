@@ -1,16 +1,16 @@
+use crate::types::*;
 use specs::*;
-use types::*;
 
-use SystemInfo;
+use crate::SystemInfo;
 
-use component::channel::*;
-use component::event::*;
-use component::flag::*;
-use component::ratelimit::*;
-use component::time::ThisFrame;
+use crate::component::channel::*;
+use crate::component::event::*;
+use crate::component::flag::*;
+use crate::component::ratelimit::*;
+use crate::component::time::ThisFrame;
 
-use systems::handlers::game::on_join::InitLimiters;
-use systems::handlers::packet::ChatEventHandler;
+// use crate::systems::handlers::game::on_join::InitLimiters;
+use crate::systems::handlers::packet::ChatEventHandler;
 
 pub struct LimitChat {
 	reader: Option<OnChatEventReader>,
@@ -72,7 +72,10 @@ impl<'a> System<'a> for LimitChat {
 }
 
 impl SystemInfo for LimitChat {
-	type Dependencies = (ChatEventHandler, InitLimiters);
+	type Dependencies = (
+		ChatEventHandler,
+		// InitLimiters
+	);
 
 	fn name() -> &'static str {
 		concat!(module_path!(), "::", line!())

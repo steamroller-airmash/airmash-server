@@ -1,8 +1,8 @@
-use component::event::PlayerLeave as EvtPlayerLeave;
-use protocol::server::PlayerLeave;
-use types::systemdata::*;
-use utils::{EventHandler, EventHandlerTypeProvider};
-use SystemInfo;
+use crate::component::event::PlayerLeave as EvtPlayerLeave;
+use crate::protocol::server::PlayerLeave;
+use crate::types::systemdata::*;
+use crate::utils::{EventHandler, EventHandlerTypeProvider};
+use crate::SystemInfo;
 
 /// Create a despawn event when a player leaves
 #[derive(Default)]

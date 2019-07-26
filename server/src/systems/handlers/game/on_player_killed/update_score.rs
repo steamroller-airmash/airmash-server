@@ -1,14 +1,13 @@
 use specs::*;
 
-use types::systemdata::*;
-use types::*;
+use crate::types::systemdata::*;
+use crate::types::*;
 
-use component::counter::*;
-use component::event::*;
-use protocol::server::ScoreUpdate;
-use SystemInfo;
-
-use utils::{EventHandler, EventHandlerTypeProvider};
+use crate::component::counter::*;
+use crate::component::event::*;
+use crate::protocol::server::ScoreUpdate;
+use crate::utils::{EventHandler, EventHandlerTypeProvider};
+use crate::SystemInfo;
 
 #[derive(Default)]
 pub struct UpdateScore;

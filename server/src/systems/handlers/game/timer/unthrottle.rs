@@ -1,14 +1,14 @@
 use specs::*;
 
-use types::*;
+use crate::types::*;
 
-use component::channel::*;
-use component::event::*;
-use component::flag::*;
-use consts::timer::*;
+use crate::component::channel::*;
+use crate::component::event::*;
+use crate::component::flag::*;
+use crate::consts::timer::*;
 
-use systems::TimerHandler;
-use SystemInfo;
+use crate::systems::TimerHandler;
+use crate::SystemInfo;
 
 pub struct UnthrottlePlayer {
 	reader: Option<OnTimerEventReader>,

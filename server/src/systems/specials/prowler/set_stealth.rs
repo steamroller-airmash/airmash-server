@@ -1,17 +1,17 @@
+use crate::types::systemdata::*;
+use crate::types::*;
 use specs::*;
-use types::systemdata::*;
-use types::*;
 
-use systems::handlers::packet::KeyHandler;
-use systems::specials::config::*;
+use crate::systems::handlers::packet::KeyHandler;
+use crate::systems::specials::config::*;
 
-use component::channel::OnPlayerStealth;
-use component::event::PlayerStealth;
-use component::flag::*;
-use component::time::{LastStealthTime, ThisFrame};
+use crate::component::channel::OnPlayerStealth;
+use crate::component::event::PlayerStealth;
+use crate::component::flag::*;
+use crate::component::time::{LastStealthTime, ThisFrame};
 
-use protocol::PlaneType;
-use SystemInfo;
+use crate::protocol::PlaneType;
+use crate::SystemInfo;
 
 pub struct SetStealth;
 

@@ -15,6 +15,4 @@ pub type AllLeaveHandlers = (
 	SendPlayerLeave,
 );
 
-use systems;
-
-pub type KnownEventSources = (systems::handlers::packet::OnCloseHandler);
+pub type KnownEventSources = (crate::systems::handlers::packet::OnCloseHandler);

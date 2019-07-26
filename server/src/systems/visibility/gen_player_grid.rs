@@ -1,11 +1,11 @@
 use specs::*;
 
-use types::collision::*;
-use types::*;
-use SystemInfo;
+use crate::types::collision::*;
+use crate::types::*;
+use crate::SystemInfo;
 
-use component::collision::PlayerGrid;
-use component::flag::IsPlayer;
+use crate::component::collision::PlayerGrid;
+use crate::component::flag::IsPlayer;
 
 #[derive(Default)]
 pub struct GenPlayerGrid;
@@ -42,7 +42,7 @@ impl<'a> System<'a> for GenPlayerGrid {
 	}
 }
 
-use systems::PositionUpdate;
+use crate::systems::PositionUpdate;
 
 impl SystemInfo for GenPlayerGrid {
 	type Dependencies = PositionUpdate;

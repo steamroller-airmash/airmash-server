@@ -2,15 +2,14 @@ use specs::*;
 
 use super::*;
 
-use SystemInfo;
+use crate::component::counter::*;
+use crate::component::event::*;
+use crate::types::systemdata::*;
+use crate::types::*;
+use crate::utils::{EventHandler, EventHandlerTypeProvider};
+use crate::SystemInfo;
 
-use component::counter::*;
-use component::event::*;
-use types::systemdata::*;
-use types::*;
-use utils::{EventHandler, EventHandlerTypeProvider};
-
-use protocol::server::ScoreUpdate;
+use crate::protocol::server::ScoreUpdate;
 
 #[derive(Default)]
 pub struct SendScoreUpdate;
@@ -55,12 +54,12 @@ impl<'a> EventHandler<'a> for SendScoreUpdate {
 
 impl SystemInfo for SendScoreUpdate {
 	type Dependencies = (
-		InitTraits,
-		InitEarnings,
-		InitKillCounters,
+		// InitTraits,
+		// InitEarnings,
+		// InitKillCounters,
 		SendLogin,
 		InitConnection,
-		InitState,
+		// InitState,
 	);
 
 	fn name() -> &'static str {

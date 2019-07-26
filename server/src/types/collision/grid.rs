@@ -4,8 +4,8 @@ use specs::Entity;
 use std::cmp::Ordering;
 use std::mem;
 
-use types::collision::{Collision, HitCircle};
-use types::{Distance, Position};
+use crate::types::collision::{Collision, HitCircle};
+use crate::types::{Distance, Position};
 
 const BUCKETS_X: u32 = BUCKETS_Y * 2;
 const BUCKETS_Y: u32 = 64;

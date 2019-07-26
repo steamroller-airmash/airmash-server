@@ -1,10 +1,10 @@
+use crate::SystemInfo;
 use specs::*;
-use SystemInfo;
 
-use component::event::*;
-use component::time::{LastShotTime, ThisFrame};
+use crate::component::event::*;
+use crate::component::time::{LastShotTime, ThisFrame};
 
-use utils::{EventHandler, EventHandlerTypeProvider};
+use crate::utils::{EventHandler, EventHandlerTypeProvider};
 
 #[derive(Default)]
 pub struct SetLastShot;

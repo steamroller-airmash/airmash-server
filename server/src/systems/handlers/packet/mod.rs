@@ -1,4 +1,4 @@
-pub use handlers::*;
+pub use crate::handlers::*;
 
 mod chat_event;
 mod register;

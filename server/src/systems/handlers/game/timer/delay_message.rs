@@ -1,9 +1,9 @@
-use component::event::TimerEvent;
-use consts::timer::DELAYED_MESSAGE;
-use protocol::server::ServerMessage;
-use types::systemdata::*;
-use utils::*;
-use SystemInfo;
+use crate::component::event::TimerEvent;
+use crate::consts::timer::DELAYED_MESSAGE;
+use crate::protocol::server::ServerMessage;
+use crate::types::systemdata::*;
+use crate::utils::*;
+use crate::SystemInfo;
 
 #[derive(Default)]
 pub struct DelayMessage;

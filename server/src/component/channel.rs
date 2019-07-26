@@ -1,7 +1,7 @@
 use shrev::*;
 
-use component::event::*;
-use types::event::{ConnectionClose, ConnectionOpen, Message};
+use crate::component::event::*;
+use crate::types::event::{ConnectionClose, ConnectionOpen, Message};
 
 // Connection Events
 pub type OnOpen = EventChannel<ConnectionOpen>;

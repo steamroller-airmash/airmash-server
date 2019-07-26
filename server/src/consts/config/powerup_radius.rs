@@ -1,5 +1,5 @@
+use crate::Distance;
 use std::marker::PhantomData;
-use types::Distance;
 
 /// The radius of a powerup (for collision purposes).
 ///

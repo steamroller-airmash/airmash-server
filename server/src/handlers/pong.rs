@@ -1,10 +1,10 @@
+use crate::types::*;
 use specs::*;
-use types::*;
 
-use component::channel::{OnPong, OnPongReader};
-use component::counter::{PlayerPing, PlayersGame};
+use crate::component::channel::{OnPong, OnPongReader};
+use crate::component::counter::{PlayerPing, PlayersGame};
 
-use protocol::server::PingResult;
+use crate::protocol::server::PingResult;
 
 pub struct PongHandler {
 	reader: Option<OnPongReader>,
@@ -64,8 +64,8 @@ impl<'a> System<'a> for PongHandler {
 	}
 }
 
-use dispatch::SystemInfo;
-use handlers::OnCloseHandler;
+use crate::dispatch::SystemInfo;
+use crate::handlers::OnCloseHandler;
 
 impl SystemInfo for PongHandler {
 	type Dependencies = OnCloseHandler;

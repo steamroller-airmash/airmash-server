@@ -1,13 +1,13 @@
 use specs::*;
 
-use component::event::*;
-use types::*;
-use SystemInfo;
+use crate::component::event::*;
+use crate::types::*;
+use crate::SystemInfo;
 
-use systems::handlers::command::AllCommandHandlers;
-use systems::handlers::game::on_join::AllJoinHandlers;
+use crate::systems::handlers::command::AllCommandHandlers;
+use crate::systems::handlers::game::on_join::AllJoinHandlers;
 
-use utils::{EventHandler, EventHandlerTypeProvider};
+use crate::utils::{EventHandler, EventHandlerTypeProvider};
 
 /// Reset the keystate of a player when they
 /// respawn.

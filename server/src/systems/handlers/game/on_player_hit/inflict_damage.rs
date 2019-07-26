@@ -1,17 +1,17 @@
+use crate::types::*;
 use specs::*;
-use types::*;
 
-use dispatch::SystemInfo;
+use crate::dispatch::SystemInfo;
 
-use component::channel::*;
-use component::event::{PlayerHit, PlayerKilled};
-use component::flag::*;
-use component::reference::PlayerRef;
+use crate::component::channel::*;
+use crate::component::event::{PlayerHit, PlayerKilled};
+use crate::component::flag::*;
+use crate::component::reference::PlayerRef;
 
-use utils::{EventHandler, EventHandlerTypeProvider};
+use crate::utils::{EventHandler, EventHandlerTypeProvider};
 
-use systems::handlers::game::on_missile_fire::KnownEventSources;
-use systems::missile::MissileHit;
+use crate::systems::handlers::game::on_missile_fire::KnownEventSources;
+use crate::systems::missile::MissileHit;
 
 #[derive(Default)]
 pub struct InflictDamage;

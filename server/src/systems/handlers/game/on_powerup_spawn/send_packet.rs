@@ -1,8 +1,8 @@
-use component::event::PowerupSpawnEvent;
-use types::systemdata::SendToVisible;
-use utils::*;
+use crate::component::event::PowerupSpawnEvent;
+use crate::types::systemdata::SendToVisible;
+use crate::utils::*;
 
-use protocol::server::MobUpdateStationary;
+use crate::protocol::server::MobUpdateStationary;
 
 #[derive(Default)]
 pub struct SendPacket;

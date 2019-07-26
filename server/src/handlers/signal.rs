@@ -1,12 +1,12 @@
 use specs::*;
 
-use consts::SHUTDOWN;
 use std::sync::atomic::Ordering;
 use std::time::{Duration, Instant};
-use types::systemdata::*;
 
-use protocol::server::ServerMessage;
-use protocol::ServerMessageType;
+use crate::consts::SHUTDOWN;
+use crate::protocol::server::ServerMessage;
+use crate::protocol::ServerMessageType;
+use crate::types::systemdata::*;
 
 use std::process;
 
@@ -50,7 +50,7 @@ impl<'a> System<'a> for SignalHandler {
 	}
 }
 
-use dispatch::SystemInfo;
+use crate::dispatch::SystemInfo;
 
 impl SystemInfo for SignalHandler {
 	type Dependencies = ();

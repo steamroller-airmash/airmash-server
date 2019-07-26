@@ -1,9 +1,10 @@
+use crate::types::*;
 use specs::prelude::*;
-use types::*;
 
-use component::flag::IsPlayer;
-use component::time::{LastFrame, ThisFrame};
+use crate::component::flag::IsPlayer;
+use crate::component::time::{LastFrame, ThisFrame};
 
+#[derive(Default)]
 pub struct EnergyRegenSystem;
 
 #[derive(SystemData)]
@@ -49,17 +50,8 @@ impl<'a> System<'a> for EnergyRegenSystem {
 	}
 }
 
-use super::missile::MissileFireHandler;
-use dispatch::SystemInfo;
-
-impl SystemInfo for EnergyRegenSystem {
-	type Dependencies = MissileFireHandler;
-
-	fn name() -> &'static str {
-		concat!(module_path!(), "::", line!())
-	}
-
-	fn new() -> Self {
-		Self {}
+system_info! {
+	impl SystemInfo for EnergyRegenSystem {
+		type Dependencies = super::missile::MissileFireHandler;
 	}
 }

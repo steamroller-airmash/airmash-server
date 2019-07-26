@@ -1,12 +1,12 @@
 use specs::*;
 
-use types::*;
+use crate::types::*;
 
-use SystemInfo;
+use crate::SystemInfo;
 
-use component::event::PlayerJoin;
-use systems::handlers::packet::LoginHandler;
-use utils::{EventHandler, EventHandlerTypeProvider};
+use crate::component::event::PlayerJoin;
+//use crate::systems::handlers::packet::LoginHandler;
+use crate::utils::{EventHandler, EventHandlerTypeProvider};
 
 #[derive(Default)]
 pub struct InitConnection;
@@ -34,7 +34,7 @@ impl<'a> EventHandler<'a> for InitConnection {
 }
 
 impl SystemInfo for InitConnection {
-	type Dependencies = LoginHandler;
+	type Dependencies = (); //LoginHandler;
 
 	fn name() -> &'static str {
 		concat!(module_path!(), "::", line!())

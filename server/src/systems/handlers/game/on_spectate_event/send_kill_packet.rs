@@ -1,11 +1,10 @@
-use types::*;
+use crate::component::event::PlayerSpectate;
+use crate::protocol::server::PlayerKill;
+use crate::types::systemdata::*;
+use crate::types::*;
+use crate::utils::*;
 
-use component::event::PlayerSpectate;
-use protocol::server::PlayerKill;
-use types::systemdata::*;
-use utils::*;
-
-use SystemInfo;
+use crate::SystemInfo;
 
 #[derive(Default)]
 pub struct SendKillPacket;

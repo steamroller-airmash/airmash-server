@@ -1,18 +1,17 @@
+use crate::types::systemdata::*;
+use crate::types::*;
 use specs::*;
-use systems;
-use types::systemdata::*;
-use types::*;
 
-use SystemInfo;
+use crate::SystemInfo;
 
 use std::f32::consts;
 use std::marker::PhantomData;
 use std::time::Duration;
 
-use component::flag::{ForcePlayerUpdate, IsPlayer};
-use component::time::*;
-use protocol::server::PlayerUpdate;
-use protocol::Upgrades as ServerUpgrades;
+use crate::component::flag::{ForcePlayerUpdate, IsPlayer};
+use crate::component::time::*;
+use crate::protocol::server::PlayerUpdate;
+use crate::protocol::Upgrades as ServerUpgrades;
 
 const PI: Rotation = Rotation {
 	value_unsafe: consts::PI,
@@ -331,8 +330,8 @@ impl<'a> System<'a> for PositionUpdate {
 
 impl SystemInfo for PositionUpdate {
 	type Dependencies = (
-		systems::handlers::packet::KeyHandler,
-		systems::handlers::game::on_player_respawn::SetTraits,
+		crate::systems::handlers::packet::KeyHandler,
+		crate::systems::handlers::game::on_player_respawn::SetTraits,
 	);
 
 	fn name() -> &'static str {

@@ -4,10 +4,10 @@ use std::any::Any;
 use std::collections::{HashMap, HashSet};
 use std::mem;
 
-use dispatch::sysbuilder::*;
-use dispatch::sysinfo::*;
+use crate::dispatch::sysbuilder::*;
+use crate::dispatch::sysinfo::*;
 
-use utils::{EventHandler, EventHandlerTypeProvider};
+use crate::utils::{EventHandler, EventHandlerTypeProvider};
 
 pub struct Builder<'a, 'b> {
 	builder: DispatcherBuilder<'a, 'b>,
@@ -71,7 +71,7 @@ impl<'a, 'b> Builder<'a, 'b> {
 		T: for<'c> EventHandler<'c> + EventHandlerTypeProvider + Send + Sync + SystemInfo + 'static,
 		T::Event: Send + Sync,
 	{
-		use utils::EventHandlerWrapper;
+		use crate::utils::EventHandlerWrapper;
 		self.with_args::<EventHandlerWrapper<T>, U>(args)
 	}
 

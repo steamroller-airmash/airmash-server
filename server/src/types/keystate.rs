@@ -1,7 +1,7 @@
 use specs::*;
 
+use crate::types::Plane;
 use airmash_protocol::{PlaneType, ServerKeyState};
-use types::Plane;
 
 #[derive(Default, Clone, Debug)]
 pub struct KeyState {

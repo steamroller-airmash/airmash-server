@@ -1,6 +1,6 @@
 use specs::*;
 
-use protocol::PowerupType;
+use crate::protocol::PowerupType;
 
 use std::time::Instant;
 

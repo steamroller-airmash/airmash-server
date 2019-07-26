@@ -2,15 +2,15 @@ use hashbrown::{HashMap, HashSet};
 use shrev::*;
 use specs::*;
 
-use component::channel::*;
-use component::collision::*;
-use component::event::*;
-use component::flag::*;
-use types::collision::{Grid, HitCircle};
-use types::{Config, Position};
-use utils::MaybeInit;
+use crate::component::channel::*;
+use crate::component::collision::*;
+use crate::component::event::*;
+use crate::component::flag::*;
+use crate::types::collision::{Grid, HitCircle};
+use crate::types::{Config, Position};
+use crate::utils::MaybeInit;
 
-use systems;
+use crate::systems;
 
 #[derive(Copy, Clone, Debug, Eq, Hash, PartialEq)]
 struct VisibleEntry {

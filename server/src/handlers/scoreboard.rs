@@ -1,15 +1,15 @@
+use crate::types::systemdata::*;
+use crate::types::*;
 use specs::*;
-use types::systemdata::*;
-use types::*;
 
-use consts::timer::SCORE_BOARD;
+use crate::consts::timer::SCORE_BOARD;
 
-use component::event::TimerEvent;
-use component::flag::IsPlayer;
-use component::time::JoinTime;
+use crate::component::event::TimerEvent;
+use crate::component::flag::IsPlayer;
+use crate::component::time::JoinTime;
 
-use protocol::server::{ScoreBoard, ScoreBoardData, ScoreBoardRanking};
-use utils::*;
+use crate::protocol::server::{ScoreBoard, ScoreBoardData, ScoreBoardRanking};
+use crate::utils::*;
 
 use std::cmp::{Ordering, Reverse};
 
@@ -115,9 +115,9 @@ impl<'a> EventHandler<'a> for ScoreBoardTimerHandler {
 	}
 }
 
-use dispatch::SystemInfo;
-use systems::handlers::game::on_join::SendLogin;
-use systems::TimerHandler;
+use crate::dispatch::SystemInfo;
+use crate::systems::handlers::game::on_join::SendLogin;
+use crate::systems::TimerHandler;
 
 impl SystemInfo for ScoreBoardTimerHandler {
 	type Dependencies = (TimerHandler, SendLogin);

@@ -1,9 +1,9 @@
 use specs::*;
 
-use SystemInfo;
+use crate::SystemInfo;
 
-use component::time::ThisFrame;
-use types::FutureDispatcher;
+use crate::component::time::ThisFrame;
+use crate::types::FutureDispatcher;
 
 pub struct RunTimedFutures;
 

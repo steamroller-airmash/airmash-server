@@ -1,12 +1,12 @@
 use specs::prelude::*;
 use specs::world::EntitiesRes;
 
-use component::channel::OnMissileTerrainCollision;
-use component::event::MissileTerrainCollision;
-use component::flag::IsMissile;
-use systems;
-use types::collision::*;
-use types::*;
+use crate::component::channel::OnMissileTerrainCollision;
+use crate::component::event::MissileTerrainCollision;
+use crate::component::flag::IsMissile;
+use crate::systems;
+use crate::types::collision::*;
+use crate::types::*;
 
 #[derive(Default)]
 pub struct MissileTerrainCollisionSystem {

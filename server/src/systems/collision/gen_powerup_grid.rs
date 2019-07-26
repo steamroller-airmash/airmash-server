@@ -1,11 +1,11 @@
 use specs::*;
 
-use consts::config::POWERUP_RADIUS;
-use types::collision::*;
-use types::*;
+use crate::consts::config::POWERUP_RADIUS;
+use crate::types::collision::*;
+use crate::types::*;
 
-use component::collision::PowerupGrid;
-use component::flag::IsPowerup;
+use crate::component::collision::PowerupGrid;
+use crate::component::flag::IsPowerup;
 
 #[derive(Default)]
 pub struct GenPowerupGrid;
@@ -36,10 +36,8 @@ impl<'a> System<'a> for GenPowerupGrid {
 	}
 }
 
-use systems::PositionUpdate;
-
 system_info! {
 	impl SystemInfo for GenPowerupGrid {
-		type Dependencies = PositionUpdate;
+		type Dependencies = crate::systems::PositionUpdate;
 	}
 }

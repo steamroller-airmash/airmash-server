@@ -1,12 +1,12 @@
+use crate::types::*;
 use specs::*;
-use types::*;
 
-use systems::specials::config::*;
+use crate::systems::specials::config::*;
 
-use component::flag::IsBoosting;
-use protocol::PlaneType;
-use systems::handlers::packet::KeyHandler;
-use SystemInfo;
+use crate::component::flag::IsBoosting;
+use crate::protocol::PlaneType;
+use crate::systems::handlers::packet::KeyHandler;
+use crate::SystemInfo;
 
 pub struct SetBoostingFlag;
 

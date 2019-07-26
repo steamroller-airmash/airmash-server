@@ -6,9 +6,7 @@ pub use self::set_last_shot::SetLastShot;
 
 pub type AllFireHandlers = (SendPlayerFire, SetLastShot);
 
-use systems;
-
 pub type KnownEventSources = (
-	systems::missile::MissileFireHandler,
-	systems::specials::tornado::Fire,
+	crate::systems::missile::MissileFireHandler,
+	crate::systems::specials::tornado::Fire,
 );

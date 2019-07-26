@@ -1,15 +1,15 @@
 use specs::*;
 
-use SystemInfo;
+use crate::SystemInfo;
 
-use component::channel::OnPlayerPowerup;
-use component::event::PlayerJoin;
-use component::event::PlayerPowerup;
+use crate::component::channel::OnPlayerPowerup;
+use crate::component::event::PlayerJoin;
+use crate::component::event::PlayerPowerup;
 
-use protocol::PowerupType;
+use crate::protocol::PowerupType;
 
-use types::Config;
-use utils::{EventHandler, EventHandlerTypeProvider};
+use crate::types::Config;
+use crate::utils::{EventHandler, EventHandlerTypeProvider};
 
 /// Give the newly joined player an initial 2s shield.
 #[derive(Default)]
@@ -38,7 +38,7 @@ impl<'a> EventHandler<'a> for SendPlayerPowerup {
 }
 
 impl SystemInfo for SendPlayerPowerup {
-	type Dependencies = (super::InitState, super::SendLogin);
+	type Dependencies = (super::SendLogin);
 
 	fn name() -> &'static str {
 		concat!(module_path!(), "::", line!())

@@ -1,13 +1,13 @@
 use hashbrown::HashSet;
 use specs::prelude::*;
 
-use types::collision::*;
-use types::*;
+use crate::types::collision::*;
+use crate::types::*;
 
-use component::channel::*;
-use component::collision::PlaneGrid;
-use component::event::PlayerMissileCollision;
-use component::flag::*;
+use crate::component::channel::*;
+use crate::component::collision::PlaneGrid;
+use crate::component::event::PlayerMissileCollision;
+use crate::component::flag::*;
 
 pub struct PlayerMissileCollisionSystem;
 
@@ -67,9 +67,9 @@ impl<'a> System<'a> for PlayerMissileCollisionSystem {
 	}
 }
 
-use dispatch::SystemInfo;
-use systems::collision::GenPlaneGrid;
-use systems::PositionUpdate;
+use crate::dispatch::SystemInfo;
+use crate::systems::collision::GenPlaneGrid;
+use crate::systems::PositionUpdate;
 
 impl SystemInfo for PlayerMissileCollisionSystem {
 	type Dependencies = (PositionUpdate, GenPlaneGrid);

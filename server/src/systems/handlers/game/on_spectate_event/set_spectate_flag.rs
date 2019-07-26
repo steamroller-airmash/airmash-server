@@ -1,9 +1,9 @@
 use specs::*;
 
-use dispatch::SystemInfo;
+use crate::dispatch::SystemInfo;
 
-use component::channel::*;
-use component::flag::IsSpectating;
+use crate::component::channel::*;
+use crate::component::flag::IsSpectating;
 
 pub struct SetSpectateFlag {
 	reader: Option<OnPlayerSpectateReader>,

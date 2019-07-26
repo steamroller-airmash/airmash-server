@@ -1,9 +1,9 @@
 use specs::*;
 
-use component::channel::OnPowerupDespawn;
-use component::event::PowerupDespawnEvent;
-use component::time::{MobDespawnTime, ThisFrame};
-use types::*;
+use crate::component::channel::OnPowerupDespawn;
+use crate::component::event::PowerupDespawnEvent;
+use crate::component::time::{MobDespawnTime, ThisFrame};
+use crate::types::*;
 
 #[derive(Default)]
 pub struct Despawn;

@@ -1,12 +1,12 @@
-use SystemInfo;
+use crate::SystemInfo;
 
 use std::time::Duration;
 
-use component::event::PlayerJoin;
-use protocol::server::ServerMessage;
-use protocol::ServerMessageType;
-use types::systemdata::*;
-use utils::*;
+use crate::component::event::PlayerJoin;
+use crate::protocol::server::ServerMessage;
+use crate::protocol::ServerMessageType;
+use crate::types::systemdata::*;
+use crate::utils::*;
 
 pub struct NotifyAlpha {
 	duration: Duration,

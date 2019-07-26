@@ -3,9 +3,9 @@ use specs::Entity;
 
 use std::net::IpAddr;
 
-use protocol::{Protocol, ServerPacket};
-use protocol_v5::ProtocolV5;
-use types::ConnectionId;
+use crate::protocol::{Protocol, ServerPacket};
+use crate::protocol_v5::ProtocolV5;
+use crate::types::ConnectionId;
 
 use ws::{self, Sender as WsSender};
 

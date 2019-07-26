@@ -1,5 +1,5 @@
 use super::*;
-use dispatch::Builder;
+use crate::dispatch::Builder;
 
 pub fn register<'a, 'b>(builder: Builder<'a, 'b>) -> Builder<'a, 'b> {
 	builder
@@ -18,21 +18,10 @@ pub fn register<'a, 'b>(builder: Builder<'a, 'b>) -> Builder<'a, 'b> {
 		.with_handler::<on_player_killed::CreateDespawnEvent>()
 		// On player joined
 		.with_handler::<on_join::InitConnection>()
-		.with_handler::<on_join::InitKillCounters>()
-		.with_handler::<on_join::InitJoinTime>()
-		.with_handler::<on_join::InitEarnings>()
-		.with_handler::<on_join::InitTraits>()
-		.with_handler::<on_join::InitState>()
-		.with_handler::<on_join::InitName>()
-		.with_handler::<on_join::InitLimiters>()
-		.with_handler::<on_join::InitTransform>()
-		.with_handler::<on_join::InitStealthTime>()
-		.with_handler::<on_join::InitLastRepelTime>()
 		.with_handler::<on_join::SendPlayerNew>()
 		.with_handler::<on_join::SendLogin>()
 		.with_handler::<on_join::SendPlayerLevel>()
 		.with_handler::<on_join::SendScoreUpdate>()
-		.with_handler::<on_join::UpdatePlayersGame>()
 		.with_handler::<on_join::SendPlayerPowerup>()
 		// On player leave
 		.with::<on_leave::FreeName>()

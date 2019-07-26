@@ -1,11 +1,11 @@
 use std::net::ToSocketAddrs;
 use std::sync::mpsc::{channel, Sender};
 
-use dispatch::Builder;
+use crate::dispatch::Builder;
 use specs::{Builder as SpecsBuilder, World};
 
-use types::event::ConnectionEvent;
-use types::GameMode;
+use crate::types::event::ConnectionEvent;
+use crate::types::GameMode;
 
 /// Configuration options for an Airmash server.
 pub struct AirmashServerConfig<T>
@@ -48,8 +48,8 @@ where
 	///
 	/// [0]: #fn.new
 	pub fn new_no_gamemode(addr: T) -> Self {
-		use systems::{PacketHandler, TimerHandler};
-		use types::{Connections, FutureDispatcher};
+		use crate::systems::{PacketHandler, TimerHandler};
+		use crate::types::{Connections, FutureDispatcher};
 
 		let (event_send, event_recv) = channel();
 		let (timer_send, timer_recv) = channel();
@@ -113,10 +113,8 @@ where
 	///
 	/// [0]: ::systems
 	pub fn with_engine(self) -> Self {
-		use systems;
-
 		Self {
-			builder: systems::register(self.builder),
+			builder: crate::systems::register(self.builder),
 			..self
 		}
 	}
@@ -132,7 +130,7 @@ where
 	where
 		G: GameMode + 'static,
 	{
-		use types::gamemode::*;
+		use crate::types::gamemode::*;
 
 		self.world
 			.add_resource(GameModeInternal(Box::new(GameModeWrapperImpl {
@@ -149,7 +147,7 @@ where
 	/// Sooner or later this will be replaced with something
 	/// to add a generic banner.
 	pub fn with_alpha_warning(self) -> Self {
-		use systems::notify::*;
+		use crate::systems::notify::*;
 
 		Self {
 			builder: self.builder.with_handler::<NotifyAlpha>(),

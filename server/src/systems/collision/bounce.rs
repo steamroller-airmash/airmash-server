@@ -1,11 +1,11 @@
+use crate::types::systemdata::*;
+use crate::types::*;
 use specs::*;
-use types::systemdata::*;
-use types::*;
 
-use component::event::*;
-use component::time::{StartTime, ThisFrame};
+use crate::component::event::*;
+use crate::component::time::{StartTime, ThisFrame};
 
-use utils::{EventHandler, EventHandlerTypeProvider};
+use crate::utils::{EventHandler, EventHandlerTypeProvider};
 
 use airmash_protocol::server::EventBounce;
 
@@ -86,17 +86,8 @@ impl<'a> EventHandler<'a> for BounceSystem {
 	}
 }
 
-use super::PlaneCollisionSystem;
-use dispatch::SystemInfo;
-
-impl SystemInfo for BounceSystem {
-	type Dependencies = PlaneCollisionSystem;
-
-	fn name() -> &'static str {
-		concat!(module_path!(), "::", line!())
-	}
-
-	fn new() -> Self {
-		Self::default()
+system_info! {
+	impl SystemInfo for BounceSystem {
+		type Dependencies = super::PlaneCollisionSystem;
 	}
 }

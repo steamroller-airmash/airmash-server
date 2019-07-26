@@ -1,13 +1,13 @@
+use crate::types::*;
 use specs::*;
-use types::*;
 
-use SystemInfo;
+use crate::SystemInfo;
 
-use component::event::*;
-use protocol::server::PlayerNew;
-use protocol::Upgrades as ProtocolUpgrades;
-use types::systemdata::*;
-use utils::{EventHandler, EventHandlerTypeProvider};
+use crate::component::event::*;
+use crate::protocol::server::PlayerNew;
+use crate::protocol::Upgrades as ProtocolUpgrades;
+use crate::types::systemdata::*;
+use crate::utils::{EventHandler, EventHandlerTypeProvider};
 
 /// Send a `PlayerNew` packet to all other players when
 /// a new player joins.
@@ -63,10 +63,10 @@ impl<'a> EventHandler<'a> for SendPlayerNew {
 
 impl SystemInfo for SendPlayerNew {
 	type Dependencies = (
-		super::InitTraits,
+		// super::InitTraits,
 		super::InitConnection,
-		super::InitState,
-		super::InitTransform,
+		// super::InitState,
+		// super::InitTransform,
 		super::SendPlayerPowerup,
 		super::SendLogin,
 	);

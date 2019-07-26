@@ -1,4 +1,4 @@
-use dispatch::sysinfo::*;
+use crate::dispatch::sysinfo::*;
 use shred::*;
 
 use std::time::Instant;

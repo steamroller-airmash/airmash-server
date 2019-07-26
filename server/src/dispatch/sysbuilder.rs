@@ -4,8 +4,8 @@ use std::mem;
 
 use specs::*;
 
-use dispatch::sysinfo::*;
-use dispatch::syswrapper::*;
+use crate::dispatch::sysinfo::*;
+use crate::dispatch::syswrapper::*;
 
 pub trait AbstractBuilder {
 	fn build<'a, 'b>(&mut self, disp: DispatcherBuilder<'a, 'b>) -> DispatcherBuilder<'a, 'b>;

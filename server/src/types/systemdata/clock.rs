@@ -2,8 +2,8 @@ use specs::*;
 
 use std::time::Instant;
 
-use component::time::StartTime;
-use types::ToClock;
+use crate::component::time::StartTime;
+use crate::types::ToClock;
 
 /// Get the number of clock ticks between
 /// the start of the game and now.

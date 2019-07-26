@@ -12,7 +12,7 @@ macro_rules! try_get_error {
 			);
 
 		#[cfg(features = "sentry")]
-		::airmash_server::utils::_internal_log_sentry_error(
+		$crate::utils::_internal_log_sentry_error(
 			module_path!(),
 			line!(),
 			stringify!($storage),

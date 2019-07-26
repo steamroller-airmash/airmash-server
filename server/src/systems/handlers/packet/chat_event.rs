@@ -1,10 +1,10 @@
 use specs::*;
 
-use systems::PacketHandler;
-use SystemInfo;
+use crate::systems::PacketHandler;
+use crate::SystemInfo;
 
-use component::channel::*;
-use component::event::*;
+use crate::component::channel::*;
+use crate::component::event::*;
 
 #[derive(Default)]
 pub struct ChatEventHandler {

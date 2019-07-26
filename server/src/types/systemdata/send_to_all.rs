@@ -1,7 +1,7 @@
+use crate::types::*;
 use specs::*;
-use types::*;
 
-use protocol::ServerPacket;
+use crate::protocol::ServerPacket;
 
 /// Send packets to a connection, a player, or many players.
 #[derive(SystemData)]

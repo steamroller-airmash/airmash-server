@@ -1,10 +1,10 @@
+use crate::types::systemdata::*;
+use crate::types::*;
 use specs::prelude::*;
-use types::systemdata::*;
-use types::*;
 
-use systems::handlers::packet::KeyHandler;
-use systems::specials::config::*;
-use systems::EnergyRegenSystem;
+use crate::systems::handlers::packet::KeyHandler;
+use crate::systems::specials::config::*;
+use crate::systems::EnergyRegenSystem;
 
 pub struct Fire;
 
@@ -54,8 +54,8 @@ impl<'a> System<'a> for Fire {
 	}
 }
 
-use dispatch::SystemInfo;
-use systems::PositionUpdate;
+use crate::dispatch::SystemInfo;
+use crate::systems::PositionUpdate;
 
 impl SystemInfo for Fire {
 	type Dependencies = (PositionUpdate, EnergyRegenSystem, KeyHandler);

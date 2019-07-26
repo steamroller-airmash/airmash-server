@@ -1,9 +1,9 @@
 use hashbrown::HashMap;
 
-use protocol::MobType;
-use types::{Distance, Mob, Position};
+use crate::protocol::MobType;
+use crate::types::{Distance, Mob, Position};
 
-use consts::config::POWERUP_RADIUS;
+use crate::consts::config::POWERUP_RADIUS;
 
 lazy_static! {
 	pub static ref COLLIDERS: HashMap<Mob, Vec<(Position, Distance)>> = {

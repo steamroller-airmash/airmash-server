@@ -1,8 +1,8 @@
-use consts::TERRAIN;
+use crate::consts::TERRAIN;
+use crate::types::*;
 use specs::world::*;
-use types::*;
 
-use types::collision::*;
+use crate::types::collision::*;
 
 #[derive(Default, Debug)]
 pub struct Terrain {

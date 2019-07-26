@@ -5,7 +5,7 @@ use std::sync::mpsc::Sender;
 use std::sync::Mutex;
 use std::time::{Duration, Instant};
 
-use component::event::TimerEvent;
+use crate::component::event::TimerEvent;
 
 struct Task {
 	pub time: Instant,

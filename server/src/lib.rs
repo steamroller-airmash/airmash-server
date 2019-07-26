@@ -1,4 +1,4 @@
-#![feature(try_trait)]
+#![feature(try_trait, async_await, box_into_pin)]
 
 // Crates with macros
 #[macro_use]
@@ -14,24 +14,6 @@ extern crate serde;
 
 // Regular Dependencies
 extern crate airmash_protocol_v5 as protocol_v5;
-extern crate bounded_queue;
-extern crate dimensioned;
-//extern crate fnv;
-extern crate futures;
-extern crate hashbrown;
-extern crate hibitset;
-extern crate htmlescape;
-extern crate rand;
-extern crate rayon;
-#[cfg(features = "sentry")]
-extern crate sentry;
-extern crate serde_json;
-extern crate shred;
-extern crate shrev;
-extern crate special_map;
-extern crate specs;
-extern crate uuid;
-extern crate ws;
 
 // Public dependencies
 pub extern crate airmash_protocol as protocol;
@@ -41,7 +23,7 @@ pub extern crate airmash_protocol as protocol;
 // namespace can be accessed by doing ::airmash_server.
 #[allow(unused)]
 mod airmash_server {
-	pub use *;
+	pub use crate::*;
 }
 
 // Needs to be first because of macros
@@ -57,15 +39,14 @@ mod status;
 pub mod component;
 pub mod consts;
 pub mod systems;
+pub mod task;
 pub mod types;
 
-use protocol as airmash_protocol;
+pub use crate::server::{AirmashServer, AirmashServerConfig};
 
-pub use server::{AirmashServer, AirmashServerConfig};
+pub use crate::dispatch::{Builder, SystemDeps, SystemInfo};
 
-pub use dispatch::{Builder, SystemDeps, SystemInfo};
-
-pub use types::{
+pub use crate::types::{
 	Accel, AccelScalar, Config, Connections, Distance, Energy, EnergyRegen, Flag, FutureDispatcher,
 	GameMode, GameModeWriter, Health, HealthRegen, KeyState, Level, Mob, Name, Plane, Position,
 	Score, Speed, Team, Time, Vector2, Velocity,

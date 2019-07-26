@@ -1,15 +1,15 @@
 use specs::*;
 
-use types::collision::*;
-use types::systemdata::*;
+use crate::types::collision::*;
+use crate::types::systemdata::*;
 
-use component::event::*;
-use component::flag::*;
-use systems;
-use utils::*;
+use crate::component::event::*;
+use crate::component::flag::*;
+use crate::systems;
+use crate::utils::*;
 
-use protocol::server::MobDespawn;
-use protocol::DespawnType;
+use crate::protocol::server::MobDespawn;
+use crate::protocol::DespawnType;
 
 #[derive(Default)]
 pub struct SendDespawn;

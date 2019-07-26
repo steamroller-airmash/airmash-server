@@ -1,11 +1,10 @@
 use specs::*;
 
-use types::collision::*;
-use types::*;
-use SystemInfo;
+use crate::types::collision::*;
+use crate::types::*;
 
-use component::collision::MissileGrid;
-use component::flag::IsMissile;
+use crate::component::collision::MissileGrid;
+use crate::component::flag::IsMissile;
 
 #[derive(Default)]
 pub struct GenMissileGrid;
@@ -42,19 +41,11 @@ impl<'a> System<'a> for GenMissileGrid {
 	}
 }
 
-use systems;
-
-impl SystemInfo for GenMissileGrid {
-	type Dependencies = (
-		systems::PositionUpdate,
-		systems::handlers::game::on_missile_despawn::KnownEventSources,
-	);
-
-	fn name() -> &'static str {
-		concat!(module_path!(), "::", line!())
-	}
-
-	fn new() -> Self {
-		Self::default()
+system_info! {
+	impl SystemInfo for GenMissileGrid {
+		type Dependencies = (
+			crate::systems::PositionUpdate,
+			crate::systems::handlers::game::on_missile_despawn::KnownEventSources
+		);
 	}
 }

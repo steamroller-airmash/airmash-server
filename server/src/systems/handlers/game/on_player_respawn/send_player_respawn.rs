@@ -1,19 +1,19 @@
 use specs::*;
 
-use component::event::PlayerRespawn as EvtPlayerRespawn;
-use component::flag::*;
-use types::systemdata::SendToVisible;
-use types::*;
-use SystemInfo;
+use crate::component::event::PlayerRespawn as EvtPlayerRespawn;
+use crate::component::flag::*;
+use crate::types::systemdata::SendToVisible;
+use crate::types::*;
+use crate::SystemInfo;
 
-use protocol::server::PlayerRespawn;
-use protocol::Upgrades as ProtocolUpgrades;
+use crate::protocol::server::PlayerRespawn;
+use crate::protocol::Upgrades as ProtocolUpgrades;
 
-use utils::{EventHandler, EventHandlerTypeProvider};
+use crate::utils::{EventHandler, EventHandlerTypeProvider};
 
-use systems::handlers::command::AllCommandHandlers;
-use systems::handlers::game::on_join::AllJoinHandlers;
-use systems::handlers::game::on_player_respawn::SetTraits;
+use crate::systems::handlers::command::AllCommandHandlers;
+use crate::systems::handlers::game::on_join::AllJoinHandlers;
+use crate::systems::handlers::game::on_player_respawn::SetTraits;
 
 /// Send a [`PlayerRespawn`] packet to
 /// all visible players if the target

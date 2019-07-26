@@ -1,14 +1,14 @@
+use crate::types::event::ConnectionClose;
+use crate::types::*;
 use specs::*;
-use types::event::ConnectionClose;
-use types::*;
 
-use component::channel::OnPlayerLeave;
-use component::counter::PlayersGame;
-use component::event::PlayerLeave as EvtPlayerLeave;
-use dispatch::SystemInfo;
-use handlers::OnOpenHandler;
+use crate::component::channel::OnPlayerLeave;
+use crate::component::counter::PlayersGame;
+use crate::component::event::PlayerLeave as EvtPlayerLeave;
+use crate::dispatch::SystemInfo;
+use crate::handlers::OnOpenHandler;
 
-use utils::*;
+use crate::utils::*;
 
 #[derive(Default)]
 pub struct OnCloseHandler;

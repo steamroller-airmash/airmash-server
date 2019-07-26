@@ -1,14 +1,15 @@
+use crate::types::systemdata::*;
+use crate::types::*;
 use shrev::*;
 use specs::*;
-use types::systemdata::*;
-use types::*;
 
-use protocol::client::Chat;
-use protocol::server::{ChatPublic, Error};
-use protocol::ErrorType;
+use crate::protocol::client::Chat;
+use crate::protocol::server::{ChatPublic, Error};
+use crate::protocol::ErrorType;
 
-use component::flag::{IsChatMuted, IsChatThrottled};
+use crate::component::flag::{IsChatMuted, IsChatThrottled};
 
+#[derive(Default)]
 pub struct ChatHandler {
 	reader: Option<ReaderId<(ConnectionId, Chat)>>,
 }
@@ -20,12 +21,6 @@ pub struct ChatHandlerData<'a> {
 
 	throttled: ReadStorage<'a, IsChatThrottled>,
 	muted: ReadStorage<'a, IsChatMuted>,
-}
-
-impl ChatHandler {
-	pub fn new() -> Self {
-		Self { reader: None }
-	}
 }
 
 impl<'a> System<'a> for ChatHandler {
@@ -68,17 +63,8 @@ impl<'a> System<'a> for ChatHandler {
 	}
 }
 
-use dispatch::SystemInfo;
-use handlers::OnCloseHandler;
-
-impl SystemInfo for ChatHandler {
-	type Dependencies = OnCloseHandler;
-
-	fn new() -> Self {
-		Self::new()
-	}
-
-	fn name() -> &'static str {
-		concat!(module_path!(), "::", line!())
+system_info! {
+	impl SystemInfo for ChatHandler {
+		type Dependencies = super::OnCloseHandler;
 	}
 }

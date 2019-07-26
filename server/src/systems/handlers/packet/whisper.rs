@@ -1,14 +1,14 @@
 use specs::*;
 
-use component::event::WhisperEvent;
-use component::flag::*;
-use protocol::server::{ChatWhisper, Error};
-use protocol::ErrorType;
-use types::systemdata::SendToPlayer;
+use crate::component::event::WhisperEvent;
+use crate::component::flag::*;
+use crate::protocol::server::{ChatWhisper, Error};
+use crate::protocol::ErrorType;
+use crate::types::systemdata::SendToPlayer;
 
-use utils::*;
+use crate::utils::*;
 
-use component::flag::IsPlayer;
+use crate::component::flag::IsPlayer;
 
 #[derive(Default)]
 pub struct WhisperHandler;
@@ -76,17 +76,8 @@ impl<'a> EventHandler<'a> for WhisperHandler {
 	}
 }
 
-use dispatch::SystemInfo;
-use handlers::OnCloseHandler;
-
-impl SystemInfo for WhisperHandler {
-	type Dependencies = OnCloseHandler;
-
-	fn new() -> Self {
-		Self::default()
-	}
-
-	fn name() -> &'static str {
-		concat!(module_path!(), "::", line!())
+system_info! {
+	impl SystemInfo for WhisperHandler {
+		type Dependencies = crate::handlers::OnCloseHandler;
 	}
 }

@@ -1,15 +1,15 @@
 use specs::*;
 
-use SystemInfo;
+use crate::SystemInfo;
 
-use types::systemdata::IsAlive;
-use types::Powerups;
+use crate::types::systemdata::IsAlive;
+use crate::types::Powerups;
 
-use component::channel::OnPowerupExpired;
-use component::event::PowerupExpired;
-use component::time::ThisFrame;
+use crate::component::channel::OnPowerupExpired;
+use crate::component::event::PowerupExpired;
+use crate::component::time::ThisFrame;
 
-use systems::handlers::game::on_player_powerup::SetPowerupLifetime;
+use crate::systems::handlers::game::on_player_powerup::SetPowerupLifetime;
 
 #[derive(Default)]
 pub struct CheckExpired;

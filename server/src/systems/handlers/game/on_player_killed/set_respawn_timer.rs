@@ -1,25 +1,18 @@
 use specs::*;
 
-use types::*;
-use SystemInfo;
-
-use std::time::Duration;
-
-use component::channel::*;
-use component::event::*;
-use consts::timer::RESPAWN_TIME;
-use systems::handlers::game::on_player_hit::AllPlayerHitSystems;
-use systems::missile::MissileHit;
-
-use utils::{EventHandler, EventHandlerTypeProvider};
+use crate::component::event::PlayerKilled;
+use crate::systems::handlers::game::on_player_hit::AllPlayerHitSystems;
+use crate::systems::missile::MissileHit;
+use crate::task::death_cooldown;
+use crate::types::TaskSpawner;
+use crate::utils::{EventHandler, EventHandlerTypeProvider};
 
 #[derive(Default)]
 pub struct SetRespawnTimer;
 
 #[derive(SystemData)]
 pub struct SetRespawnTimerData<'a> {
-	pub channel: Read<'a, OnPlayerKilled>,
-	pub future: ReadExpect<'a, FutureDispatcher>,
+	tasks: WriteExpect<'a, TaskSpawner>,
 }
 
 impl EventHandlerTypeProvider for SetRespawnTimer {
@@ -32,25 +25,13 @@ impl<'a> EventHandler<'a> for SetRespawnTimer {
 	fn on_event(&mut self, evt: &PlayerKilled, data: &mut Self::SystemData) {
 		let player = evt.player;
 
-		data.future
-			.run_delayed(Duration::from_secs(2), move |instant| {
-				Some(TimerEvent {
-					ty: *RESPAWN_TIME,
-					instant,
-					data: Some(Box::new(player)),
-				})
-			});
+		let tdata = data.tasks.task_data();
+		data.tasks.launch(death_cooldown(tdata, player));
 	}
 }
 
-impl SystemInfo for SetRespawnTimer {
-	type Dependencies = (MissileHit, AllPlayerHitSystems);
-
-	fn name() -> &'static str {
-		concat!(module_path!(), "::", line!())
-	}
-
-	fn new() -> Self {
-		Default::default()
+system_info! {
+	impl SystemInfo for SetRespawnTimer {
+		type Dependencies = (MissileHit, AllPlayerHitSystems);
 	}
 }

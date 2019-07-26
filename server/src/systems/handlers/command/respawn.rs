@@ -1,24 +1,24 @@
 use specs::*;
 
-use types::systemdata::*;
-use types::*;
+use crate::types::systemdata::*;
+use crate::types::*;
 
 use std::convert::TryFrom;
 use std::time::Duration;
 
-use component::channel::*;
-use component::event::*;
-use component::flag::*;
-use component::time::*;
+use crate::component::channel::*;
+use crate::component::event::*;
+use crate::component::flag::*;
+use crate::component::time::*;
 
-use protocol::server::{Error, PlayerType};
-use protocol::ErrorType;
+use crate::protocol::server::{Error, PlayerType};
+use crate::protocol::ErrorType;
 
-use utils::{EventHandler, EventHandlerTypeProvider};
+use crate::utils::{EventHandler, EventHandlerTypeProvider};
 
-use systems::handlers::game::on_join::InitTraits;
-use systems::PacketHandler;
-use SystemInfo;
+//use crate::systems::handlers::game::on_join::InitTraits;
+use crate::systems::PacketHandler;
+use crate::SystemInfo;
 
 #[derive(Default)]
 pub struct Respawn;
@@ -109,7 +109,7 @@ impl<'a> EventHandler<'a> for Respawn {
 }
 
 impl SystemInfo for Respawn {
-	type Dependencies = (PacketHandler, InitTraits);
+	type Dependencies = (PacketHandler);
 
 	fn name() -> &'static str {
 		concat!(module_path!(), "::", line!())
@@ -121,8 +121,8 @@ impl SystemInfo for Respawn {
 }
 
 fn check_allowed(
-	is_spec: bool,
 	is_dead: bool,
+	is_spec: bool,
 	health: &Health,
 	last_key: &LastKeyTime,
 	last_respawn: Option<&LastRespawnTime>,
@@ -190,8 +190,8 @@ fn parse_plane<'a>(s: &'a str) -> Result<Plane, ()> {
 #[cfg(test)]
 mod test {
 	use super::*;
+	use crate::types::Plane::*;
 	use std::time::*;
-	use types::Plane::*;
 	#[test]
 	fn parse_valid_plane() {
 		let planes = vec![
@@ -238,12 +238,12 @@ mod test {
 	}
 
 	#[test]
-	fn check_allowed_spec() {
+	fn check_allowed_spec_not_dead() {
 		assert!(check_allowed(
-			true,
 			false,
-			&Health::new(1.0),
-			&LastKeyTime(Instant::now() - Duration::from_secs(5)),
+			true,
+			&Health::new(0.0),
+			&LastKeyTime(Instant::now()),
 			None,
 			&ThisFrame(Instant::now())
 		));

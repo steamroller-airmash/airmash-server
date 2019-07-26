@@ -1,14 +1,14 @@
 use specs::*;
 
-use component::flag::IsPlayer;
-use component::time::*;
-use types::systemdata::*;
-use types::*;
+use crate::component::flag::IsPlayer;
+use crate::component::time::*;
+use crate::types::systemdata::*;
+use crate::types::*;
 
 use std::time::{Duration, Instant};
 
-use protocol::server::Ping as ServerPing;
-use systems::handlers::game::on_join::SendLogin;
+use crate::protocol::server::Ping as ServerPing;
+use crate::systems::handlers::game::on_join::SendLogin;
 
 pub struct PingTimerHandler {
 	lastping: Instant,
@@ -65,9 +65,9 @@ impl<'a> System<'a> for PingTimerHandler {
 	}
 }
 
-use dispatch::SystemInfo;
-use handlers::OnCloseHandler;
-use systems::TimerHandler;
+use crate::dispatch::SystemInfo;
+use crate::handlers::OnCloseHandler;
+use crate::systems::TimerHandler;
 
 impl SystemInfo for PingTimerHandler {
 	type Dependencies = (OnCloseHandler, TimerHandler, SendLogin);

@@ -1,13 +1,13 @@
 use specs::*;
 
-use component::event::SayEvent;
-use component::flag::*;
-use types::systemdata::*;
-use types::*;
+use crate::component::event::SayEvent;
+use crate::component::flag::*;
+use crate::types::systemdata::*;
+use crate::types::*;
 
-use protocol::server::{ChatSay, Error};
-use protocol::ErrorType;
-use utils::*;
+use crate::protocol::server::{ChatSay, Error};
+use crate::protocol::ErrorType;
+use crate::utils::*;
 
 #[derive(Default)]
 pub struct SayHandler;
@@ -58,8 +58,8 @@ impl<'a> EventHandler<'a> for SayHandler {
 	}
 }
 
-use dispatch::SystemInfo;
-use handlers::OnCloseHandler;
+use crate::dispatch::SystemInfo;
+use crate::handlers::OnCloseHandler;
 
 impl SystemInfo for SayHandler {
 	type Dependencies = OnCloseHandler;

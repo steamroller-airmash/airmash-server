@@ -1,13 +1,14 @@
+use crate::types::systemdata::*;
+use crate::types::*;
 use specs::*;
-use types::systemdata::*;
-use types::*;
 
-use component::channel::*;
-use component::flag::*;
-use component::reference::PlayerRef;
+use crate::component::channel::*;
+use crate::component::flag::*;
+use crate::component::reference::PlayerRef;
 
-use protocol::server::{PlayerHit, PlayerHitPlayer};
+use crate::protocol::server::{PlayerHit, PlayerHitPlayer};
 
+#[derive(Default)]
 pub struct SendPacket {
 	reader: Option<OnPlayerHitReader>,
 }
@@ -74,17 +75,8 @@ impl<'a> System<'a> for SendPacket {
 	}
 }
 
-use super::*;
-use dispatch::SystemInfo;
-
-impl SystemInfo for SendPacket {
-	type Dependencies = InflictDamage;
-
-	fn name() -> &'static str {
-		concat!(module_path!(), "::", line!())
-	}
-
-	fn new() -> Self {
-		Self::new()
+system_info! {
+	impl SystemInfo for SendPacket {
+		type Dependencies = super::InflictDamage;
 	}
 }

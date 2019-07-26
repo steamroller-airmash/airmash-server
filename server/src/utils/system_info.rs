@@ -38,7 +38,7 @@ macro_rules! system_info {
 		)*
 	} => {
 		$(
-		impl ::airmash_server::SystemInfo for $name {
+		impl $crate::SystemInfo for $name {
 			type Dependencies = $deps;
 
 			fn name() -> &'static str {

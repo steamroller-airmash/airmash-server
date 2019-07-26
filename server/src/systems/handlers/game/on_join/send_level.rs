@@ -1,13 +1,13 @@
+use crate::types::*;
 use specs::*;
-use types::*;
 
-use SystemInfo;
+use crate::SystemInfo;
 
-use component::event::*;
-use protocol::server::PlayerLevel;
-use protocol::PlayerLevelType;
-use types::systemdata::SendToAll;
-use utils::{EventHandler, EventHandlerTypeProvider};
+use crate::component::event::*;
+use crate::protocol::server::PlayerLevel;
+use crate::protocol::PlayerLevelType;
+use crate::types::systemdata::SendToAll;
+use crate::utils::{EventHandler, EventHandlerTypeProvider};
 
 #[derive(Default)]
 pub struct SendPlayerLevel;
@@ -39,7 +39,7 @@ impl<'a> EventHandler<'a> for SendPlayerLevel {
 
 impl SystemInfo for SendPlayerLevel {
 	type Dependencies = (
-		super::InitTraits,
+		// super::InitTraits,
 		super::SendLogin,
 		super::InitConnection,
 		super::SendPlayerNew,

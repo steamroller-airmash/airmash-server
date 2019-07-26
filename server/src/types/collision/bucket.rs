@@ -1,5 +1,5 @@
+use crate::types::*;
 use specs::Entity;
-use types::*;
 
 use std::hash::{Hash, Hasher};
 
