@@ -7,6 +7,7 @@ mod powerups;
 mod ratelimit;
 mod units;
 mod upgrades;
+mod task_spawner;
 
 mod connection_events;
 
@@ -28,6 +29,7 @@ pub use self::powerups::*;
 pub use self::ratelimit::RateLimiter;
 pub use self::units::*;
 pub use self::upgrades::*;
+pub use self::task_spawner::TaskSpawner;
 
 pub mod event {
 	pub use types::connection_events::*;

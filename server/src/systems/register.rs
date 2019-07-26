@@ -6,6 +6,10 @@ use dispatch::Builder;
 
 pub fn register<'a, 'b>(disp: Builder<'a, 'b>) -> Builder<'a, 'b> {
 	disp.with::<run_futures::RunTimedFutures>()
+		// TODO: This should probably be done outside of the
+		//       register function since it is required for
+		//       the task system.
+		.with::<TaskTimerSystem>()
 		// Other handlers
 		.with_registrar(handlers::register)
 		// Systems with dependencies on handlers

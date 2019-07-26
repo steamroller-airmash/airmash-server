@@ -1,4 +1,4 @@
-#![feature(try_trait)]
+#![feature(try_trait, async_await, box_into_pin)]
 
 // Crates with macros
 #[macro_use]
@@ -32,6 +32,7 @@ extern crate special_map;
 extern crate specs;
 extern crate uuid;
 extern crate ws;
+extern crate parking_lot;
 
 // Public dependencies
 pub extern crate airmash_protocol as protocol;
@@ -58,6 +59,7 @@ pub mod component;
 pub mod consts;
 pub mod systems;
 pub mod types;
+pub mod task;
 
 use protocol as airmash_protocol;
 

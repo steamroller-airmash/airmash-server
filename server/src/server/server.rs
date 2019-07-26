@@ -1,11 +1,15 @@
 use std::error::Error;
 use std::net::ToSocketAddrs;
 use std::time::{Duration, Instant};
+use std::sync::Arc;
+use parking_lot::RwLock;
 
 use specs::{Dispatcher, World};
 
 use super::{spawn_acceptor, AirmashServerConfig};
-use component::time::{LastFrame, StartTime};
+use crate::component::time::{LastFrame, StartTime};
+use crate::task::{ExecutorHandle, TaskData};
+use crate::types::TaskSpawner;
 
 const FRAME_WARN_MILLIS: u64 = 60;
 
@@ -69,14 +73,18 @@ where
 		);
 
 		let AirmashServerConfig {
-			mut world, builder, ..
+			world, builder, ..
 		} = self.config;
 
-		world.add_resource(StartTime(Instant::now()));
-		world.add_resource(LastFrame(Instant::now()));
+		let world = Arc::new(RwLock::new(world));
+		let mut executor = ExecutorHandle::new();
+
+		world.write().add_resource(TaskSpawner::new(TaskData::new(Arc::clone(&world)), executor.clone()));
+		world.write().add_resource(StartTime(Instant::now()));
+		world.write().add_resource(LastFrame(Instant::now()));
 
 		let mut dispatcher = builder.build();
-		dispatcher.setup(&mut world.res);
+		dispatcher.setup(&mut world.write().res);
 
 		let frame_time = Duration::from_nanos(16666667);
 		let mut next_frame = Instant::now();
@@ -84,8 +92,11 @@ where
 		loop {
 			let now = Instant::now();
 			if now >= next_frame {
+				// Poll all tasks
+				executor.cycle();
+				
 				// Actually run the game loop
-				if !Self::game_loop(next_frame, &mut world, &mut dispatcher) {
+				if !Self::game_loop(next_frame, &mut world.write(), &mut dispatcher) {
 					break;
 				}
 				next_frame += frame_time;
