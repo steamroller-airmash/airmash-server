@@ -3,7 +3,6 @@ use specs::*;
 use components::TotalDamage;
 
 use airmash_server::component::channel::*;
-use airmash_server::systems::handlers::game::timer::LoginHandler;
 use airmash_server::*;
 
 #[derive(Default)]
@@ -37,7 +36,7 @@ impl<'a> System<'a> for AddDamage {
 }
 
 impl SystemInfo for AddDamage {
-    type Dependencies = LoginHandler;
+    type Dependencies = ();
 
     fn name() -> &'static str {
         concat!(module_path!(), "::", line!())
