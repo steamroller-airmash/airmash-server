@@ -38,7 +38,7 @@ impl<'a> EventHandler<'a> for SendPlayerPowerup {
 }
 
 impl SystemInfo for SendPlayerPowerup {
-	type Dependencies = (super::InitState, super::SendLogin);
+	type Dependencies = (super::SendLogin);
 
 	fn name() -> &'static str {
 		concat!(module_path!(), "::", line!())

@@ -1,6 +1,6 @@
 use shred::{Fetch, FetchMut, Resource};
 use specs::error::WrongGeneration;
-use specs::{Component, Entity, ReadStorage, World, WriteStorage};
+use specs::{storage::InsertResult, Component, Entity, ReadStorage, World, WriteStorage};
 
 use parking_lot::RwLock;
 use std::sync::Arc;
@@ -9,6 +9,9 @@ use std::future::Future;
 use std::pin::Pin;
 use std::task::{Context, Poll};
 use std::time::{Duration, Instant};
+
+use crate::protocol::ServerPacket;
+use crate::types::{ConnectionId, Connections};
 
 /// This is a task's reference to the rest of the game world.
 #[derive(Clone)]
@@ -29,6 +32,21 @@ impl TaskData {
 		self.read_storage(move |storage| storage.get(id).cloned())
 	}
 
+	/// Allow mutable access to the world within the callback.
+	pub fn world<F, R>(&mut self, cb: F) -> R
+	where
+		F: FnOnce(&mut World) -> R,
+	{
+		cb(&mut *self.world.write())
+	}
+
+	pub fn insert<T>(&mut self, ent: Entity, v: T) -> InsertResult<T>
+	where
+		T: Component,
+	{
+		self.write_storage::<T, _, _>(move |mut storage| storage.insert(ent, v))
+	}
+
 	/// Analogous to `World::read_storage()` with the limitation
 	/// that the storage can only be accessed within the callback.
 	pub fn read_storage<T, F, R>(&self, cb: F) -> R
@@ -41,7 +59,7 @@ impl TaskData {
 
 	/// Analogous to `World::write_storage()` with the limitation
 	/// that the storage can only be accessed within the callback.
-	pub fn write_storage<T, F, R>(&self, cb: F) -> R
+	pub fn write_storage<T, F, R>(&mut self, cb: F) -> R
 	where
 		T: Component,
 		F: FnOnce(WriteStorage<T>) -> R,
@@ -61,7 +79,7 @@ impl TaskData {
 
 	/// Analogous to `World::read_resource()` with the limitation
 	/// that the resource can only be accessed within the callback.
-	pub fn write_resource<T, F, R>(&self, cb: F) -> R
+	pub fn write_resource<T, F, R>(&mut self, cb: F) -> R
 	where
 		T: Resource,
 		F: FnOnce(FetchMut<T>) -> R,
@@ -90,13 +108,13 @@ impl TaskData {
 
 	/// Returns a future that will resolve once the
 	/// specified duration has passed.
-	pub fn sleep_for<'a>(&'a self, duration: Duration) -> impl Future<Output = ()> + 'a {
+	pub fn sleep_for<'a>(&'a mut self, duration: Duration) -> impl Future<Output = ()> + 'a {
 		self.sleep_until(Instant::now() + duration)
 	}
 
 	/// Returns a future that will resolve once
 	/// `Instant::now() > instant`
-	pub fn sleep_until<'a>(&'a self, instant: Instant) -> impl Future<Output = ()> + 'a {
+	pub fn sleep_until<'a>(&'a mut self, instant: Instant) -> impl Future<Output = ()> + 'a {
 		TimedFuture::new(self, instant)
 	}
 
@@ -104,17 +122,30 @@ impl TaskData {
 	pub fn yield_frame(&self) -> impl Future<Output = ()> {
 		InstantFuture::default()
 	}
+
+	/// Send a packet to a specified connection
+	pub fn send_to<P>(&self, conn: ConnectionId, msg: P)
+	where
+		P: Into<ServerPacket>,
+	{
+		self.read_resource::<Connections, _, _>(move |conns| conns.send_to(conn, msg.into()))
+	}
+
+	/// Send a non-owned packet to a specified connection
+	pub fn send_to_ref(&self, conn: ConnectionId, msg: &ServerPacket) {
+		self.read_resource::<Connections, _, _>(move |conns| conns.send_to_ref(conn, msg))
+	}
 }
 
 /// A future that depends on the `TaskTimerSystem`
 /// to wake it at the right time.
 struct TimedFuture<'a> {
-	data: &'a TaskData,
+	data: &'a mut TaskData,
 	end: Instant,
 }
 
 impl<'a> TimedFuture<'a> {
-	fn new(data: &'a TaskData, end: Instant) -> Self {
+	fn new(data: &'a mut TaskData, end: Instant) -> Self {
 		Self { data, end }
 	}
 }
@@ -122,16 +153,18 @@ impl<'a> TimedFuture<'a> {
 impl Future for TimedFuture<'_> {
 	type Output = ();
 
-	fn poll(self: Pin<&mut Self>, ctx: &mut Context) -> Poll<()> {
+	fn poll(mut self: Pin<&mut Self>, ctx: &mut Context) -> Poll<()> {
 		use crate::systems::task_timer::{WakerChannel, WakerEvent};
 
 		if Instant::now() > self.end {
 			return Poll::Ready(());
 		}
 
+		let end = self.end;
+
 		self.data
 			.write_resource::<WakerChannel, _, _>(|mut channel| {
-				channel.single_write(WakerEvent(self.end, ctx.waker().clone()));
+				channel.single_write(WakerEvent(end, ctx.waker().clone()));
 			});
 
 		Poll::Pending

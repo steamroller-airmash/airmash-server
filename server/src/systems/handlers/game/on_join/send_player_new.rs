@@ -63,10 +63,10 @@ impl<'a> EventHandler<'a> for SendPlayerNew {
 
 impl SystemInfo for SendPlayerNew {
 	type Dependencies = (
-		super::InitTraits,
+		// super::InitTraits,
 		super::InitConnection,
-		super::InitState,
-		super::InitTransform,
+		// super::InitState,
+		// super::InitTransform,
 		super::SendPlayerPowerup,
 		super::SendLogin,
 	);

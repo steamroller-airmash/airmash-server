@@ -31,6 +31,7 @@ pub struct SendLoginData<'a> {
 	powerups: ReadStorage<'a, Powerups>,
 	name: ReadStorage<'a, Name>,
 	level: ReadStorage<'a, Level>,
+	session: ReadStorage<'a, Session>,
 }
 
 impl SendLogin {
@@ -92,7 +93,10 @@ impl<'a> EventHandler<'a> for SendLogin {
 			id: evt.id.into(),
 			room: gamemode.room(),
 			success: true,
-			token: "none".to_owned(),
+			token: try_get!(evt.id, data.session)
+				.0
+				.map(|x| x.to_string())
+				.unwrap_or_else(|| "none".to_owned()),
 			team: *try_get!(evt.id, data.team),
 			ty: gamemode.gametype(),
 			players: player_data,
@@ -103,7 +107,11 @@ impl<'a> EventHandler<'a> for SendLogin {
 }
 
 impl SystemInfo for SendLogin {
-	type Dependencies = (super::InitTraits, super::InitConnection, super::InitState);
+	type Dependencies = (
+		// super::InitTraits,
+		super::InitConnection,
+		// super::InitState
+	);
 
 	fn name() -> &'static str {
 		concat!(module_path!(), "::", line!())

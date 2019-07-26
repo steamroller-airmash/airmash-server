@@ -16,7 +16,7 @@ use crate::protocol::ErrorType;
 
 use crate::utils::{EventHandler, EventHandlerTypeProvider};
 
-use crate::systems::handlers::game::on_join::InitTraits;
+//use crate::systems::handlers::game::on_join::InitTraits;
 use crate::systems::PacketHandler;
 use crate::SystemInfo;
 
@@ -109,7 +109,10 @@ impl<'a> EventHandler<'a> for Respawn {
 }
 
 impl SystemInfo for Respawn {
-	type Dependencies = (PacketHandler, InitTraits);
+	type Dependencies = (
+		PacketHandler,
+		//InitTraits
+	);
 
 	fn name() -> &'static str {
 		concat!(module_path!(), "::", line!())

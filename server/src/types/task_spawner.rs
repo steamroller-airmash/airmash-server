@@ -12,15 +12,14 @@ impl TaskSpawner {
 		Self { data, handle }
 	}
 
-	fn task_data(&self) -> TaskData {
+	pub fn task_data(&self) -> TaskData {
 		self.data.clone()
 	}
 
-	pub fn launch<T, F>(&mut self, task: T)
+	pub fn launch<F>(&mut self, fut: F)
 	where
-		T: FnOnce(TaskData) -> F,
 		F: Future<Output = ()> + Send + 'static,
 	{
-		self.handle.spawn_fut(task(self.task_data()));
+		self.handle.spawn_fut(fut);
 	}
 }

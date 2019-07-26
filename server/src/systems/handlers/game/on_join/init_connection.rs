@@ -5,7 +5,7 @@ use crate::types::*;
 use crate::SystemInfo;
 
 use crate::component::event::PlayerJoin;
-use crate::systems::handlers::packet::LoginHandler;
+//use crate::systems::handlers::packet::LoginHandler;
 use crate::utils::{EventHandler, EventHandlerTypeProvider};
 
 #[derive(Default)]
@@ -34,7 +34,7 @@ impl<'a> EventHandler<'a> for InitConnection {
 }
 
 impl SystemInfo for InitConnection {
-	type Dependencies = LoginHandler;
+	type Dependencies = (); //LoginHandler;
 
 	fn name() -> &'static str {
 		concat!(module_path!(), "::", line!())

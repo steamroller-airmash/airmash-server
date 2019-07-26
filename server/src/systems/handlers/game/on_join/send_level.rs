@@ -39,7 +39,7 @@ impl<'a> EventHandler<'a> for SendPlayerLevel {
 
 impl SystemInfo for SendPlayerLevel {
 	type Dependencies = (
-		super::InitTraits,
+		// super::InitTraits,
 		super::SendLogin,
 		super::InitConnection,
 		super::SendPlayerNew,

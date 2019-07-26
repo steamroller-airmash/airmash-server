@@ -54,12 +54,12 @@ impl<'a> EventHandler<'a> for SendScoreUpdate {
 
 impl SystemInfo for SendScoreUpdate {
 	type Dependencies = (
-		InitTraits,
-		InitEarnings,
-		InitKillCounters,
+		// InitTraits,
+		// InitEarnings,
+		// InitKillCounters,
 		SendLogin,
 		InitConnection,
-		InitState,
+		// InitState,
 	);
 
 	fn name() -> &'static str {
