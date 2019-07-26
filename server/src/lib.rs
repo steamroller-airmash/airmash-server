@@ -14,25 +14,6 @@ extern crate serde;
 
 // Regular Dependencies
 extern crate airmash_protocol_v5 as protocol_v5;
-extern crate bounded_queue;
-extern crate dimensioned;
-//extern crate fnv;
-extern crate futures;
-extern crate hashbrown;
-extern crate hibitset;
-extern crate htmlescape;
-extern crate parking_lot;
-extern crate rand;
-extern crate rayon;
-#[cfg(features = "sentry")]
-extern crate sentry;
-extern crate serde_json;
-extern crate shred;
-extern crate shrev;
-extern crate special_map;
-extern crate specs;
-extern crate uuid;
-extern crate ws;
 
 // Public dependencies
 pub extern crate airmash_protocol as protocol;

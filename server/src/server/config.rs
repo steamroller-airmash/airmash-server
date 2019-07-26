@@ -2,7 +2,7 @@ use std::net::ToSocketAddrs;
 use std::sync::mpsc::{channel, Sender};
 
 use crate::dispatch::Builder;
-use crate::specs::{Builder as SpecsBuilder, World};
+use specs::{Builder as SpecsBuilder, World};
 
 use crate::types::event::ConnectionEvent;
 use crate::types::GameMode;
