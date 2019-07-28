@@ -1,10 +1,10 @@
 use specs::*;
 
-use component::channel::OnPowerupSpawn;
-use component::event::PowerupSpawnEvent;
-use component::flag::IsPowerup;
-use component::time::ThisFrame;
-use types::*;
+use crate::component::channel::OnPowerupSpawn;
+use crate::component::event::PowerupSpawnEvent;
+use crate::component::flag::IsPowerup;
+use crate::component::time::ThisFrame;
+use crate::types::*;
 
 #[derive(Default)]
 pub struct SpawnFixedPowerup {}
