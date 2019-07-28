@@ -1,15 +1,15 @@
 use component::{FlagCarrier, Flags, IsFlag, LastDrop};
 
-use server::{Builder, Position, Team, Distance};
+use airmash_server::protocol::MobType;
+use server::{Builder, Distance, Position, Team};
 use specs::Builder as SpecsBuilder;
 use specs::*;
-use airmash_server::protocol::MobType;
 
-use std::time::{Instant, Duration};
+use std::time::{Duration, Instant};
 
 use super::*;
-use config;
 use airmash_server::types::*;
+use config;
 
 pub fn register<'a, 'b>(world: &mut World, disp: Builder<'a, 'b>) -> Builder<'a, 'b> {
 	// Normally the systems would take care of this,
@@ -46,49 +46,35 @@ pub fn register<'a, 'b>(world: &mut World, disp: Builder<'a, 'b>) -> Builder<'a,
 	world.add_resource(Flags { red, blue });
 
 	// inferno spawn point in Europe
-	world.add_resource(
-		PowerupSpawnPoints(
-			vec![
-				PowerupSpawnPoint {
-					pos: Position::new(
-						Distance::new(-9300.0),
-						Distance::new(-1470.0),
-					),
-					powerup_type: MobType::Shield,
-					respawn_delay: Duration::from_secs(105),
-					next_respawn_time: None,
-					powerup_entity: None
-				},
-				PowerupSpawnPoint {
-					pos: Position::new(
-						Distance::new(-7440.0),
-						Distance::new(-1380.0),
-					),
-					powerup_type: MobType::Inferno,
-					respawn_delay: Duration::from_secs(105),
-					next_respawn_time: None,
-					powerup_entity: None
-				},
-				PowerupSpawnPoint {
-					pos: Position::new(
-						Distance::new(6550.0),
-						Distance::new(-940.0),
-					),
-					powerup_type: MobType::Inferno,
-					respawn_delay: Duration::from_secs(105),
-					next_respawn_time: None,
-					powerup_entity: None
-				},
-				PowerupSpawnPoint {
-					pos: Position::new(
-						Distance::new(8350.0),
-						Distance::new(-940.0),
-					),
-					powerup_type: MobType::Shield,
-					respawn_delay: Duration::from_secs(105),
-					next_respawn_time: None,
-					powerup_entity: None
-				}								
+	world.add_resource(PowerupSpawnPoints(vec![
+		PowerupSpawnPoint {
+			pos: Position::new(Distance::new(-9300.0), Distance::new(-1470.0)),
+			powerup_type: MobType::Shield,
+			respawn_delay: Duration::from_secs(105),
+			next_respawn_time: None,
+			powerup_entity: None,
+		},
+		PowerupSpawnPoint {
+			pos: Position::new(Distance::new(-7440.0), Distance::new(-1380.0)),
+			powerup_type: MobType::Inferno,
+			respawn_delay: Duration::from_secs(105),
+			next_respawn_time: None,
+			powerup_entity: None,
+		},
+		PowerupSpawnPoint {
+			pos: Position::new(Distance::new(6550.0), Distance::new(-940.0)),
+			powerup_type: MobType::Inferno,
+			respawn_delay: Duration::from_secs(105),
+			next_respawn_time: None,
+			powerup_entity: None,
+		},
+		PowerupSpawnPoint {
+			pos: Position::new(Distance::new(8350.0), Distance::new(-940.0)),
+			powerup_type: MobType::Shield,
+			respawn_delay: Duration::from_secs(105),
+			next_respawn_time: None,
+			powerup_entity: None,
+		},
 	]));
 
 	disp.with_handler::<DropOnDespawn>()

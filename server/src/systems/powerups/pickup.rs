@@ -63,13 +63,14 @@ impl<'a> EventHandler<'a> for Pickup {
 			)
 			.unwrap();
 
-		let psps = data.powerup_spawn_points.0
+		let psps = data
+			.powerup_spawn_points
+			.0
 			.iter_mut()
 			.filter(|p| p.powerup_entity.is_some());
 
 		for p in psps {
-			if p.powerup_entity.unwrap() == upgrade.ent
-			{
+			if p.powerup_entity.unwrap() == upgrade.ent {
 				p.powerup_entity = None;
 				p.next_respawn_time = Some(Instant::now() + p.respawn_delay);
 			}

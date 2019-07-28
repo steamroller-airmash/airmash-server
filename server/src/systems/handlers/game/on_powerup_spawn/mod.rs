@@ -7,4 +7,4 @@ pub type AllPowerupSpawnHandlers = (SendPacket);
 pub type KnownEventSources = (
     crate::systems::powerups::SpawnRandomPowerup,
     crate::systems::powerups::SpawnFixedPowerup,
-    );
+);

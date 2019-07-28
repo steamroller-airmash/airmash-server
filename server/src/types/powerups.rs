@@ -4,8 +4,8 @@ use crate::protocol::PowerupType;
 use crate::protocol::Position;
 use crate::protocol::MobType;
 
-use std::time::Instant;
 use std::time::Duration;
+use std::time::Instant;
 
 #[derive(Copy, Clone, Debug, Component)]
 pub struct Powerups {

@@ -2,7 +2,7 @@ use specs::*;
 
 use component::channel::OnPowerupSpawn;
 use component::event::PowerupSpawnEvent;
-use component::flag::{IsPowerup};
+use component::flag::IsPowerup;
 use component::time::ThisFrame;
 use types::*;
 
@@ -32,13 +32,18 @@ impl<'a> System<'a> for SpawnFixedPowerup {
 
 	fn run(&mut self, mut data: Self::SystemData) {
 		let this_frame = *data.this_frame;
-		let psps = data.powerup_spawn_points.0
+		let psps = data
+			.powerup_spawn_points
+			.0
 			.iter_mut()
 			.filter(|p| p.powerup_entity.is_none())
-			.filter(|p| p.next_respawn_time.is_none() || p.next_respawn_time.unwrap() <= this_frame.0);
+			.filter(|p| {
+				p.next_respawn_time.is_none() || p.next_respawn_time.unwrap() <= this_frame.0
+			});
 
 		for p in psps {
-			let mob = data.entities
+			let mob = data
+				.entities
 				.build_entity()
 				.with(p.pos, &mut data.pos)
 				.with(p.powerup_type, &mut data.mob)
