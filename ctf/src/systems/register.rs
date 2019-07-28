@@ -45,7 +45,6 @@ pub fn register<'a, 'b>(world: &mut World, disp: Builder<'a, 'b>) -> Builder<'a,
 
 	world.add_resource(Flags { red, blue });
 
-	// inferno spawn point in Europe
 	world.add_resource(PowerupSpawnPoints(vec![
 		PowerupSpawnPoint {
 			pos: Position::new(Distance::new(-9300.0), Distance::new(-1470.0)),
