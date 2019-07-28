@@ -13,7 +13,7 @@ use rand::{random, Open01};
 use std::time::{Duration, Instant};
 
 // Chance that a powerup will spawn on the map each frame.
-const SPAWN_CHANCE: f32 = 0.02;
+const SPAWN_CHANCE: f32 = 0.005;
 const POWERUP_LIFETIME: u64 = 60;
 
 #[derive(Default)]
