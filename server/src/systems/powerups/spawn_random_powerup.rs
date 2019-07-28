@@ -13,16 +13,16 @@ use rand::{random, Open01};
 use std::time::{Duration, Instant};
 
 // Chance that a powerup will spawn on the map each frame.
-const SPAWN_CHANCE: f32 = 0.01;
+const SPAWN_CHANCE: f32 = 0.02;
 const POWERUP_LIFETIME: u64 = 60;
 
 #[derive(Default)]
-pub struct SpawnPowerup {
+pub struct SpawnRandomPowerup {
 	terrain: Terrain,
 }
 
 #[derive(SystemData)]
-pub struct SpawnPowerupData<'a> {
+pub struct SpawnRandomPowerupData<'a> {
 	entities: Entities<'a>,
 	mob: WriteStorage<'a, Mob>,
 	despawn_time: WriteStorage<'a, MobDespawnTime>,
@@ -32,8 +32,8 @@ pub struct SpawnPowerupData<'a> {
 	channel: Write<'a, OnPowerupSpawn>,
 }
 
-impl<'a> System<'a> for SpawnPowerup {
-	type SystemData = SpawnPowerupData<'a>;
+impl<'a> System<'a> for SpawnRandomPowerup {
+	type SystemData = SpawnRandomPowerupData<'a>;
 
 	fn setup(&mut self, res: &mut Resources) {
 		Self::SystemData::setup(res);
@@ -75,14 +75,14 @@ impl<'a> System<'a> for SpawnPowerup {
 		data.channel.single_write(PowerupSpawnEvent {
 			mob,
 			pos,
-			despawn,
+			despawn: Some(despawn),
 			ty: powerup_type,
 		});
 	}
 }
 
 system_info! {
-	impl SystemInfo for SpawnPowerup {
+	impl SystemInfo for SpawnRandomPowerup {
 		type Dependencies = ();
 	}
 }

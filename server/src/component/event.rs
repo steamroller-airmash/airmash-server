@@ -150,7 +150,7 @@ pub struct PowerupSpawnEvent {
 	pub mob: Entity,
 	pub ty: Mob,
 	pub pos: Position,
-	pub despawn: Instant,
+	pub despawn: Option<Instant>,
 }
 
 /// Note: Includes upgrades
