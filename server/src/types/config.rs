@@ -36,6 +36,12 @@ pub struct PlaneInfo {
 	pub missile_type: Mob,
 	// Offset of missile (in the Y dir) when fired
 	pub missile_offset: Distance,
+
+	// Angle and displacement of the other two missiles when inferno firing
+	// (assuming symmetry around central missile)
+	pub missile_inferno_angle: Rotation,
+	pub missile_inferno_offset_x: Distance,
+	pub missile_inferno_offset_y: Distance,
 }
 
 #[derive(Copy, Clone, Debug, Default, Serialize, Deserialize)]
@@ -129,6 +135,10 @@ impl Default for PlaneInfos {
 
 				missile_type: MobType::PredatorMissile,
 				missile_offset: Distance::new(35.0),
+
+				missile_inferno_angle: Rotation::new(0.05),
+				missile_inferno_offset_x: Distance::new(18.0),
+				missile_inferno_offset_y: Distance::new(1.25),
 			},
 		);
 
@@ -156,6 +166,10 @@ impl Default for PlaneInfos {
 
 				missile_type: MobType::GoliathMissile,
 				missile_offset: Distance::new(35.0),
+
+				missile_inferno_angle: Rotation::new(0.04),
+				missile_inferno_offset_x: Distance::new(30.0),
+				missile_inferno_offset_y: Distance::new(2.1),
 			},
 		);
 
@@ -184,6 +198,10 @@ impl Default for PlaneInfos {
 				missile_type: MobType::MohawkMissile,
 				// This will have to be a special case
 				missile_offset: Distance::new(10.0),
+
+				missile_inferno_angle: Rotation::new(0.1),
+				missile_inferno_offset_x: Distance::new(0.0),
+				missile_inferno_offset_y: Distance::new(0.0),
 			},
 		);
 
@@ -211,6 +229,10 @@ impl Default for PlaneInfos {
 
 				missile_type: MobType::TornadoSingleMissile,
 				missile_offset: Distance::new(40.0),
+
+				missile_inferno_angle: Rotation::new(0.05),
+				missile_inferno_offset_x: Distance::new(15.1),
+				missile_inferno_offset_y: Distance::new(10.0),
 			},
 		);
 
@@ -238,6 +260,10 @@ impl Default for PlaneInfos {
 
 				missile_type: MobType::ProwlerMissile,
 				missile_offset: Distance::new(35.0),
+
+				missile_inferno_angle: Rotation::new(0.05),
+				missile_inferno_offset_x: Distance::new(18.0),
+				missile_inferno_offset_y: Distance::new(2.25),
 			},
 		);
 

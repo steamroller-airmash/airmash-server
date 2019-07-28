@@ -13,6 +13,7 @@ pub struct MissileFireHandlerData<'a> {
 	plane: ReadStorage<'a, Plane>,
 	keystate: ReadStorage<'a, KeyState>,
 	lastshot: ReadStorage<'a, LastShotTime>,
+	powerups: ReadStorage<'a, Powerups>,
 
 	energy: WriteStorage<'a, Energy>,
 
@@ -28,6 +29,7 @@ impl<'a> System<'a> for MissileFireHandler {
 	fn run(&mut self, mut data: Self::SystemData) {
 		let this_frame = *data.this_frame;
 		let config = data.config;
+		let powerups = data.powerups;
 
 		let missiles = (
 			&*data.entities,
@@ -52,19 +54,49 @@ impl<'a> System<'a> for MissileFireHandler {
 			.map(|(ent, info, energy)| {
 				*energy -= info.fire_energy;
 
-				(
-					ent,
-					MissileFireInfo {
+				let inferno = match powerups.get(ent) {
+					Some(powerups) => powerups.inferno(),
+					None => false,
+				};
+
+				let fire_info = if inferno {
+					vec![
+						MissileFireInfo {
+							pos_offset: Position::new(
+								info.missile_inferno_offset_x,
+								info.missile_inferno_offset_y,
+							),
+							rot_offset: -info.missile_inferno_angle,
+							ty: info.missile_type,
+						},
+						MissileFireInfo {
+							pos_offset: Position::new(Distance::default(), info.missile_offset),
+							rot_offset: Rotation::default(),
+							ty: info.missile_type,
+						},
+						MissileFireInfo {
+							pos_offset: Position::new(
+								-info.missile_inferno_offset_x,
+								info.missile_inferno_offset_y,
+							),
+							rot_offset: info.missile_inferno_angle,
+							ty: info.missile_type,
+						},
+					]
+				} else {
+					vec![MissileFireInfo {
 						pos_offset: Position::new(Distance::default(), info.missile_offset),
 						rot_offset: Rotation::default(),
 						ty: info.missile_type,
-					},
-				)
+					}]
+				};
+
+				(ent, fire_info)
 			})
 			.collect::<Vec<_>>();
 
 		for (ent, fire_info) in missiles {
-			data.fire_missile.fire_missiles(ent, &[fire_info]);
+			data.fire_missile.fire_missiles(ent, &fire_info);
 		}
 	}
 }

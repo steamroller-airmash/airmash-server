@@ -75,7 +75,7 @@ fn main() {
 
     let mut config = AirmashServerConfig::new(bind_addr, EmptyGameMode).with_engine();
 
-    config.builder = systems::register(config.builder);
+    config.builder = systems::register(&mut config.world, config.builder);
 
     if let Some(path) = matches.value_of("config") {
         let file = match File::open(path) {

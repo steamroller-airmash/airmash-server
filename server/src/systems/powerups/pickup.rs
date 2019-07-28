@@ -24,6 +24,8 @@ pub struct PickupData<'a> {
 	mobs: ReadStorage<'a, Mob>,
 	powerups: WriteStorage<'a, Powerups>,
 	is_player: ReadStorage<'a, IsPlayer>,
+
+	powerup_spawn_points: Write<'a, PowerupSpawnPoints>,
 }
 
 impl EventHandlerTypeProvider for Pickup {
@@ -60,6 +62,19 @@ impl<'a> EventHandler<'a> for Pickup {
 				},
 			)
 			.unwrap();
+
+		let psps = data
+			.powerup_spawn_points
+			.0
+			.iter_mut()
+			.filter(|p| p.powerup_entity.is_some());
+
+		for p in psps {
+			if p.powerup_entity.unwrap() == upgrade.ent {
+				p.powerup_entity = None;
+				p.next_respawn_time = Some(Instant::now() + p.respawn_delay);
+			}
+		}
 
 		data.entities.delete(upgrade.ent).unwrap();
 

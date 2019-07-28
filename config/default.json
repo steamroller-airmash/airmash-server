@@ -18,7 +18,10 @@
         "nanos": 550000000
       },
       "missile_type": "PredatorMissile",
-      "missile_offset": 35.0
+      "missile_offset": 35.0,
+      "missile_inferno_angle": 0.05,
+      "missile_inferno_offset_x": 18.0,
+      "missile_inferno_offset_y": 1.25
     },
     "tornado": {
       "turn_factor": 0.055,
@@ -38,7 +41,10 @@
         "nanos": 500000000
       },
       "missile_type": "TornadoSingleMissile",
-      "missile_offset": 40.0
+      "missile_offset": 40.0,
+      "missile_inferno_angle": 0.05,
+      "missile_inferno_offset_x": 15.1,
+      "missile_inferno_offset_y": 10.0
     },
     "prowler": {
       "turn_factor": 0.055,
@@ -58,7 +64,10 @@
         "nanos": 300000000
       },
       "missile_type": "ProwlerMissile",
-      "missile_offset": 35.0
+      "missile_offset": 35.0,
+      "missile_inferno_angle": 0.05,
+      "missile_inferno_offset_x": 18.0,
+      "missile_inferno_offset_y": 2.25
     },
     "mohawk": {
       "turn_factor": 0.07,
@@ -78,7 +87,10 @@
         "nanos": 300000000
       },
       "missile_type": "MohawkMissile",
-      "missile_offset": 10.0
+      "missile_offset": 10.0,
+      "missile_inferno_angle": 0.1,
+      "missile_inferno_offset_x": 0.0,
+      "missile_inferno_offset_y": 0.0
     },
     "goliath": {
       "turn_factor": 0.04,
@@ -98,7 +110,10 @@
         "nanos": 300000000
       },
       "missile_type": "GoliathMissile",
-      "missile_offset": 35.0
+      "missile_offset": 35.0,
+      "missile_inferno_angle": 0.04,
+      "missile_inferno_offset_x": 30.0,
+      "missile_inferno_offset_y": 2.1
     }
   },
   "mobs": {

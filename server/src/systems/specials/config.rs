@@ -34,7 +34,7 @@ lazy_static! {
 				Distance::new(15.0),
 				Distance::new(9.6)
 			),
-			rot_offset: Rotation::new(-0.05012323812),
+			rot_offset: Rotation::new(-0.05),
 			ty: Mob::TornadoTripleMissile,
 		},
 		MissileFireInfo {
@@ -42,7 +42,50 @@ lazy_static! {
 				Distance::new(-15.0),
 				Distance::new(9.6),
 			),
-			rot_offset: Rotation::new(0.05012323812),
+			rot_offset: Rotation::new(0.05),
+			ty: Mob::TornadoTripleMissile,
+		}
+	];
+
+	pub static ref TORNADO_INFERNO_MISSILE_DETAILS: Vec<MissileFireInfo> = vec![
+		MissileFireInfo {
+			pos_offset: Position::new(
+				Distance::new(0.0),
+				Distance::new(40.1),
+			),
+			rot_offset: Rotation::new(0.0),
+			ty: Mob::TornadoTripleMissile,
+		},
+		MissileFireInfo {
+			pos_offset: Position::new(
+				Distance::new(30.0),
+				Distance::new(15.0)
+			),
+			rot_offset: Rotation::new(-0.1),
+			ty: Mob::TornadoTripleMissile,
+		},
+		MissileFireInfo {
+			pos_offset: Position::new(
+				Distance::new(20.0),
+				Distance::new(25.0)
+			),
+			rot_offset: Rotation::new(-0.05),
+			ty: Mob::TornadoTripleMissile,
+		},
+		MissileFireInfo {
+			pos_offset: Position::new(
+				Distance::new(-20.0),
+				Distance::new(25.0)
+			),
+			rot_offset: Rotation::new(0.05),
+			ty: Mob::TornadoTripleMissile,
+		},
+		MissileFireInfo {
+			pos_offset: Position::new(
+				Distance::new(-30.0),
+				Distance::new(15.0),
+			),
+			rot_offset: Rotation::new(0.1),
 			ty: Mob::TornadoTripleMissile,
 		}
 	];

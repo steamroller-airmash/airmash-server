@@ -1,7 +1,10 @@
 use specs::*;
 
+use crate::protocol::MobType;
+use crate::protocol::Position;
 use crate::protocol::PowerupType;
 
+use std::time::Duration;
 use std::time::Instant;
 
 #[derive(Copy, Clone, Debug, Component)]
@@ -42,3 +45,14 @@ impl<'a> PowerupExt for Option<&'a Powerups> {
 		self.map(|x| x.inferno()).unwrap_or(false)
 	}
 }
+
+pub struct PowerupSpawnPoint {
+	pub pos: Position,
+	pub respawn_delay: Duration,
+	pub powerup_type: MobType,
+	pub next_respawn_time: Option<Instant>,
+	pub powerup_entity: Option<Entity>,
+}
+
+#[derive(Default)]
+pub struct PowerupSpawnPoints(pub Vec<PowerupSpawnPoint>);

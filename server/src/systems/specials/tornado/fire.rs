@@ -12,6 +12,7 @@ pub struct Fire;
 pub struct FireData<'a> {
 	plane: ReadStorage<'a, Plane>,
 	keystate: ReadStorage<'a, KeyState>,
+	powerups: ReadStorage<'a, Powerups>,
 
 	energy: WriteStorage<'a, Energy>,
 
@@ -24,6 +25,8 @@ impl<'a> System<'a> for Fire {
 	type SystemData = FireData<'a>;
 
 	fn run(&mut self, mut data: Self::SystemData) {
+		let powerups = data.powerups;
+
 		let missiles = (
 			&*data.entities,
 			&data.keystate,
@@ -44,7 +47,16 @@ impl<'a> System<'a> for Fire {
 			.map(|(ent, energy)| {
 				*energy -= *TORNADO_SPECIAL_ENERGY;
 
-				(ent, &*TORNADO_MISSILE_DETAILS)
+				let inferno = match powerups.get(ent) {
+					Some(powerups) => powerups.inferno(),
+					None => false,
+				};
+
+				if inferno {
+					(ent, &*TORNADO_INFERNO_MISSILE_DETAILS)
+				} else {
+					(ent, &*TORNADO_MISSILE_DETAILS)
+				}
 			})
 			.collect::<Vec<_>>();
 

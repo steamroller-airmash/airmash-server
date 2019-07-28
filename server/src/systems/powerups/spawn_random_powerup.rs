@@ -12,17 +12,17 @@ use crate::types::*;
 use rand::{random, Open01};
 use std::time::{Duration, Instant};
 
-// Chance that a shield will spawn on the map each frame.
-const SPAWN_CHANCE: f32 = 0.01;
-const SHIELD_LIFETIME: u64 = 60;
+// Chance that a powerup will spawn on the map each frame.
+const SPAWN_CHANCE: f32 = 0.005;
+const POWERUP_LIFETIME: u64 = 60;
 
 #[derive(Default)]
-pub struct SpawnShield {
+pub struct SpawnRandomPowerup {
 	terrain: Terrain,
 }
 
 #[derive(SystemData)]
-pub struct SpawnShieldData<'a> {
+pub struct SpawnRandomPowerupData<'a> {
 	entities: Entities<'a>,
 	mob: WriteStorage<'a, Mob>,
 	despawn_time: WriteStorage<'a, MobDespawnTime>,
@@ -32,8 +32,8 @@ pub struct SpawnShieldData<'a> {
 	channel: Write<'a, OnPowerupSpawn>,
 }
 
-impl<'a> System<'a> for SpawnShield {
-	type SystemData = SpawnShieldData<'a>;
+impl<'a> System<'a> for SpawnRandomPowerup {
+	type SystemData = SpawnRandomPowerupData<'a>;
 
 	fn setup(&mut self, res: &mut Resources) {
 		Self::SystemData::setup(res);
@@ -46,6 +46,13 @@ impl<'a> System<'a> for SpawnShield {
 			return;
 		}
 
+		// equal chance of powerup being shield or inferno
+		let powerup_type = if random::<Open01<f32>>().0 > 0.5 {
+			Mob::Shield
+		} else {
+			Mob::Inferno
+		};
+
 		let coords = Vector2::<f32>::new(random::<Open01<f32>>().0, random::<Open01<f32>>().0);
 		let pos = coords * MAP_SIZE - MAP_SIZE * 0.5;
 
@@ -54,13 +61,13 @@ impl<'a> System<'a> for SpawnShield {
 			return;
 		}
 
-		let despawn = Instant::now() + Duration::from_secs(SHIELD_LIFETIME);
+		let despawn = Instant::now() + Duration::from_secs(POWERUP_LIFETIME);
 
 		let mob = data
 			.entities
 			.build_entity()
 			.with(pos, &mut data.pos)
-			.with(Mob::Shield, &mut data.mob)
+			.with(powerup_type, &mut data.mob)
 			.with(MobDespawnTime(despawn), &mut data.despawn_time)
 			.with(IsPowerup, &mut data.is_powerup)
 			.build();
@@ -68,14 +75,14 @@ impl<'a> System<'a> for SpawnShield {
 		data.channel.single_write(PowerupSpawnEvent {
 			mob,
 			pos,
-			despawn,
-			ty: Mob::Shield,
+			despawn: Some(despawn),
+			ty: powerup_type,
 		});
 	}
 }
 
 system_info! {
-	impl SystemInfo for SpawnShield {
+	impl SystemInfo for SpawnRandomPowerup {
 		type Dependencies = ();
 	}
 }
