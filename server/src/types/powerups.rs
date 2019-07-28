@@ -1,8 +1,8 @@
 use specs::*;
 
-use crate::protocol::PowerupType;
-use crate::protocol::Position;
 use crate::protocol::MobType;
+use crate::protocol::Position;
+use crate::protocol::PowerupType;
 
 use std::time::Duration;
 use std::time::Instant;
