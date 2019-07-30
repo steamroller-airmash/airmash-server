@@ -74,6 +74,13 @@ pub fn register<'a, 'b>(world: &mut World, disp: Builder<'a, 'b>) -> Builder<'a,
 			next_respawn_time: None,
 			powerup_entity: None,
 		},
+		PowerupSpawnPoint {
+			pos: Position::new(Distance::new(920.0), Distance::new(-2800.0)),
+			powerup_type: MobType::Inferno,
+			respawn_delay: Duration::from_secs(60),
+			next_respawn_time: None,
+			powerup_entity: None,
+		},
 	]));
 
 	disp.with_handler::<DropOnDespawn>()
