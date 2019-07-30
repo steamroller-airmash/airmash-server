@@ -67,30 +67,30 @@ jobs:
           key: build-cache-{{ checksum "Cargo.lock" }}-{{ checksum "~/rustc.version" }}-{{ arch }}
           paths:
             - target
-  format:
-    working_directory: ~/build
-    docker:
-      - image: rustlang/rust:nightly
-    environment:
-      CARGO_HOME: /root/.cargo
-    steps:
-      - checkout
-      - run:
-          name: Save rustc version
-          command: rustc -V > ~/rustc.version
-      - restore_cache:
-          key: fetch-cache-{{ checksum "Cargo.lock" }}
-      - restore_cache:
-          key: test-cache-{{ checksum "Cargo.lock" }}-{{ checksum "~/rustc.version" }}-{{ arch }}
-      - run:
-          name: Install rustfmt
-          command: rustup component add rustfmt
-      - run:
-          name: Fetch Dependencies
-          command: cargo +nightly fetch
-      - run:
-          name: Check Formatting
-          command: cargo +nightly fmt -- --check
+  # format:
+  #   working_directory: ~/build
+  #   docker:
+  #     - image: rustlang/rust:nightly
+  #   environment:
+  #     CARGO_HOME: /root/.cargo
+  #   steps:
+  #     - checkout
+  #     - run:
+  #         name: Save rustc version
+  #         command: rustc -V > ~/rustc.version
+  #     - restore_cache:
+  #         key: fetch-cache-{{ checksum "Cargo.lock" }}
+  #     - restore_cache:
+  #         key: test-cache-{{ checksum "Cargo.lock" }}-{{ checksum "~/rustc.version" }}-{{ arch }}
+  #     - run:
+  #         name: Install rustfmt
+  #         command: rustup component add rustfmt
+  #     - run:
+  #         name: Fetch Dependencies
+  #         command: cargo +nightly fetch
+  #     - run:
+  #         name: Check Formatting
+  #         command: cargo +nightly fmt -- --check
 
 workflows:
   version: 2
@@ -101,8 +101,5 @@ workflows:
           requires:
             - fetch
       - test:
-          requires:
-            - fetch
-      - format:
           requires:
             - fetch
