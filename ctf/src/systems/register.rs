@@ -8,7 +8,7 @@ use specs::*;
 use std::time::{Duration, Instant};
 
 use super::*;
-use crate::server::::types::*;
+use crate::server::types::*;
 use crate::config;
 
 pub fn register<'a, 'b>(world: &mut World, disp: Builder<'a, 'b>) -> Builder<'a, 'b> {
