@@ -16,6 +16,7 @@ pub use self::update_captures::UpdateCaptures;
 pub use self::update_lastdrop::UpdateLastDrop;
 pub use self::update_score::UpdateScore;
 
+#[allow(dead_code)]
 pub type AllFlagSystems = (
 	CheckWin,
 	PickupMessage,

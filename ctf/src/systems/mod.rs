@@ -9,11 +9,9 @@ mod score_detailed;
 
 pub mod flag_event;
 pub mod on_flag;
-pub mod on_game_start;
 pub mod on_game_win;
 pub mod on_join;
 pub mod on_leave;
-pub mod timer;
 
 pub use self::register::register;
 

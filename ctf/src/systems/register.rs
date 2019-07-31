@@ -110,21 +110,5 @@ pub fn register<'a, 'b>(world: &mut World, disp: Builder<'a, 'b>) -> Builder<'a,
 		.with::<flag_event::CaptureFlag>()
 		.with::<flag_event::ReturnFlag>()
 		// On Game Win events
-		.with_handler::<on_game_win::SetupMessages>()
-		.with_handler::<on_game_win::SetupGameStart>()
-		.with_handler::<on_game_win::SetupReteam>()
-		.with_handler::<on_game_win::ChangeConfig>()
-		.with_handler::<on_game_win::DisplayWin>()
-		.with_handler::<on_game_win::SetGameActive>()
-		.with_handler::<on_game_win::AwardBounty>()
-		.with_handler::<on_game_win::ResetFlags>()
-		// Timer events
-		.with_handler::<timer::RestoreConfig>()
-		.with_handler::<timer::GameStart>()
-		.with_handler::<timer::SetGameActive>()
-		.with_handler::<timer::Shuffle>()
-		// Game Start events
-		.with_handler::<on_game_start::RespawnAllUnspec>()
-		.with_handler::<on_game_start::RespawnAll>()
-		.with_handler::<on_game_start::ResetScore>()
+		.with_handler::<on_game_win::LaunchTask>()
 }

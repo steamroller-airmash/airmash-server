@@ -1,3 +1,5 @@
+#![feature(async_await)]
+
 #[macro_use]
 extern crate specs_derive;
 #[macro_use]
@@ -6,17 +8,8 @@ extern crate shred_derive;
 extern crate lazy_static;
 #[macro_use]
 extern crate log;
-
+#[macro_use]
 extern crate airmash_server;
-extern crate clap;
-extern crate env_logger;
-extern crate fnv;
-extern crate htmlescape;
-extern crate rand;
-extern crate sentry;
-extern crate shred;
-extern crate shrev;
-extern crate specs;
 
 use airmash_server as server;
 
@@ -26,6 +19,7 @@ mod consts;
 mod gamemode;
 mod shuffle;
 mod systems;
+mod tasks;
 
 #[cfg(test)]
 mod tests;

@@ -14,12 +14,19 @@ use crate::protocol::ServerPacket;
 use crate::types::{ConnectionId, Connections};
 
 /// This is a task's reference to the rest of the game world.
-#[derive(Clone)]
 pub struct TaskData {
 	world: Arc<RwLock<World>>,
 }
 
 impl TaskData {
+	/// This should only really be used by task_spawner
+	/// since using multiple TaskData copies concurrently
+	/// makes it really easy to cause deadlocks.
+	#[doc(hidden)]
+	pub(crate) fn clone(&self) -> Self {
+		Self::new(self.world.clone())
+	}
+
 	pub fn new(world: Arc<RwLock<World>>) -> Self {
 		Self { world }
 	}
