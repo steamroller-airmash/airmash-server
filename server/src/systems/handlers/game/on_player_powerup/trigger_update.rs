@@ -13,6 +13,7 @@ pub struct TriggerUpdate;
 #[derive(SystemData)]
 pub struct TriggerUpdateData<'a> {
 	force_update: WriteStorage<'a, ForcePlayerUpdate>,
+	entities: Entities<'a>,
 }
 
 impl EventHandlerTypeProvider for TriggerUpdate {
@@ -23,6 +24,10 @@ impl<'a> EventHandler<'a> for TriggerUpdate {
 	type SystemData = TriggerUpdateData<'a>;
 
 	fn on_event(&mut self, evt: &PlayerPowerup, data: &mut Self::SystemData) {
+		if !data.entities.is_alive(evt.player) {
+			return;
+		}
+
 		data.force_update
 			.insert(evt.player, ForcePlayerUpdate)
 			.unwrap();
