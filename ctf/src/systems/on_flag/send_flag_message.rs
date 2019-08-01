@@ -55,6 +55,8 @@ impl<'a> EventHandler<'a> for SendFlagMessageSystem {
 				unimplemented!();
 			}
 
+			info!("new scores. red: {}, blue: {}", data.scores.redteam, data.scores.blueteam);
+
 			let flag = Flag(*try_get!(other, data.team));
 
 			if try_get!(other, data.carrier).0.is_none() {

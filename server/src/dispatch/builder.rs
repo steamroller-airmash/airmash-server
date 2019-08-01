@@ -112,19 +112,29 @@ impl<'a, 'b> Builder<'a, 'b> {
 		let systems = self.system_toposort();
 		let builder = mem::replace(&mut self.builder, DispatcherBuilder::new());
 
-		if log_enabled!(log::Level::Debug) {
-			for sys in &systems {
+		let mut count: usize = 0;
+		for sys in &systems {
+			debug!(
+				target: "airmash:builder",
+				"{:03} Added system to builder: {name}",
+				count,
+				name = sys.name(),
+			);
+			count += 1;
+
+			for dep in sys.deps() {
 				debug!(
 					target: "airmash:builder",
-					"Added system to builder: {name}",
-					name = sys.name(),
+					"{:03}   With dependency: {}", 
+					count, 
+					dep
 				);
+				count += 1;
 			}
 		}
 
 		self.builder = systems
 			.into_iter()
-			.rev()
 			.fold(builder, |builder, mut sys| sys.build(builder));
 	}
 
@@ -139,49 +149,149 @@ impl<'a, 'b> Builder<'a, 'b> {
 	}
 }
 
+fn make_hashset<T>(val: T) -> HashSet<T> 
+where
+	T: std::hash::Hash + Eq
+{
+	let mut set = HashSet::default();
+	set.insert(val);
+	set
+}
+
+#[derive(Default)]
+struct Graph<'a> {
+	vertices: HashSet<&'a str>,
+	incoming: HashMap<&'a str, HashSet<&'a str>>,
+	outgoing: HashMap<&'a str, HashSet<&'a str>>,
+	roots: HashSet<&'a str>,
+}
+
+impl<'a> Graph<'a> {
+	pub fn insert_vertex(&mut self, vert: &'a str) -> bool {
+		self.roots.insert(vert);
+		self.vertices.insert(vert)
+	}
+
+	fn insert_incoming(&mut self, target: &'a str, source: &'a str) {
+		if let Some(x) = self.incoming.get_mut(target) {
+			x.insert(source);
+		} else {
+			self.incoming.insert(target, make_hashset(source));
+		}
+	}
+	fn insert_outgoing(&mut self, target: &'a str, source: &'a str) {
+		if let Some(x) = self.outgoing.get_mut(source) {
+			x.insert(target);
+		} else {
+			self.outgoing.insert(source, make_hashset(target));
+		}
+	}
+
+	pub fn insert_edge(&mut self, target: &'a str, source: &'a str) {
+		assert!(self.vertices.contains(target));
+		assert!(self.vertices.contains(source));
+		
+		self.insert_incoming(target, source);
+		self.insert_outgoing(target, source);
+
+		self.roots.remove(target);
+	}
+
+	fn remove_edge(&mut self, target: &'a str, source: &'a str) {
+		let in_empty = if let Some(x) = self.incoming.get_mut(target) {
+			x.remove(source);
+			x.is_empty()
+		} else { false };
+		let out_empty = if let Some(x) = self.outgoing.get_mut(source) {
+			x.remove(target);
+			x.is_empty()
+		} else { false };
+
+		if in_empty {
+			self.incoming.remove(target);
+		}
+		if out_empty {
+			self.outgoing.remove(source);
+		}
+	}
+	fn has_incoming(&self, target: &'a str) -> bool {
+		self.incoming.get(target).is_some()
+	}
+
+	/// Toposort using Kahn's algorithm
+	pub fn toposort(mut self) -> Vec<&'a str> {
+		use std::collections::VecDeque;
+
+		let mut res = vec![];
+		let mut roots = self.roots
+			.iter()
+			.cloned()
+			.collect::<VecDeque<_>>();
+
+		while let Some(node) = roots.pop_front() {
+			res.push(node);
+
+			if let Some(sources) = self.outgoing.get(node).cloned() {
+				for m in sources {
+					self.remove_edge(m, node);
+
+					if !self.has_incoming(m) {
+						roots.push_back(m);
+					}
+				}
+			}
+		}
+
+		// If we find a cycle, print a nice(ish) error
+		// message to help with debugging it.
+		if res.len() != self.vertices.len() {
+			let res = res.into_iter().collect::<HashSet<_>>();
+			
+			error!("Cycle found in dependancy graph containing the following systems:");
+			for name in self.vertices.difference(&res) {
+				error!("  {}", name);
+			}
+
+			panic!("Cycle found in dependency graph!");
+		}
+
+		res.reverse();
+
+		res
+	}
+}
+
 // This impl is related to finding a toposort of
 // the systems so that they can be registered in
 // the correct order.
 impl<'a, 'b> Builder<'a, 'b> {
-	/// Get the names of all systems
-	fn get_system_names(&self) -> HashSet<&'static str> {
-		self.sysmap.keys().map(|&x| x).collect()
-	}
+	fn system_toposort(&mut self) -> Vec<Box<dyn AbstractBuilder>> {
+		let mut graph = Graph::default();
 
-	/// Find all systems that have no other systems
-	/// depending on them
-	fn find_roots(&self) -> HashSet<&'static str> {
-		let mut names = self.get_system_names();
+		for (name, _) in self.sysmap.iter() {
+			graph.insert_vertex(name);
+		}
 
-		for builder in self.sysmap.values() {
-			for dep in builder.deps() {
-				names.remove(dep);
+		for (name, sys) in self.sysmap.iter() {
+			let deps = sys.deps();
+
+			for dep in deps {
+				graph.insert_edge(dep, name);
 			}
 		}
 
-		names
-	}
-
-	/// This runs a Kahn's algorithm for toposort.
-	///
-	/// It is probably horrendously inefficient but it is
-	/// only run once at startup so it most likely doesn't matter.
-	fn system_toposort(&mut self) -> Vec<Box<dyn AbstractBuilder>> {
+		let sorted = graph.toposort();
 		let mut result = vec![];
 
-		while !self.sysmap.is_empty() {
-			let roots = self.find_roots().into_iter().collect::<Vec<_>>();
+		for name in sorted {
+			let sys = self.sysmap.remove(name);
 
-			if roots.is_empty() {
-				panic!("Cycle detected within dependencies");
-			}
-
-			for root in roots {
-				if let Some(sys) = self.sysmap.remove(root) {
-					result.push(sys);
-				} else {
-					panic!("Cycle detected with system {} as part of it", root);
-				}
+			if let Some(sys) = sys {
+				result.push(sys);
+			} else {
+				error!("Unknown system {}", name);
+				error!("Do you have a dependency on a system that wasn't added?");
+				panic!("Unknown system.");
 			}
 		}
 

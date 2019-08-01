@@ -10,6 +10,7 @@ use std::time::{Duration, Instant};
 use super::*;
 use crate::server::types::*;
 use crate::config;
+use crate::component::OnGameStart;
 
 pub fn register<'a, 'b>(world: &mut World, disp: Builder<'a, 'b>) -> Builder<'a, 'b> {
 	// Normally the systems would take care of this,
@@ -20,6 +21,7 @@ pub fn register<'a, 'b>(world: &mut World, disp: Builder<'a, 'b>) -> Builder<'a,
 	world.register::<IsFlag>();
 	world.register::<FlagCarrier>();
 	world.register::<LastDrop>();
+	world.add_resource::<OnGameStart>(OnGameStart::default());
 
 	let lastdrop = LastDrop {
 		player: None,
