@@ -125,8 +125,8 @@ impl<'a, 'b> Builder<'a, 'b> {
 			for dep in sys.deps() {
 				debug!(
 					target: "airmash:builder",
-					"{:03}   With dependency: {}", 
-					count, 
+					"{:03}   With dependency: {}",
+					count,
 					dep
 				);
 				count += 1;
@@ -149,9 +149,9 @@ impl<'a, 'b> Builder<'a, 'b> {
 	}
 }
 
-fn make_hashset<T>(val: T) -> HashSet<T> 
+fn make_hashset<T>(val: T) -> HashSet<T>
 where
-	T: std::hash::Hash + Eq
+	T: std::hash::Hash + Eq,
 {
 	let mut set = HashSet::default();
 	set.insert(val);
@@ -190,7 +190,7 @@ impl<'a> Graph<'a> {
 	pub fn insert_edge(&mut self, target: &'a str, source: &'a str) {
 		assert!(self.vertices.contains(target));
 		assert!(self.vertices.contains(source));
-		
+
 		self.insert_incoming(target, source);
 		self.insert_outgoing(target, source);
 
@@ -201,11 +201,15 @@ impl<'a> Graph<'a> {
 		let in_empty = if let Some(x) = self.incoming.get_mut(target) {
 			x.remove(source);
 			x.is_empty()
-		} else { false };
+		} else {
+			false
+		};
 		let out_empty = if let Some(x) = self.outgoing.get_mut(source) {
 			x.remove(target);
 			x.is_empty()
-		} else { false };
+		} else {
+			false
+		};
 
 		if in_empty {
 			self.incoming.remove(target);
@@ -223,10 +227,7 @@ impl<'a> Graph<'a> {
 		use std::collections::VecDeque;
 
 		let mut res = vec![];
-		let mut roots = self.roots
-			.iter()
-			.cloned()
-			.collect::<VecDeque<_>>();
+		let mut roots = self.roots.iter().cloned().collect::<VecDeque<_>>();
 
 		while let Some(node) = roots.pop_front() {
 			res.push(node);
@@ -246,7 +247,7 @@ impl<'a> Graph<'a> {
 		// message to help with debugging it.
 		if res.len() != self.vertices.len() {
 			let res = res.into_iter().collect::<HashSet<_>>();
-			
+
 			error!("Cycle found in dependancy graph containing the following systems:");
 			for name in self.vertices.difference(&res) {
 				error!("  {}", name);
