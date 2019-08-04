@@ -21,4 +21,7 @@ rand = "0.4"
 lazy_static = "*"
 clap = "*"
 serde_json = "*"
-sentry = "*"
+
+[dependencies.sentry]
+optional = true
+version = "*"

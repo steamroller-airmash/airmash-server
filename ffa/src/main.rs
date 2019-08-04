@@ -12,6 +12,7 @@ extern crate specs_derive;
 #[macro_use]
 extern crate shred_derive;
 extern crate clap;
+#[cfg(features = "sentry")]
 extern crate sentry;
 extern crate serde_json;
 
@@ -29,6 +30,7 @@ use gamemode::EmptyGameMode;
 
 use airmash_server::*;
 
+#[cfg(features = "sentry")]
 /// NOTE: Also initializes env_logger
 fn init_sentry() -> Option<sentry::internals::ClientInitGuard> {
     if let Ok(dsn) = env::var("SENTRY_DSN") {
@@ -43,6 +45,11 @@ fn init_sentry() -> Option<sentry::internals::ClientInitGuard> {
 
         None
     }
+}
+
+#[cfg(not(features = "sentry"))]
+fn init_sentry() {
+    env_logger::init();
 }
 
 fn set_default_var(name: &str, value: &str) {

@@ -10,7 +10,7 @@ edition = "2018"
 [features]
 # Have logging on by default, it doesn't do anything
 # unless the environment variable is on
-default = [ "sentry" ]
+default = [ ]
 # If enabled, set TCP_NODELAY on incoming connections
 nodelay = []
 # Enable looking for the X-Forwarded-For header

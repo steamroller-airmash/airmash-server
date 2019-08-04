@@ -30,6 +30,7 @@ use std::fs::File;
 use crate::gamemode::{CTFGameMode, BLUE_TEAM, RED_TEAM};
 use crate::server::{AirmashServer, AirmashServerConfig, Config};
 
+#[cfg(features = "sentry")]
 /// NOTE: Also initializes env_logger
 fn init_sentry() -> Option<sentry::internals::ClientInitGuard> {
 	if let Ok(dsn) = env::var("SENTRY_DSN") {
@@ -44,6 +45,11 @@ fn init_sentry() -> Option<sentry::internals::ClientInitGuard> {
 
 		None
 	}
+}
+
+#[cfg(not(features = "sentry"))]
+fn init_sentry() {
+	env_logger::init();
 }
 
 fn main() {

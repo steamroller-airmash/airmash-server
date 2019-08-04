@@ -7,13 +7,14 @@ publish = false
 repository = 'https://github.com/steamroller-airmash/airmash-server'
 edition = "2018"
 
+[features]
+
 [dependencies]
 # When specs updates to shred 0.8.0 this will need to be updated as well
 shred = "0.7"
 shred-derive = "0.5"
 specs = { version = "0.14.3", features = ["nightly"] }
 shrev = "*"
-sentry = "*"
 fnv = "*"
 log = "*"
 rand = "0.4"
@@ -24,6 +25,10 @@ env_logger = "*"
 serde = { version = "*", features = [ "derive" ]}
 serde_json = "*"
 clap = "*"
+
+[dependencies.sentry]
+optional = true
+version = "*"
 
 [dependencies.airmash-server]
 path = '../server'
