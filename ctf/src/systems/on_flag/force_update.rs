@@ -40,20 +40,12 @@ impl<'a> EventHandler<'a> for ForceUpdate {
 	}
 }
 
-use crate::systems::PickupFlagSystem;
-
-impl SystemInfo for ForceUpdate {
-	type Dependencies = (
-		PickupFlagSystem,
-		super::KnownEventSources,
-		super::SendFlagMessage,
-	);
-
-	fn name() -> &'static str {
-		concat!(module_path!(), "::", line!())
-	}
-
-	fn new() -> Self {
-		Self::default()
+system_info! {
+	impl SystemInfo for ForceUpdate {
+		type Dependencies = (
+			crate::systems::PickupFlag,
+			super::KnownEventSources,
+			super::SendFlagMessage,
+		);
 	}
 }

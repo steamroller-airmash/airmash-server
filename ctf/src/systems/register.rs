@@ -8,9 +8,9 @@ use specs::*;
 use std::time::{Duration, Instant};
 
 use super::*;
-use crate::server::types::*;
-use crate::config;
 use crate::component::OnGameStart;
+use crate::config;
+use crate::server::types::*;
 
 pub fn register<'a, 'b>(world: &mut World, disp: Builder<'a, 'b>) -> Builder<'a, 'b> {
 	// Normally the systems would take care of this,
@@ -95,10 +95,10 @@ pub fn register<'a, 'b>(world: &mut World, disp: Builder<'a, 'b>) -> Builder<'a,
 		.with_handler::<on_join::InitCaptures>()
 		.with_handler::<on_join::SendFlagPosition>()
 		// Needs to happen after SendFlagPosition
-		.with::<PickupFlagSystem>()
-		.with::<PosUpdateSystem>()
+		.with::<PickupFlag>()
+		.with::<PosUpdate>()
 		.with_handler::<DropSystem>()
-		.with_handler::<FlagSpeedSystem>()
+		.with_handler::<FlagSpeed>()
 		// On Flag Events
 		.with_handler::<on_flag::SendFlagMessage>()
 		.with_handler::<on_flag::PickupMessage>()

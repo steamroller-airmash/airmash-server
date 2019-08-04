@@ -50,18 +50,12 @@ impl<'a> EventHandler<'a> for DropOnStealth {
 	}
 }
 
-impl SystemInfo for DropOnStealth {
-	type Dependencies = (
-		// FIXME: I don't think this is necessary, need to investigate more
-		KnownEventSources,
-		super::PickupFlagSystem,
-	);
-
-	fn name() -> &'static str {
-		concat!(module_path!(), "::", line!())
-	}
-
-	fn new() -> Self {
-		Self::default()
+system_info! {
+	impl SystemInfo for DropOnStealth {
+		type Dependencies = (
+			// FIXME: I don't think this is necessary, need to investigate more
+			KnownEventSources,
+			super::PickupFlag,
+		);
 	}
 }

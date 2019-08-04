@@ -87,16 +87,8 @@ impl<'a> EventHandler<'a> for DropSystem {
 	}
 }
 
-use super::PickupFlagSystem;
-
-impl SystemInfo for DropSystem {
-	type Dependencies = PickupFlagSystem;
-
-	fn name() -> &'static str {
-		concat!(module_path!(), "::", line!())
-	}
-
-	fn new() -> Self {
-		Self::default()
+system_info! {
+	impl SystemInfo for DropSystem {
+		type Dependencies = super::PickupFlag;
 	}
 }

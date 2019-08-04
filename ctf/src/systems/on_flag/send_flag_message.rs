@@ -55,7 +55,10 @@ impl<'a> EventHandler<'a> for SendFlagMessageSystem {
 				unimplemented!();
 			}
 
-			info!("new scores. red: {}, blue: {}", data.scores.redteam, data.scores.blueteam);
+			info!(
+				"new scores. red: {}, blue: {}",
+				data.scores.redteam, data.scores.blueteam
+			);
 
 			let flag = Flag(*try_get!(other, data.team));
 
@@ -94,16 +97,8 @@ impl<'a> EventHandler<'a> for SendFlagMessageSystem {
 	}
 }
 
-use crate::systems::PickupFlagSystem;
-
-impl SystemInfo for SendFlagMessageSystem {
-	type Dependencies = PickupFlagSystem;
-
-	fn name() -> &'static str {
-		concat!(module_path!(), "::", line!())
-	}
-
-	fn new() -> Self {
-		Self::default()
+system_info! {
+	impl SystemInfo for SendFlagMessageSystem {
+		type Dependencies = crate::systems::PickupFlag;
 	}
 }

@@ -6,21 +6,21 @@ use crate::component::*;
 use crate::server::systems::handlers::game::on_join::AllJoinHandlers;
 use crate::server::utils::*;
 
-use super::PickupFlagSystem;
+use super::PickupFlag;
 
 #[derive(Default)]
-pub struct FlagSpeedSystem;
+pub struct FlagSpeed;
 
 #[derive(SystemData)]
 pub struct FlagSpeedSystemData<'a> {
 	keystate: WriteStorage<'a, KeyState>,
 }
 
-impl EventHandlerTypeProvider for FlagSpeedSystem {
+impl EventHandlerTypeProvider for FlagSpeed {
 	type Event = FlagEvent;
 }
 
-impl<'a> EventHandler<'a> for FlagSpeedSystem {
+impl<'a> EventHandler<'a> for FlagSpeed {
 	type SystemData = FlagSpeedSystemData<'a>;
 
 	fn on_event(&mut self, evt: &FlagEvent, data: &mut Self::SystemData) {
@@ -44,14 +44,8 @@ impl<'a> EventHandler<'a> for FlagSpeedSystem {
 	}
 }
 
-impl SystemInfo for FlagSpeedSystem {
-	type Dependencies = (PickupFlagSystem, AllJoinHandlers);
-
-	fn name() -> &'static str {
-		concat!(module_path!(), "::", line!())
-	}
-
-	fn new() -> Self {
-		Self::default()
+system_info! {
+	impl SystemInfo for FlagSpeed {
+		type Dependencies = (PickupFlag, AllJoinHandlers);
 	}
 }

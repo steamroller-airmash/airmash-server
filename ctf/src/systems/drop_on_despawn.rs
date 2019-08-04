@@ -47,14 +47,8 @@ impl<'a> EventHandler<'a> for DropOnDespawn {
 	}
 }
 
-impl SystemInfo for DropOnDespawn {
-	type Dependencies = (KnownEventSources, super::PickupFlagSystem);
-
-	fn name() -> &'static str {
-		concat!(module_path!(), "::", line!())
-	}
-
-	fn new() -> Self {
-		Self::default()
+system_info! {
+	impl SystemInfo for DropOnDespawn {
+		type Dependencies = (KnownEventSources, super::PickupFlag);
 	}
 }

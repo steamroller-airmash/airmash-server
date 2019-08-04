@@ -31,7 +31,10 @@ impl<'a> EventHandler<'a> for CheckWin {
 			_ => return,
 		}
 
-		info!("Checking for a win. red: {}, blue: {}", data.scores.redteam, data.scores.blueteam);
+		info!(
+			"Checking for a win. red: {}, blue: {}",
+			data.scores.redteam, data.scores.blueteam
+		);
 
 		// Check to see if the game is over yet
 		if data.scores.redteam < 3 && data.scores.blueteam < 3 {

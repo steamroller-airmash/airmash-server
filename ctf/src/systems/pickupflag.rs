@@ -2,6 +2,7 @@ use specs::*;
 
 use crate::server::component::flag::*;
 use crate::server::component::time::ThisFrame;
+use crate::server::systems::PositionUpdate;
 use crate::server::types::systemdata::*;
 use crate::server::*;
 
@@ -11,10 +12,11 @@ use crate::systems::on_join::SendFlagPosition;
 
 use std::cmp::Ordering;
 
-pub struct PickupFlagSystem;
+#[derive(Default)]
+pub struct PickupFlag;
 
 #[derive(SystemData)]
-pub struct PickupFlagSystemData<'a> {
+pub struct PickupFlagData<'a> {
 	entities: Entities<'a>,
 	channel: Write<'a, OnFlag>,
 	thisframe: Read<'a, ThisFrame>,
@@ -37,8 +39,8 @@ pub struct PickupFlagSystemData<'a> {
 	keystate: ReadStorage<'a, KeyState>,
 }
 
-impl<'a> System<'a> for PickupFlagSystem {
-	type SystemData = PickupFlagSystemData<'a>;
+impl<'a> System<'a> for PickupFlag {
+	type SystemData = PickupFlagData<'a>;
 
 	fn run(&mut self, mut data: Self::SystemData) {
 		// Flags can only be captured when a game is active
@@ -132,16 +134,8 @@ impl<'a> System<'a> for PickupFlagSystem {
 	}
 }
 
-use crate::server::systems::PositionUpdate;
-
-impl SystemInfo for PickupFlagSystem {
-	type Dependencies = (PositionUpdate, SendFlagPosition);
-
-	fn name() -> &'static str {
-		concat!(module_path!(), "::", line!())
-	}
-
-	fn new() -> Self {
-		Self {}
+system_info! {
+	impl SystemInfo for PickupFlag {
+		type Dependencies = (PositionUpdate, SendFlagPosition);
 	}
 }

@@ -8,6 +8,7 @@ use crate::component::*;
 use crate::server::protocol::server::GameFlag;
 use crate::server::protocol::FlagUpdateType;
 use crate::server::types::systemdata::*;
+use airmash_server::system_info;
 
 #[derive(Default)]
 pub struct CaptureFlag;
@@ -90,16 +91,8 @@ impl<'a> System<'a> for CaptureFlag {
 	}
 }
 
-use crate::systems::PickupFlagSystem;
-
-impl SystemInfo for CaptureFlag {
-	type Dependencies = PickupFlagSystem;
-
-	fn name() -> &'static str {
-		concat!(module_path!(), "::", line!())
-	}
-
-	fn new() -> Self {
-		Self::default()
+system_info! {
+	impl SystemInfo for CaptureFlag {
+		type Dependencies = crate::systems::PickupFlag;
 	}
 }

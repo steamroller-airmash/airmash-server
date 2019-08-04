@@ -68,20 +68,12 @@ impl<'a> EventHandler<'a> for DoReturn {
 	}
 }
 
-use crate::systems::PickupFlagSystem;
-
-impl SystemInfo for DoReturn {
-	type Dependencies = (
-		PickupFlagSystem,
-		super::KnownEventSources,
-		super::ForceUpdate,
-	);
-
-	fn name() -> &'static str {
-		concat!(module_path!(), "::", line!())
-	}
-
-	fn new() -> Self {
-		Self::default()
+system_info! {
+	impl SystemInfo for DoReturn {
+		type Dependencies = (
+			crate::systems::PickupFlag,
+			super::KnownEventSources,
+			super::ForceUpdate,
+		);
 	}
 }

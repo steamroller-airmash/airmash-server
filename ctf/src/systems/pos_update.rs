@@ -5,10 +5,10 @@ use crate::component::*;
 use crate::server::types::systemdata::*;
 
 #[derive(Default)]
-pub struct PosUpdateSystem;
+pub struct PosUpdate;
 
 #[derive(SystemData)]
-pub struct PosUpdateSystemData<'a> {
+pub struct PosUpdateData<'a> {
 	ents: Entities<'a>,
 	pos: WriteStorage<'a, Position>,
 	flag: ReadStorage<'a, IsFlag>,
@@ -16,8 +16,8 @@ pub struct PosUpdateSystemData<'a> {
 	is_alive: IsAlive<'a>,
 }
 
-impl<'a> System<'a> for PosUpdateSystem {
-	type SystemData = PosUpdateSystemData<'a>;
+impl<'a> System<'a> for PosUpdate {
+	type SystemData = PosUpdateData<'a>;
 
 	fn run(&mut self, mut data: Self::SystemData) {
 		let carriers = (&data.carrier, &*data.ents, &data.flag, data.is_alive.mask())
@@ -33,16 +33,8 @@ impl<'a> System<'a> for PosUpdateSystem {
 	}
 }
 
-use super::PickupFlagSystem;
-
-impl SystemInfo for PosUpdateSystem {
-	type Dependencies = PickupFlagSystem;
-
-	fn name() -> &'static str {
-		concat!(module_path!(), "::", line!())
-	}
-
-	fn new() -> Self {
-		Self {}
+system_info! {
+	impl SystemInfo for PosUpdate {
+		type Dependencies = super::PickupFlag;
 	}
 }

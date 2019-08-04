@@ -63,16 +63,8 @@ impl<'a> EventHandler<'a> for UpdateScore {
 	}
 }
 
-use crate::systems::PickupFlagSystem;
-
-impl SystemInfo for UpdateScore {
-	type Dependencies = PickupFlagSystem;
-
-	fn name() -> &'static str {
-		concat!(module_path!(), "::", line!())
-	}
-
-	fn new() -> Self {
-		Self::default()
+system_info! {
+	impl SystemInfo for UpdateScore {
+		type Dependencies = crate::systems::PickupFlag;
 	}
 }

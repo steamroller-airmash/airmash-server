@@ -1,11 +1,10 @@
-
 use specs::prelude::*;
 
-use crate::tasks::new_game;
 use crate::component::GameWinEvent;
-use crate::systems::on_flag::CheckWin;
 use crate::server::types::TaskSpawner;
 use crate::server::utils::{EventHandler, EventHandlerTypeProvider};
+use crate::systems::on_flag::CheckWin;
+use crate::tasks::new_game;
 
 #[derive(SystemData)]
 pub struct LaunchTaskData<'a> {

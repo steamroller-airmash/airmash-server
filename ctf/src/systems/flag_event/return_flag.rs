@@ -10,6 +10,7 @@ use std::cmp::Ordering;
 use crate::server::component::flag::IsPlayer;
 use crate::server::types::systemdata::*;
 
+#[derive(Default)]
 pub struct ReturnFlag;
 
 #[derive(SystemData)]
@@ -103,16 +104,8 @@ impl<'a> System<'a> for ReturnFlag {
 	}
 }
 
-use crate::systems::PickupFlagSystem;
-
-impl SystemInfo for ReturnFlag {
-	type Dependencies = PickupFlagSystem;
-
-	fn name() -> &'static str {
-		concat!(module_path!(), "::", line!())
-	}
-
-	fn new() -> Self {
-		Self {}
+system_info! {
+	impl SystemInfo for ReturnFlag {
+		type Dependencies = crate::systems::PickupFlag;
 	}
 }

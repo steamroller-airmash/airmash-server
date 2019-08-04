@@ -64,16 +64,8 @@ impl<'a> EventHandler<'a> for PickupMessageSystem {
 	}
 }
 
-use crate::systems::PickupFlagSystem;
-
-impl SystemInfo for PickupMessageSystem {
-	type Dependencies = PickupFlagSystem;
-
-	fn name() -> &'static str {
-		concat!(module_path!(), "::", line!())
-	}
-
-	fn new() -> Self {
-		Self::default()
+system_info! {
+	impl SystemInfo for PickupMessageSystem {
+		type Dependencies = crate::systems::PickupFlag;
 	}
 }
