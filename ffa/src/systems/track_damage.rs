@@ -1,6 +1,6 @@
 use specs::*;
 
-use components::TotalDamage;
+use crate::components::TotalDamage;
 
 use super::AddDamage;
 

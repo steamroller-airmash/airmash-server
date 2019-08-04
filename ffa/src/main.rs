@@ -26,7 +26,7 @@ mod tests;
 use std::env;
 use std::fs::File;
 
-use gamemode::EmptyGameMode;
+use crate::gamemode::EmptyGameMode;
 
 use airmash_server::*;
 

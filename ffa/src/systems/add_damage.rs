@@ -1,6 +1,6 @@
 use specs::*;
 
-use components::TotalDamage;
+use crate::components::TotalDamage;
 
 use airmash_server::component::channel::*;
 use airmash_server::*;

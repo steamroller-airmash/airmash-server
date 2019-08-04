@@ -1,9 +1,9 @@
 use super::*;
+use crate::protocol::MobType;
+use crate::types::*;
 use airmash_server::{Builder, Distance, Position};
-use protocol::MobType;
 use specs::*;
 use std::time::Duration;
-use types::*;
 
 pub fn register<'a, 'b>(world: &mut World, builder: Builder<'a, 'b>) -> Builder<'a, 'b> {
     // inferno spawn point in Europe
