@@ -59,9 +59,7 @@ fn main() {
 
 	let _guard = init_sentry();
 
-	let mut config = AirmashServerConfig::new("0.0.0.0:3501", CTFGameMode::new())
-		.with_engine()
-		.with_alpha_warning();
+	let mut config = AirmashServerConfig::new("0.0.0.0:3501", CTFGameMode::new()).with_engine();
 
 	config.builder = systems::register(&mut config.world, config.builder);
 	config.world.add_resource(shuffle::get_shuffle());
