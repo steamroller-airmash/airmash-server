@@ -6,7 +6,7 @@ license = "Apache-2.0 OR MIT"
 description = "Airmash CTF game mode"
 publish = false
 repository = 'https://github.com/steamroller-airmash/airmash-server'
-
+edition = "2018"
 
 [dependencies]
 # When specs updates to shred 0.8.0 this will need to be updated as well

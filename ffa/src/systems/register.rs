@@ -16,7 +16,7 @@ pub fn register<'a, 'b>(world: &mut World, builder: Builder<'a, 'b>) -> Builder<
     }]));
 
     builder
-        .with::<AddDamage>()
-        .with::<TrackDamage>()
-        .with::<SendScoreDetailed>()
+        .with_handler::<AddDamage>()
+        .with_handler::<TrackDamage>()
+        .with_handler::<SendScoreDetailed>()
 }

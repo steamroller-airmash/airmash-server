@@ -1,20 +1,11 @@
-extern crate airmash_server;
-extern crate env_logger;
 #[macro_use]
 extern crate log;
-extern crate rand;
-extern crate shred;
-extern crate specs;
 #[macro_use]
 extern crate lazy_static;
 #[macro_use]
 extern crate specs_derive;
 #[macro_use]
 extern crate shred_derive;
-extern crate clap;
-#[cfg(features = "sentry")]
-extern crate sentry;
-extern crate serde_json;
 
 mod components;
 mod gamemode;
@@ -26,7 +17,7 @@ mod tests;
 use std::env;
 use std::fs::File;
 
-use crate::gamemode::EmptyGameMode;
+use gamemode::EmptyGameMode;
 
 use airmash_server::*;
 
