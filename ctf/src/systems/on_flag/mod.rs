@@ -37,4 +37,5 @@ pub type KnownEventSources = (
 	systems::DropOnDespawn,
 	systems::DropOnStealth,
 	systems::DropSystem,
+	systems::on_respawn::DropFlag,
 );

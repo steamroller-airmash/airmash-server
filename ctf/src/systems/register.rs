@@ -113,4 +113,6 @@ pub fn register<'a, 'b>(world: &mut World, disp: Builder<'a, 'b>) -> Builder<'a,
 		.with::<flag_event::ReturnFlag>()
 		// On Game Win events
 		.with_handler::<on_game_win::LaunchTask>()
+		// On Player Respawn events
+		.with_handler::<on_respawn::DropFlag>()
 }
