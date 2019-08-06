@@ -12,6 +12,7 @@ pub mod on_flag;
 pub mod on_game_win;
 pub mod on_join;
 pub mod on_leave;
+pub mod on_respawn;
 
 pub use self::register::register;
 
