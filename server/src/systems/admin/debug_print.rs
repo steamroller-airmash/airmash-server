@@ -1,5 +1,5 @@
-use specs::*;
 use serde_json;
+use specs::*;
 
 use crate::component::event::*;
 use crate::protocol::server::CommandReply;
@@ -49,27 +49,26 @@ impl<'a> EventHandler<'a> for DebugPrint {
 			return;
 		}
 
-		let res = parse_command(&packet.data)
-			.and_then(|x| {
-				if x.id == 0 {
-					return Ok((player, x.ty));
-				}
+		let res = parse_command(&packet.data).and_then(|x| {
+			if x.id == 0 {
+				return Ok((player, x.ty));
+			}
 
-				let ent = data.entities.entity(x.id as u32);
-				if !data.entities.is_alive(ent) {
-					return Err(ParseError::NotAnEntity(x.id));
-				}
+			let ent = data.entities.entity(x.id as u32);
+			if !data.entities.is_alive(ent) {
+				return Err(ParseError::NotAnEntity(x.id));
+			}
 
-				Ok((ent, x.ty))
-			});
+			Ok((ent, x.ty))
+		});
 
 		if res.is_err() {
 			data.conns.send_to(
 				conn,
 				CommandReply {
 					ty: CommandReplyType::ShowInConsole,
-					text: serde_json::to_string_pretty(&res.unwrap_err()).unwrap()
-				}
+					text: serde_json::to_string_pretty(&res.unwrap_err()).unwrap(),
+				},
 			);
 			return;
 		}
@@ -82,15 +81,15 @@ impl<'a> EventHandler<'a> for DebugPrint {
 			"rotation" => format!("{:?}", data.rot.get(target)),
 			"health" => format!("{:?}", data.health.get(target)),
 			"energy" => format!("{:?}", data.energy.get(target)),
-			_ => format!("no such printable component")
+			_ => format!("no such printable component"),
 		};
 
 		data.conns.send_to(
 			conn,
 			CommandReply {
 				ty: CommandReplyType::ShowInConsole,
-				text: formatted
-			}
+				text: formatted,
+			},
 		);
 	}
 }
@@ -99,12 +98,12 @@ impl<'a> EventHandler<'a> for DebugPrint {
 enum ParseError<'a> {
 	NotEnoughArguments,
 	IdNotANumber(&'a str),
-	NotAnEntity(u16)
+	NotAnEntity(u16),
 }
 
 struct ParsedCommand<'a> {
 	id: u16,
-	ty: &'a str
+	ty: &'a str,
 }
 
 fn parse_command<'a>(s: &'a str) -> Result<ParsedCommand<'a>, ParseError<'a>> {
@@ -118,7 +117,7 @@ fn parse_command<'a>(s: &'a str) -> Result<ParsedCommand<'a>, ParseError<'a>> {
 	let id = strs[0].parse().map_err(|_| IdNotANumber(strs[0]))?;
 	let ty = strs[1];
 
-	Ok(ParsedCommand{ id, ty })
+	Ok(ParsedCommand { id, ty })
 }
 
 system_info! {
@@ -126,4 +125,3 @@ system_info! {
 		type Dependencies = PacketHandler;
 	}
 }
-
