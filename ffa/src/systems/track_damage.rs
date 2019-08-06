@@ -1,25 +1,23 @@
 use specs::*;
 
-use components::TotalDamage;
+use crate::components::TotalDamage;
 
 use super::AddDamage;
 
-use airmash_server::component::channel::*;
+use airmash_server::component::event::PlayerHit;
 use airmash_server::component::flag::IsMissile;
 use airmash_server::component::reference::PlayerRef;
 use airmash_server::systems::missile::MissileHit;
+use airmash_server::utils::{EventHandler, EventHandlerTypeProvider};
 use airmash_server::*;
 
 #[derive(Default)]
-pub struct TrackDamage {
-    reader: Option<OnPlayerHitReader>,
-}
+pub struct TrackDamage;
 
 #[derive(SystemData)]
 pub struct TrackDamageData<'a> {
     entities: Entities<'a>,
     config: Read<'a, Config>,
-    channel: Read<'a, OnPlayerHit>,
 
     mob: ReadStorage<'a, Mob>,
     owner: ReadStorage<'a, PlayerRef>,
@@ -28,44 +26,34 @@ pub struct TrackDamageData<'a> {
     damage: WriteStorage<'a, TotalDamage>,
 }
 
-impl<'a> System<'a> for TrackDamage {
+impl EventHandlerTypeProvider for TrackDamage {
+    type Event = PlayerHit;
+}
+
+impl<'a> EventHandler<'a> for TrackDamage {
     type SystemData = TrackDamageData<'a>;
 
-    fn setup(&mut self, res: &mut Resources) {
-        Self::SystemData::setup(res);
-
-        self.reader = Some(res.fetch_mut::<OnPlayerHit>().register_reader());
-    }
-
-    fn run(&mut self, mut data: Self::SystemData) {
-        for evt in data.channel.read(self.reader.as_mut().unwrap()) {
-            // Ignore invalid missiles
-            if !data.is_missile.get(evt.missile).is_some() {
-                continue;
-            }
-
-            let mob = *data.mob.get(evt.missile).unwrap();
-            let owner = *data.owner.get(evt.missile).unwrap();
-
-            if !data.entities.is_alive(owner.0) {
-                continue;
-            }
-
-            let ref info = data.config.mobs[mob].missile.unwrap();
-
-            data.damage.get_mut(owner.0).unwrap().0 += info.damage * 100.0;
+    fn on_event(&mut self, evt: &PlayerHit, data: &mut Self::SystemData) {
+        // Ignore invalid missiles
+        if !data.is_missile.get(evt.missile).is_some() {
+            return;
         }
+
+        let mob = *data.mob.get(evt.missile).unwrap();
+        let owner = *data.owner.get(evt.missile).unwrap();
+
+        if !data.entities.is_alive(owner.0) {
+            return;
+        }
+
+        let ref info = data.config.mobs[mob].missile.unwrap();
+
+        data.damage.get_mut(owner.0).unwrap().0 += info.damage * 100.0;
     }
 }
 
-impl SystemInfo for TrackDamage {
-    type Dependencies = (AddDamage, MissileHit);
-
-    fn name() -> &'static str {
-        concat!(module_path!(), "::", line!())
-    }
-
-    fn new() -> Self {
-        Self::default()
+system_info! {
+    impl SystemInfo for TrackDamage {
+        type Dependencies = (AddDamage, MissileHit);
     }
 }
