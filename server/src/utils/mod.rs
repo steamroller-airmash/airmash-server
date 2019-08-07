@@ -12,6 +12,7 @@ mod system_info;
 mod tuple_array;
 
 mod event_handler;
+mod kdtree;
 mod maybe_init;
 pub mod timer;
 
@@ -20,6 +21,10 @@ pub use self::maybe_init::MaybeInit;
 
 // Needed within dispatch
 pub(crate) use self::event_handler::EventHandlerWrapper;
+
+// Needed within collision
+#[cfg(features = "kd-tree")]
+pub(crate) use self::kdtree::KdTree;
 
 // Internal logging hook
 #[cfg(features = "sentry")]

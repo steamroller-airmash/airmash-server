@@ -86,7 +86,7 @@ impl<'a> SendToAll<'a> {
 	{
 		let msg = msg.into();
 
-		(&self.associated,).join().for_each(|(assoc,)| {
+		(&self.associated,).join().for_each(|(assoc)| {
 			self.conns.send_to_ref(assoc.0, &msg);
 		});
 	}

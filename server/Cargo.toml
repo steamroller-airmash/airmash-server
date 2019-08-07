@@ -8,9 +8,7 @@ repository = 'https://github.com/steamroller-airmash/airmash-server'
 edition = "2018"
 
 [features]
-# Have logging on by default, it doesn't do anything
-# unless the environment variable is on
-default = [ ]
+default = [ "kd-tree" ]
 # If enabled, set TCP_NODELAY on incoming connections
 nodelay = []
 # Enable looking for the X-Forwarded-For header
@@ -18,6 +16,8 @@ nodelay = []
 proxied = []
 # Turn on bot blocking settings
 block-bots = []
+# Use a kd-tree for collisions instead of a grid
+kd-tree = []
 
 [dependencies]
 log = "0.4"
@@ -41,6 +41,7 @@ serde_json = "1.0"
 ws = "0.8"
 hashbrown = "0.5"
 parking_lot = "0.7"
+pdqselect = "0.1"
 
 [dependencies.sentry]
 optional = true

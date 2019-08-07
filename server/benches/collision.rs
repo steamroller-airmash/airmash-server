@@ -21,7 +21,7 @@ const ONES: (u32, u32) = (!0, !0);
 fn generate_circles() -> Vec<HitCircle> {
 	let mut circles = vec![];
 
-	for _ in 0..16000 {
+	for _ in 0..10000 {
 		let x: f32 = rand::random::<f32>() * 32768.0;
 		let y: f32 = rand::random::<f32>() * 16384.0;
 		let r: f32 = rand::random::<f32>() * 35.0;
