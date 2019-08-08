@@ -4,6 +4,7 @@ use crate::component::*;
 use crate::config::{BLUE_TEAM, RED_TEAM};
 use crate::server::utils::*;
 use crate::server::*;
+use crate::server::component::stats::FrameCounter;
 
 use super::SendFlagMessage;
 
@@ -14,6 +15,8 @@ pub struct CheckWin;
 pub struct CheckWinData<'a> {
 	win_channel: Write<'a, OnGameWin>,
 	scores: Read<'a, GameScores>,
+
+	frame: Read<'a, FrameCounter>,
 }
 
 impl EventHandlerTypeProvider for CheckWin {
@@ -32,8 +35,9 @@ impl<'a> EventHandler<'a> for CheckWin {
 		}
 
 		info!(
-			"Checking for a win. red: {}, blue: {}",
-			data.scores.redteam, data.scores.blueteam
+			"Checking for a win. red: {}, blue: {}, frame: {}",
+			data.scores.redteam, data.scores.blueteam,
+			data.frame.0
 		);
 
 		// Check to see if the game is over yet
@@ -51,14 +55,8 @@ impl<'a> EventHandler<'a> for CheckWin {
 	}
 }
 
-impl SystemInfo for CheckWin {
-	type Dependencies = SendFlagMessage;
-
-	fn new() -> Self {
-		Self::default()
-	}
-
-	fn name() -> &'static str {
-		concat!(module_path!(), "::", line!())
+system_info! {
+	impl SystemInfo for CheckWin {
+		type Dependencies = SendFlagMessage;
 	}
 }
