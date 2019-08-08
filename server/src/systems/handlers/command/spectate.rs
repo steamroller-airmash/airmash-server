@@ -3,8 +3,6 @@ use specs::*;
 
 use std::time::Duration;
 
-use crate::SystemInfo;
-
 use crate::component::channel::*;
 use crate::component::event::PlayerSpectate;
 use crate::component::event::*;
@@ -14,11 +12,11 @@ use crate::component::time::{LastKeyTime, ThisFrame};
 
 use crate::protocol::server::Error;
 use crate::protocol::ErrorType;
-
 use crate::utils::{EventHandler, EventHandlerTypeProvider};
-
-// use crate::systems::handlers::game::on_join::InitTraits;
 use crate::systems::PacketHandler;
+
+const SPEED_THRESHOLD: f32 = 0.01;
+const SPEED_THRESHOLD_SQUARED: f32 = SPEED_THRESHOLD * SPEED_THRESHOLD;
 
 #[derive(Default)]
 pub struct Spectate;
@@ -28,6 +26,7 @@ pub struct SpectateData<'a> {
 	pub conns: Read<'a, Connections>,
 	pub channel: Write<'a, OnPlayerSpectate>,
 	pub this_frame: Read<'a, ThisFrame>,
+	config: Read<'a, Config>,
 
 	pub is_spec: WriteStorage<'a, IsSpectating>,
 	pub is_dead: ReadStorage<'a, IsDead>,
@@ -36,6 +35,7 @@ pub struct SpectateData<'a> {
 	pub entities: Entities<'a>,
 	pub health: ReadStorage<'a, Health>,
 	pub last_key: ReadStorage<'a, LastKeyTime>,
+	velocity: ReadStorage<'a, Velocity>,
 }
 
 impl EventHandlerTypeProvider for Spectate {
@@ -52,6 +52,7 @@ impl<'a> EventHandler<'a> for Spectate {
 			conns,
 			ref mut channel,
 			this_frame,
+			config,
 
 			is_spec,
 			is_dead,
@@ -60,6 +61,7 @@ impl<'a> EventHandler<'a> for Spectate {
 			spec_target,
 			health,
 			last_key,
+			velocity,
 		} = data;
 
 		let &(conn, ref packet) = evt;
@@ -78,12 +80,19 @@ impl<'a> EventHandler<'a> for Spectate {
 			Err(_) => return,
 		};
 
-		let allowed = check_allowed(
+		let mut allowed = check_allowed(
 			is_spec.get(player).is_some(),
-			health.get(player).unwrap(),
-			last_key.get(player).unwrap(),
+			try_get!(player, health),
+			try_get!(player, last_key),
 			&*this_frame,
 		);
+
+		let vel = *try_get!(player, velocity);
+		let spd2 = vel.length2().inner();
+		
+		if !config.allow_spectate_while_moving && spd2 >= SPEED_THRESHOLD_SQUARED {
+			allowed = false;
+		}
 
 		if !allowed {
 			conns.send_to(
@@ -181,24 +190,13 @@ impl<'a> EventHandler<'a> for Spectate {
 			}
 		}
 
-		info!("Went into spec. is_dead: {}", spec_event.is_dead);
-
 		channel.single_write(spec_event);
 	}
 }
 
-impl SystemInfo for Spectate {
-	type Dependencies = (
-		PacketHandler,
-		// InitTraits
-	);
-
-	fn name() -> &'static str {
-		concat!(module_path!(), "::", line!())
-	}
-
-	fn new() -> Self {
-		Self::default()
+system_info! {
+	impl SystemInfo for Spectate {
+		type Dependencies = PacketHandler;
 	}
 }
 
