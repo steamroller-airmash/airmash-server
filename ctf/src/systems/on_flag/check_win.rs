@@ -31,11 +31,6 @@ impl<'a> EventHandler<'a> for CheckWin {
 			_ => return,
 		}
 
-		info!(
-			"Checking for a win. red: {}, blue: {}",
-			data.scores.redteam, data.scores.blueteam
-		);
-
 		// Check to see if the game is over yet
 		if data.scores.redteam < 3 && data.scores.blueteam < 3 {
 			return;
@@ -51,14 +46,8 @@ impl<'a> EventHandler<'a> for CheckWin {
 	}
 }
 
-impl SystemInfo for CheckWin {
-	type Dependencies = SendFlagMessage;
-
-	fn new() -> Self {
-		Self::default()
-	}
-
-	fn name() -> &'static str {
-		concat!(module_path!(), "::", line!())
+system_info! {
+	impl SystemInfo for CheckWin {
+		type Dependencies = SendFlagMessage;
 	}
 }
