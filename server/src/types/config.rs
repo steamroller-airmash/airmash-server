@@ -1,7 +1,7 @@
-use airmash_protocol::{MobType};
+use airmash_protocol::MobType;
+use serde_deserialize_over::DeserializeOver;
 use std::ops::Index;
 use std::time::Duration;
-use serde_deserialize_over::DeserializeOver;
 
 use crate::types::*;
 
@@ -68,7 +68,7 @@ pub struct UpgradeInfo {
 }
 
 #[derive(Clone, Debug, Serialize, Deserialize, DeserializeOver)]
-pub struct PlaneInfos{
+pub struct PlaneInfos {
 	#[deserialize_over]
 	pub predator: PlaneInfo,
 	#[deserialize_over]
@@ -141,7 +141,7 @@ impl MobInfos {
 			&mut self.tornado_triple,
 			&mut self.upgrade,
 			&mut self.inferno,
-			&mut self.shield
+			&mut self.shield,
 		];
 
 		arr.into_iter()
@@ -157,7 +157,7 @@ impl Index<Plane> for PlaneInfos {
 			Plane::Tornado => &self.tornado,
 			Plane::Prowler => &self.prowler,
 			Plane::Mohawk => &self.mohawk,
-			Plane::Goliath => &self.goliath
+			Plane::Goliath => &self.goliath,
 		}
 	}
 }
@@ -175,7 +175,7 @@ impl Index<Mob> for MobInfos {
 			Mob::TornadoTripleMissile => &self.tornado_triple,
 			Mob::Upgrade => &self.upgrade,
 			Mob::Inferno => &self.inferno,
-			Mob::Shield => &self.shield
+			Mob::Shield => &self.shield,
 		}
 	}
 }
@@ -189,7 +189,7 @@ impl Default for PlaneInfos {
 			goliath: goliath(),
 			mohawk: mohawk(),
 			tornado: tornado(),
-			prowler: prowler()
+			prowler: prowler(),
 		}
 	}
 }
@@ -207,7 +207,7 @@ impl Default for MobInfos {
 			tornado_triple: tornado_triple_missile(),
 			upgrade: upgrade(),
 			inferno: inferno(),
-			shield: shield()
+			shield: shield(),
 		}
 	}
 }

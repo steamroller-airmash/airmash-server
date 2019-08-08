@@ -84,9 +84,7 @@ fn main() {
 		let mut de = serde_json::Deserializer::new(serde_json::de::IoRead::new(file));
 
 		let mut serverconfig = Config::default();
-		serverconfig
-			.deserialize_over(&mut de)
-			.unwrap();
+		serverconfig.deserialize_over(&mut de).unwrap();
 
 		config.world.add_resource(serverconfig);
 	}
