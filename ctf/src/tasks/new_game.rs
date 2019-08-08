@@ -178,11 +178,7 @@ fn make_planes_invulnerable(data: &mut TaskData) -> SavedVulnData {
 			mobs: config.mobs.clone(),
 		};
 
-		let iter = config
-			.mobs
-			.0
-			.iter_mut()
-			.filter_map(|x| x.1.missile.as_mut());
+		let iter = config.mobs.iter_mut().filter_map(|x| x.missile.as_mut());
 
 		for missile in iter {
 			missile.damage = Health::new(0.0);

@@ -27,6 +27,8 @@ mod tests;
 use std::env;
 use std::fs::File;
 
+use serde_deserialize_over::DeserializeOver;
+
 use crate::gamemode::{CTFGameMode, BLUE_TEAM, RED_TEAM};
 use crate::server::{AirmashServer, AirmashServerConfig, Config};
 
@@ -79,11 +81,10 @@ fn main() {
 			}
 		};
 
-		let serverconfig: Config = serde_json::from_reader(file).unwrap_or_else(|e| {
-			error!("Unable to parse config file! Using default config.");
-			error!("Config file error was: {}", e);
-			Default::default()
-		});
+		let mut de = serde_json::Deserializer::new(serde_json::de::IoRead::new(file));
+
+		let mut serverconfig = Config::default();
+		serverconfig.deserialize_over(&mut de).unwrap();
 
 		config.world.add_resource(serverconfig);
 	}

@@ -23,6 +23,7 @@ lazy_static = "*"
 htmlescape = "*"
 env_logger = "*"
 serde = { version = "*", features = [ "derive" ]}
+serde-deserialize-over = { git="https://github.com/steamroller-airmash/serde-deserialize-over" }
 serde_json = "*"
 clap = "*"
 
