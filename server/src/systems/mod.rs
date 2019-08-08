@@ -18,10 +18,10 @@ pub mod missile;
 pub mod notify;
 pub mod powerups;
 pub mod specials;
+pub mod stats;
 pub mod timers;
 pub mod upgrades;
 pub mod visibility;
-pub mod stats;
 
 pub use self::disconnect::Disconnect;
 pub use self::energy_regen::EnergyRegenSystem;

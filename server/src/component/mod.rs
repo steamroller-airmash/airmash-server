@@ -11,5 +11,5 @@ pub mod flag;
 pub mod missile;
 pub mod ratelimit;
 pub mod reference;
-pub mod time;
 pub mod stats;
+pub mod time;
