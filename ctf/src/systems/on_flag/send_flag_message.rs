@@ -6,7 +6,6 @@ use crate::server::protocol::server::GameFlag;
 use crate::server::protocol::FlagUpdateType;
 use crate::server::types::systemdata::*;
 use crate::server::utils::*;
-use crate::server::component::stats::FrameCounter;
 
 use crate::BLUE_TEAM;
 use crate::RED_TEAM;
@@ -23,8 +22,6 @@ pub struct SendFlagMessageSystemData<'a> {
 	team: ReadStorage<'a, Team>,
 	pos: ReadStorage<'a, Position>,
 	carrier: ReadStorage<'a, FlagCarrier>,
-
-	frame: Read<'a, FrameCounter>
 }
 
 impl EventHandlerTypeProvider for SendFlagMessageSystem {
@@ -57,12 +54,6 @@ impl<'a> EventHandler<'a> for SendFlagMessageSystem {
 				// implemented.
 				unimplemented!();
 			}
-
-			info!(
-				"new scores. red: {}, blue: {}, frame: {}",
-				data.scores.redteam, data.scores.blueteam,
-				data.frame.0
-			);
 
 			let flag = Flag(*try_get!(other, data.team));
 
