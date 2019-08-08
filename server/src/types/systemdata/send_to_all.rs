@@ -86,7 +86,9 @@ impl<'a> SendToAll<'a> {
 	{
 		let msg = msg.into();
 
-		(&self.associated,).join().for_each(|(assoc)| {
+		// Rustfmt breaks the code here
+		#[rustfmt::skip]
+		(&self.associated,).join().for_each(|(assoc,)| {
 			self.conns.send_to_ref(assoc.0, &msg);
 		});
 	}

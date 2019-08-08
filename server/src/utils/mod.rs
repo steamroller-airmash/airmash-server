@@ -12,9 +12,11 @@ mod system_info;
 mod tuple_array;
 
 mod event_handler;
-mod kdtree;
 mod maybe_init;
 pub mod timer;
+
+#[cfg(features = "kd-tree")]
+mod kdtree;
 
 pub use self::event_handler::{EventHandler, EventHandlerTypeProvider};
 pub use self::maybe_init::MaybeInit;
