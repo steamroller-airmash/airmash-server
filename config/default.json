@@ -224,6 +224,7 @@
     }
   },
   "admin_enabled": true,
+  "allow_spectate_while_moving": true,
   "spawn_shield_duration": {
     "secs": 2,
     "nanos": 0
