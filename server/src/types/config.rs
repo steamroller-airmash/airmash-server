@@ -124,6 +124,7 @@ pub struct Config {
 	pub upgrades: UpgradeInfos,
 
 	pub admin_enabled: bool,
+	pub allow_spectate_while_moving: bool,
 	pub spawn_shield_duration: Duration,
 	pub shield_duration: Duration,
 	pub inferno_duration: Duration,
@@ -248,6 +249,7 @@ impl Default for Config {
 			// default feature defined. Ensure admin commands are disabled by
 			// default in release mode, unless explicitly requested.
 			admin_enabled: cfg!(debug_assertions),
+			allow_spectate_while_moving: true,
 			spawn_shield_duration: Duration::from_secs(2),
 			shield_duration: Duration::from_secs(10),
 			inferno_duration: Duration::from_secs(10),

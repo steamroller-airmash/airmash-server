@@ -86,7 +86,10 @@ fn main() {
 
         let mut de = serde_json::Deserializer::new(serde_json::de::IoRead::new(file));
 
-        let mut serverconfig = Config::default();
+        let mut serverconfig = Config {
+            allow_spectate_while_moving: false,
+            ..Config::default()
+        };
         serverconfig.deserialize_over(&mut de).unwrap();
 
         config.world.add_resource(serverconfig);
