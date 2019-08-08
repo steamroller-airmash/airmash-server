@@ -20,6 +20,8 @@ env_logger = "*"
 rand = "0.4"
 lazy_static = "*"
 clap = "*"
+serde = "1.0"
+serde-deserialize-over = { git="https://github.com/steamroller-airmash/serde-deserialize-over" }
 serde_json = "*"
 
 [dependencies.sentry]

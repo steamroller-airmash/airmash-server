@@ -1,6 +1,4 @@
 #[macro_use]
-extern crate log;
-#[macro_use]
 extern crate lazy_static;
 #[macro_use]
 extern crate specs_derive;
@@ -16,6 +14,8 @@ mod tests;
 
 use std::env;
 use std::fs::File;
+
+use serde_deserialize_over::DeserializeOver;
 
 use gamemode::EmptyGameMode;
 
@@ -84,11 +84,10 @@ fn main() {
             }
         };
 
-        let serverconfig: Config = serde_json::from_reader(file).unwrap_or_else(|e| {
-            error!("Unable to parse config file! Using default config.");
-            error!("Config file error was: {}", e);
-            Default::default()
-        });
+        let mut de = serde_json::Deserializer::new(serde_json::de::IoRead::new(file));
+
+        let mut serverconfig = Config::default();
+        serverconfig.deserialize_over(&mut de).unwrap();
 
         config.world.add_resource(serverconfig);
     }
