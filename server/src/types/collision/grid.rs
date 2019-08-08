@@ -296,6 +296,7 @@ impl Grid {
 
 		false
 	}
+
 	/// Get all entities that the hit circle could potentially
 	/// collide with
 	pub fn rough_collide(&self, hc: HitCircle) -> HashSet<Entity> {

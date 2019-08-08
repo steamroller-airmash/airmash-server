@@ -15,11 +15,18 @@ mod event_handler;
 mod maybe_init;
 pub mod timer;
 
+#[cfg(features = "kd-tree")]
+mod kdtree;
+
 pub use self::event_handler::{EventHandler, EventHandlerTypeProvider};
 pub use self::maybe_init::MaybeInit;
 
 // Needed within dispatch
 pub(crate) use self::event_handler::EventHandlerWrapper;
+
+// Needed within collision
+#[cfg(features = "kd-tree")]
+pub(crate) use self::kdtree::KdTree;
 
 // Internal logging hook
 #[cfg(features = "sentry")]
