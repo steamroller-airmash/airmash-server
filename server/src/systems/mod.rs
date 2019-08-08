@@ -21,6 +21,7 @@ pub mod specials;
 pub mod timers;
 pub mod upgrades;
 pub mod visibility;
+pub mod stats;
 
 pub use self::disconnect::Disconnect;
 pub use self::energy_regen::EnergyRegenSystem;
