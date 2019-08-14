@@ -12,8 +12,8 @@ use crate::component::time::{LastKeyTime, ThisFrame};
 
 use crate::protocol::server::Error;
 use crate::protocol::ErrorType;
-use crate::utils::{EventHandler, EventHandlerTypeProvider};
 use crate::systems::PacketHandler;
+use crate::utils::{EventHandler, EventHandlerTypeProvider};
 
 const SPEED_THRESHOLD: f32 = 0.01;
 const SPEED_THRESHOLD_SQUARED: f32 = SPEED_THRESHOLD * SPEED_THRESHOLD;
@@ -89,7 +89,7 @@ impl<'a> EventHandler<'a> for Spectate {
 
 		let vel = *try_get!(player, velocity);
 		let spd2 = vel.length2().inner();
-		
+
 		if !config.allow_spectate_while_moving && spd2 >= SPEED_THRESHOLD_SQUARED {
 			allowed = false;
 		}

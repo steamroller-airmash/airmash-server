@@ -1,7 +1,6 @@
 use specs::*;
 
 use crate::component::event::PlayerRespawn as EvtPlayerRespawn;
-use crate::component::flag::*;
 use crate::types::systemdata::SendToVisible;
 use crate::types::*;
 use crate::SystemInfo;
@@ -26,7 +25,6 @@ pub struct SendPlayerRespawnData<'a> {
 	entities: Entities<'a>,
 	conns: SendToVisible<'a>,
 
-	is_spec: ReadStorage<'a, IsSpectating>,
 	pos: ReadStorage<'a, Position>,
 	rot: ReadStorage<'a, Rotation>,
 }
@@ -43,23 +41,28 @@ impl<'a> EventHandler<'a> for SendPlayerRespawn {
 			return;
 		}
 
-		if data.is_spec.get(evt.player).is_some() {
-			return;
-		}
-
 		let player = evt.player;
 		let pos = *try_get!(player, data.pos);
 		let rot = *try_get!(player, data.rot);
+		let packet = PlayerRespawn {
+			id: player.into(),
+			pos: pos,
+			rot: rot,
+			upgrades: ProtocolUpgrades::default(),
+		};
 
-		data.conns.send_to_visible(
-			pos,
-			PlayerRespawn {
-				id: player.into(),
-				pos: pos,
-				rot: rot,
-				upgrades: ProtocolUpgrades::default(),
-			},
-		);
+		// FIXME: Bake setting traits into a respawn task
+		//        so that there's a 1-frame gap between
+		//        setting the position and respawning. This
+		//        would ensure that the collision mask is
+		//        properly updated before.
+		//
+		// Alternative: Allow reinserting players into the
+		//        collision grid mid-frame. This one might
+		//        actually be better.
+		data.conns.send_to_others_visible(pos, player, packet);
+
+		data.conns.send_to_player(player, packet);
 	}
 }
 

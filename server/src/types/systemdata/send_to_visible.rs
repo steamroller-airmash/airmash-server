@@ -113,4 +113,29 @@ impl<'a> SendToVisible<'a> {
 				self.send_to_ref(associated.0, &msg);
 			});
 	}
+
+	/// Send to all players that could be visible with
+	/// the exception of one entity.
+	///
+	/// Use this when you need to guarantee that a player
+	/// is sent a message even when others might not.
+	pub fn send_to_others_visible<I>(&self, pos: Position, player: Entity, msg: I)
+	where
+		I: Into<ServerPacket>,
+	{
+		let msg = msg.into();
+
+		self.grid
+			.0
+			.rough_collide(HitCircle {
+				pos: pos,
+				rad: self.config.view_radius,
+				layer: 0,
+				ent: player,
+			})
+			.into_iter()
+			.filter(|x| *x != player)
+			.filter_map(|x| self.associated.get(x))
+			.for_each(|associated| self.send_to_ref(associated.0, &msg));
+	}
 }
