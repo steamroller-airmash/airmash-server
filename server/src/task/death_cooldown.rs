@@ -12,8 +12,6 @@ use std::time::Duration;
 pub async fn death_cooldown(mut task: TaskData, player: Entity) {
 	task.sleep_for(Duration::from_secs(2)).await;
 
-	info!("Clearing dead flag for {:?}", player);
-
 	task.write_storage::<IsDead, _, _>(|mut storage: specs::WriteStorage<IsDead>| {
 		storage.remove(player)
 	});

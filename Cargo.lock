@@ -1202,28 +1202,6 @@ dependencies = [
 ]
 
 [[package]]
-name = "proc-macro-rules"
-version = "0.2.1"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-dependencies = [
- "proc-macro-hack 0.5.9 (registry+https://github.com/rust-lang/crates.io-index)",
- "proc-macro-rules-macros 0.2.0 (registry+https://github.com/rust-lang/crates.io-index)",
- "proc-macro2 0.4.30 (registry+https://github.com/rust-lang/crates.io-index)",
- "syn 0.15.44 (registry+https://github.com/rust-lang/crates.io-index)",
-]
-
-[[package]]
-name = "proc-macro-rules-macros"
-version = "0.2.0"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-dependencies = [
- "proc-macro-hack 0.5.9 (registry+https://github.com/rust-lang/crates.io-index)",
- "proc-macro2 0.4.30 (registry+https://github.com/rust-lang/crates.io-index)",
- "quote 0.6.13 (registry+https://github.com/rust-lang/crates.io-index)",
- "syn 0.15.44 (registry+https://github.com/rust-lang/crates.io-index)",
-]
-
-[[package]]
 name = "proc-macro2"
 version = "0.4.30"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -1644,7 +1622,7 @@ dependencies = [
 [[package]]
 name = "serde-deserialize-over"
 version = "0.1.0"
-source = "git+https://github.com/steamroller-airmash/serde-deserialize-over#f76f30a37f651127204d972ef9c7e29ad1f34566"
+source = "git+https://github.com/steamroller-airmash/serde-deserialize-over#789ef99bed92a021b9a7b0153db6e22a49d912de"
 dependencies = [
  "serde 1.0.98 (registry+https://github.com/rust-lang/crates.io-index)",
  "serde-deserialize-over-derive 0.1.0 (git+https://github.com/steamroller-airmash/serde-deserialize-over)",
@@ -1653,13 +1631,12 @@ dependencies = [
 [[package]]
 name = "serde-deserialize-over-derive"
 version = "0.1.0"
-source = "git+https://github.com/steamroller-airmash/serde-deserialize-over#f76f30a37f651127204d972ef9c7e29ad1f34566"
+source = "git+https://github.com/steamroller-airmash/serde-deserialize-over#789ef99bed92a021b9a7b0153db6e22a49d912de"
 dependencies = [
  "proc-macro-crate 0.1.4 (registry+https://github.com/rust-lang/crates.io-index)",
- "proc-macro-rules 0.2.1 (registry+https://github.com/rust-lang/crates.io-index)",
  "proc-macro2 1.0.0 (registry+https://github.com/rust-lang/crates.io-index)",
- "quote 0.6.13 (registry+https://github.com/rust-lang/crates.io-index)",
- "syn 0.15.44 (registry+https://github.com/rust-lang/crates.io-index)",
+ "quote 1.0.0 (registry+https://github.com/rust-lang/crates.io-index)",
+ "syn 1.0.1 (registry+https://github.com/rust-lang/crates.io-index)",
 ]
 
 [[package]]
@@ -2382,8 +2359,6 @@ dependencies = [
 "checksum ppv-lite86 0.2.5 (registry+https://github.com/rust-lang/crates.io-index)" = "e3cbf9f658cdb5000fcf6f362b8ea2ba154b9f146a61c7a20d647034c6b6561b"
 "checksum proc-macro-crate 0.1.4 (registry+https://github.com/rust-lang/crates.io-index)" = "e10d4b51f154c8a7fb96fd6dad097cb74b863943ec010ac94b9fd1be8861fe1e"
 "checksum proc-macro-hack 0.5.9 (registry+https://github.com/rust-lang/crates.io-index)" = "e688f31d92ffd7c1ddc57a1b4e6d773c0f2a14ee437a4b0a4f5a69c80eb221c8"
-"checksum proc-macro-rules 0.2.1 (registry+https://github.com/rust-lang/crates.io-index)" = "07d9aa616dcd7b69da7a367cf8a062185a4f8d7797e24c2bcced47d29674e8e4"
-"checksum proc-macro-rules-macros 0.2.0 (registry+https://github.com/rust-lang/crates.io-index)" = "c041321a6d176a71f17196da02b81ac81f00ef71b5c8dbd42200190bb3ba1a0d"
 "checksum proc-macro2 0.4.30 (registry+https://github.com/rust-lang/crates.io-index)" = "cf3d2011ab5c909338f7887f4fc896d35932e29146c12c8d01da6b22a80ba759"
 "checksum proc-macro2 1.0.0 (registry+https://github.com/rust-lang/crates.io-index)" = "19f287c234c9b2d0308d692dee5c449c1a171167a6f8150f7cf2a49d8fd96967"
 "checksum publicsuffix 1.5.2 (registry+https://github.com/rust-lang/crates.io-index)" = "5afecba86dcf1e4fd610246f89899d1924fe12e1e89f555eb7c7f710f3c5ad1d"

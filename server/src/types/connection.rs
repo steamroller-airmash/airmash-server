@@ -110,11 +110,15 @@ impl Connections {
 	}
 	pub fn send_to_ref(&self, id: ConnectionId, msg: &ServerPacket) {
 		// FIXME: Send errors back up to the caller
-		trace!(
-			target: "server",
-			"Sent message to {:?}: {:?}",
-			id, msg
-		);
+		match msg {
+			ServerPacket::Ack | ServerPacket::PlayerUpdate(_) => (),
+			ServerPacket::PingResult(_) => (),
+			_ => trace!(
+				target: "server",
+				"Sent message to {:?}: {:?}",
+				id, msg
+			),
+		}
 
 		let mut conn = match self.conns.get(&id).map(|ref x| x.sink.clone()) {
 			Some(conn) => conn,

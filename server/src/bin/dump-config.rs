@@ -1,5 +1,5 @@
-use std::error::Error;
 use airmash_server::types::Config;
+use std::error::Error;
 
 fn main() -> Result<(), Box<dyn Error>> {
 	let config = Config::default();
