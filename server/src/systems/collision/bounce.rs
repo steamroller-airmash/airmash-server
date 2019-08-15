@@ -1,9 +1,9 @@
-use crate::types::systemdata::*;
-use crate::types::*;
-use specs::*;
+use specs::prelude::*;
 
 use crate::component::event::*;
 use crate::component::time::{StartTime, ThisFrame};
+use crate::types::systemdata::Connections;
+use crate::types::*;
 
 use crate::utils::{EventHandler, EventHandlerTypeProvider};
 
@@ -20,7 +20,7 @@ pub struct BounceSystemData<'a> {
 	team: ReadStorage<'a, Team>,
 	plane: ReadStorage<'a, Plane>,
 	keystate: ReadStorage<'a, KeyState>,
-	conns: SendToTeamVisible<'a>,
+	conns: Connections<'a>,
 	thisframe: Read<'a, ThisFrame>,
 	starttime: Read<'a, StartTime>,
 }

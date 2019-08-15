@@ -1,4 +1,3 @@
-use crate::types::systemdata::*;
 use crate::types::*;
 use specs::*;
 
@@ -12,6 +11,7 @@ use crate::component::flag::{ForcePlayerUpdate, IsPlayer};
 use crate::component::time::*;
 use crate::protocol::server::PlayerUpdate;
 use crate::protocol::Upgrades as ServerUpgrades;
+use crate::types::systemdata::{Connections, IsAlive, ReadClock};
 
 const PI: Rotation = Rotation {
 	value_unsafe: consts::PI,
@@ -49,7 +49,7 @@ pub struct PositionUpdateData<'a> {
 	lastframe: Read<'a, LastFrame>,
 	thisframe: Read<'a, ThisFrame>,
 	entities: Entities<'a>,
-	conns: SendToTeamVisible<'a>,
+	conns: Connections<'a>,
 	is_alive: IsAlive<'a>,
 	clock: ReadClock<'a>,
 }
