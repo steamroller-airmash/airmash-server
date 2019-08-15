@@ -1,6 +1,6 @@
 use specs::*;
 
-use crate::types::systemdata::*;
+use crate::types::systemdata::Connections;
 use crate::types::*;
 
 use std::convert::TryFrom;
@@ -16,7 +16,6 @@ use crate::protocol::ErrorType;
 
 use crate::utils::{EventHandler, EventHandlerTypeProvider};
 
-//use crate::systems::handlers::game::on_join::InitTraits;
 use crate::systems::PacketHandler;
 use crate::SystemInfo;
 
@@ -32,7 +31,7 @@ pub struct RespawnData<'a> {
 	is_dead: WriteStorage<'a, IsDead>,
 	last_key: ReadStorage<'a, LastKeyTime>,
 
-	conns: SendToAll<'a>,
+	conns: Connections<'a>,
 	channel: Write<'a, OnPlayerRespawn>,
 	this_frame: Read<'a, ThisFrame>,
 }

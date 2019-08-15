@@ -3,11 +3,10 @@ use specs::*;
 use crate::component::event::*;
 use crate::protocol::server::PlayerFlag;
 use crate::protocol::FlagCode;
-use crate::types::systemdata::*;
+use crate::types::systemdata::Connections;
 
 use crate::systems::PacketHandler;
 use crate::utils::{EventHandler, EventHandlerTypeProvider};
-use crate::SystemInfo;
 
 use std::str::FromStr;
 
@@ -20,7 +19,7 @@ pub struct Flag;
 
 #[derive(SystemData)]
 pub struct FlagData<'a> {
-	conns: SendToAll<'a>,
+	conns: Connections<'a>,
 	flags: WriteStorage<'a, FlagCode>,
 }
 
@@ -54,14 +53,8 @@ impl<'a> EventHandler<'a> for Flag {
 	}
 }
 
-impl SystemInfo for Flag {
-	type Dependencies = PacketHandler;
-
-	fn name() -> &'static str {
-		concat!(module_path!(), "::", line!())
-	}
-
-	fn new() -> Self {
-		Self::default()
+system_info! {
+	impl SystemInfo for Flag {
+		type Dependencies = PacketHandler;
 	}
 }

@@ -4,10 +4,9 @@ use super::*;
 
 use crate::component::counter::*;
 use crate::component::event::*;
-use crate::types::systemdata::*;
+use crate::types::systemdata::Connections;
 use crate::types::*;
 use crate::utils::{EventHandler, EventHandlerTypeProvider};
-use crate::SystemInfo;
 
 use crate::protocol::server::ScoreUpdate;
 
@@ -16,7 +15,7 @@ pub struct SendScoreUpdate;
 
 #[derive(SystemData)]
 pub struct SendScoreUpdateData<'a> {
-	conns: SendToAll<'a>,
+	conns: Connections<'a>,
 
 	score: ReadStorage<'a, Score>,
 	earnings: ReadStorage<'a, Earnings>,
@@ -52,21 +51,11 @@ impl<'a> EventHandler<'a> for SendScoreUpdate {
 	}
 }
 
-impl SystemInfo for SendScoreUpdate {
-	type Dependencies = (
-		// InitTraits,
-		// InitEarnings,
-		// InitKillCounters,
-		SendLogin,
-		InitConnection,
-		// InitState,
-	);
-
-	fn name() -> &'static str {
-		concat!(module_path!(), "::", line!())
-	}
-
-	fn new() -> Self {
-		Self::default()
+system_info! {
+	impl SystemInfo for SendScoreUpdate {
+		type Dependencies = (
+			SendLogin,
+			InitConnection,
+		);
 	}
 }

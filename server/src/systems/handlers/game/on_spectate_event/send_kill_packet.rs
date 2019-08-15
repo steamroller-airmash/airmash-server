@@ -1,17 +1,15 @@
 use crate::component::event::PlayerSpectate;
 use crate::protocol::server::PlayerKill;
-use crate::types::systemdata::*;
+use crate::types::systemdata::Connections;
 use crate::types::*;
 use crate::utils::*;
-
-use crate::SystemInfo;
 
 #[derive(Default)]
 pub struct SendKillPacket;
 
 #[derive(SystemData)]
 pub struct SendKillPacketData<'a> {
-	conns: SendToAll<'a>,
+	conns: Connections<'a>,
 }
 
 impl EventHandlerTypeProvider for SendKillPacket {
@@ -41,14 +39,8 @@ impl<'a> EventHandler<'a> for SendKillPacket {
 	}
 }
 
-impl SystemInfo for SendKillPacket {
-	type Dependencies = super::KnownEventSources;
-
-	fn name() -> &'static str {
-		concat!(module_path!(), "::", line!())
-	}
-
-	fn new() -> Self {
-		Self::default()
+system_info! {
+	impl SystemInfo for SendKillPacket {
+		type Dependencies = super::KnownEventSources;
 	}
 }

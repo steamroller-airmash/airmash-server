@@ -7,7 +7,7 @@ use crate::component::*;
 
 use crate::server::protocol::server::GameFlag;
 use crate::server::protocol::FlagUpdateType;
-use crate::server::types::systemdata::*;
+use crate::server::types::systemdata::Connections;
 
 use crate::server::utils::{EventHandler, EventHandlerTypeProvider};
 
@@ -20,7 +20,7 @@ pub struct DoReturnData<'a> {
 	flags: ReadExpect<'a, Flags>,
 
 	scores: Read<'a, GameScores>,
-	conns: SendToAll<'a>,
+	conns: Connections<'a>,
 	carriers: WriteStorage<'a, FlagCarrier>,
 }
 

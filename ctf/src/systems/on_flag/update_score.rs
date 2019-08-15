@@ -6,7 +6,7 @@ use crate::config as ctfconfig;
 
 use crate::server::component::counter::*;
 use crate::server::protocol::server::ScoreUpdate;
-use crate::server::types::systemdata::*;
+use crate::server::types::systemdata::Connections;
 use crate::server::types::*;
 use crate::server::utils::*;
 
@@ -15,7 +15,7 @@ pub struct UpdateScore;
 
 #[derive(SystemData)]
 pub struct UpdateScoreData<'a> {
-	conns: SendToAll<'a>,
+	conns: Connections<'a>,
 	players_game: Read<'a, PlayersGame>,
 
 	scores: WriteStorage<'a, Score>,

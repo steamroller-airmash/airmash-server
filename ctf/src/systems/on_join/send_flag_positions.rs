@@ -4,7 +4,7 @@ use crate::server::component::event::*;
 use crate::server::protocol::server::GameFlag;
 use crate::server::protocol::FlagUpdateType;
 use crate::server::systems::handlers::game::on_join::SendLogin;
-use crate::server::types::systemdata::SendToPlayer;
+use crate::server::types::systemdata::Connections;
 use crate::server::utils::*;
 use crate::server::*;
 
@@ -15,7 +15,7 @@ pub struct SendFlagPosition;
 
 #[derive(SystemData)]
 pub struct SendFlagPositionData<'a> {
-	conns: SendToPlayer<'a>,
+	conns: Connections<'a>,
 	scores: Read<'a, GameScores>,
 
 	// These ones are for both

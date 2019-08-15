@@ -1,4 +1,4 @@
-use crate::types::systemdata::*;
+use crate::types::systemdata::Connections;
 use crate::types::*;
 use shrev::*;
 use specs::*;
@@ -17,7 +17,7 @@ pub struct ChatHandler {
 #[derive(SystemData)]
 pub struct ChatHandlerData<'a> {
 	channel: Read<'a, EventChannel<(ConnectionId, Chat)>>,
-	conns: SendToAll<'a>,
+	conns: Connections<'a>,
 
 	throttled: ReadStorage<'a, IsChatThrottled>,
 	muted: ReadStorage<'a, IsChatMuted>,

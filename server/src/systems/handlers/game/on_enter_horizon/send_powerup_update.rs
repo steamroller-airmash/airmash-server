@@ -2,7 +2,7 @@ use specs::*;
 
 use crate::component::event::*;
 use crate::protocol::server::MobUpdateStationary;
-use crate::types::systemdata::*;
+use crate::types::systemdata::Connections;
 use crate::types::*;
 use crate::utils::*;
 
@@ -13,7 +13,7 @@ pub struct SendPowerupUpdate;
 
 #[derive(SystemData)]
 pub struct SendPowerupUpdateData<'a> {
-	conns: SendToPlayer<'a>,
+	conns: Connections<'a>,
 
 	pos: ReadStorage<'a, Position>,
 	mob: ReadStorage<'a, Mob>,

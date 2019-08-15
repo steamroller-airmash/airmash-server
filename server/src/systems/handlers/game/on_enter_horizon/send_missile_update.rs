@@ -2,18 +2,17 @@ use specs::*;
 
 use crate::component::event::*;
 use crate::protocol::server::MobUpdate;
+use crate::types::systemdata::Connections;
 use crate::types::systemdata::ReadClock;
-use crate::types::systemdata::*;
 use crate::types::*;
 use crate::utils::*;
-use crate::SystemInfo;
 
 #[derive(Default)]
 pub struct SendMissileUpdate;
 
 #[derive(SystemData)]
 pub struct SendMissileUpdateData<'a> {
-	conns: SendToPlayer<'a>,
+	conns: Connections<'a>,
 	config: Read<'a, Config>,
 	clock: ReadClock<'a>,
 
@@ -57,14 +56,8 @@ impl<'a> EventHandler<'a> for SendMissileUpdate {
 	}
 }
 
-impl SystemInfo for SendMissileUpdate {
-	type Dependencies = (super::KnownEventSources);
-
-	fn name() -> &'static str {
-		concat!(module_path!(), "::", line!())
-	}
-
-	fn new() -> Self {
-		Default::default()
+system_info! {
+	impl SystemInfo for SendMissileUpdate {
+		type Dependencies = (super::KnownEventSources);
 	}
 }

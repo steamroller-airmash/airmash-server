@@ -1,8 +1,8 @@
-use crate::types::systemdata::*;
-use crate::types::*;
 use specs::*;
 
 use crate::consts::timer::SCORE_BOARD;
+use crate::types::systemdata::{Connections, IsAlive};
+use crate::types::*;
 
 use crate::component::event::TimerEvent;
 use crate::component::flag::IsPlayer;
@@ -32,7 +32,7 @@ pub struct ScoreBoardTimerHandler;
 
 #[derive(SystemData)]
 pub struct ScoreBoardSystemData<'a> {
-	conns: SendToAll<'a>,
+	conns: Connections<'a>,
 
 	entities: Entities<'a>,
 	scores: ReadStorage<'a, Score>,

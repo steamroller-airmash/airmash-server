@@ -1,13 +1,12 @@
 use specs::*;
 
-use crate::types::systemdata::*;
+use crate::types::systemdata::Connections;
 use crate::types::*;
 
 use crate::component::counter::*;
 use crate::component::event::*;
 use crate::protocol::server::ScoreUpdate;
 use crate::utils::{EventHandler, EventHandlerTypeProvider};
-use crate::SystemInfo;
 
 #[derive(Default)]
 pub struct UpdateScore;
@@ -15,7 +14,7 @@ pub struct UpdateScore;
 #[derive(SystemData)]
 pub struct UpdateScoreData<'a> {
 	entities: Entities<'a>,
-	conns: SendToAll<'a>,
+	conns: Connections<'a>,
 
 	score: WriteStorage<'a, Score>,
 	upgrades: WriteStorage<'a, Upgrades>,
@@ -81,14 +80,8 @@ impl<'a> EventHandler<'a> for UpdateScore {
 	}
 }
 
-impl SystemInfo for UpdateScore {
-	type Dependencies = (super::DisplayMessage);
-
-	fn name() -> &'static str {
-		concat!(module_path!(), "::", line!())
-	}
-
-	fn new() -> Self {
-		Self::default()
+system_info! {
+	impl SystemInfo for UpdateScore {
+		type Dependencies = (super::DisplayMessage);
 	}
 }

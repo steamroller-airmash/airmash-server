@@ -1,7 +1,7 @@
-use crate::types::systemdata::*;
-use crate::types::*;
 use specs::*;
 
+use crate::types::systemdata::{Connections, ReadClock};
+use crate::types::*;
 use crate::GameMode;
 use crate::GameModeWriter;
 use crate::SystemInfo;
@@ -16,7 +16,7 @@ pub struct SendLogin;
 
 #[derive(SystemData)]
 pub struct SendLoginData<'a> {
-	conns: SendToPlayer<'a>,
+	conns: Connections<'a>,
 	entities: Entities<'a>,
 	gamemode: GameModeWriter<'a, dyn GameMode>,
 	clock: ReadClock<'a>,

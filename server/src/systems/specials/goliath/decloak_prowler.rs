@@ -1,13 +1,11 @@
-use crate::types::systemdata::*;
-use crate::types::*;
 use specs::*;
-
-use crate::SystemInfo;
 
 use crate::component::event::PlayerRepel;
 use crate::component::flag::IsPlayer;
 use crate::component::time::{LastStealthTime, ThisFrame};
 use crate::systems::specials::config::*;
+use crate::types::systemdata::{Connections, IsAlive};
+use crate::types::*;
 
 use crate::protocol::server::EventStealth;
 use crate::utils::{EventHandler, EventHandlerTypeProvider};
@@ -26,7 +24,7 @@ pub struct DecloakProwler;
 pub struct DecloakProwlerData<'a> {
 	entities: Entities<'a>,
 	this_frame: Read<'a, ThisFrame>,
-	conns: SendToAll<'a>,
+	conns: Connections<'a>,
 
 	pos: ReadStorage<'a, Position>,
 	team: WriteStorage<'a, Team>,
@@ -95,14 +93,8 @@ impl<'a> EventHandler<'a> for DecloakProwler {
 	}
 }
 
-impl SystemInfo for DecloakProwler {
-	type Dependencies = super::GoliathRepel;
-
-	fn name() -> &'static str {
-		concat!(module_path!(), "::", line!())
-	}
-
-	fn new() -> Self {
-		Self::default()
+system_info! {
+	impl SystemInfo for DecloakProwler {
+		type Dependencies = super::GoliathRepel;
 	}
 }

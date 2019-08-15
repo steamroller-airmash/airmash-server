@@ -6,7 +6,7 @@ use std::time::{Duration, Instant};
 use crate::consts::SHUTDOWN;
 use crate::protocol::server::ServerMessage;
 use crate::protocol::ServerMessageType;
-use crate::types::systemdata::*;
+use crate::types::systemdata::Connections;
 
 use std::process;
 
@@ -16,7 +16,7 @@ pub struct SignalHandler {
 }
 
 impl<'a> System<'a> for SignalHandler {
-	type SystemData = SendToAll<'a>;
+	type SystemData = Connections<'a>;
 
 	fn run(&mut self, data: Self::SystemData) {
 		if SHUTDOWN.swap(false, Ordering::Relaxed) {

@@ -1,12 +1,11 @@
-use crate::types::systemdata::*;
-use crate::types::*;
 use specs::*;
 
 use crate::component::event::*;
 use crate::component::flag::*;
 use crate::systems::collision::PlayerMissileCollisionSystem;
+use crate::types::systemdata::{Connections, IsAlive};
+use crate::types::*;
 use crate::utils::{EventHandler, EventHandlerTypeProvider};
-use crate::SystemInfo;
 
 use crate::protocol::server::EventStealth;
 
@@ -15,7 +14,7 @@ pub struct DestealthOnHit;
 
 #[derive(SystemData)]
 pub struct DestealthOnHitData<'a> {
-	conns: SendToPlayer<'a>,
+	conns: Connections<'a>,
 
 	keystate: WriteStorage<'a, KeyState>,
 	plane: ReadStorage<'a, Plane>,
@@ -60,14 +59,8 @@ impl<'a> EventHandler<'a> for DestealthOnHit {
 	}
 }
 
-impl SystemInfo for DestealthOnHit {
-	type Dependencies = PlayerMissileCollisionSystem;
-
-	fn name() -> &'static str {
-		concat!(module_path!(), "::", line!())
-	}
-
-	fn new() -> Self {
-		Self::default()
+system_info! {
+	impl SystemInfo for DestealthOnHit {
+		type Dependencies = PlayerMissileCollisionSystem;
 	}
 }

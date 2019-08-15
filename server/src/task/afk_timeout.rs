@@ -1,7 +1,8 @@
 use crate::component::flag::IsPlayer;
 use crate::component::time::LastKeyTime;
+use crate::protocol::{server::Error, ErrorType};
 use crate::task::TaskData;
-use crate::types::systemdata::SendToPlayer;
+use crate::types::systemdata::Connections;
 
 use specs::{Entities, Join, ReadStorage};
 
@@ -16,7 +17,7 @@ struct AfkData<'a> {
 	last_key: ReadStorage<'a, LastKeyTime>,
 	is_player: ReadStorage<'a, IsPlayer>,
 
-	conns: SendToPlayer<'a>,
+	conns: Connections<'a>,
 }
 
 /// If a player hasn't pressed a key in 30 minutes then
@@ -37,7 +38,13 @@ pub async fn afk_timeout(mut task: TaskData) {
 			let iter = (&*entities, &last_key, is_player.mask()).join();
 			for (ent, time, ..) in iter {
 				if now - time.0 > AFK_TIMEOUT {
-					todo!()
+					conns.send_to_player(
+						ent,
+						Error {
+							error: ErrorType::AfkTimeout,
+						},
+					);
+					todo!("disconnect player")
 				}
 			}
 		});

@@ -4,7 +4,7 @@ use crate::component::event::WhisperEvent;
 use crate::component::flag::*;
 use crate::protocol::server::{ChatWhisper, Error};
 use crate::protocol::ErrorType;
-use crate::types::systemdata::SendToPlayer;
+use crate::types::systemdata::Connections;
 
 use crate::utils::*;
 
@@ -15,7 +15,7 @@ pub struct WhisperHandler;
 
 #[derive(SystemData)]
 pub struct WhisperHandlerData<'a> {
-	conns: SendToPlayer<'a>,
+	conns: Connections<'a>,
 
 	throttled: ReadStorage<'a, IsChatThrottled>,
 	muted: ReadStorage<'a, IsChatMuted>,

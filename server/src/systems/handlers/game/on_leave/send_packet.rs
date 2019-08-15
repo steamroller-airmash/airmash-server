@@ -1,8 +1,7 @@
 use crate::component::event::PlayerLeave as EvtPlayerLeave;
 use crate::protocol::server::PlayerLeave;
-use crate::types::systemdata::*;
+use crate::types::systemdata::Connections;
 use crate::utils::{EventHandler, EventHandlerTypeProvider};
-use crate::SystemInfo;
 
 /// Create a despawn event when a player leaves
 #[derive(Default)]
@@ -10,7 +9,7 @@ pub struct SendPlayerLeave;
 
 #[derive(SystemData)]
 pub struct SendPlayerLeaveData<'a> {
-	conns: SendToAll<'a>,
+	conns: Connections<'a>,
 }
 
 impl EventHandlerTypeProvider for SendPlayerLeave {
@@ -25,14 +24,8 @@ impl<'a> EventHandler<'a> for SendPlayerLeave {
 	}
 }
 
-impl SystemInfo for SendPlayerLeave {
-	type Dependencies = super::KnownEventSources;
-
-	fn name() -> &'static str {
-		concat!(module_path!(), "::", line!())
-	}
-
-	fn new() -> Self {
-		Self::default()
+system_info! {
+	impl SystemInfo for SendPlayerLeave {
+		type Dependencies = super::KnownEventSources;
 	}
 }

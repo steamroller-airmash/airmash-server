@@ -2,13 +2,15 @@ use specs::*;
 
 use crate::component::flag::IsPlayer;
 use crate::component::time::*;
-use crate::types::systemdata::*;
+use crate::types::systemdata::{Connections, ReadClock};
 use crate::types::*;
 
 use std::time::{Duration, Instant};
 
+use crate::handlers::OnCloseHandler;
 use crate::protocol::server::Ping as ServerPing;
 use crate::systems::handlers::game::on_join::SendLogin;
+use crate::systems::TimerHandler;
 
 pub struct PingTimerHandler {
 	lastping: Instant,
@@ -17,7 +19,7 @@ pub struct PingTimerHandler {
 #[derive(SystemData)]
 pub struct PingTimerHandlerData<'a> {
 	frame: Read<'a, ThisFrame>,
-	conns: SendToAll<'a>,
+	conns: Connections<'a>,
 	clock: ReadClock<'a>,
 
 	is_player: ReadStorage<'a, IsPlayer>,
@@ -25,8 +27,8 @@ pub struct PingTimerHandlerData<'a> {
 	associated: ReadStorage<'a, AssociatedConnection>,
 }
 
-impl PingTimerHandler {
-	pub fn new() -> Self {
+impl Default for PingTimerHandler {
+	fn default() -> Self {
 		Self {
 			lastping: Instant::now(),
 		}
@@ -65,18 +67,8 @@ impl<'a> System<'a> for PingTimerHandler {
 	}
 }
 
-use crate::dispatch::SystemInfo;
-use crate::handlers::OnCloseHandler;
-use crate::systems::TimerHandler;
-
-impl SystemInfo for PingTimerHandler {
-	type Dependencies = (OnCloseHandler, TimerHandler, SendLogin);
-
-	fn new() -> Self {
-		Self::new()
-	}
-
-	fn name() -> &'static str {
-		concat!(module_path!(), "::", line!())
+system_info! {
+	impl SystemInfo for PingTimerHandler {
+		type Dependencies = (OnCloseHandler, TimerHandler, SendLogin);
 	}
 }

@@ -7,7 +7,7 @@ use crate::component::*;
 
 use crate::server::protocol::server::GameFlag;
 use crate::server::protocol::FlagUpdateType;
-use crate::server::types::systemdata::*;
+use crate::server::types::systemdata::Connections;
 use airmash_server::system_info;
 
 #[derive(Default)]
@@ -23,7 +23,7 @@ pub struct CaptureFlagData<'a> {
 
 	scores: Read<'a, GameScores>,
 	channel: Write<'a, OnFlag>,
-	conns: SendToAll<'a>,
+	conns: Connections<'a>,
 }
 
 impl<'a> System<'a> for CaptureFlag {

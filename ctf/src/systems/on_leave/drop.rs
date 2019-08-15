@@ -5,7 +5,7 @@ use crate::server::component::event::*;
 use crate::server::component::time::ThisFrame;
 use crate::server::protocol::server::GameFlag;
 use crate::server::protocol::FlagUpdateType;
-use crate::server::types::systemdata::*;
+use crate::server::types::systemdata::Connections;
 use crate::server::utils::*;
 
 use crate::component::*;
@@ -16,7 +16,7 @@ pub struct Drop;
 #[derive(SystemData)]
 pub struct DropData<'a> {
 	entities: Entities<'a>,
-	conns: SendToAll<'a>,
+	conns: Connections<'a>,
 	pos: WriteStorage<'a, Position>,
 	is_flag: ReadStorage<'a, IsFlag>,
 	carrier: WriteStorage<'a, FlagCarrier>,

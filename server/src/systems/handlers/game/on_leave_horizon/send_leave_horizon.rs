@@ -1,16 +1,15 @@
 use crate::component::event::*;
 use crate::protocol::server::EventLeaveHorizon;
 use crate::protocol::LeaveHorizonType;
-use crate::types::systemdata::*;
+use crate::types::systemdata::Connections;
 use crate::utils::*;
-use crate::SystemInfo;
 
 #[derive(Default)]
 pub struct SendLeaveHorizon;
 
 #[derive(SystemData)]
 pub struct SendLeaveHorizonData<'a> {
-	conns: SendToPlayer<'a>,
+	conns: Connections<'a>,
 }
 
 impl EventHandlerTypeProvider for SendLeaveHorizon {
@@ -38,14 +37,8 @@ impl<'a> EventHandler<'a> for SendLeaveHorizon {
 	}
 }
 
-impl SystemInfo for SendLeaveHorizon {
-	type Dependencies = super::KnownEventSources;
-
-	fn name() -> &'static str {
-		concat!(module_path!(), "::", line!())
-	}
-
-	fn new() -> Self {
-		Self::default()
+system_info! {
+	impl SystemInfo for SendLeaveHorizon {
+		type Dependencies = super::KnownEventSources;
 	}
 }

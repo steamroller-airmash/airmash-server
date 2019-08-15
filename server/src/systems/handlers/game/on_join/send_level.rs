@@ -6,7 +6,7 @@ use crate::SystemInfo;
 use crate::component::event::*;
 use crate::protocol::server::PlayerLevel;
 use crate::protocol::PlayerLevelType;
-use crate::types::systemdata::SendToAll;
+use crate::types::systemdata::Connections;
 use crate::utils::{EventHandler, EventHandlerTypeProvider};
 
 #[derive(Default)]
@@ -14,7 +14,7 @@ pub struct SendPlayerLevel;
 
 #[derive(SystemData)]
 pub struct SendPlayerLevelData<'a> {
-	conns: SendToAll<'a>,
+	conns: Connections<'a>,
 
 	level: ReadStorage<'a, Level>,
 }

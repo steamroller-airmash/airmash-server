@@ -1,12 +1,10 @@
-use crate::types::*;
 use specs::*;
-
-use crate::SystemInfo;
 
 use crate::component::event::*;
 use crate::protocol::server::PlayerNew;
 use crate::protocol::Upgrades as ProtocolUpgrades;
-use crate::types::systemdata::*;
+use crate::types::systemdata::Connections;
+use crate::types::*;
 use crate::utils::{EventHandler, EventHandlerTypeProvider};
 
 /// Send a `PlayerNew` packet to all other players when
@@ -16,7 +14,7 @@ pub struct SendPlayerNew;
 
 #[derive(SystemData)]
 pub struct SendPlayerNewData<'a> {
-	conns: SendToAll<'a>,
+	conns: Connections<'a>,
 
 	pos: ReadStorage<'a, Position>,
 	rot: ReadStorage<'a, Rotation>,
@@ -61,21 +59,12 @@ impl<'a> EventHandler<'a> for SendPlayerNew {
 	}
 }
 
-impl SystemInfo for SendPlayerNew {
-	type Dependencies = (
-		// super::InitTraits,
-		super::InitConnection,
-		// super::InitState,
-		// super::InitTransform,
-		super::SendPlayerPowerup,
-		super::SendLogin,
-	);
-
-	fn name() -> &'static str {
-		concat!(module_path!(), "::", line!())
-	}
-
-	fn new() -> Self {
-		Self::default()
+system_info! {
+	impl SystemInfo for SendPlayerNew {
+		type Dependencies = (
+			super::InitConnection,
+			super::SendPlayerPowerup,
+			super::SendLogin,
+		);
 	}
 }

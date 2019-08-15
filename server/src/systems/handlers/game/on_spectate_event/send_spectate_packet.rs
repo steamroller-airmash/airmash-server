@@ -1,16 +1,14 @@
 use crate::component::event::PlayerSpectate;
 use crate::protocol::server::GameSpectate;
-use crate::types::systemdata::*;
+use crate::types::systemdata::Connections;
 use crate::utils::*;
-
-use crate::SystemInfo;
 
 #[derive(Default)]
 pub struct SendSpectatePacket;
 
 #[derive(SystemData)]
 pub struct SendSpectatePacketData<'a> {
-	conns: SendToPlayer<'a>,
+	conns: Connections<'a>,
 }
 
 impl EventHandlerTypeProvider for SendSpectatePacket {
@@ -34,15 +32,8 @@ impl<'a> EventHandler<'a> for SendSpectatePacket {
 		data.conns.send_to_player(evt.player, packet);
 	}
 }
-
-impl SystemInfo for SendSpectatePacket {
-	type Dependencies = super::KnownEventSources;
-
-	fn name() -> &'static str {
-		concat!(module_path!(), "::", line!())
-	}
-
-	fn new() -> Self {
-		Self::default()
+system_info! {
+	impl SystemInfo for SendSpectatePacket {
+		type Dependencies = super::KnownEventSources;
 	}
 }

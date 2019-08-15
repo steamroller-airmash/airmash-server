@@ -5,7 +5,7 @@ use crate::server::component::flag::IsPlayer;
 use crate::server::protocol::server::ScoreUpdate;
 use crate::server::protocol::Score;
 use crate::server::task::TaskData;
-use crate::server::types::systemdata::SendToPlayer;
+use crate::server::types::systemdata::Connections;
 use crate::server::types::{Config, Health, Team, Upgrades};
 
 use crate::component::{GameActive, GameStartEvent, OnGameStart};
@@ -113,7 +113,7 @@ fn award_bounty(data: &mut TaskData, winner: Team) {
 		player_mask: ReadStorage<'a, IsPlayer>,
 		upgrades: ReadStorage<'a, Upgrades>,
 
-		conns: SendToPlayer<'a>,
+		conns: Connections<'a>,
 	}
 
 	use crate::config::GAME_WIN_BOUNTY_BASE;
@@ -224,7 +224,6 @@ fn shuffle(data: &mut TaskData) {
 	use crate::component::Captures;
 	use crate::config::{BLUE_TEAM, RED_TEAM};
 	use crate::server::protocol::server::{PlayerReteam, PlayerReteamPlayer};
-	use crate::server::types::systemdata::SendToAll;
 	use crate::server::types::GameModeWriter;
 	use crate::shuffle::{PlayerShuffleInfo, ShuffleProvider};
 	use crate::CTFGameMode;
@@ -232,7 +231,7 @@ fn shuffle(data: &mut TaskData) {
 	#[derive(SystemData)]
 	struct ShuffleData<'a> {
 		shuffler: ReadExpect<'a, Box<dyn ShuffleProvider + Sync + Send>>,
-		conns: SendToAll<'a>,
+		conns: Connections<'a>,
 		entities: Entities<'a>,
 		gamemode: GameModeWriter<'a, CTFGameMode>,
 
@@ -311,11 +310,10 @@ fn display_win_banner(data: &mut TaskData, winner: Team) {
 	use crate::config::GAME_WIN_BOUNTY_BASE;
 	use crate::server::protocol::server::ServerCustom;
 	use crate::server::protocol::ServerCustomType;
-	use crate::server::types::systemdata::SendToAll;
 
 	#[derive(SystemData)]
 	struct DisplayWinData<'a> {
-		conns: SendToAll<'a>,
+		conns: Connections<'a>,
 		players_game: Read<'a, PlayersGame>,
 	}
 
@@ -340,10 +338,9 @@ fn display_win_banner(data: &mut TaskData, winner: Team) {
 fn display_message(data: &mut TaskData, msg: &str, duration: Duration) {
 	use crate::server::protocol::server::ServerMessage;
 	use crate::server::protocol::ServerMessageType;
-	use crate::server::types::systemdata::SendToAll;
 
 	data.world(|world| {
-		let data = world.system_data::<SendToAll>();
+		let data = world.system_data::<Connections>();
 
 		let packet = ServerMessage {
 			ty: ServerMessageType::TimeToGameStart,

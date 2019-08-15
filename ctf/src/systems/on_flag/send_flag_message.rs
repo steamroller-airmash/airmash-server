@@ -4,7 +4,7 @@ use specs::*;
 use crate::component::*;
 use crate::server::protocol::server::GameFlag;
 use crate::server::protocol::FlagUpdateType;
-use crate::server::types::systemdata::*;
+use crate::server::types::systemdata::Connections;
 use crate::server::utils::*;
 
 use crate::BLUE_TEAM;
@@ -15,7 +15,7 @@ pub struct SendFlagMessageSystem;
 
 #[derive(SystemData)]
 pub struct SendFlagMessageSystemData<'a> {
-	conns: SendToAll<'a>,
+	conns: Connections<'a>,
 	scores: Write<'a, GameScores>,
 	flags: ReadExpect<'a, Flags>,
 

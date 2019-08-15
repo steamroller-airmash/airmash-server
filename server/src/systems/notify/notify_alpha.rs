@@ -5,7 +5,7 @@ use std::time::Duration;
 use crate::component::event::PlayerJoin;
 use crate::protocol::server::ServerMessage;
 use crate::protocol::ServerMessageType;
-use crate::types::systemdata::*;
+use crate::types::systemdata::Connections;
 use crate::utils::*;
 
 pub struct NotifyAlpha {
@@ -15,7 +15,7 @@ pub struct NotifyAlpha {
 
 #[derive(SystemData)]
 pub struct NotifyAlphaData<'a> {
-	conns: SendToPlayer<'a>,
+	conns: Connections<'a>,
 }
 
 impl EventHandlerTypeProvider for NotifyAlpha {

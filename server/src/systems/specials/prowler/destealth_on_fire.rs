@@ -4,9 +4,8 @@ use crate::component::event::*;
 use crate::component::flag::ForcePlayerUpdate;
 use crate::systems::missile::MissileFireHandler;
 use crate::systems::PositionUpdate;
-use crate::types::systemdata::*;
+use crate::types::systemdata::Connections;
 use crate::types::*;
-use crate::SystemInfo;
 
 use crate::utils::{EventHandler, EventHandlerTypeProvider};
 
@@ -17,7 +16,7 @@ pub struct DestealthOnFire;
 
 #[derive(SystemData)]
 pub struct DestealthOnFireData<'a> {
-	conns: SendToPlayer<'a>,
+	conns: Connections<'a>,
 
 	keystate: WriteStorage<'a, KeyState>,
 	plane: ReadStorage<'a, Plane>,
@@ -52,14 +51,8 @@ impl<'a> EventHandler<'a> for DestealthOnFire {
 	}
 }
 
-impl SystemInfo for DestealthOnFire {
-	type Dependencies = (MissileFireHandler, PositionUpdate);
-
-	fn name() -> &'static str {
-		concat!(module_path!(), "::", line!())
-	}
-
-	fn new() -> Self {
-		Self::default()
+system_info! {
+	impl SystemInfo for DestealthOnFire {
+		type Dependencies = (MissileFireHandler, PositionUpdate);
 	}
 }

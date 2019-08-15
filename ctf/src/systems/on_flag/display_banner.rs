@@ -8,7 +8,7 @@ use htmlescape;
 
 use crate::server::protocol::server::ServerMessage;
 use crate::server::protocol::ServerMessageType;
-use crate::server::types::systemdata::*;
+use crate::server::types::systemdata::Connections;
 use crate::server::utils::*;
 
 #[derive(Default)]
@@ -16,7 +16,7 @@ pub struct PickupMessageSystem;
 
 #[derive(SystemData)]
 pub struct PickupMessageSystemData<'a> {
-	conns: SendToAll<'a>,
+	conns: Connections<'a>,
 
 	names: ReadStorage<'a, Name>,
 	teams: ReadStorage<'a, Team>,

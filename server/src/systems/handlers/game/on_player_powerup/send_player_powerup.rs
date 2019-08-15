@@ -1,9 +1,7 @@
-use crate::SystemInfo;
-
 use crate::component::event::PlayerPowerup;
 use crate::protocol::server::PlayerPowerup as ServerPlayerPowerup;
 
-use crate::types::systemdata::*;
+use crate::types::systemdata::Connections;
 use crate::utils::{EventHandler, EventHandlerTypeProvider};
 
 /// Add the initial 2s shield when a player joins
@@ -13,7 +11,7 @@ pub struct SendPlayerPowerup;
 
 #[derive(SystemData)]
 pub struct SendPlayerPowerupData<'a> {
-	conns: SendToPlayer<'a>,
+	conns: Connections<'a>,
 }
 
 impl EventHandlerTypeProvider for SendPlayerPowerup {
@@ -36,14 +34,8 @@ impl<'a> EventHandler<'a> for SendPlayerPowerup {
 	}
 }
 
-impl SystemInfo for SendPlayerPowerup {
-	type Dependencies = (super::KnownEventSources);
-
-	fn name() -> &'static str {
-		concat!(module_path!(), "::", line!())
-	}
-
-	fn new() -> Self {
-		Self::default()
+system_info! {
+	impl SystemInfo for SendPlayerPowerup {
+		type Dependencies = (super::KnownEventSources);
 	}
 }

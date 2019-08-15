@@ -1,14 +1,11 @@
-use specs::*;
+use specs::prelude::*;
 
-use crate::types::systemdata::*;
-use crate::types::*;
-
+use crate::component::flag::{IsChatMuted, IsChatThrottled};
 use crate::protocol::client::TeamChat;
 use crate::protocol::server::{ChatTeam, Error};
 use crate::protocol::ErrorType;
-
-use crate::component::flag::{IsChatMuted, IsChatThrottled};
-
+use crate::types::systemdata::Connections;
+use crate::types::*;
 use crate::utils::{EventHandler, EventHandlerTypeProvider};
 
 #[derive(Default)]
@@ -16,7 +13,7 @@ pub struct TeamChatHandler;
 
 #[derive(SystemData)]
 pub struct TeamChatHandlerData<'a> {
-	conns: SendToTeam<'a>,
+	conns: Connections<'a>,
 
 	throttled: ReadStorage<'a, IsChatThrottled>,
 	muted: ReadStorage<'a, IsChatMuted>,
