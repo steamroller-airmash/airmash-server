@@ -1,4 +1,4 @@
-#![feature(try_trait, async_await, box_into_pin, maybe_uninit_ref)]
+#![feature(try_trait, async_await, todo_macro)]
 
 // Crates with macros
 #[macro_use]

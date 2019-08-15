@@ -76,7 +76,9 @@ impl ExecutorQueue {
 
 impl ExecutorData {
 	fn start_task(&mut self, id: TaskId, task: BoxedFuture) {
-		self.tasks.insert(id, Box::into_pin(task));
+		// TODO: When box_into_pin is stabilized then replace this
+		//       with Box::into_pin(task)
+		self.tasks.insert(id, unsafe { Pin::new_unchecked(task) });
 	}
 
 	fn delete_task(&mut self, task: TaskId) {
