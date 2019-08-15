@@ -3,15 +3,20 @@ use specs::*;
 use std::any::Any;
 use std::collections::{HashMap, HashSet};
 use std::mem;
+use std::future::Future;
 
 use crate::dispatch::sysbuilder::*;
 use crate::dispatch::sysinfo::*;
+use crate::task::TaskData;
 
 use crate::utils::{EventHandler, EventHandlerTypeProvider};
+
+type TaskVec = Vec<Box<dyn FnOnce(TaskData) -> Box<dyn Future<Output = ()> + Send + 'static>>>;
 
 pub struct Builder<'a, 'b> {
 	builder: DispatcherBuilder<'a, 'b>,
 	sysmap: HashMap<&'static str, Box<dyn AbstractBuilder>>,
+	tasks: TaskVec,
 }
 
 impl<'a, 'b> Builder<'a, 'b> {
@@ -19,7 +24,23 @@ impl<'a, 'b> Builder<'a, 'b> {
 		Self {
 			builder: DispatcherBuilder::new(),
 			sysmap: HashMap::default(),
+			tasks: Vec::new(),
 		}
+	}
+
+	/// Add a new task that will be started when
+	/// the server game loop starts.
+	pub fn with_task<F, O>(mut self, task: F) -> Self 
+	where
+		F: (FnOnce(TaskData) -> O) + 'static,
+		O: Future<Output = ()> + Send + 'static
+	{
+		let func = move |data: TaskData| -> Box<dyn Future<Output = ()> + Send> {
+			Box::new(task(data))
+		};
+		self.tasks.push(Box::new(func));
+
+		self
 	}
 
 	/// Add a new system to be scheduled.
@@ -138,14 +159,14 @@ impl<'a, 'b> Builder<'a, 'b> {
 			.fold(builder, |builder, mut sys| sys.build(builder));
 	}
 
-	pub fn inner(mut self) -> DispatcherBuilder<'a, 'b> {
+	pub fn inner(mut self) -> (DispatcherBuilder<'a, 'b>, TaskVec) {
 		self.build_with_all();
-		self.builder
+		(self.builder, self.tasks)
 	}
 
-	pub fn build(mut self) -> Dispatcher<'a, 'b> {
+	pub fn build(mut self) -> (Dispatcher<'a, 'b>, TaskVec) {
 		self.build_with_all();
-		self.builder.build()
+		(self.builder.build(), self.tasks)
 	}
 }
 

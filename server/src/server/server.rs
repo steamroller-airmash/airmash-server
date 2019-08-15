@@ -84,8 +84,14 @@ where
 		world.write().add_resource(StartTime(Instant::now()));
 		world.write().add_resource(LastFrame(Instant::now()));
 
-		let mut dispatcher = builder.build();
+		let (mut dispatcher, tasks) = builder.build();
 		dispatcher.setup(&mut world.write().res);
+
+		// Setup initial tasks
+		for task in tasks {
+			let taskdata = TaskData::new(Arc::clone(&world));
+			executor.spawn_fut_dyn(task(taskdata));
+		}
 
 		let frame_time = Duration::from_nanos(16666667);
 		let mut next_frame = Instant::now();
