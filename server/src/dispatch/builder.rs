@@ -2,8 +2,8 @@ use specs::*;
 
 use std::any::Any;
 use std::collections::{HashMap, HashSet};
-use std::mem;
 use std::future::Future;
+use std::mem;
 
 use crate::dispatch::sysbuilder::*;
 use crate::dispatch::sysinfo::*;
@@ -30,14 +30,13 @@ impl<'a, 'b> Builder<'a, 'b> {
 
 	/// Add a new task that will be started when
 	/// the server game loop starts.
-	pub fn with_task<F, O>(mut self, task: F) -> Self 
+	pub fn with_task<F, O>(mut self, task: F) -> Self
 	where
 		F: (FnOnce(TaskData) -> O) + 'static,
-		O: Future<Output = ()> + Send + 'static
+		O: Future<Output = ()> + Send + 'static,
 	{
-		let func = move |data: TaskData| -> Box<dyn Future<Output = ()> + Send> {
-			Box::new(task(data))
-		};
+		let func =
+			move |data: TaskData| -> Box<dyn Future<Output = ()> + Send> { Box::new(task(data)) };
 		self.tasks.push(Box::new(func));
 
 		self

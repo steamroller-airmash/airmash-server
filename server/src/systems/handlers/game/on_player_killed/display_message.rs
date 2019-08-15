@@ -2,7 +2,7 @@ use crate::component::event::*;
 use crate::dispatch::SystemInfo;
 use crate::protocol::server::PlayerKill;
 use crate::systems::handlers::game::on_player_hit::AllPlayerHitSystems;
-use crate::types::systemdata::*;
+use crate::types::systemdata::Connections;
 use crate::utils::{EventHandler, EventHandlerTypeProvider};
 
 #[derive(Default)]
@@ -10,7 +10,7 @@ pub struct DisplayMessage;
 
 #[derive(SystemData)]
 pub struct DisplayMessageData<'a> {
-	conns: SendToVisible<'a>,
+	conns: Connections<'a>,
 }
 
 impl EventHandlerTypeProvider for DisplayMessage {

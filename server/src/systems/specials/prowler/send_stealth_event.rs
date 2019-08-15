@@ -1,6 +1,6 @@
 use specs::*;
 
-use crate::types::systemdata::*;
+use crate::types::systemdata::{Connections, IsAlive};
 use crate::types::*;
 
 use crate::systems::specials::prowler::SetStealth;
@@ -17,7 +17,7 @@ pub struct SendEventStealth;
 
 #[derive(SystemData)]
 pub struct SendEventStealthData<'a> {
-	conns: SendToVisible<'a>,
+	conns: Connections<'a>,
 
 	pos: ReadStorage<'a, Position>,
 	energy: ReadStorage<'a, Energy>,

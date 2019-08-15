@@ -1,8 +1,7 @@
 use shrev::*;
-use specs::prelude::ComponentEvent;
-use specs::*;
+use specs::prelude::*;
 
-use crate::types::systemdata::*;
+use crate::types::systemdata::{Connections, IsAlive, ReadClock};
 use crate::types::*;
 use crate::utils::MaybeInit;
 
@@ -23,7 +22,7 @@ pub struct SendEventBoost {
 #[derive(SystemData)]
 pub struct SendEventBoostData<'a> {
 	entities: Entities<'a>,
-	conns: SendToVisible<'a>,
+	conns: Connections<'a>,
 
 	boosting: ReadStorage<'a, IsBoosting>,
 	pos: ReadStorage<'a, Position>,

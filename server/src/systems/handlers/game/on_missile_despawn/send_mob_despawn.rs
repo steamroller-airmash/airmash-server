@@ -2,7 +2,7 @@ use crate::component::event::{MissileDespawn, MissileDespawnType};
 use crate::protocol::server::MobDespawn;
 use crate::protocol::DespawnType;
 
-use crate::types::systemdata::*;
+use crate::types::systemdata::Connections;
 use crate::utils::{EventHandler, EventHandlerTypeProvider};
 
 /// Add the initial 2s shield when a player joins
@@ -12,7 +12,7 @@ pub struct SendMobDespawn;
 
 #[derive(SystemData)]
 pub struct SendMobDespawnData<'a> {
-	conns: SendToVisible<'a>,
+	conns: Connections<'a>,
 }
 
 impl EventHandlerTypeProvider for SendMobDespawn {

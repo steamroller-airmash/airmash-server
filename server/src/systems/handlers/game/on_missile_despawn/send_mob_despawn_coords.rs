@@ -2,7 +2,7 @@ use specs::*;
 
 use crate::component::event::{MissileDespawn, MissileDespawnType};
 use crate::protocol::server::MobDespawnCoords;
-use crate::types::systemdata::*;
+use crate::types::systemdata::Connections;
 use crate::types::Mob;
 use crate::utils::{EventHandler, EventHandlerTypeProvider};
 use crate::SystemInfo;
@@ -14,7 +14,7 @@ pub struct SendMobDespawnCoords;
 
 #[derive(SystemData)]
 pub struct SendMobDespawnCoordsData<'a> {
-	conns: SendToVisible<'a>,
+	conns: Connections<'a>,
 	mob: ReadStorage<'a, Mob>,
 }
 

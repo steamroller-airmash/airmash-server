@@ -1,4 +1,4 @@
-use crate::types::systemdata::*;
+use crate::types::systemdata::Connections;
 use crate::types::*;
 use specs::*;
 
@@ -17,7 +17,7 @@ pub struct SendPacket {
 pub struct SendPacketData<'a> {
 	channel: Read<'a, OnPlayerHit>,
 	config: Read<'a, Config>,
-	conns: SendToVisible<'a>,
+	conns: Connections<'a>,
 
 	health: ReadStorage<'a, Health>,
 	plane: ReadStorage<'a, Plane>,

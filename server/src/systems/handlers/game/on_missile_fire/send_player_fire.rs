@@ -2,7 +2,7 @@ use specs::*;
 
 use crate::component::event::*;
 use crate::protocol::server::{PlayerFire, PlayerFireProjectile};
-use crate::types::systemdata::*;
+use crate::types::systemdata::{Connections, ReadClock};
 use crate::types::*;
 use crate::utils::{EventHandler, EventHandlerTypeProvider};
 use crate::SystemInfo;
@@ -12,7 +12,7 @@ pub struct SendPlayerFire;
 
 #[derive(SystemData)]
 pub struct SendPlayerFireData<'a> {
-	conns: SendToVisible<'a>,
+	conns: Connections<'a>,
 	config: Read<'a, Config>,
 	clock: ReadClock<'a>,
 

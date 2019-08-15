@@ -2,7 +2,7 @@ use crate::component::event::PowerupDespawnEvent;
 use crate::protocol::server::MobDespawn;
 use crate::protocol::DespawnType;
 use crate::systems;
-use crate::types::systemdata::SendToVisible;
+use crate::types::systemdata::Connections;
 use crate::utils::*;
 
 #[derive(Default)]
@@ -13,7 +13,7 @@ impl EventHandlerTypeProvider for SendPacket {
 }
 
 impl<'a> EventHandler<'a> for SendPacket {
-	type SystemData = SendToVisible<'a>;
+	type SystemData = Connections<'a>;
 
 	fn on_event(&mut self, evt: &Self::Event, conns: &mut Self::SystemData) {
 		let ty = match evt.player {

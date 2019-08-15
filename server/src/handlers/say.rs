@@ -2,7 +2,7 @@ use specs::*;
 
 use crate::component::event::SayEvent;
 use crate::component::flag::*;
-use crate::types::systemdata::*;
+use crate::types::systemdata::Connections;
 use crate::types::*;
 
 use crate::protocol::server::{ChatSay, Error};
@@ -14,7 +14,7 @@ pub struct SayHandler;
 
 #[derive(SystemData)]
 pub struct SayHandlerData<'a> {
-	conns: SendToVisible<'a>,
+	conns: Connections<'a>,
 
 	throttled: ReadStorage<'a, IsChatThrottled>,
 	muted: ReadStorage<'a, IsChatMuted>,

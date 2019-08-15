@@ -1,7 +1,7 @@
 use specs::*;
 
 use crate::types::collision::*;
-use crate::types::systemdata::*;
+use crate::types::systemdata::Connections;
 
 use crate::component::event::*;
 use crate::component::flag::*;
@@ -17,7 +17,7 @@ pub struct SendDespawn;
 #[derive(SystemData)]
 pub struct SendDespawnData<'a> {
 	entities: Entities<'a>,
-	conns: SendToVisible<'a>,
+	conns: Connections<'a>,
 
 	is_player: ReadStorage<'a, IsPlayer>,
 }

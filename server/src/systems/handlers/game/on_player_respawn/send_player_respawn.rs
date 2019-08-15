@@ -1,7 +1,7 @@
 use specs::*;
 
 use crate::component::event::PlayerRespawn as EvtPlayerRespawn;
-use crate::types::systemdata::SendToVisible;
+use crate::types::systemdata::Connections;
 use crate::types::*;
 use crate::SystemInfo;
 
@@ -23,7 +23,7 @@ pub struct SendPlayerRespawn;
 #[derive(SystemData)]
 pub struct SendPlayerRespawnData<'a> {
 	entities: Entities<'a>,
-	conns: SendToVisible<'a>,
+	conns: Connections<'a>,
 
 	pos: ReadStorage<'a, Position>,
 	rot: ReadStorage<'a, Rotation>,
@@ -60,7 +60,7 @@ impl<'a> EventHandler<'a> for SendPlayerRespawn {
 		// Alternative: Allow reinserting players into the
 		//        collision grid mid-frame. This one might
 		//        actually be better.
-		data.conns.send_to_others_visible(pos, player, packet);
+		data.conns.send_visible(pos).except(player).send_all(packet);
 
 		data.conns.send_to_player(player, packet);
 	}

@@ -1,5 +1,5 @@
 use crate::component::event::PowerupSpawnEvent;
-use crate::types::systemdata::SendToVisible;
+use crate::types::systemdata::Connections;
 use crate::utils::*;
 
 use crate::protocol::server::MobUpdateStationary;
@@ -9,7 +9,7 @@ pub struct SendPacket;
 
 #[derive(SystemData)]
 pub struct SendPacketData<'a> {
-	conns: SendToVisible<'a>,
+	conns: Connections<'a>,
 }
 
 impl EventHandlerTypeProvider for SendPacket {
