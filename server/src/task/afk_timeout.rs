@@ -2,14 +2,11 @@ use crate::component::flag::IsPlayer;
 use crate::component::time::LastKeyTime;
 use crate::protocol::{server::Error, ErrorType};
 use crate::task::TaskData;
-use crate::types::systemdata::Connections;
+use crate::types::{systemdata::Connections, Config};
 
 use specs::{Entities, Join, ReadStorage};
 
-use std::time::{Duration, Instant};
-
-// Have an AFK timeout of 30 mins
-const AFK_TIMEOUT: Duration = Duration::from_secs(60 * 30);
+use std::time::Instant;
 
 #[derive(SystemData)]
 struct AfkData<'a> {
@@ -24,7 +21,9 @@ struct AfkData<'a> {
 /// disconnect them for being AFK.
 pub async fn afk_timeout(mut task: TaskData) {
 	loop {
-		task.sleep_for(AFK_TIMEOUT).await;
+		let afk_timeout = task.read_resource::<Config, _, _>(|config| config.afk_timeout);
+
+		task.sleep_for(afk_timeout).await;
 
 		task.world(|world| {
 			let AfkData {
@@ -36,15 +35,18 @@ pub async fn afk_timeout(mut task: TaskData) {
 
 			let now = Instant::now();
 			let iter = (&*entities, &last_key, is_player.mask()).join();
-			for (ent, time, ..) in iter {
-				if now - time.0 > AFK_TIMEOUT {
+			for (player, time, ..) in iter {
+				if now - time.0 > afk_timeout {
 					conns.send_to_player(
-						ent,
+						player,
 						Error {
 							error: ErrorType::AfkTimeout,
 						},
 					);
-					todo!("disconnect player")
+
+					for conn in conns.associated_connections(player) {
+						conns.close(conn);
+					}
 				}
 			}
 		});

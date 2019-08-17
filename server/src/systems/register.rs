@@ -1,11 +1,16 @@
 use crate::systems::handlers;
 use crate::systems::missile;
 use crate::systems::*;
+use crate::task;
 
 use crate::dispatch::Builder;
 
 pub fn register<'a, 'b>(disp: Builder<'a, 'b>) -> Builder<'a, 'b> {
-	disp.with::<run_futures::RunTimedFutures>()
+	disp
+		// Static tasks
+		.with_task(task::afk_timeout)
+		// Timed futures stuff
+		.with::<run_futures::RunTimedFutures>()
 		// TODO: This should probably be done outside of the
 		//       register function since it is required for
 		//       the task system.

@@ -4,7 +4,7 @@ use crate::component::event::PlayerRepel;
 use crate::component::flag::IsPlayer;
 use crate::component::time::{LastStealthTime, ThisFrame};
 use crate::systems::specials::config::*;
-use crate::types::systemdata::{Connections, IsAlive};
+use crate::types::systemdata::{ConnectionsNoTeams, IsAlive};
 use crate::types::*;
 
 use crate::protocol::server::EventStealth;
@@ -24,7 +24,7 @@ pub struct DecloakProwler;
 pub struct DecloakProwlerData<'a> {
 	entities: Entities<'a>,
 	this_frame: Read<'a, ThisFrame>,
-	conns: Connections<'a>,
+	conns: ConnectionsNoTeams<'a>,
 
 	pos: ReadStorage<'a, Position>,
 	team: WriteStorage<'a, Team>,

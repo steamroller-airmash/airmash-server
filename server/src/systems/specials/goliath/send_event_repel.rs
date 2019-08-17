@@ -6,7 +6,7 @@ use crate::component::event::PlayerRepel;
 use crate::component::flag::{IsMissile, IsPlayer};
 use crate::component::reference::PlayerRef;
 use crate::systems::specials::config::*;
-use crate::types::systemdata::{Connections, IsAlive, ReadClock};
+use crate::types::systemdata::{ConnectionsNoTeams, IsAlive, ReadClock};
 use crate::types::*;
 use crate::utils::{EventHandler, EventHandlerTypeProvider};
 
@@ -22,7 +22,7 @@ pub struct SendEventRepel;
 
 #[derive(SystemData)]
 pub struct SendEventRepelData<'a> {
-	conns: Connections<'a>,
+	conns: ConnectionsNoTeams<'a>,
 	config: Read<'a, Config>,
 	entities: Entities<'a>,
 	clock: ReadClock<'a>,

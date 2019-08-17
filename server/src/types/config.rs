@@ -129,6 +129,7 @@ pub struct Config {
 	pub shield_duration: Duration,
 	pub inferno_duration: Duration,
 	pub view_radius: Distance,
+	pub afk_timeout: Duration,
 }
 
 impl MobInfos {
@@ -254,6 +255,7 @@ impl Default for Config {
 			shield_duration: Duration::from_secs(10),
 			inferno_duration: Duration::from_secs(10),
 			view_radius: Distance::new(2250.0),
+			afk_timeout: Duration::from_secs(60 * 20),
 		}
 	}
 }

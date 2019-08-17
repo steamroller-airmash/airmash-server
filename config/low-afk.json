@@ -1,0 +1,6 @@
+{
+	"afk_timeout": {
+		"secs": 30,
+		"nanos": 0
+	}
+}
