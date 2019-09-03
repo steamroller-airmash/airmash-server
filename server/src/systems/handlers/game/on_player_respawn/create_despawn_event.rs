@@ -1,5 +1,5 @@
 use crate::types::*;
-use specs::*;
+use specs::prelude::*;
 
 use crate::component::channel::OnPlayerDespawn;
 use crate::component::event::{

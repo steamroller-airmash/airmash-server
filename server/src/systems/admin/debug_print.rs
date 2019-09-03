@@ -1,5 +1,5 @@
 use serde_json;
-use specs::*;
+use specs::prelude::*;
 
 use crate::component::event::*;
 use crate::protocol::server::CommandReply;

@@ -1,5 +1,5 @@
 use shrev::*;
-use specs::*;
+use specs::prelude::*;
 
 use crate::server::Team;
 

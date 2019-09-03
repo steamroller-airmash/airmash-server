@@ -14,9 +14,9 @@ use crate::protocol::server::EventBoost;
 
 #[derive(Default)]
 pub struct SendEventBoost {
-	pub inserted: BitSet,
-	pub removed: BitSet,
-	pub changed: MaybeInit<ReaderId<ComponentEvent>>,
+	inserted: BitSet,
+	removed: BitSet,
+	changed: MaybeInit<ReaderId<ComponentEvent>>,
 }
 
 #[derive(SystemData)]
@@ -74,7 +74,7 @@ impl SendEventBoost {
 impl<'a> System<'a> for SendEventBoost {
 	type SystemData = SendEventBoostData<'a>;
 
-	fn setup(&mut self, res: &mut Resources) {
+	fn setup(&mut self, res: &mut World) {
 		Self::SystemData::setup(res);
 
 		let mut storage: WriteStorage<IsBoosting> = WriteStorage::fetch(&res);

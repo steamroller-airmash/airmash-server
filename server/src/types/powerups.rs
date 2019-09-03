@@ -1,4 +1,4 @@
-use specs::*;
+use specs::prelude::*;
 
 use crate::protocol::MobType;
 use crate::protocol::Position;

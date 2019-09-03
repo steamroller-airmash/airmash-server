@@ -1,5 +1,5 @@
 use crate::types::Score;
-use specs::*;
+use specs::prelude::*;
 
 #[derive(Clone, Debug, Copy, Component, Default)]
 pub struct PlayersGame(pub u32);

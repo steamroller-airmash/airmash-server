@@ -1,3 +1,5 @@
+use specs::prelude::*;
+
 use crate::component::event::*;
 use crate::dispatch::SystemInfo;
 use crate::protocol::server::PlayerKill;

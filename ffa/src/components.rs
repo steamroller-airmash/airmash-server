@@ -1,5 +1,5 @@
 use airmash_server::*;
-use specs::*;
+use specs::prelude::*;
 
 #[derive(Copy, Clone, Debug, Component)]
 pub struct TotalDamage(pub Health);

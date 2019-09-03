@@ -1,5 +1,5 @@
 use crate::types::systemdata::*;
-use specs::*;
+use specs::prelude::*;
 
 use crate::SystemInfo;
 

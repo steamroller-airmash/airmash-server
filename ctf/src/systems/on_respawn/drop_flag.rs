@@ -1,4 +1,4 @@
-use specs::*;
+use specs::prelude::*;
 
 use airmash_server::component::event::PlayerRespawn;
 use airmash_server::systems::handlers::game::on_player_respawn::KnownEventSources;

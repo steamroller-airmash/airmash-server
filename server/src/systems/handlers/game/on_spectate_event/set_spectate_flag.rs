@@ -1,45 +1,31 @@
-use specs::*;
+use specs::prelude::*;
 
-use crate::dispatch::SystemInfo;
-
-use crate::component::channel::*;
+use crate::component::event::PlayerSpectate;
 use crate::component::flag::IsSpectating;
+use crate::utils::{EventHandler, EventHandlerTypeProvider};
 
-pub struct SetSpectateFlag {
-	reader: Option<OnPlayerSpectateReader>,
-}
+#[derive(Default)]
+pub struct SetSpectateFlag;
 
 #[derive(SystemData)]
 pub struct SetSpectateFlagData<'a> {
-	pub channel: Read<'a, OnPlayerSpectate>,
-
-	pub is_spec: WriteStorage<'a, IsSpectating>,
+	is_spec: WriteStorage<'a, IsSpectating>,
 }
 
-impl<'a> System<'a> for SetSpectateFlag {
+impl EventHandlerTypeProvider for SetSpectateFlag {
+	type Event = PlayerSpectate;
+}
+
+impl<'a> EventHandler<'a> for SetSpectateFlag {
 	type SystemData = SetSpectateFlagData<'a>;
 
-	fn setup(&mut self, res: &mut Resources) {
-		Self::SystemData::setup(res);
-
-		self.reader = Some(res.fetch_mut::<OnPlayerSpectate>().register_reader())
-	}
-
-	fn run(&mut self, mut data: Self::SystemData) {
-		for evt in data.channel.read(self.reader.as_mut().unwrap()) {
-			data.is_spec.insert(evt.player, IsSpectating).unwrap();
-		}
+	fn on_event(&mut self, evt: &PlayerSpectate, data: &mut Self::SystemData) {
+		data.is_spec.insert(evt.player, IsSpectating).unwrap();
 	}
 }
 
-impl SystemInfo for SetSpectateFlag {
-	type Dependencies = super::KnownEventSources;
-
-	fn name() -> &'static str {
-		concat!(module_path!(), "::", line!())
-	}
-
-	fn new() -> Self {
-		Self { reader: None }
+system_info! {
+	impl SystemInfo for SetSpectateFlag {
+		type Dependencies = super::KnownEventSources;
 	}
 }

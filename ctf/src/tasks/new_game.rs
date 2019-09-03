@@ -1,12 +1,17 @@
-use specs::{Entities, Join, Read, ReadExpect, ReadStorage, Write, WriteStorage};
+use specs::prelude::*;
 
-use crate::server::component::counter::{Earnings, PlayersGame, TotalDeaths, TotalKills};
-use crate::server::component::flag::IsPlayer;
-use crate::server::protocol::server::ScoreUpdate;
-use crate::server::protocol::Score;
-use crate::server::task::TaskData;
-use crate::server::types::systemdata::Connections;
-use crate::server::types::{Config, Health, Team, Upgrades};
+use crate::server::{
+	component::{
+		counter::{Earnings, PlayersGame, TotalDeaths, TotalKills},
+		flag::IsPlayer
+	},
+	protocol::{server::ScoreUpdate, Score},
+	task::TaskData,
+	types::{
+		systemdata::Connections,
+		Config, Health, Team, Upgrades
+	}
+};
 
 use crate::component::{GameActive, GameStartEvent, OnGameStart};
 

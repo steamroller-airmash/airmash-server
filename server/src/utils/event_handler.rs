@@ -38,7 +38,7 @@ pub trait EventHandler<'a>: EventHandlerTypeProvider + Send {
 	/// `Self::SystemData::setup`, otherwise some
 	/// of the resources that this system depends
 	/// upon may not be initialized.
-	fn setup(&mut self, res: &mut Resources) {
+	fn setup(&mut self, res: &mut World) {
 		Self::SystemData::setup(res);
 	}
 
@@ -69,7 +69,7 @@ where
 		<T as EventHandler<'a>>::SystemData,
 	);
 
-	fn setup(&mut self, res: &mut Resources) {
+	fn setup(&mut self, res: &mut World) {
 		Read::<EventChannel<T::Event>>::setup(res);
 		T::setup(&mut self.handler, res);
 

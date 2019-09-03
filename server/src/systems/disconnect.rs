@@ -1,4 +1,4 @@
-use specs::*;
+use specs::prelude::*;
 
 use hashbrown::HashMap;
 
@@ -47,7 +47,7 @@ pub struct DisconnectData<'a> {
 impl<'a> System<'a> for Disconnect {
 	type SystemData = DisconnectData<'a>;
 
-	fn setup(&mut self, res: &mut Resources) {
+	fn setup(&mut self, res: &mut World) {
 		Self::SystemData::setup(res);
 
 		self.message = MaybeInit::init(res.fetch_mut::<OnMessage>().register_reader());

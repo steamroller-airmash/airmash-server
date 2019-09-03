@@ -2,12 +2,12 @@ use super::*;
 use crate::protocol::MobType;
 use crate::types::*;
 use airmash_server::{Builder, Distance, Position};
-use specs::*;
+use specs::prelude::*;
 use std::time::Duration;
 
 pub fn register<'a, 'b>(world: &mut World, builder: Builder<'a, 'b>) -> Builder<'a, 'b> {
     // inferno spawn point in Europe
-    world.add_resource(PowerupSpawnPoints(vec![PowerupSpawnPoint {
+    world.insert(PowerupSpawnPoints(vec![PowerupSpawnPoint {
         pos: Position::new(Distance::new(920.0), Distance::new(-2800.0)),
         powerup_type: MobType::Inferno,
         respawn_delay: Duration::from_secs(60),

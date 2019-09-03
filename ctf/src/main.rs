@@ -1,9 +1,5 @@
-#![feature(async_await)]
-
 #[macro_use]
 extern crate specs_derive;
-#[macro_use]
-extern crate shred_derive;
 #[macro_use]
 extern crate lazy_static;
 #[macro_use]
@@ -70,7 +66,7 @@ fn main() {
 	let mut config = AirmashServerConfig::new("0.0.0.0:3501", CTFGameMode::new()).with_engine();
 
 	config.builder = systems::register(&mut config.world, config.builder);
-	config.world.add_resource(shuffle::get_shuffle());
+	config.world.insert(shuffle::get_shuffle());
 
 	if let Some(path) = matches.value_of("config") {
 		let file = match File::open(path) {
@@ -86,7 +82,7 @@ fn main() {
 		let mut serverconfig = Config::default();
 		serverconfig.deserialize_over(&mut de).unwrap();
 
-		config.world.add_resource(serverconfig);
+		config.world.insert(serverconfig);
 	}
 
 	AirmashServer::new(config).run().unwrap();

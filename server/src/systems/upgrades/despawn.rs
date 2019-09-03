@@ -1,4 +1,4 @@
-use specs::*;
+use specs::prelude::*;
 
 use crate::component::channel::OnPowerupDespawn;
 use crate::component::event::PowerupDespawnEvent;

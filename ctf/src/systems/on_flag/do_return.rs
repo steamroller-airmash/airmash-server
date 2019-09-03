@@ -1,5 +1,5 @@
 use crate::server::*;
-use specs::*;
+use specs::prelude::*;
 
 use crate::config::{BLUE_TEAM, FLAG_HOME_POS, RED_TEAM};
 

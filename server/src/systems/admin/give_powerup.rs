@@ -1,5 +1,5 @@
 use crate::types::*;
-use specs::*;
+use specs::prelude::*;
 
 use crate::utils::{EventHandler, EventHandlerTypeProvider};
 use crate::SystemInfo;

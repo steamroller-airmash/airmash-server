@@ -33,15 +33,10 @@ impl MissileTerrainCollisionSystem {
 impl<'a> System<'a> for MissileTerrainCollisionSystem {
 	type SystemData = MissileTerrainCollisionSystemData<'a>;
 
-	fn setup(&mut self, res: &mut Resources) {
+	fn setup(&mut self, res: &mut World) {
 		Self::SystemData::setup(res);
 
 		self.terrain = Terrain::from_default(&*res.fetch::<EntitiesRes>());
-
-		// Hopefully 1000 collision events is enough during
-		// each 16ms frame. If not, this number should be
-		// increased.
-		res.insert::<OnMissileTerrainCollision>(OnMissileTerrainCollision::with_capacity(1000));
 	}
 
 	fn run(&mut self, mut data: Self::SystemData) {

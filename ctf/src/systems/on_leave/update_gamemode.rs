@@ -1,4 +1,4 @@
-use specs::*;
+use specs::prelude::*;
 
 use crate::server::component::event::PlayerLeave;
 use crate::server::systems::handlers::packet::OnCloseHandler;

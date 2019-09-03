@@ -1,5 +1,5 @@
 use crate::types::*;
-use specs::*;
+use specs::prelude::*;
 
 use std::iter::Iterator;
 
@@ -25,7 +25,7 @@ pub struct MissileFireInfo {
 	pub ty: Mob,
 }
 
-#[derive(SystemData)]
+#[derive(SystemData, EventDeps)]
 pub struct FireMissiles<'a> {
 	entities: Entities<'a>,
 	this_frame: Read<'a, ThisFrame>,

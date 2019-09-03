@@ -1,4 +1,4 @@
-use specs::*;
+use specs::prelude::*;
 
 use crate::component::event::PlayerSpectate;
 use crate::component::flag::IsDead;

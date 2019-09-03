@@ -4,7 +4,7 @@ use std::net::ToSocketAddrs;
 use std::sync::Arc;
 use std::time::{Duration, Instant};
 
-use specs::{Dispatcher, World};
+use specs::{Dispatcher, World, WorldExt};
 
 use super::{spawn_acceptor, AirmashServerConfig};
 use crate::component::time::{LastFrame, StartTime};
@@ -42,13 +42,13 @@ where
 
 		let now = _now;
 
-		world.add_resource(ThisFrame(now));
+		world.insert(ThisFrame(now));
 
-		dispatcher.dispatch_seq(&mut world.res);
-		dispatcher.dispatch_thread_local(&mut world.res);
+		dispatcher.dispatch_seq(world);
+		dispatcher.dispatch_thread_local(world);
 		world.maintain();
 
-		world.add_resource(LastFrame(now));
+		world.insert(LastFrame(now));
 
 		let duration = Instant::now() - now;
 		if duration > Duration::from_millis(FRAME_WARN_MILLIS) {
@@ -77,15 +77,15 @@ where
 		let world = Arc::new(RwLock::new(world));
 		let mut executor = ExecutorHandle::new();
 
-		world.write().add_resource(TaskSpawner::new(
+		world.write().insert(TaskSpawner::new(
 			TaskData::new(Arc::clone(&world)),
 			executor.clone(),
 		));
-		world.write().add_resource(StartTime(Instant::now()));
-		world.write().add_resource(LastFrame(Instant::now()));
+		world.write().insert(StartTime(Instant::now()));
+		world.write().insert(LastFrame(Instant::now()));
 
 		let (mut dispatcher, tasks) = builder.build();
-		dispatcher.setup(&mut world.write().res);
+		dispatcher.setup(&mut world.write());
 
 		// Setup initial tasks
 		for task in tasks {

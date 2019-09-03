@@ -2,7 +2,7 @@ use std::any::Any;
 use std::marker::PhantomData;
 use std::mem;
 
-use specs::*;
+use specs::prelude::*;
 
 use crate::dispatch::sysinfo::*;
 use crate::dispatch::syswrapper::*;

@@ -4,7 +4,7 @@ use crate::protocol::{server::Error, ErrorType};
 use crate::task::TaskData;
 use crate::types::{systemdata::Connections, Config};
 
-use specs::{Entities, Join, ReadStorage};
+use specs::prelude::*;
 
 use std::time::Instant;
 

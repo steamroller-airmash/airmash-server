@@ -1,3 +1,5 @@
+use specs::prelude::*;
+
 use crate::component::event::PlayerPowerup;
 use crate::protocol::server::PlayerPowerup as ServerPlayerPowerup;
 

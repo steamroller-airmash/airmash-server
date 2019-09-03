@@ -1,4 +1,4 @@
-use specs::*;
+use specs::prelude::*;
 
 use crate::server::component::event::*;
 use crate::server::protocol::server::GameFlag;

@@ -1,4 +1,4 @@
-use specs::*;
+use specs::prelude::*;
 
 use crate::consts::timer::SCORE_BOARD;
 use crate::types::systemdata::{Connections, IsAlive};

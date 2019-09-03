@@ -1,4 +1,4 @@
-use specs::*;
+use specs::prelude::*;
 
 use crate::component::*;
 use crate::server::component::event::PlayerStealth;

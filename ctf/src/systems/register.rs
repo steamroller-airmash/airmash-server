@@ -3,7 +3,7 @@ use crate::component::{FlagCarrier, Flags, IsFlag, LastDrop};
 use crate::server::protocol::MobType;
 use crate::server::{Builder, Position, Team};
 use specs::Builder as SpecsBuilder;
-use specs::*;
+use specs::prelude::*;
 
 use std::time::{Duration, Instant};
 
@@ -21,7 +21,7 @@ pub fn register<'a, 'b>(world: &mut World, disp: Builder<'a, 'b>) -> Builder<'a,
 	world.register::<IsFlag>();
 	world.register::<FlagCarrier>();
 	world.register::<LastDrop>();
-	world.add_resource::<OnGameStart>(OnGameStart::default());
+	world.insert::<OnGameStart>(OnGameStart::default());
 
 	let lastdrop = LastDrop {
 		player: None,
@@ -45,9 +45,9 @@ pub fn register<'a, 'b>(world: &mut World, disp: Builder<'a, 'b>) -> Builder<'a,
 		.with(lastdrop)
 		.build();
 
-	world.add_resource(Flags { red, blue });
+	world.insert(Flags { red, blue });
 
-	world.add_resource(PowerupSpawnPoints(vec![
+	world.insert(PowerupSpawnPoints(vec![
 		PowerupSpawnPoint {
 			pos: Position::new(Distance::new(-9300.0), Distance::new(-1470.0)),
 			powerup_type: MobType::Shield,

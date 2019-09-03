@@ -75,11 +75,11 @@ impl<'a, T> SystemData<'a> for GameModeWriter<'a, T>
 where
 	T: GameMode + Sync + Send + ?Sized,
 {
-	fn setup(res: &mut Resources) {
+	fn setup(res: &mut World) {
 		WriteExpect::<'a, GameModeInternal>::setup(res);
 	}
 
-	fn fetch(res: &'a Resources) -> Self {
+	fn fetch(res: &'a World) -> Self {
 		Self {
 			inner: WriteExpect::<'a, GameModeInternal>::fetch(res),
 			marker: PhantomData,

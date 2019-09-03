@@ -1,6 +1,6 @@
 use shred::{Fetch, FetchMut, Resource};
 use specs::error::WrongGeneration;
-use specs::{storage::InsertResult, Component, Entity, ReadStorage, World, WriteStorage};
+use specs::{storage::InsertResult, Component, Entity, ReadStorage, World, WorldExt, WriteStorage};
 
 use parking_lot::RwLock;
 use std::sync::Arc;

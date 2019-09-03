@@ -1,6 +1,6 @@
 use crate::types::*;
 use shrev::*;
-use specs::*;
+use specs::prelude::*;
 
 use crate::protocol::client::Key;
 use crate::protocol::KeyCode;
@@ -27,7 +27,7 @@ pub struct KeyHandlerData<'a> {
 impl<'a> System<'a> for KeyHandler {
 	type SystemData = KeyHandlerData<'a>;
 
-	fn setup(&mut self, res: &mut Resources) {
+	fn setup(&mut self, res: &mut World) {
 		self.reader = Some(
 			res.fetch_mut::<EventChannel<(ConnectionId, Key)>>()
 				.register_reader(),

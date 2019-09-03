@@ -1,3 +1,5 @@
+use specs::prelude::*;
+
 use crate::component::event::PlayerSpectate;
 use crate::protocol::server::GameSpectate;
 use crate::types::systemdata::Connections;

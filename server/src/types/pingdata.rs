@@ -1,4 +1,4 @@
-use specs::*;
+use specs::prelude::*;
 
 use std::collections::VecDeque;
 use std::time::Instant;

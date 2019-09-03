@@ -1,4 +1,4 @@
-use specs::*;
+use specs::prelude::*;
 
 #[derive(Default, Clone, Copy, Debug, Component)]
 pub struct Upgrades {

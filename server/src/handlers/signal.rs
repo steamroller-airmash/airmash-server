@@ -1,4 +1,4 @@
-use specs::*;
+use specs::prelude::*;
 
 use std::sync::atomic::Ordering;
 use std::time::{Duration, Instant};

@@ -1,5 +1,5 @@
 use crate::dispatch::sysinfo::*;
-use shred::*;
+use shred::{DynamicSystemData, System, World};
 
 use std::time::Instant;
 
@@ -20,11 +20,11 @@ where
 {
 	type Accessor = <<T as System<'a>>::SystemData as DynamicSystemData<'a>>::Accessor;
 
-	fn setup(acc: &Self::Accessor, res: &mut Resources) {
+	fn setup(acc: &Self::Accessor, res: &mut World) {
 		T::SystemData::setup(acc, res);
 	}
 
-	fn fetch(acc: &Self::Accessor, res: &'a Resources) -> Self {
+	fn fetch(acc: &Self::Accessor, res: &'a World) -> Self {
 		Self {
 			inner: T::SystemData::fetch(acc, res),
 		}
@@ -38,7 +38,7 @@ where
 {
 	type SystemData = SystemWrapperData<'a, T>;
 
-	fn setup(&mut self, res: &mut Resources) {
+	fn setup(&mut self, res: &mut World) {
 		self.0.setup(res);
 	}
 

@@ -1,17 +1,17 @@
-use specs::*;
+use specs::prelude::*;
 
 use crate::systems::PacketHandler;
-use crate::SystemInfo;
 
 use crate::component::channel::*;
 use crate::component::event::*;
+use crate::utils::MaybeInit;
 
 #[derive(Default)]
 pub struct ChatEventHandler {
-	chat_reader: Option<OnChatReader>,
-	team_reader: Option<OnTeamChatReader>,
-	whisper_reader: Option<OnWhisperReader>,
-	say_reader: Option<OnSayReader>,
+	chat_reader: MaybeInit<OnChatReader>,
+	team_reader: MaybeInit<OnTeamChatReader>,
+	whisper_reader: MaybeInit<OnWhisperReader>,
+	say_reader: MaybeInit<OnSayReader>,
 }
 
 #[derive(SystemData)]
@@ -27,17 +27,17 @@ pub struct ChatEventHandlerData<'a> {
 impl<'a> System<'a> for ChatEventHandler {
 	type SystemData = ChatEventHandlerData<'a>;
 
-	fn setup(&mut self, res: &mut Resources) {
+	fn setup(&mut self, res: &mut World) {
 		Self::SystemData::setup(res);
 
-		self.chat_reader = Some(res.fetch_mut::<OnChat>().register_reader());
-		self.team_reader = Some(res.fetch_mut::<OnTeamChat>().register_reader());
-		self.whisper_reader = Some(res.fetch_mut::<OnWhisper>().register_reader());
-		self.say_reader = Some(res.fetch_mut::<OnSay>().register_reader())
+		self.chat_reader = MaybeInit::init(res.fetch_mut::<OnChat>().register_reader());
+		self.team_reader = MaybeInit::init(res.fetch_mut::<OnTeamChat>().register_reader());
+		self.whisper_reader = MaybeInit::init(res.fetch_mut::<OnWhisper>().register_reader());
+		self.say_reader = MaybeInit::init(res.fetch_mut::<OnSay>().register_reader())
 	}
 
 	fn run(&mut self, mut data: Self::SystemData) {
-		for evt in data.channel_chat.read(self.chat_reader.as_mut().unwrap()) {
+		for evt in data.channel_chat.read(&mut self.chat_reader) {
 			data.channel.single_write(AnyChatEvent {
 				ty: ChatEventType::Public,
 				text: evt.1.text.clone(),
@@ -45,7 +45,7 @@ impl<'a> System<'a> for ChatEventHandler {
 			});
 		}
 
-		for evt in data.channel_team.read(self.team_reader.as_mut().unwrap()) {
+		for evt in data.channel_team.read(&mut self.team_reader) {
 			data.channel.single_write(AnyChatEvent {
 				ty: ChatEventType::Team,
 				text: evt.1.text.clone(),
@@ -53,7 +53,7 @@ impl<'a> System<'a> for ChatEventHandler {
 			});
 		}
 
-		for evt in data.channel_say.read(self.say_reader.as_mut().unwrap()) {
+		for evt in data.channel_say.read(&mut self.say_reader) {
 			data.channel.single_write(AnyChatEvent {
 				ty: ChatEventType::Say,
 				text: evt.1.text.clone(),
@@ -61,10 +61,7 @@ impl<'a> System<'a> for ChatEventHandler {
 			});
 		}
 
-		for evt in data
-			.channel_whisper
-			.read(self.whisper_reader.as_mut().unwrap())
-		{
+		for evt in data.channel_whisper.read(&mut self.whisper_reader) {
 			data.channel.single_write(AnyChatEvent {
 				ty: ChatEventType::Whisper(evt.1.id.0),
 				text: evt.1.text.clone(),
@@ -74,14 +71,8 @@ impl<'a> System<'a> for ChatEventHandler {
 	}
 }
 
-impl SystemInfo for ChatEventHandler {
-	type Dependencies = PacketHandler;
-
-	fn new() -> Self {
-		Self::default()
-	}
-
-	fn name() -> &'static str {
-		concat!(module_path!(), "::", line!())
+system_info! {
+	impl SystemInfo for ChatEventHandler {
+		type Dependencies = PacketHandler;
 	}
 }

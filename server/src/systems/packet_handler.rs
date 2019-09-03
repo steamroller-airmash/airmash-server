@@ -1,7 +1,6 @@
 use crate::protocol::{ClientPacket, ProtocolSerializationExt};
 use crate::protocol_v5::ProtocolV5;
-use shrev::EventChannel;
-use specs::*;
+use specs::prelude::*;
 
 use std::any::Any;
 use std::mem;
@@ -78,14 +77,6 @@ impl PacketHandler {
 
 impl<'a> System<'a> for PacketHandler {
 	type SystemData = PacketHandlerData<'a>;
-
-	fn setup(&mut self, res: &mut Resources) {
-		Self::SystemData::setup(res);
-
-		// Override some default sizes
-		// to prevent buffers from overflowing
-		res.insert::<OnMessage>(EventChannel::with_capacity(400));
-	}
 
 	fn run(&mut self, mut sysdata: PacketHandlerData<'a>) {
 		let protocol = ProtocolV5 {};

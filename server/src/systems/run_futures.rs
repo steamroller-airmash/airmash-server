@@ -1,10 +1,9 @@
-use specs::*;
-
-use crate::SystemInfo;
+use specs::prelude::*;
 
 use crate::component::time::ThisFrame;
 use crate::types::FutureDispatcher;
 
+#[derive(Default)]
 pub struct RunTimedFutures;
 
 impl<'a> System<'a> for RunTimedFutures {
@@ -15,14 +14,8 @@ impl<'a> System<'a> for RunTimedFutures {
 	}
 }
 
-impl SystemInfo for RunTimedFutures {
-	type Dependencies = ();
-
-	fn name() -> &'static str {
-		concat!(module_path!(), "::", line!())
-	}
-
-	fn new() -> Self {
-		Self {}
+system_info! {
+	impl SystemInfo for RunTimedFutures {
+		type Dependencies = ();
 	}
 }

@@ -2,7 +2,7 @@ use std::any::Any;
 use std::mem;
 use std::sync::mpsc::{channel, Receiver};
 
-use specs::*;
+use specs::prelude::*;
 
 use crate::component::channel::OnTimerEvent;
 use crate::component::event::*;

@@ -1,4 +1,4 @@
-use specs::*;
+use specs::prelude::*;
 use std::time::Instant;
 
 #[derive(Clone, Debug, Copy)]

@@ -1,5 +1,5 @@
 use crate::server::*;
-use specs::*;
+use specs::prelude::*;
 
 use crate::server::component::event::*;
 use crate::server::component::time::ThisFrame;

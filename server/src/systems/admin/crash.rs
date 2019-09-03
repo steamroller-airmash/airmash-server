@@ -1,5 +1,5 @@
 use crate::types::*;
-use specs::*;
+use specs::prelude::*;
 
 use std::env;
 
@@ -13,7 +13,7 @@ use crate::utils::{EventHandler, EventHandlerTypeProvider};
 #[derive(Default)]
 pub struct Crash;
 
-#[derive(SystemData)]
+#[derive(SystemData, EventDeps)]
 pub struct CrashData<'a> {
 	name: ReadStorage<'a, Name>,
 	config: Read<'a, Config>,

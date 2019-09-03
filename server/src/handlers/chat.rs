@@ -1,7 +1,8 @@
 use crate::types::systemdata::Connections;
 use crate::types::*;
-use shrev::*;
-use specs::*;
+
+use shrev::EventChannel;
+use specs::prelude::*;
 
 use crate::protocol::client::Chat;
 use crate::protocol::server::{ChatPublic, Error};
@@ -26,7 +27,7 @@ pub struct ChatHandlerData<'a> {
 impl<'a> System<'a> for ChatHandler {
 	type SystemData = ChatHandlerData<'a>;
 
-	fn setup(&mut self, res: &mut Resources) {
+	fn setup(&mut self, res: &mut World) {
 		self.reader = Some(
 			res.fetch_mut::<EventChannel<(ConnectionId, Chat)>>()
 				.register_reader(),

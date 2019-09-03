@@ -1,5 +1,5 @@
 use crate::types::*;
-use specs::*;
+use specs::prelude::*;
 
 use crate::component::channel::{OnPong, OnPongReader};
 use crate::component::counter::{PlayerPing, PlayersGame};
@@ -27,7 +27,7 @@ impl PongHandler {
 impl<'a> System<'a> for PongHandler {
 	type SystemData = (PongHandlerData<'a>, WriteStorage<'a, PingData>);
 
-	fn setup(&mut self, res: &mut Resources) {
+	fn setup(&mut self, res: &mut World) {
 		self.reader = Some(res.fetch_mut::<OnPong>().register_reader());
 
 		Self::SystemData::setup(res);

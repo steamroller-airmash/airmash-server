@@ -1,4 +1,4 @@
-use specs::*;
+use specs::prelude::*;
 
 use crate::component::event::TimerEvent;
 use crate::consts::timer::DELETE_ENTITY;

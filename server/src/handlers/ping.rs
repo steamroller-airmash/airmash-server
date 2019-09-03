@@ -1,4 +1,4 @@
-use specs::*;
+use specs::prelude::*;
 
 use crate::component::flag::IsPlayer;
 use crate::component::time::*;

@@ -1,3 +1,5 @@
+use specs::prelude::*;
+
 use crate::component::event::TimerEvent;
 use crate::consts::timer::DELAYED_MESSAGE;
 use crate::protocol::server::ServerMessage;

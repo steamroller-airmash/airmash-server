@@ -1,5 +1,5 @@
 use crate::SystemInfo;
-use specs::*;
+use specs::prelude::*;
 
 use crate::component::event::*;
 use crate::component::time::{LastShotTime, ThisFrame};

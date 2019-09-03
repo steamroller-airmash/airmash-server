@@ -1,4 +1,4 @@
-use specs::*;
+use specs::prelude::*;
 
 use crate::component::event::PlayerRespawn as EvtPlayerRespawn;
 use crate::types::systemdata::Connections;

@@ -4,11 +4,11 @@ use crate::dispatch::Builder;
 pub fn register<'a, 'b>(builder: Builder<'a, 'b>) -> Builder<'a, 'b> {
 	builder
 		// Spectate events
-		.with::<on_spectate_event::SetSpectateFlag>()
+		.with_handler::<on_spectate_event::SetSpectateFlag>()
 		.with_handler::<on_spectate_event::SendKillPacket>()
 		.with_handler::<on_spectate_event::SendSpectatePacket>()
-		.with::<on_spectate_event::SendTimerEvent>()
-		.with::<on_spectate_event::SetSpectateTarget>()
+		.with_handler::<on_spectate_event::SendTimerEvent>()
+		.with_handler::<on_spectate_event::SetSpectateTarget>()
 		.with_handler::<on_spectate_event::CreateDespawnEvent>()
 		.with_handler::<on_spectate_event::SetDeadFlag>()
 		// On player killed
@@ -24,8 +24,8 @@ pub fn register<'a, 'b>(builder: Builder<'a, 'b>) -> Builder<'a, 'b> {
 		.with_handler::<on_join::SendScoreUpdate>()
 		.with_handler::<on_join::SendPlayerPowerup>()
 		// On player leave
-		.with::<on_leave::FreeName>()
-		.with::<on_leave::UpdatePlayersGame>()
+		.with_handler::<on_leave::FreeName>()
+		.with_handler::<on_leave::UpdatePlayersGame>()
 		.with_handler::<on_leave::CreateDespawnEvent>()
 		.with_handler::<on_leave::SendPlayerLeave>()
 		// On missile fire
@@ -33,7 +33,7 @@ pub fn register<'a, 'b>(builder: Builder<'a, 'b>) -> Builder<'a, 'b> {
 		.with_handler::<on_missile_fire::SetLastShot>()
 		// On player hit
 		.with_handler::<on_player_hit::InflictDamage>()
-		.with::<on_player_hit::SendPacket>()
+		.with_handler::<on_player_hit::SendPacket>()
 		// On player respawn
 		.with_handler::<on_player_respawn::ResetKeyState>()
 		.with_handler::<on_player_respawn::SetTraits>()

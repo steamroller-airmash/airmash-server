@@ -1,4 +1,4 @@
-use specs::*;
+use specs::prelude::*;
 
 use crate::component::channel::OnPowerupSpawn;
 use crate::component::event::PowerupSpawnEvent;
@@ -7,7 +7,7 @@ use crate::component::time::ThisFrame;
 use crate::types::*;
 
 #[derive(Default)]
-pub struct SpawnFixedPowerup {}
+pub struct SpawnFixedPowerup;
 
 #[derive(SystemData)]
 pub struct SpawnFixedPowerupData<'a> {
@@ -25,10 +25,6 @@ pub struct SpawnFixedPowerupData<'a> {
 
 impl<'a> System<'a> for SpawnFixedPowerup {
 	type SystemData = SpawnFixedPowerupData<'a>;
-
-	fn setup(&mut self, res: &mut Resources) {
-		Self::SystemData::setup(res);
-	}
 
 	fn run(&mut self, mut data: Self::SystemData) {
 		let this_frame = *data.this_frame;

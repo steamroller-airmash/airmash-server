@@ -1,4 +1,4 @@
-use specs::*;
+use specs::prelude::*;
 
 use crate::types::Plane;
 use airmash_protocol::{PlaneType, ServerKeyState};

@@ -1,5 +1,5 @@
 use hashbrown::HashMap;
-use specs::*;
+use specs::prelude::*;
 
 use std::option::NoneError;
 

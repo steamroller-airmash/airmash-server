@@ -8,6 +8,7 @@ use crate::types::{
 	connection::ConnectionType, AssociatedConnection, Config, ConnectionId,
 	Connections as ConnData, Position, Team,
 };
+use crate::utils::EventDeps;
 
 use ws::Sender as WsSender;
 
@@ -18,8 +19,12 @@ pub type Connections<'a> = ConnsInternal<'a, ReadStorage<'a, Team>, Read<'a, Con
 pub type ConnectionsMut<'a> = ConnsInternal<'a, ReadStorage<'a, Team>, Write<'a, ConnData>>;
 pub type ConnectionsNoTeams<'a> = ConnsInternal<'a, (), Write<'a, ConnData>>;
 
-#[derive(SystemData)]
-pub struct ConnsInternal<'a, Teams, Conns> {
+#[derive(SystemData, EventDeps)]
+pub struct ConnsInternal<'a, Teams, Conns>
+where
+	Teams: EventDeps,
+	Conns: EventDeps,
+{
 	config: Read<'a, Config>,
 	entities: Entities<'a>,
 	grid: Read<'a, PlayerGrid>,
@@ -41,6 +46,8 @@ where
 
 impl<'a, 'b: 'a, It, Teams, Conns> SendIter<It, &'b ConnsInternal<'a, Teams, Conns>>
 where
+	Teams: EventDeps,
+	Conns: EventDeps,
 	It: Iterator<Item = Entity> + 'b,
 {
 	fn new(conns: &'b ConnsInternal<'a, Teams, Conns>, iter: It) -> Self {
@@ -51,7 +58,8 @@ where
 impl<'a, 'b: 'a, It, Teams, Conns> SendIter<It, &'b ConnsInternal<'a, Teams, Conns>>
 where
 	It: Iterator<Item = Entity> + 'b,
-	Conns: Deref<Target = ConnData>,
+	Teams: EventDeps,
+	Conns: Deref<Target = ConnData> + EventDeps,
 {
 	/// Exclude the given player from those being sent messages
 	pub fn except(
@@ -83,6 +91,7 @@ where
 
 impl<'a, 'b: 'a, It, Conns> SendIter<It, &'b ConnsInternal<'a, ReadStorage<'a, Team>, Conns>>
 where
+	Conns: EventDeps,
 	It: Iterator<Item = Entity> + 'b,
 {
 	/// Only send the message to players on the given team
@@ -120,7 +129,8 @@ where
 
 impl<'a, Teams, Conns> ConnsInternal<'a, Teams, Conns>
 where
-	Conns: Deref<Target = ConnData>,
+	Teams: EventDeps,
+	Conns: EventDeps + Deref<Target = ConnData>,
 {
 	/// Get the player associated with this connection, or none
 	/// if the connection is not associated with any players.
@@ -274,7 +284,7 @@ where
 
 impl<'a, Conns> ConnsInternal<'a, ReadStorage<'a, Team>, Conns>
 where
-	Conns: Deref<Target = ConnData>,
+	Conns: EventDeps + Deref<Target = ConnData>,
 {
 	/// Send to all players on a team
 	pub fn send_to_team<I>(&self, team: Team, msg: I)
@@ -296,7 +306,8 @@ where
 
 impl<'a, Teams, Conns> ConnsInternal<'a, Teams, Conns>
 where
-	Conns: DerefMut<Target = ConnData>,
+	Teams: EventDeps,
+	Conns: EventDeps + DerefMut<Target = ConnData>,
 {
 	pub fn add(&mut self, id: ConnectionId, sink: WsSender, addr: IpAddr, origin: Option<String>) {
 		self.conns.add(id, sink, addr, origin);

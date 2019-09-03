@@ -1,4 +1,4 @@
-use specs::*;
+use specs::prelude::*;
 
 use crate::types::systemdata::{Connections, IsAlive};
 use crate::types::*;

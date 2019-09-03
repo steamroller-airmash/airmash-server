@@ -5,4 +5,4 @@ pub use self::send_missile_update::SendMissileUpdate;
 pub use self::send_powerup_update::SendPowerupUpdate;
 
 pub type AllEventHandlers = (SendMissileUpdate, SendPowerupUpdate);
-pub type KnownEventSources = (crate::systems::visibility::TrackVisible);
+pub type KnownEventSources = (); // (crate::systems::visibility::TrackVisible);

@@ -50,6 +50,8 @@ fn set_default_var(name: &str, value: &str) {
 }
 
 fn main() {
+    use specs::WorldExt;
+
     let matches = clap::App::new("airmash-server-ffa")
         .version(env!("CARGO_PKG_VERSION"))
         .author("STEAMROLLER")
@@ -92,7 +94,7 @@ fn main() {
         };
         serverconfig.deserialize_over(&mut de).unwrap();
 
-        config.world.add_resource(serverconfig);
+        config.world.insert(serverconfig);
     }
 
     AirmashServer::new(config).run().unwrap();

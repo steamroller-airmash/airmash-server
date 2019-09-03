@@ -1,6 +1,6 @@
 use crate::types::systemdata::*;
 use crate::types::*;
-use specs::*;
+use specs::prelude::*;
 
 use crate::systems::handlers::packet::KeyHandler;
 use crate::systems::specials::config::*;

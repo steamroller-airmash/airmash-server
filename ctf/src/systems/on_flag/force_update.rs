@@ -1,6 +1,6 @@
 use crate::component::*;
 use crate::server::*;
-use specs::*;
+use specs::prelude::*;
 
 use crate::server::component::flag::ForcePlayerUpdate;
 use crate::server::utils::{EventHandler, EventHandlerTypeProvider};

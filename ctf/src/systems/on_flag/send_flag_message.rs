@@ -1,5 +1,5 @@
 use crate::server::*;
-use specs::*;
+use specs::prelude::*;
 
 use crate::component::*;
 use crate::server::protocol::server::GameFlag;

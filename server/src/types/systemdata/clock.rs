@@ -1,4 +1,4 @@
-use specs::*;
+use specs::prelude::*;
 
 use std::time::Instant;
 
@@ -10,8 +10,8 @@ use crate::types::ToClock;
 ///
 /// This component adapter reads [`StartTime`][0].
 ///
-/// [0]: ::component::time::StartTime
-#[derive(SystemData)]
+/// [0]: crate::component::time::StartTime
+#[derive(SystemData, EventDeps)]
 pub struct ReadClock<'a> {
 	start: Read<'a, StartTime>,
 }

@@ -1,5 +1,6 @@
+use shred::World;
 use shrev::{EventChannel, ReaderId};
-use specs::{Read, Resources, System, SystemData};
+use specs::prelude::*;
 
 use crate::component::time::ThisFrame;
 use crate::utils::MaybeInit;
@@ -53,7 +54,7 @@ pub struct TaskTimerSystem {
 impl<'a> System<'a> for TaskTimerSystem {
 	type SystemData = TaskTimerData<'a>;
 
-	fn setup(&mut self, res: &mut Resources) {
+	fn setup(&mut self, res: &mut World) {
 		Self::SystemData::setup(res);
 		res.insert(WakerChannel::with_capacity(500));
 

@@ -1,4 +1,4 @@
-use specs::*;
+use specs::prelude::*;
 
 use std::any::Any;
 use std::collections::{HashMap, HashSet};

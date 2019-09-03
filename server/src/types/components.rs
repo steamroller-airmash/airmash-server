@@ -1,6 +1,6 @@
 use uuid::Uuid;
 
-use specs::*;
+use specs::prelude::*;
 
 use crate::types::ConnectionId;
 

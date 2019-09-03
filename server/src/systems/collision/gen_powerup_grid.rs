@@ -1,4 +1,4 @@
-use specs::*;
+use specs::prelude::*;
 
 use crate::consts::config::POWERUP_RADIUS;
 use crate::types::collision::*;

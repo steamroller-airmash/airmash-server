@@ -15,5 +15,6 @@ members = [
 	"ctf",
 	"ffa",
 	"bounded-queue",
-	"special-map"
+	"special-map",
+	"server-macros"
 ]

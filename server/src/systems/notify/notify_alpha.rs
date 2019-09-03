@@ -1,4 +1,4 @@
-use crate::SystemInfo;
+use specs::prelude::*;
 
 use std::time::Duration;
 
@@ -36,21 +36,21 @@ impl<'a> EventHandler<'a> for NotifyAlpha {
 	}
 }
 
-impl SystemInfo for NotifyAlpha {
-	type Dependencies = ();
-
-	fn name() -> &'static str {
-		concat!(module_path!(), "::", line!())
-	}
-
-	fn new() -> Self {
+impl Default for NotifyAlpha {
+	fn default() -> Self {
 		Self {
 			// Note: don't set this to a duration above approximately
 			// 49.7 weeks so that the number of milliseconds does not
-			// overflow a u32
+			// overflow a u32. Not that that should ever happen.
 			duration: Duration::from_secs(5),
 			message: "This server is in alpha! Don't expect things to work correctly or at all."
 				.to_string(),
 		}
+	}
+}
+
+system_info! {
+	impl SystemInfo for NotifyAlpha {
+		type Dependencies = ();
 	}
 }

@@ -1,4 +1,4 @@
-use specs::*;
+use specs::prelude::*;
 
 use crate::component::event::PlayerKilled;
 use crate::systems::handlers::game::on_player_hit::AllPlayerHitSystems;

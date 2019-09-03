@@ -1,71 +1,54 @@
-use specs::*;
+use specs::prelude::*;
 
-use crate::types::*;
-
-use crate::component::channel::*;
 use crate::component::event::*;
 use crate::component::flag::*;
 use crate::consts::timer::*;
+use crate::utils::{EventHandler, EventHandlerTypeProvider};
 
 use crate::systems::TimerHandler;
-use crate::SystemInfo;
 
-pub struct UnthrottlePlayer {
-	reader: Option<OnTimerEventReader>,
-}
+#[derive(Default)]
+pub struct UnthrottlePlayer;
 
 #[derive(SystemData)]
 pub struct UnthrottlePlayerData<'a> {
-	pub channel: Read<'a, OnTimerEvent>,
-	pub conns: Read<'a, Connections>,
-
-	pub entities: Entities<'a>,
-	pub throttled: WriteStorage<'a, IsChatThrottled>,
+	entities: Entities<'a>,
+	throttled: WriteStorage<'a, IsChatThrottled>,
 }
 
-impl<'a> System<'a> for UnthrottlePlayer {
+impl EventHandlerTypeProvider for UnthrottlePlayer {
+	type Event = TimerEvent;
+}
+
+impl<'a> EventHandler<'a> for UnthrottlePlayer {
 	type SystemData = UnthrottlePlayerData<'a>;
 
-	fn setup(&mut self, res: &mut Resources) {
-		Self::SystemData::setup(res);
-
-		self.reader = Some(res.fetch_mut::<OnTimerEvent>().register_reader());
-	}
-
-	fn run(&mut self, mut data: Self::SystemData) {
-		for evt in data.channel.read(self.reader.as_mut().unwrap()) {
-			if evt.ty != *UNTHROTTLE_TIME {
-				continue;
-			}
-
-			let evt: PlayerThrottle = match evt.data {
-				Some(ref dat) => match (*dat).downcast_ref::<PlayerThrottle>() {
-					Some(val) => val.clone(),
-					None => {
-						error!("Unable to downcast TimerEvent data to PlayerThrottle!");
-						continue;
-					}
-				},
-				None => continue,
-			};
-
-			if !data.entities.is_alive(evt.player) {
-				continue;
-			}
-
-			data.throttled.remove(evt.player);
+	fn on_event(&mut self, evt: &TimerEvent, data: &mut Self::SystemData) {
+		if evt.ty != *UNTHROTTLE_TIME {
+			return;
 		}
+
+		let evt: PlayerThrottle = match evt.data {
+			Some(ref dat) => match (*dat).downcast_ref::<PlayerThrottle>() {
+				Some(val) => val.clone(),
+				None => {
+					error!("Unable to downcast TimerEvent data to PlayerThrottle!");
+					return;
+				}
+			},
+			None => return,
+		};
+
+		if !data.entities.is_alive(evt.player) {
+			return;
+		}
+
+		data.throttled.remove(evt.player);
 	}
 }
 
-impl SystemInfo for UnthrottlePlayer {
-	type Dependencies = TimerHandler;
-
-	fn name() -> &'static str {
-		concat!(module_path!(), "::", line!())
-	}
-
-	fn new() -> Self {
-		Self { reader: None }
+system_info! {
+	impl SystemInfo for UnthrottlePlayer {
+		type Dependencies = TimerHandler;
 	}
 }

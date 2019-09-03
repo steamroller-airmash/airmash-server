@@ -33,7 +33,7 @@ impl PlaneCollisionSystem {
 impl<'a> System<'a> for PlaneCollisionSystem {
 	type SystemData = PlaneCollisionSystemData<'a>;
 
-	fn setup(&mut self, res: &mut Resources) {
+	fn setup(&mut self, res: &mut World) {
 		Self::SystemData::setup(res);
 
 		self.terrain = Terrain::from_default(&*res.fetch::<EntitiesRes>());

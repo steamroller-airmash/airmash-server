@@ -1,4 +1,4 @@
-use specs::*;
+use specs::prelude::*;
 
 use crate::component::channel::OnMissileDespawn;
 use crate::component::event::{MissileDespawn, MissileDespawnType, TimerEvent};

@@ -1,9 +1,9 @@
 use hibitset;
-use specs::*;
+use specs::prelude::*;
 
 use crate::component::flag::{IsDead, IsSpectating};
 
-#[derive(SystemData)]
+#[derive(SystemData, EventDeps)]
 pub struct IsAlive<'a> {
 	pub is_spec: ReadStorage<'a, IsSpectating>,
 	pub is_dead: ReadStorage<'a, IsDead>,
@@ -11,10 +11,10 @@ pub struct IsAlive<'a> {
 
 impl<'a> IsAlive<'a> {
 	pub fn get(&self, ent: Entity) -> bool {
-		let is_spec = self.is_spec.get(ent).is_none();
-		let is_dead = self.is_dead.get(ent).is_none();
+		let is_not_spec = self.is_spec.get(ent).is_none();
+		let is_not_dead = self.is_dead.get(ent).is_none();
 
-		is_spec && is_dead
+		is_not_spec && is_not_dead
 	}
 
 	pub fn mask<'b: 'a>(

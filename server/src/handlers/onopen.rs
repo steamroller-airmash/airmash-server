@@ -1,6 +1,6 @@
 use crate::types::*;
 use shrev::*;
-use specs::*;
+use specs::prelude::*;
 
 use crate::component::channel::{OnLogin, OnLoginReader};
 use crate::task::new_connection;
@@ -26,7 +26,7 @@ pub struct OnOpenData<'a> {
 impl<'a> System<'a> for OnOpenHandler {
 	type SystemData = OnOpenData<'a>;
 
-	fn setup(&mut self, res: &mut Resources) {
+	fn setup(&mut self, res: &mut World) {
 		self.reader = MaybeInit::init(
 			res.fetch_mut::<EventChannel<ConnectionOpen>>()
 				.register_reader(),

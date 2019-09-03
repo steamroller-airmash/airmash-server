@@ -1,5 +1,5 @@
+use specs::prelude::*;
 use specs::world::EntitiesRes;
-use specs::*;
 
 use crate::component::channel::OnPowerupSpawn;
 use crate::component::event::PowerupSpawnEvent;
@@ -35,7 +35,7 @@ pub struct SpawnRandomPowerupData<'a> {
 impl<'a> System<'a> for SpawnRandomPowerup {
 	type SystemData = SpawnRandomPowerupData<'a>;
 
-	fn setup(&mut self, res: &mut Resources) {
+	fn setup(&mut self, res: &mut World) {
 		Self::SystemData::setup(res);
 
 		self.terrain = Terrain::from_default(&*res.fetch::<EntitiesRes>());

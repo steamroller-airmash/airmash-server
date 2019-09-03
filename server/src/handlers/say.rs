@@ -1,4 +1,4 @@
-use specs::*;
+use specs::prelude::*;
 
 use crate::component::event::SayEvent;
 use crate::component::flag::*;

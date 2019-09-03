@@ -1,4 +1,4 @@
-use specs::*;
+use specs::prelude::*;
 
 use crate::server::component::flag::*;
 use crate::server::component::time::ThisFrame;

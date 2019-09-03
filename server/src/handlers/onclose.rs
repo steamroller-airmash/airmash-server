@@ -1,6 +1,6 @@
 use crate::types::event::ConnectionClose;
 use crate::types::*;
-use specs::*;
+use specs::prelude::*;
 
 use crate::component::channel::OnPlayerLeave;
 use crate::component::counter::PlayersGame;

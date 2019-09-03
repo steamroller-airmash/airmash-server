@@ -11,13 +11,13 @@ mod try_get;
 mod system_info;
 mod tuple_array;
 
+mod event_deps;
 mod event_handler;
+mod kdtree;
 mod maybe_init;
 pub mod timer;
 
-#[cfg(features = "kd-tree")]
-mod kdtree;
-
+pub use self::event_deps::EventDeps;
 pub use self::event_handler::{EventHandler, EventHandlerTypeProvider};
 pub use self::maybe_init::MaybeInit;
 
@@ -25,7 +25,6 @@ pub use self::maybe_init::MaybeInit;
 pub(crate) use self::event_handler::EventHandlerWrapper;
 
 // Needed within collision
-#[cfg(features = "kd-tree")]
 pub(crate) use self::kdtree::KdTree;
 
 // Internal logging hook

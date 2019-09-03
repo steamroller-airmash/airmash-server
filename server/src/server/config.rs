@@ -2,7 +2,7 @@ use std::net::ToSocketAddrs;
 use std::sync::mpsc::{channel, Sender};
 
 use crate::dispatch::Builder;
-use specs::{Builder as SpecsBuilder, World};
+use specs::{Builder as SpecsBuilder, World, WorldExt};
 
 use crate::types::event::ConnectionEvent;
 use crate::types::GameMode;
@@ -67,8 +67,8 @@ where
 		// them here to avoid having an awkward system where it
 		// is necessary to pass Option<Sender<_>> all the way
 		// through the config struct.
-		world.add_resource(Connections::new());
-		world.add_resource(FutureDispatcher::new(timer_send));
+		world.insert(Connections::new());
+		world.insert(FutureDispatcher::new(timer_send));
 
 		Self {
 			addr,
@@ -111,7 +111,7 @@ where
 	/// here, it is a good idea to call this before
 	/// registering any of your own systems.
 	///
-	/// [0]: ::systems
+	/// [0]: crate::systems
 	pub fn with_engine(self) -> Self {
 		Self {
 			builder: crate::systems::register(self.builder),
@@ -133,7 +133,7 @@ where
 		use crate::types::gamemode::*;
 
 		self.world
-			.add_resource(GameModeInternal(Box::new(GameModeWrapperImpl {
+			.insert(GameModeInternal(Box::new(GameModeWrapperImpl {
 				val: gamemode,
 			})));
 
