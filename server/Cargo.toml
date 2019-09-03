@@ -19,9 +19,7 @@ block-bots = []
 
 [dependencies]
 log = "0.4"
-# When specs updates to shred 0.8.0 this will need to be updated as well
 shred = "0.9"
-shred-derive = "0.6"
 specs = { version = "0.15", features = ["nightly"] }
 specs-derive = "0.4"
 dimensioned = "0.7"

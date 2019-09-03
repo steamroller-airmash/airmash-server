@@ -60,7 +60,7 @@ fn main() {
 			Default::default()
 		});
 
-		config.world.add_resource(serverconfig);
+		config.world.insert(serverconfig);
 	}
 
 	AirmashServer::new(config).run().unwrap();

@@ -2,8 +2,6 @@
 extern crate lazy_static;
 #[macro_use]
 extern crate specs_derive;
-#[macro_use]
-extern crate shred_derive;
 
 mod components;
 mod gamemode;
@@ -50,8 +48,6 @@ fn set_default_var(name: &str, value: &str) {
 }
 
 fn main() {
-    use specs::WorldExt;
-
     let matches = clap::App::new("airmash-server-ffa")
         .version(env!("CARGO_PKG_VERSION"))
         .author("STEAMROLLER")
