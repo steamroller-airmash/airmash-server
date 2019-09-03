@@ -3,14 +3,11 @@ use specs::prelude::*;
 use crate::server::{
 	component::{
 		counter::{Earnings, PlayersGame, TotalDeaths, TotalKills},
-		flag::IsPlayer
+		flag::IsPlayer,
 	},
 	protocol::{server::ScoreUpdate, Score},
 	task::TaskData,
-	types::{
-		systemdata::Connections,
-		Config, Health, Team, Upgrades
-	}
+	types::{systemdata::Connections, Config, Health, Team, Upgrades},
 };
 
 use crate::component::{GameActive, GameStartEvent, OnGameStart};

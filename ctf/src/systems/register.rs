@@ -2,8 +2,8 @@ use crate::component::{FlagCarrier, Flags, IsFlag, LastDrop};
 
 use crate::server::protocol::MobType;
 use crate::server::{Builder, Position, Team};
-use specs::Builder as SpecsBuilder;
 use specs::prelude::*;
+use specs::Builder as SpecsBuilder;
 
 use std::time::{Duration, Instant};
 
