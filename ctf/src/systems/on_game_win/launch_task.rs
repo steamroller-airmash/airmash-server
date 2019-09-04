@@ -22,8 +22,8 @@ impl<'a> EventHandler<'a> for LaunchTask {
 	type SystemData = LaunchTaskData<'a>;
 
 	fn on_event(&mut self, evt: &GameWinEvent, data: &mut Self::SystemData) {
-		let tdata = data.task.task_data();
-		data.task.launch(new_game(tdata, evt.winning_team));
+		data.task
+			.spawn(new_game(data.task.task_data(), evt.winning_team));
 	}
 }
 
