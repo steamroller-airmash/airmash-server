@@ -10,7 +10,7 @@ use crate::SystemInfo;
 #[derive(Default)]
 pub struct TriggerUpdate;
 
-#[derive(SystemData)]
+#[derive(SystemData, EventDeps)]
 pub struct TriggerUpdateData<'a> {
 	force_update: WriteStorage<'a, ForcePlayerUpdate>,
 	entities: Entities<'a>,

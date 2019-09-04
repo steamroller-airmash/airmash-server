@@ -11,7 +11,7 @@ use crate::component::*;
 #[derive(Default)]
 pub struct DropFlag;
 
-#[derive(SystemData)]
+#[derive(SystemData, EventDeps)]
 pub struct DropFlagData<'a> {
 	channel: Write<'a, OnFlag>,
 	carrier: WriteStorage<'a, FlagCarrier>,

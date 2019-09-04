@@ -9,7 +9,7 @@ use crate::utils::*;
 #[derive(Default)]
 pub struct SendLeaveHorizon;
 
-#[derive(SystemData)]
+#[derive(SystemData, EventDeps)]
 pub struct SendLeaveHorizonData<'a> {
 	conns: Connections<'a>,
 }

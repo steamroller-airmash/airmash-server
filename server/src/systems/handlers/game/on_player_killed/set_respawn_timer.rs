@@ -10,7 +10,7 @@ use crate::utils::{EventHandler, EventHandlerTypeProvider};
 #[derive(Default)]
 pub struct SetRespawnTimer;
 
-#[derive(SystemData)]
+#[derive(SystemData, EventDeps)]
 pub struct SetRespawnTimerData<'a> {
 	tasks: WriteExpect<'a, TaskSpawner>,
 }

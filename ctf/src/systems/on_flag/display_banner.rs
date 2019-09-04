@@ -14,7 +14,7 @@ use crate::server::utils::*;
 #[derive(Default)]
 pub struct PickupMessageSystem;
 
-#[derive(SystemData)]
+#[derive(SystemData, EventDeps)]
 pub struct PickupMessageSystemData<'a> {
 	conns: Connections<'a>,
 

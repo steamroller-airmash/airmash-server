@@ -6,7 +6,7 @@ use crate::server::utils::{EventHandler, EventHandlerTypeProvider};
 use crate::systems::on_flag::CheckWin;
 use crate::tasks::new_game;
 
-#[derive(SystemData)]
+#[derive(SystemData, EventDeps)]
 pub struct LaunchTaskData<'a> {
 	task: WriteExpect<'a, TaskSpawner>,
 }

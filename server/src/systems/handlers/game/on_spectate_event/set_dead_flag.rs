@@ -9,7 +9,7 @@ use crate::SystemInfo;
 #[derive(Default)]
 pub struct SetDeadFlag;
 
-#[derive(SystemData)]
+#[derive(SystemData, EventDeps)]
 pub struct SetDeadFlagData<'a> {
 	is_dead: WriteStorage<'a, IsDead>,
 	tasks: WriteExpect<'a, TaskSpawner>,

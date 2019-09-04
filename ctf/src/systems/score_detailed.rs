@@ -12,7 +12,7 @@ use crate::component::Captures;
 #[derive(Default)]
 pub struct ScoreDetailed;
 
-#[derive(SystemData)]
+#[derive(SystemData, EventDeps)]
 pub struct ScoreDetailedData<'a> {
 	conns: Read<'a, Connections>,
 

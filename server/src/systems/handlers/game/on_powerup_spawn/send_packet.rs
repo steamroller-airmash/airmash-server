@@ -9,7 +9,7 @@ use crate::protocol::server::MobUpdateStationary;
 #[derive(Default)]
 pub struct SendPacket;
 
-#[derive(SystemData)]
+#[derive(SystemData, EventDeps)]
 pub struct SendPacketData<'a> {
 	conns: Connections<'a>,
 }

@@ -15,7 +15,7 @@ use std::time::Instant;
 #[derive(Default)]
 pub struct Pickup;
 
-#[derive(SystemData)]
+#[derive(SystemData, EventDeps)]
 pub struct PickupData<'a> {
 	upgrade_channel: Write<'a, OnPlayerPowerup>,
 	entities: Entities<'a>,

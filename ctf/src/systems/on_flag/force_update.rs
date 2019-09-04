@@ -8,7 +8,7 @@ use crate::server::utils::{EventHandler, EventHandlerTypeProvider};
 #[derive(Default)]
 pub struct ForceUpdate;
 
-#[derive(SystemData)]
+#[derive(SystemData, EventDeps)]
 pub struct ForceUpdateData<'a> {
 	force: WriteStorage<'a, ForcePlayerUpdate>,
 	carriers: WriteStorage<'a, FlagCarrier>,

@@ -23,7 +23,7 @@ use crate::systems::handlers::game::on_join::AllJoinHandlers;
 #[derive(Default)]
 pub struct SetTraits;
 
-#[derive(SystemData)]
+#[derive(SystemData, EventDeps)]
 pub struct SetTraitsData<'a> {
 	entities: Entities<'a>,
 	team: ReadStorage<'a, Team>,

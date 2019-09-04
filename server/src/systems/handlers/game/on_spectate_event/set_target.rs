@@ -7,7 +7,7 @@ use crate::utils::{EventHandler, EventHandlerTypeProvider};
 #[derive(Default)]
 pub struct SetSpectateTarget;
 
-#[derive(SystemData)]
+#[derive(SystemData, EventDeps)]
 pub struct SetSpectateTargetData<'a> {
 	spec_tgt: WriteStorage<'a, PlayerRef>,
 }

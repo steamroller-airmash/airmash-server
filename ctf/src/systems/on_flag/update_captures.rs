@@ -8,7 +8,7 @@ use crate::server::*;
 #[derive(Default)]
 pub struct UpdateCaptures;
 
-#[derive(SystemData)]
+#[derive(SystemData, EventDeps)]
 pub struct UpdateCapturesData<'a> {
 	entities: Entities<'a>,
 	captures: WriteStorage<'a, Captures>,

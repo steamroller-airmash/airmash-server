@@ -1,4 +1,4 @@
-use std::any::Any;
+use std::any::{Any, TypeId};
 use std::marker::PhantomData;
 use std::mem;
 
@@ -11,6 +11,9 @@ pub trait AbstractBuilder {
 	fn build<'a, 'b>(&mut self, disp: DispatcherBuilder<'a, 'b>) -> DispatcherBuilder<'a, 'b>;
 	fn name(&self) -> &'static str;
 	fn deps(&self) -> Vec<&'static str>;
+
+	fn reads_events(&self) -> Vec<TypeId>;
+	fn writes_events(&self) -> Vec<TypeId>;
 }
 
 pub trait AbstractThreadLocalBuilder<'b> {
@@ -50,6 +53,13 @@ where
 
 	fn deps(&self) -> Vec<&'static str> {
 		T::Dependencies::dependencies()
+	}
+
+	fn reads_events(&self) -> Vec<TypeId> {
+		T::Dependencies::reads_events()
+	}
+	fn writes_events(&self) -> Vec<TypeId> {
+		T::Dependencies::writes_events()
 	}
 }
 

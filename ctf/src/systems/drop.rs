@@ -13,7 +13,7 @@ use crate::component::*;
 #[derive(Default)]
 pub struct DropSystem;
 
-#[derive(SystemData)]
+#[derive(SystemData, EventDeps)]
 pub struct DropSystemData<'a> {
 	conns: Connections<'a>,
 	thisframe: Read<'a, ThisFrame>,

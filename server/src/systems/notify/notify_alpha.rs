@@ -13,7 +13,7 @@ pub struct NotifyAlpha {
 	message: String,
 }
 
-#[derive(SystemData)]
+#[derive(SystemData, EventDeps)]
 pub struct NotifyAlphaData<'a> {
 	conns: Connections<'a>,
 }

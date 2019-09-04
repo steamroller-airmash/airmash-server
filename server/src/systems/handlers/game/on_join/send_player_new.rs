@@ -12,7 +12,7 @@ use crate::utils::{EventHandler, EventHandlerTypeProvider};
 #[derive(Default)]
 pub struct SendPlayerNew;
 
-#[derive(SystemData)]
+#[derive(SystemData, EventDeps)]
 pub struct SendPlayerNewData<'a> {
 	conns: Connections<'a>,
 

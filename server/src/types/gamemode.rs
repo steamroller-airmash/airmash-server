@@ -7,6 +7,7 @@ use shred::ResourceId;
 use specs::prelude::*;
 
 use crate::types::*;
+use crate::utils::EventDeps;
 
 use std::any::Any;
 use std::marker::PhantomData;
@@ -87,11 +88,11 @@ where
 	}
 
 	fn reads() -> Vec<ResourceId> {
-		WriteExpect::<'a, GameModeInternal>::reads()
+		<WriteExpect<'a, GameModeInternal> as SystemData>::reads()
 	}
 
 	fn writes() -> Vec<ResourceId> {
-		WriteExpect::<'a, GameModeInternal>::writes()
+		<WriteExpect<'a, GameModeInternal> as SystemData>::writes()
 	}
 }
 
@@ -124,3 +125,5 @@ where
 		}
 	}
 }
+
+impl<'a, T> EventDeps for GameModeWriter<'a, T> where T: ?Sized {}

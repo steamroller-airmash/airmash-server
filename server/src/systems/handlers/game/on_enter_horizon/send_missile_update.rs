@@ -10,7 +10,7 @@ use crate::utils::*;
 #[derive(Default)]
 pub struct SendMissileUpdate;
 
-#[derive(SystemData)]
+#[derive(SystemData, EventDeps)]
 pub struct SendMissileUpdateData<'a> {
 	conns: Connections<'a>,
 	config: Read<'a, Config>,

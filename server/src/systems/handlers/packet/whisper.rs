@@ -13,7 +13,7 @@ use crate::component::flag::IsPlayer;
 #[derive(Default)]
 pub struct WhisperHandler;
 
-#[derive(SystemData)]
+#[derive(SystemData, EventDeps)]
 pub struct WhisperHandlerData<'a> {
 	conns: Connections<'a>,
 

@@ -289,6 +289,7 @@ impl<'a, 'b> Builder<'a, 'b> {
 	fn system_toposort(&mut self) -> Vec<Box<dyn AbstractBuilder>> {
 		let mut graph = Graph::default();
 
+		let mut reads: HashMap<_, HashSet<_>> = HashMap::default();
 		for (name, _) in self.sysmap.iter() {
 			graph.insert_vertex(name);
 		}
@@ -298,6 +299,26 @@ impl<'a, 'b> Builder<'a, 'b> {
 
 			for dep in deps {
 				graph.insert_edge(dep, name);
+			}
+		}
+
+		for (name, sys) in self.sysmap.iter() {
+			let events = sys.reads_events();
+
+			for event in events {
+				reads.entry(event).or_default().insert(name);
+			}
+		}
+
+		for (name, sys) in self.sysmap.iter() {
+			let events = sys.writes_events();
+
+			for event in events {
+				if let Some(set) = reads.get(&event) {
+					for othername in set {
+						graph.insert_edge(name, othername);
+					}
+				}
 			}
 		}
 
@@ -312,7 +333,7 @@ impl<'a, 'b> Builder<'a, 'b> {
 			} else {
 				error!("Unknown system {}", name);
 				error!("Do you have a dependency on a system that wasn't added?");
-				panic!("Unknown system.");
+				panic!("Unknown system {}.", name);
 			}
 		}
 

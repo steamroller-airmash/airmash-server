@@ -11,7 +11,7 @@ use crate::utils::{EventHandler, EventHandlerTypeProvider};
 #[derive(Default)]
 pub struct UpdateScore;
 
-#[derive(SystemData)]
+#[derive(SystemData, EventDeps)]
 pub struct UpdateScoreData<'a> {
 	entities: Entities<'a>,
 	conns: Connections<'a>,

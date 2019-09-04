@@ -13,7 +13,7 @@ use crate::protocol::server::ScoreUpdate;
 #[derive(Default)]
 pub struct SendScoreUpdate;
 
-#[derive(SystemData)]
+#[derive(SystemData, EventDeps)]
 pub struct SendScoreUpdateData<'a> {
 	conns: Connections<'a>,
 

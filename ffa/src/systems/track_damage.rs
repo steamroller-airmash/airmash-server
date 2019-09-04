@@ -14,7 +14,7 @@ use airmash_server::*;
 #[derive(Default)]
 pub struct TrackDamage;
 
-#[derive(SystemData)]
+#[derive(SystemData, EventDeps)]
 pub struct TrackDamageData<'a> {
     entities: Entities<'a>,
     config: Read<'a, Config>,

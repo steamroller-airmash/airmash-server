@@ -10,7 +10,7 @@ use crate::SystemInfo;
 #[derive(Default)]
 pub struct DelayMessage;
 
-#[derive(SystemData)]
+#[derive(SystemData, EventDeps)]
 pub struct DelayMessageData<'a> {
 	conns: Connections<'a>,
 }

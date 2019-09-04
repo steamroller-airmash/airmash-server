@@ -14,7 +14,7 @@ use crate::systems::handlers::packet::ChatEventHandler;
 #[derive(Default)]
 pub struct LimitChat;
 
-#[derive(SystemData)]
+#[derive(SystemData, EventDeps)]
 pub struct LimitChatData<'a> {
 	conns: Read<'a, Connections>,
 

@@ -14,7 +14,7 @@ use crate::protocol::server::EventStealth;
 #[derive(Default)]
 pub struct DestealthOnFire;
 
-#[derive(SystemData)]
+#[derive(SystemData, EventDeps)]
 pub struct DestealthOnFireData<'a> {
 	conns: Connections<'a>,
 

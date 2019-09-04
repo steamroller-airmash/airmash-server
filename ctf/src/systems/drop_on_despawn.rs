@@ -11,7 +11,7 @@ use crate::server::*;
 #[derive(Default)]
 pub struct DropOnDespawn;
 
-#[derive(SystemData)]
+#[derive(SystemData, EventDeps)]
 pub struct DropOnDespawnData<'a> {
 	channel: Write<'a, OnFlag>,
 	entities: Entities<'a>,

@@ -20,7 +20,7 @@ use crate::utils::{EventHandler, EventHandlerTypeProvider};
 #[derive(Default)]
 pub struct DecloakProwler;
 
-#[derive(SystemData)]
+#[derive(SystemData, EventDeps)]
 pub struct DecloakProwlerData<'a> {
 	entities: Entities<'a>,
 	this_frame: Read<'a, ThisFrame>,

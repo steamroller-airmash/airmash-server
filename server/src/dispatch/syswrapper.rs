@@ -66,7 +66,7 @@ where
 impl<'a, T> System<'a> for SystemWrapper<T>
 where
 	T: System<'a> + SystemInfo + Send,
-	T::SystemData: DynamicSystemData<'a>,
+	<T as System<'a>>::SystemData: DynamicSystemData<'a>,
 {
 	type SystemData = SystemWrapperData<'a, T>;
 

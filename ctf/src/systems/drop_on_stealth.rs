@@ -9,7 +9,7 @@ use crate::server::*;
 #[derive(Default)]
 pub struct DropOnStealth;
 
-#[derive(SystemData)]
+#[derive(SystemData, EventDeps)]
 pub struct DropOnStealthData<'a> {
 	channel: Write<'a, OnFlag>,
 	entities: Entities<'a>,

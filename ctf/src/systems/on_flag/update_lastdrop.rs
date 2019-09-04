@@ -9,7 +9,7 @@ use crate::server::*;
 #[derive(Default)]
 pub struct UpdateLastDrop;
 
-#[derive(SystemData)]
+#[derive(SystemData, EventDeps)]
 pub struct UpdateLastDropData<'a> {
 	lastdrop: WriteStorage<'a, LastDrop>,
 	this_frame: Read<'a, ThisFrame>,

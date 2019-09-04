@@ -21,20 +21,20 @@ const SPEED_THRESHOLD_SQUARED: f32 = SPEED_THRESHOLD * SPEED_THRESHOLD;
 #[derive(Default)]
 pub struct Spectate;
 
-#[derive(SystemData)]
+#[derive(SystemData, EventDeps)]
 pub struct SpectateData<'a> {
-	pub conns: Read<'a, Connections>,
-	pub channel: Write<'a, OnPlayerSpectate>,
-	pub this_frame: Read<'a, ThisFrame>,
+	conns: Read<'a, Connections>,
+	channel: Write<'a, OnPlayerSpectate>,
+	this_frame: Read<'a, ThisFrame>,
 	config: Read<'a, Config>,
 
-	pub is_spec: WriteStorage<'a, IsSpectating>,
-	pub is_dead: ReadStorage<'a, IsDead>,
-	pub is_player: ReadStorage<'a, IsPlayer>,
-	pub spec_target: ReadStorage<'a, PlayerRef>,
-	pub entities: Entities<'a>,
-	pub health: ReadStorage<'a, Health>,
-	pub last_key: ReadStorage<'a, LastKeyTime>,
+	is_spec: WriteStorage<'a, IsSpectating>,
+	is_dead: ReadStorage<'a, IsDead>,
+	is_player: ReadStorage<'a, IsPlayer>,
+	spec_target: ReadStorage<'a, PlayerRef>,
+	entities: Entities<'a>,
+	health: ReadStorage<'a, Health>,
+	last_key: ReadStorage<'a, LastKeyTime>,
 	velocity: ReadStorage<'a, Velocity>,
 }
 

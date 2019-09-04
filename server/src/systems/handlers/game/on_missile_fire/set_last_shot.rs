@@ -9,7 +9,7 @@ use crate::utils::{EventHandler, EventHandlerTypeProvider};
 #[derive(Default)]
 pub struct SetLastShot;
 
-#[derive(SystemData)]
+#[derive(SystemData, EventDeps)]
 pub struct SetLastShotData<'a> {
 	pub this_frame: Read<'a, ThisFrame>,
 	pub last_shot: WriteStorage<'a, LastShotTime>,

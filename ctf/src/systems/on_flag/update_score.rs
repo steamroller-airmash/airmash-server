@@ -13,7 +13,7 @@ use crate::server::utils::*;
 #[derive(Default)]
 pub struct UpdateScore;
 
-#[derive(SystemData)]
+#[derive(SystemData, EventDeps)]
 pub struct UpdateScoreData<'a> {
 	conns: Connections<'a>,
 	players_game: Read<'a, PlayersGame>,

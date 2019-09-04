@@ -4,7 +4,7 @@ use specs::prelude::*;
 use std::any::Any;
 
 use crate::dispatch::SystemInfo;
-use crate::utils::MaybeInit;
+use crate::utils::{EventDeps, MaybeInit};
 
 /// Supplies the type of event that for which this
 /// system is listening. Used along with [`EventHandler`].
@@ -20,17 +20,9 @@ pub trait EventHandlerTypeProvider {
 /// have `on_event` called once for every time that
 /// the desired event (as specified in
 /// [`EventHandlerTypeProvider`]).
-///
-/// # Notes
-/// The default capacity of an [`EventChannel`](shrev::EventChannel)
-/// is 50. If more elements are added to the channel in a single
-/// frame than it's capacity, some events will get dropped before
-/// any event handlers get a chance to read them. If this is happening
-/// then initializing the problematic channels with a greater capacity
-/// will allow more events to occur per frame.
 pub trait EventHandler<'a>: EventHandlerTypeProvider + Send {
 	/// All resources that this system uses (reads or writes).
-	type SystemData: SystemData<'a>;
+	type SystemData: SystemData<'a> + EventDeps;
 
 	/// Setup any system resources.
 	///
