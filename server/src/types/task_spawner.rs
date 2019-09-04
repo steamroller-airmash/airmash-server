@@ -16,7 +16,15 @@ impl TaskSpawner {
 		self.data.clone()
 	}
 
-	pub fn launch<F>(&mut self, fut: F)
+	#[deprecated(note = "use TaskSpawner::spawn instead")]
+	pub fn launch<F>(&self, fut: F)
+	where
+		F: Future<Output = ()> + Send + 'static,
+	{
+		self.handle.spawn_fut(fut);
+	}
+
+	pub fn spawn<F>(&self, fut: F)
 	where
 		F: Future<Output = ()> + Send + 'static,
 	{

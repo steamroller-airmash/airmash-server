@@ -42,3 +42,10 @@ pub use crate::types::{
 	Score, Speed, Team, Time, Vector2, Velocity,
 };
 pub use airmash_server_macros::*;
+
+#[doc(hidden)]
+pub mod exported {
+	pub use crate::dispatch::DEBUG_ADAPTER;
+	#[cfg(features = "sentry")]
+	pub use crate::utils::__internal_log_sentry_error;
+}

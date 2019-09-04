@@ -28,8 +28,7 @@ impl<'a> EventHandler<'a> for SetDeadFlag {
 
 			let player = evt.player;
 			let tdata = data.tasks.task_data();
-			data.tasks
-				.launch(crate::task::death_cooldown(tdata, player));
+			data.tasks.spawn(crate::task::death_cooldown(tdata, player));
 		}
 	}
 }

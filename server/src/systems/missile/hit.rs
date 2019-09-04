@@ -1,16 +1,14 @@
-use crate::types::collision::*;
-use crate::types::FutureDispatcher;
-use crate::types::*;
 use specs::prelude::*;
 
 use crate::component::channel::*;
 use crate::component::event::*;
 use crate::component::flag::*;
 use crate::component::reference::PlayerRef;
-use crate::utils::{EventHandler, EventHandlerTypeProvider};
+use crate::types::collision::*;
+use crate::types::*;
+use crate::utils::{EventHandler, EventHandlerTypeProvider, HistoricalStorageExt};
 
 use crate::consts::missile::ID_REUSE_TIME;
-use crate::consts::timer::DELETE_ENTITY;
 
 #[derive(Default)]
 pub struct MissileHitSystem;
@@ -18,13 +16,13 @@ pub struct MissileHitSystem;
 #[derive(SystemData)]
 pub struct MissileHitSystemData<'a> {
 	hit_channel: Write<'a, OnPlayerHit>,
-	dispatch: ReadExpect<'a, FutureDispatcher>,
+	tasks: WriteExpect<'a, TaskSpawner>,
 	lazy: Read<'a, LazyUpdate>,
 
 	mob: ReadStorage<'a, Mob>,
 	player_flag: ReadStorage<'a, IsPlayer>,
 	entities: Entities<'a>,
-	hitmarker: WriteStorage<'a, HitMarker>,
+	is_zombie: WriteStorage<'a, IsZombie>,
 
 	despawn: Write<'a, OnMissileDespawn>,
 }
@@ -55,11 +53,9 @@ impl<'a> EventHandler<'a> for MissileHitSystem {
 		if !data.entities.is_alive(missile.ent) {
 			return;
 		}
-		if data.hitmarker.get(missile.ent).is_some() {
+		if data.is_zombie.mask().contains(missile.ent.id()) {
 			return;
 		}
-
-		data.hitmarker.insert(missile.ent, HitMarker {}).unwrap();
 
 		// Remove a bunch of components that are used to
 		// recognize missiles lazily (they will get
@@ -71,12 +67,15 @@ impl<'a> EventHandler<'a> for MissileHitSystem {
 		data.lazy.remove::<Team>(missile.ent);
 		data.lazy.remove::<PlayerRef>(missile.ent);
 
-		data.dispatch
-			.run_delayed(ID_REUSE_TIME, move |inst| TimerEvent {
-				ty: *DELETE_ENTITY,
-				instant: inst,
-				data: Some(Box::new(missile.ent)),
-			});
+		data.is_zombie
+			.insert_with_history(missile.ent, IsZombie::from_sys(self))
+			.unwrap();
+
+		data.tasks.spawn(crate::task::delayed_delete(
+			data.tasks.task_data(),
+			missile.ent,
+			ID_REUSE_TIME,
+		));
 
 		data.hit_channel.single_write(PlayerHit {
 			player: player.ent,

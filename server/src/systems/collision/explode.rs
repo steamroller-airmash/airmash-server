@@ -5,24 +5,24 @@ use crate::types::*;
 
 use crate::component::channel::OnMissileDespawn;
 use crate::component::event::*;
-use crate::component::flag::IsMissile;
+use crate::component::flag::{IsMissile, IsZombie};
 use crate::component::reference::PlayerRef;
-use crate::utils::{EventHandler, EventHandlerTypeProvider};
+use crate::utils::{EventHandler, EventHandlerTypeProvider, HistoricalStorageExt};
 
 use crate::consts::missile::ID_REUSE_TIME;
-use crate::consts::timer::DELETE_ENTITY;
 
 #[derive(Default)]
 pub struct MissileExplodeSystem;
 
 #[derive(SystemData)]
 pub struct MissileExplodeSystemData<'a> {
-	dispatch: ReadExpect<'a, FutureDispatcher>,
+	tasks: WriteExpect<'a, TaskSpawner>,
 	lazy: Read<'a, LazyUpdate>,
 
 	mob: ReadStorage<'a, Mob>,
 	pos: ReadStorage<'a, Position>,
 	channel: Write<'a, OnMissileDespawn>,
+	is_zombie: WriteStorage<'a, IsZombie>,
 }
 
 impl EventHandlerTypeProvider for MissileExplodeSystem {
@@ -43,6 +43,10 @@ impl<'a> EventHandler<'a> for MissileExplodeSystem {
 			missile_ent = c1.ent;
 		}
 
+		if data.is_zombie.mask().contains(missile_ent.id()) {
+			return;
+		}
+
 		// Remove a bunch of components that are used to
 		// recognize missiles lazily (they will get
 		// removed at the end of the frame)
@@ -53,12 +57,15 @@ impl<'a> EventHandler<'a> for MissileExplodeSystem {
 		data.lazy.remove::<Team>(missile_ent);
 		data.lazy.remove::<PlayerRef>(missile_ent);
 
-		data.dispatch
-			.run_delayed(ID_REUSE_TIME, move |inst| TimerEvent {
-				ty: *DELETE_ENTITY,
-				instant: inst,
-				data: Some(Box::new(missile_ent)),
-			});
+		data.is_zombie
+			.insert_with_history(missile_ent, IsZombie::from_sys(self))
+			.unwrap();
+
+		data.tasks.spawn(crate::task::delayed_delete(
+			data.tasks.task_data(),
+			missile_ent,
+			ID_REUSE_TIME,
+		));
 
 		data.channel.single_write(MissileDespawn {
 			missile: missile_ent,

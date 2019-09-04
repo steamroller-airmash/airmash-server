@@ -11,8 +11,12 @@ macro_rules! try_get_error {
 			line!()
 			);
 
+		$crate::exported::DEBUG_ADAPTER.with(move |f| unsafe {
+			(**f.borrow()).lazy_debug(ent);
+			});
+
 		#[cfg(features = "sentry")]
-		$crate::utils::_internal_log_sentry_error(
+		$crate::exported::_internal_log_sentry_error(
 			module_path!(),
 			line!(),
 			stringify!($storage),

@@ -132,11 +132,11 @@ impl ExecutorHandle {
 	}
 
 	/// Spawn a new future given a boxed future
-	pub fn spawn_fut_dyn(&mut self, fut: Box<dyn Future<Output = ()> + Send + 'static>) {
+	pub fn spawn_fut_dyn(&self, fut: Box<dyn Future<Output = ()> + Send + 'static>) {
 		self.queue.lock().unwrap().create_task(fut);
 	}
 	/// Spawn a new future given a future object
-	pub fn spawn_fut<F>(&mut self, fut: F)
+	pub fn spawn_fut<F>(&self, fut: F)
 	where
 		F: Future<Output = ()> + Send + 'static,
 	{

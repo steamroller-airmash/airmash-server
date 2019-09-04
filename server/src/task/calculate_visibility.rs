@@ -56,25 +56,33 @@ pub async fn calculate_visibility(mut data: TaskData) {
 	let mut spare_powerup_grid = Grid::new(vec![]);
 	let mut visibility_set: HashMap<_, HashSet<Entity>> = HashMap::default();
 
-	// let mut player_leave_reader = data.write_resource::<OnPlayerLeave, _, _>(|mut res| res.register_reader());
-	// let mut missile_despawn_reader = data.write_resource::<OnMissileDespawn, _, _>(|mut res| res.register_reader());
-	// let mut powerup_despawn_reader = data.write_resource::<OnPowerupDespawn, _, _>(|mut res| res.register_reader());
+	let mut player_leave_reader =
+		data.write_resource::<OnPlayerLeave, _, _>(|mut res| res.register_reader());
+	let mut missile_despawn_reader =
+		data.write_resource::<OnMissileDespawn, _, _>(|mut res| res.register_reader());
+	let mut powerup_despawn_reader =
+		data.write_resource::<OnPowerupDespawn, _, _>(|mut res| res.register_reader());
 
 	loop {
 		data.yield_frame().await;
 
-		/*
 		// Clear out entities that would disappear without an
 		// EventLeaveHorizon packet being sent.
 		data.world(|world| {
 			let channels: Channels = world.system_data();
 
-			let players = channels.player_leave.read(&mut player_leave_reader)
+			let players = channels
+				.player_leave
+				.read(&mut player_leave_reader)
 				.map(|evt| evt.0);
-			let missiles = channels.missile_despawn.read(&mut missile_despawn_reader)
-				.filter(|evt| evt.ty != MissileDespawnType::LifetimeEnded)
+			let missiles = channels
+				.missile_despawn
+				.read(&mut missile_despawn_reader)
+				// .filter(|evt| evt.ty != MissileDespawnType::LifetimeEnded)
 				.map(|evt| evt.missile);
-			let powerups = channels.powerup_despawn.read(&mut powerup_despawn_reader)
+			let powerups = channels
+				.powerup_despawn
+				.read(&mut powerup_despawn_reader)
 				.filter(|evt| evt.player.is_none())
 				.map(|evt| evt.mob);
 
@@ -86,7 +94,6 @@ pub async fn calculate_visibility(mut data: TaskData) {
 				}
 			}
 		});
-		*/
 
 		data.world(|world| {
 			let mut data: FillGridData = world.system_data();
@@ -180,7 +187,10 @@ pub async fn calculate_visibility(mut data: TaskData) {
 							_ if data.is_missile.get(ent).is_some() => EntityType::Missile,
 							_ if data.is_powerup.get(ent).is_some() => EntityType::Powerup,
 							_ => {
-								error!("Entity {:?} is visible but is not a player, missile, or powerup", ent);
+								error!(
+									"Entity was not a powerup, missile, or player: {:#?}",
+									world.debug_entity(ent)
+								);
 								continue;
 							}
 						};

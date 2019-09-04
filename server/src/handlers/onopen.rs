@@ -57,7 +57,7 @@ impl<'a> System<'a> for OnOpenHandler {
 			let tdata = data.task.task_data();
 			let reader = data.logins.register_reader();
 			data.task
-				.launch(new_connection(tdata, evt.conn, reader, login));
+				.spawn(new_connection(tdata, evt.conn, reader, login));
 		}
 	}
 }

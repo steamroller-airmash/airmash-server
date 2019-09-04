@@ -26,7 +26,7 @@ impl<'a> EventHandler<'a> for SetRespawnTimer {
 		let player = evt.player;
 
 		let tdata = data.tasks.task_data();
-		data.tasks.launch(death_cooldown(tdata, player));
+		data.tasks.spawn(death_cooldown(tdata, player));
 	}
 }
 

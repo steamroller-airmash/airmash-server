@@ -1,15 +1,15 @@
 use specs::prelude::*;
 
 use crate::component::channel::OnMissileDespawn;
-use crate::component::event::{MissileDespawn, MissileDespawnType, TimerEvent};
-use crate::component::flag::IsMissile;
+use crate::component::event::{MissileDespawn, MissileDespawnType};
+use crate::component::flag::{IsMissile, IsZombie};
 use crate::component::missile::MissileTrajectory;
 use crate::component::reference::PlayerRef;
 use crate::consts::missile::ID_REUSE_TIME;
-use crate::consts::timer::DELETE_ENTITY;
-use crate::dispatch::SystemInfo;
 use crate::types::*;
+use crate::utils::HistoricalStorageExt;
 
+#[derive(Default)]
 pub struct MissileCull;
 
 #[derive(SystemData)]
@@ -19,8 +19,10 @@ pub struct MissileCullData<'a> {
 	mob: ReadStorage<'a, Mob>,
 	pos: ReadStorage<'a, Position>,
 	is_missile: ReadStorage<'a, IsMissile>,
+	is_zombie: WriteStorage<'a, IsZombie>,
+
 	lazy: Read<'a, LazyUpdate>,
-	dispatch: ReadExpect<'a, FutureDispatcher>,
+	tasks: WriteExpect<'a, TaskSpawner>,
 	channel: Write<'a, OnMissileDespawn>,
 }
 
@@ -30,7 +32,8 @@ impl<'a> System<'a> for MissileCull {
 	fn run(&mut self, mut data: MissileCullData<'a>) {
 		let ref mut channel = data.channel;
 		let ref lazy = data.lazy;
-		let ref dispatch = data.dispatch;
+		let ref mut is_zombie = data.is_zombie;
+		let ref tasks = data.tasks;
 
 		(
 			&*data.ents,
@@ -50,6 +53,10 @@ impl<'a> System<'a> for MissileCull {
 				}
 			})
 			.for_each(|(ent, mob, pos)| {
+				if is_zombie.mask().contains(ent.id()) {
+					return;
+				}
+
 				// Remove a bunch of components that are used to
 				// recognize missiles lazily (they will get
 				// removed at the end of the frame)
@@ -60,11 +67,15 @@ impl<'a> System<'a> for MissileCull {
 				lazy.remove::<Team>(ent);
 				lazy.remove::<PlayerRef>(ent);
 
-				dispatch.run_delayed(ID_REUSE_TIME, move |inst| TimerEvent {
-					ty: *DELETE_ENTITY,
-					instant: inst,
-					data: Some(Box::new(ent)),
-				});
+				is_zombie
+					.insert_with_history(ent, IsZombie::from_sys(self))
+					.unwrap();
+
+				tasks.spawn(crate::task::delayed_delete(
+					tasks.task_data(),
+					ent,
+					ID_REUSE_TIME,
+				));
 
 				channel.single_write(MissileDespawn {
 					ty: MissileDespawnType::LifetimeEnded,
@@ -76,14 +87,8 @@ impl<'a> System<'a> for MissileCull {
 	}
 }
 
-impl SystemInfo for MissileCull {
-	type Dependencies = ();
-
-	fn name() -> &'static str {
-		concat!(module_path!(), "::", line!())
-	}
-
-	fn new() -> Self {
-		Self {}
+system_info! {
+	impl SystemInfo for MissileCull {
+		type Dependencies = super::MissileHit;
 	}
 }
