@@ -1,5 +1,3 @@
-use specs::prelude::*;
-
 use crate::component::event::*;
 use crate::protocol::server::EventLeaveHorizon;
 use crate::protocol::LeaveHorizonType;

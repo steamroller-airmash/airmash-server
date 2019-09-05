@@ -1,5 +1,3 @@
-use specs::prelude::*;
-
 use crate::component::event::PowerupSpawnEvent;
 use crate::types::systemdata::Connections;
 use crate::utils::*;

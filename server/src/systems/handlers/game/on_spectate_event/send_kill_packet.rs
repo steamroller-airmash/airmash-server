@@ -1,5 +1,3 @@
-use specs::prelude::*;
-
 use crate::component::event::PlayerSpectate;
 use crate::protocol::server::PlayerKill;
 use crate::types::systemdata::Connections;
