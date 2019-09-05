@@ -9,7 +9,7 @@ use crate::utils::{EventHandler, EventHandlerTypeProvider};
 #[derive(Default)]
 pub struct SendTimerEvent;
 
-#[derive(SystemData, EventDeps)]
+#[derive(SystemDataCustom)]
 pub struct SendTimerEventData<'a> {
 	timerchannel: Write<'a, OnTimerEvent>,
 	thisframe: Read<'a, ThisFrame>,

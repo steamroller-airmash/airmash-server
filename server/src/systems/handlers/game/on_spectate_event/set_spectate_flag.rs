@@ -7,7 +7,7 @@ use crate::utils::{EventHandler, EventHandlerTypeProvider};
 #[derive(Default)]
 pub struct SetSpectateFlag;
 
-#[derive(SystemData, EventDeps)]
+#[derive(SystemDataCustom)]
 pub struct SetSpectateFlagData<'a> {
 	is_spec: WriteStorage<'a, IsSpectating>,
 }

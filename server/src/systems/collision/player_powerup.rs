@@ -14,7 +14,7 @@ use crate::component::flag::*;
 #[derive(Default)]
 pub struct PlayerPowerupCollisionSystem;
 
-#[derive(SystemData)]
+#[derive(SystemDataCustom)]
 pub struct PlayerPowerupCollisionSystemData<'a> {
 	channel: Write<'a, OnPlayerPowerupCollision>,
 	ent: Entities<'a>,

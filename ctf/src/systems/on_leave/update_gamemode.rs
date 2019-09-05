@@ -12,7 +12,7 @@ use crate::RED_TEAM;
 #[derive(Default)]
 pub struct UpdateGameModeOnPlayerLeave;
 
-#[derive(SystemData, EventDeps)]
+#[derive(SystemDataCustom)]
 pub struct UpdateGameModeOnPlayerLeaveData<'a> {
 	gamemode: GameModeWriter<'a, CTFGameMode>,
 	teams: ReadStorage<'a, Team>,

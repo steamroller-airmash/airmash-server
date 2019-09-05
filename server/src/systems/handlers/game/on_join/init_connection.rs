@@ -11,7 +11,7 @@ use crate::utils::{EventHandler, EventHandlerTypeProvider};
 #[derive(Default)]
 pub struct InitConnection;
 
-#[derive(SystemData, EventDeps)]
+#[derive(SystemDataCustom)]
 pub struct InitConnectionData<'a> {
 	pub conns: Write<'a, Connections>,
 	pub associated: WriteStorage<'a, AssociatedConnection>,

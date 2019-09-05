@@ -11,7 +11,7 @@ use crate::utils::*;
 #[derive(Default)]
 pub struct SendPowerupUpdate;
 
-#[derive(SystemData, EventDeps)]
+#[derive(SystemDataCustom)]
 pub struct SendPowerupUpdateData<'a> {
 	conns: Connections<'a>,
 

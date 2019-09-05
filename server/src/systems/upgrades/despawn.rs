@@ -8,7 +8,7 @@ use crate::types::*;
 #[derive(Default)]
 pub struct Despawn;
 
-#[derive(SystemData)]
+#[derive(SystemDataCustom)]
 pub struct DespawnData<'a> {
 	frame: Read<'a, ThisFrame>,
 	entities: Entities<'a>,

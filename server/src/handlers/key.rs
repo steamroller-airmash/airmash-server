@@ -13,7 +13,7 @@ pub struct KeyHandler {
 	reader: Option<ReaderId<(ConnectionId, Key)>>,
 }
 
-#[derive(SystemData)]
+#[derive(SystemDataCustom)]
 pub struct KeyHandlerData<'a> {
 	channel: Read<'a, EventChannel<(ConnectionId, Key)>>,
 	conns: Read<'a, Connections>,

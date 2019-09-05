@@ -13,7 +13,7 @@ use crate::component::*;
 #[derive(Default)]
 pub struct SendFlagPosition;
 
-#[derive(SystemData, EventDeps)]
+#[derive(SystemDataCustom)]
 pub struct SendFlagPositionData<'a> {
 	conns: Connections<'a>,
 	scores: Read<'a, GameScores>,

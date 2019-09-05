@@ -14,7 +14,7 @@ use crate::utils::{EventHandler, EventHandlerTypeProvider};
 #[derive(Default)]
 pub struct ResetKeyState;
 
-#[derive(SystemData, EventDeps)]
+#[derive(SystemDataCustom)]
 pub struct ResetKeyStateData<'a> {
 	entities: Entities<'a>,
 	keystate: WriteStorage<'a, KeyState>,

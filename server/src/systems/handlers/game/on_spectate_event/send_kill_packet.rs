@@ -9,7 +9,7 @@ use crate::utils::*;
 #[derive(Default)]
 pub struct SendKillPacket;
 
-#[derive(SystemData, EventDeps)]
+#[derive(SystemDataCustom)]
 pub struct SendKillPacketData<'a> {
 	conns: Connections<'a>,
 }

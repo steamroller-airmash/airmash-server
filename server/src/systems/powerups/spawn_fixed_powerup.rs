@@ -9,7 +9,7 @@ use crate::types::*;
 #[derive(Default)]
 pub struct SpawnFixedPowerup;
 
-#[derive(SystemData)]
+#[derive(SystemDataCustom)]
 pub struct SpawnFixedPowerupData<'a> {
 	entities: Entities<'a>,
 

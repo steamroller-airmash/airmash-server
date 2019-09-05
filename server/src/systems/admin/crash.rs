@@ -13,7 +13,7 @@ use crate::utils::{EventHandler, EventHandlerTypeProvider};
 #[derive(Default)]
 pub struct Crash;
 
-#[derive(SystemData, EventDeps)]
+#[derive(SystemDataCustom)]
 pub struct CrashData<'a> {
 	name: ReadStorage<'a, Name>,
 	config: Read<'a, Config>,

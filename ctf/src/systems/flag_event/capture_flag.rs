@@ -13,7 +13,7 @@ use airmash_server::system_info;
 #[derive(Default)]
 pub struct CaptureFlag;
 
-#[derive(SystemData)]
+#[derive(SystemDataCustom)]
 pub struct CaptureFlagData<'a> {
 	ents: Entities<'a>,
 	pos: WriteStorage<'a, Position>,

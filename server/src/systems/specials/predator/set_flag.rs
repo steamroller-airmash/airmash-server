@@ -10,7 +10,7 @@ use crate::SystemInfo;
 
 pub struct SetBoostingFlag;
 
-#[derive(SystemData)]
+#[derive(SystemDataCustom)]
 pub struct SetBoostingFlagData<'a> {
 	pub config: Read<'a, Config>,
 	pub entities: Entities<'a>,

@@ -10,7 +10,7 @@ use crate::component::flag::IsPlayer;
 #[derive(Default)]
 pub struct GenPlayerGrid;
 
-#[derive(SystemData)]
+#[derive(SystemDataCustom)]
 pub struct GenPlayerGridData<'a> {
 	grid: Write<'a, PlayerGrid>,
 

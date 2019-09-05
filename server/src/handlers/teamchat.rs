@@ -11,7 +11,7 @@ use crate::utils::{EventHandler, EventHandlerTypeProvider};
 #[derive(Default)]
 pub struct TeamChatHandler;
 
-#[derive(SystemData, EventDeps)]
+#[derive(SystemDataCustom)]
 pub struct TeamChatHandlerData<'a> {
 	conns: Connections<'a>,
 

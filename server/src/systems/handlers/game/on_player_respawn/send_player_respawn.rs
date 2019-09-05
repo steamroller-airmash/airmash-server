@@ -20,7 +20,7 @@ use crate::systems::handlers::game::on_player_respawn::SetTraits;
 #[derive(Default)]
 pub struct SendPlayerRespawn;
 
-#[derive(SystemData, EventDeps)]
+#[derive(SystemDataCustom)]
 pub struct SendPlayerRespawnData<'a> {
 	entities: Entities<'a>,
 	conns: Connections<'a>,

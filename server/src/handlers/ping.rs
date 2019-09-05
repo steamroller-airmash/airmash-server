@@ -16,7 +16,7 @@ pub struct PingTimerHandler {
 	lastping: Instant,
 }
 
-#[derive(SystemData)]
+#[derive(SystemDataCustom)]
 pub struct PingTimerHandlerData<'a> {
 	frame: Read<'a, ThisFrame>,
 	conns: Connections<'a>,

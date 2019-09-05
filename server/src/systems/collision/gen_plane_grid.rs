@@ -12,7 +12,7 @@ use crate::consts::config::PLANE_HIT_CIRCLES;
 #[derive(Default)]
 pub struct GenPlaneGrid;
 
-#[derive(SystemData)]
+#[derive(SystemDataCustom)]
 pub struct GenPlaneGridData<'a> {
 	grid: Write<'a, PlaneGrid>,
 

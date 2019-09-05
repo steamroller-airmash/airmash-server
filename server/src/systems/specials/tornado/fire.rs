@@ -8,7 +8,7 @@ use crate::systems::EnergyRegenSystem;
 
 pub struct Fire;
 
-#[derive(SystemData)]
+#[derive(SystemDataCustom)]
 pub struct FireData<'a> {
 	plane: ReadStorage<'a, Plane>,
 	keystate: ReadStorage<'a, KeyState>,

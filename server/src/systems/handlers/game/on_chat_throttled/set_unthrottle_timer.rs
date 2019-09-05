@@ -10,7 +10,7 @@ use std::time::Duration;
 #[derive(Default)]
 pub struct SetUnthrottleTimer;
 
-#[derive(SystemData, EventDeps)]
+#[derive(SystemDataCustom)]
 pub struct SetUnthrottleTimerData<'a> {
 	future: ReadExpect<'a, FutureDispatcher>,
 }

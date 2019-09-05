@@ -10,7 +10,7 @@ use crate::utils::{EventHandler, EventHandlerTypeProvider};
 #[derive(Default)]
 pub struct DisplayMessage;
 
-#[derive(SystemData, EventDeps)]
+#[derive(SystemDataCustom)]
 pub struct DisplayMessageData<'a> {
 	conns: Connections<'a>,
 }

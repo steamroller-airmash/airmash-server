@@ -14,7 +14,7 @@ pub struct PlaneCollisionSystem {
 	terrain: Terrain,
 }
 
-#[derive(SystemData)]
+#[derive(SystemDataCustom)]
 pub struct PlaneCollisionSystemData<'a> {
 	entities: Entities<'a>,
 	collisions: Write<'a, OnPlayerTerrainCollision>,

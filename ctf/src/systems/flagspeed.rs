@@ -11,7 +11,7 @@ use super::PickupFlag;
 #[derive(Default)]
 pub struct FlagSpeed;
 
-#[derive(SystemData, EventDeps)]
+#[derive(SystemDataCustom)]
 pub struct FlagSpeedSystemData<'a> {
 	keystate: WriteStorage<'a, KeyState>,
 }

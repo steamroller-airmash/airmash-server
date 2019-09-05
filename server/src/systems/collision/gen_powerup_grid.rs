@@ -10,7 +10,7 @@ use crate::component::flag::IsPowerup;
 #[derive(Default)]
 pub struct GenPowerupGrid;
 
-#[derive(SystemData)]
+#[derive(SystemDataCustom)]
 pub struct GenPowerupGridData<'a> {
 	grid: Write<'a, PowerupGrid>,
 

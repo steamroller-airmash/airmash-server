@@ -16,7 +16,7 @@ use crate::systems::missile::MissileHit;
 #[derive(Default)]
 pub struct InflictDamage;
 
-#[derive(SystemData, EventDeps)]
+#[derive(SystemDataCustom)]
 pub struct InflictDamageData<'a> {
 	entities: Entities<'a>,
 	kill_channel: Write<'a, OnPlayerKilled>,

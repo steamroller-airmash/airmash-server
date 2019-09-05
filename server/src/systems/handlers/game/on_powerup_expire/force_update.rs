@@ -11,7 +11,7 @@ use crate::component::time::{LastUpdate, StartTime};
 #[derive(Default)]
 pub struct ForceUpdate;
 
-#[derive(SystemData, EventDeps)]
+#[derive(SystemDataCustom)]
 pub struct ForceUpdateData<'a> {
 	entities: Entities<'a>,
 	is_alive: IsAlive<'a>,

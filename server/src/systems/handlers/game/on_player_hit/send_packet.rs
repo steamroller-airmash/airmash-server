@@ -12,7 +12,7 @@ use crate::protocol::server::PlayerHitPlayer;
 #[derive(Default)]
 pub struct SendPacket;
 
-#[derive(SystemData, EventDeps)]
+#[derive(SystemDataCustom)]
 pub struct SendPacketData<'a> {
 	config: Read<'a, Config>,
 	conns: Connections<'a>,

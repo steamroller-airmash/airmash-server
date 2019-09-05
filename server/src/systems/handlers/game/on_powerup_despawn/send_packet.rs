@@ -33,9 +33,6 @@ impl<'a> EventHandler<'a> for SendPacket {
 
 system_info! {
 	impl SystemInfo for SendPacket {
-		type Dependencies = (
-			super::KnownEventSources,
-			systems::collision::GenPlaneGrid,
-		);
+		type Dependencies = systems::collision::GenPlaneGrid;
 	}
 }

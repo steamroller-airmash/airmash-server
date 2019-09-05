@@ -14,7 +14,7 @@ use crate::server::utils::{EventHandler, EventHandlerTypeProvider};
 #[derive(Default)]
 pub struct DoReturn;
 
-#[derive(SystemData, EventDeps)]
+#[derive(SystemDataCustom)]
 pub struct DoReturnData<'a> {
 	pos: WriteStorage<'a, Position>,
 	flags: ReadExpect<'a, Flags>,

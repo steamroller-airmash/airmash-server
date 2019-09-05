@@ -21,7 +21,7 @@ impl TimerHandler {
 	}
 }
 
-#[derive(SystemData)]
+#[derive(SystemDataCustom)]
 pub struct TimerHandlerData<'a> {
 	pub channel: Write<'a, OnTimerEvent>,
 }

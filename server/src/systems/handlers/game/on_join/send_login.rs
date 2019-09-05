@@ -14,7 +14,7 @@ use crate::utils::{EventHandler, EventHandlerTypeProvider};
 #[derive(Default)]
 pub struct SendLogin;
 
-#[derive(SystemData, EventDeps)]
+#[derive(SystemDataCustom)]
 pub struct SendLoginData<'a> {
 	conns: Connections<'a>,
 	entities: Entities<'a>,

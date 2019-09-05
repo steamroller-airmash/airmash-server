@@ -15,7 +15,7 @@ pub struct OnOpenHandler {
 	login_reader: MaybeInit<OnLoginReader>,
 }
 
-#[derive(SystemData)]
+#[derive(SystemDataCustom)]
 pub struct OnOpenData<'a> {
 	channel: Read<'a, EventChannel<ConnectionOpen>>,
 	logins: Write<'a, OnLogin>,

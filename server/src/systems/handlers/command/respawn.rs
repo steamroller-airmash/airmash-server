@@ -22,7 +22,7 @@ use crate::SystemInfo;
 #[derive(Default)]
 pub struct Respawn;
 
-#[derive(SystemData, EventDeps)]
+#[derive(SystemDataCustom)]
 pub struct RespawnData<'a> {
 	health: WriteStorage<'a, Health>,
 	planes: WriteStorage<'a, Plane>,

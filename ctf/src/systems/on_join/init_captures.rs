@@ -9,7 +9,7 @@ use crate::server::*;
 #[derive(Default)]
 pub struct InitCaptures;
 
-#[derive(SystemData, EventDeps)]
+#[derive(SystemDataCustom)]
 pub struct InitCapturesData<'a> {
 	entities: Entities<'a>,
 	captures: WriteStorage<'a, Captures>,

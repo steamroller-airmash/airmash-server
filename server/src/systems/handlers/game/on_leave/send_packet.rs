@@ -9,7 +9,7 @@ use crate::utils::{EventHandler, EventHandlerTypeProvider};
 #[derive(Default)]
 pub struct SendPlayerLeave;
 
-#[derive(SystemData, EventDeps)]
+#[derive(SystemDataCustom)]
 pub struct SendPlayerLeaveData<'a> {
 	conns: Connections<'a>,
 }

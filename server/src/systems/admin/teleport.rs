@@ -18,7 +18,7 @@ use serde_json;
 #[derive(Default)]
 pub struct Teleport;
 
-#[derive(SystemData, EventDeps)]
+#[derive(SystemDataCustom)]
 pub struct TeleportData<'a> {
 	entities: Entities<'a>,
 	pos: WriteStorage<'a, Position>,

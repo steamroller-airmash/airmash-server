@@ -10,7 +10,7 @@ pub struct PongHandler {
 	reader: Option<OnPongReader>,
 }
 
-#[derive(SystemData)]
+#[derive(SystemDataCustom)]
 pub struct PongHandlerData<'a> {
 	channel: Read<'a, OnPong>,
 	conns: Read<'a, Connections>,

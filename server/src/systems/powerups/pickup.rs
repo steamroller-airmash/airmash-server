@@ -15,7 +15,7 @@ use std::time::Instant;
 #[derive(Default)]
 pub struct Pickup;
 
-#[derive(SystemData, EventDeps)]
+#[derive(SystemDataCustom)]
 pub struct PickupData<'a> {
 	upgrade_channel: Write<'a, OnPlayerPowerup>,
 	entities: Entities<'a>,
@@ -76,13 +76,11 @@ impl<'a> EventHandler<'a> for Pickup {
 			}
 		}
 
-		data.entities.delete(upgrade.ent).unwrap();
-
 		data.upgrade_channel.single_write(PlayerPowerup {
 			player: player.ent,
 			duration,
 			ty,
-		})
+		});
 	}
 }
 

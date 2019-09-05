@@ -8,7 +8,7 @@ use crate::utils::*;
 #[derive(Default)]
 pub struct SendSpectatePacket;
 
-#[derive(SystemData, EventDeps)]
+#[derive(SystemDataCustom)]
 pub struct SendSpectatePacketData<'a> {
 	conns: Connections<'a>,
 }

@@ -8,7 +8,7 @@ use specs::prelude::*;
 
 use std::time::Instant;
 
-#[derive(SystemData)]
+#[derive(SystemDataCustom)]
 struct AfkData<'a> {
 	entities: Entities<'a>,
 	last_key: ReadStorage<'a, LastKeyTime>,

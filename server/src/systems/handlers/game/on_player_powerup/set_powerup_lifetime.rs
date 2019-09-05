@@ -9,7 +9,7 @@ use crate::SystemInfo;
 #[derive(Default)]
 pub struct SetPowerupLifetime;
 
-#[derive(SystemData, EventDeps)]
+#[derive(SystemDataCustom)]
 pub struct SetPowerupLifetimeData<'a> {
 	powerups: WriteStorage<'a, Powerups>,
 	this_frame: Read<'a, ThisFrame>,

@@ -12,7 +12,7 @@ use crate::utils::HistoricalStorageExt;
 #[derive(Default)]
 pub struct MissileCull;
 
-#[derive(SystemData)]
+#[derive(SystemDataCustom)]
 pub struct MissileCullData<'a> {
 	ents: Entities<'a>,
 	missile_trajectory: ReadStorage<'a, MissileTrajectory>,

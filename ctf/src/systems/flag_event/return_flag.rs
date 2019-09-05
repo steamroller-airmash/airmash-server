@@ -13,7 +13,7 @@ use crate::server::types::systemdata::*;
 #[derive(Default)]
 pub struct ReturnFlag;
 
-#[derive(SystemData)]
+#[derive(SystemDataCustom)]
 pub struct ReturnFlagData<'a> {
 	ents: Entities<'a>,
 	pos: WriteStorage<'a, Position>,

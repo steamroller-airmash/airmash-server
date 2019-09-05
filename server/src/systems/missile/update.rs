@@ -14,7 +14,7 @@ lazy_static! {
 	static ref SIZE_Y: Distance = *BOUNDARY_Y * 2.0;
 }
 
-#[derive(SystemData)]
+#[derive(SystemDataCustom)]
 pub struct MissileUpdateSystemData<'a> {
 	pos: WriteStorage<'a, Position>,
 	vel: WriteStorage<'a, Velocity>,

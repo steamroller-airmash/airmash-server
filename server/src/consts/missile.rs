@@ -5,4 +5,4 @@ use std::time::Duration;
 /// reused while the client is still running
 /// animations for them causes the client to see
 /// ghost missiles.
-pub const ID_REUSE_TIME: Duration = Duration::from_secs(30);
+pub const ID_REUSE_TIME: Duration = Duration::from_secs(180);

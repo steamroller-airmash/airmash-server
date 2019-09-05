@@ -19,7 +19,7 @@ pub struct SendEventBoost {
 	changed: MaybeInit<ReaderId<ComponentEvent>>,
 }
 
-#[derive(SystemData)]
+#[derive(SystemDataCustom)]
 pub struct SendEventBoostData<'a> {
 	entities: Entities<'a>,
 	conns: Connections<'a>,

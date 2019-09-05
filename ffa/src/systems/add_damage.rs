@@ -9,7 +9,7 @@ use airmash_server::*;
 #[derive(Default)]
 pub struct AddDamage;
 
-#[derive(SystemData, EventDeps)]
+#[derive(SystemDataCustom)]
 pub struct AddDamageData<'a> {
     damage: WriteStorage<'a, TotalDamage>,
     entities: Entities<'a>,

@@ -14,7 +14,7 @@ use crate::consts::missile::ID_REUSE_TIME;
 #[derive(Default)]
 pub struct MissileExplodeSystem;
 
-#[derive(SystemData, EventDeps)]
+#[derive(SystemDataCustom)]
 pub struct MissileExplodeSystemData<'a> {
 	tasks: WriteExpect<'a, TaskSpawner>,
 	lazy: Read<'a, LazyUpdate>,

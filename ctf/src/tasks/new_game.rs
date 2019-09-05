@@ -103,7 +103,7 @@ pub async fn new_game(mut data: TaskData, winner: Team) {
 }
 
 fn award_bounty(data: &mut TaskData, winner: Team) {
-	#[derive(SystemData)]
+	#[derive(SystemDataCustom)]
 	struct AwardBountyData<'a> {
 		entities: Entities<'a>,
 
@@ -200,7 +200,7 @@ fn make_planes_vulnerable(data: &mut TaskData, saved: SavedVulnData) {
 fn reset_flags(data: &mut TaskData) {
 	use crate::component::{FlagEvent, FlagEventType, Flags, OnFlag};
 
-	#[derive(SystemData)]
+	#[derive(SystemDataCustom)]
 	struct ResetFlagsData<'a> {
 		channel: Write<'a, OnFlag>,
 		flags: ReadExpect<'a, Flags>,
@@ -230,7 +230,7 @@ fn shuffle(data: &mut TaskData) {
 	use crate::shuffle::{PlayerShuffleInfo, ShuffleProvider};
 	use crate::CTFGameMode;
 
-	#[derive(SystemData)]
+	#[derive(SystemDataCustom)]
 	struct ShuffleData<'a> {
 		shuffler: ReadExpect<'a, Box<dyn ShuffleProvider + Sync + Send>>,
 		conns: Connections<'a>,
@@ -313,7 +313,7 @@ fn display_win_banner(data: &mut TaskData, winner: Team) {
 	use crate::server::protocol::server::ServerCustom;
 	use crate::server::protocol::ServerCustomType;
 
-	#[derive(SystemData)]
+	#[derive(SystemDataCustom)]
 	struct DisplayWinData<'a> {
 		conns: Connections<'a>,
 		players_game: Read<'a, PlayersGame>,
@@ -359,7 +359,7 @@ fn respawn_all_players(data: &mut TaskData) {
 	use crate::server::component::event::{PlayerRespawn, PlayerRespawnPrevStatus::*};
 	use crate::server::component::flag::{IsDead, IsSpectating};
 
-	#[derive(SystemData)]
+	#[derive(SystemDataCustom)]
 	struct RespawnAllData<'a> {
 		channel: Write<'a, OnPlayerRespawn>,
 
@@ -395,7 +395,7 @@ fn respawn_all_players(data: &mut TaskData) {
 fn reset_scores(data: &mut TaskData) {
 	use crate::component::{FlagEvent, FlagEventType, Flags, GameScores, OnFlag};
 
-	#[derive(SystemData)]
+	#[derive(SystemDataCustom)]
 	struct ResetScoresData<'a> {
 		scores: Write<'a, GameScores>,
 

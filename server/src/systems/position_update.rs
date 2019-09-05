@@ -33,7 +33,7 @@ const FRAC_PI_2: Rotation = Rotation {
 #[derive(Default)]
 pub struct PositionUpdate;
 
-#[derive(SystemData)]
+#[derive(SystemDataCustom)]
 pub struct PositionUpdateData<'a> {
 	pos: WriteStorage<'a, Position>,
 	rot: WriteStorage<'a, Rotation>,

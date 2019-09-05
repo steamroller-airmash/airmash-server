@@ -8,4 +8,5 @@ pub fn register<'a, 'b>(builder: Builder<'a, 'b>) -> Builder<'a, 'b> {
 		.with::<SpawnFixedPowerup>()
 		.with_handler::<Pickup>()
 		.with_handler::<SendDespawn>()
+		.with_handler::<Despawn>()
 }

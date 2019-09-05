@@ -13,7 +13,7 @@ use crate::utils::{EventHandler, EventHandlerTypeProvider};
 #[derive(Default)]
 pub struct DebugPrint;
 
-#[derive(SystemData, EventDeps)]
+#[derive(SystemDataCustom)]
 pub struct DebugPrintData<'a> {
 	entities: Entities<'a>,
 	config: Read<'a, Config>,

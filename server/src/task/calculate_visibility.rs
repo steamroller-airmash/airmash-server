@@ -21,7 +21,7 @@ use crate::{Config, Distance, Mob, Position, Team};
 
 use std::mem;
 
-#[derive(SystemData)]
+#[derive(SystemDataCustom)]
 struct FillGridData<'a> {
 	config: Read<'a, Config>,
 	entities: Entities<'a>,
@@ -43,7 +43,7 @@ struct FillGridData<'a> {
 }
 
 #[allow(unused)]
-#[derive(SystemData)]
+#[derive(SystemDataCustom)]
 struct Channels<'a> {
 	player_leave: Read<'a, OnPlayerLeave>,
 	missile_despawn: Read<'a, OnMissileDespawn>,

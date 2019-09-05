@@ -10,7 +10,7 @@ use crate::consts::timer::*;
 #[derive(Default)]
 pub struct ScoreBoardTimer;
 
-#[derive(SystemData)]
+#[derive(SystemDataCustom)]
 pub struct ScoreBoardTimerData<'a> {
 	last: Write<'a, LastScoreBoardTime>,
 	frame: Read<'a, ThisFrame>,

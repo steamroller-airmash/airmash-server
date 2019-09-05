@@ -10,7 +10,7 @@ use crate::SystemInfo;
 #[derive(Default)]
 pub struct SendPlayerFire;
 
-#[derive(SystemData, EventDeps)]
+#[derive(SystemDataCustom)]
 pub struct SendPlayerFireData<'a> {
 	conns: Connections<'a>,
 	config: Read<'a, Config>,

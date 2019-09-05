@@ -16,11 +16,11 @@ pub struct CheckExpired;
 
 #[derive(SystemData)]
 pub struct CheckExpiredData<'a> {
-	pub entities: Entities<'a>,
-	pub powerups: WriteStorage<'a, Powerups>,
-	pub channel: Write<'a, OnPowerupExpired>,
-	pub is_alive: IsAlive<'a>,
-	pub this_frame: Read<'a, ThisFrame>,
+	entities: Entities<'a>,
+	powerups: WriteStorage<'a, Powerups>,
+	channel: Write<'a, OnPowerupExpired>,
+	is_alive: IsAlive<'a>,
+	this_frame: Read<'a, ThisFrame>,
 }
 
 impl<'a> System<'a> for CheckExpired {

@@ -12,7 +12,7 @@ use crate::utils::*;
 #[derive(Default)]
 pub struct PickupUpgrade;
 
-#[derive(SystemData, EventDeps)]
+#[derive(SystemDataCustom)]
 pub struct PickupUpgradeData<'a> {
 	upgrade_channel: Write<'a, OnPowerupPickup>,
 	entities: Entities<'a>,

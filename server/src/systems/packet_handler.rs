@@ -17,7 +17,7 @@ pub struct PacketHandler {
 	channel: Receiver<ConnectionEvent>,
 }
 
-#[derive(SystemData)]
+#[derive(SystemDataCustom)]
 pub struct PacketHandlerData<'a> {
 	onopen: Write<'a, OnOpen>,
 	onclose: Write<'a, OnClose>,

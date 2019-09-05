@@ -11,7 +11,7 @@ use crate::component::flag::*;
 
 pub struct PlayerMissileCollisionSystem;
 
-#[derive(SystemData)]
+#[derive(SystemDataCustom)]
 pub struct PlayerMissileCollisionSystemData<'a> {
 	pub channel: Write<'a, OnPlayerMissileCollision>,
 	pub ent: Entities<'a>,

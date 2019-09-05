@@ -14,7 +14,7 @@ use crate::protocol::DespawnType;
 #[derive(Default)]
 pub struct SendDespawn;
 
-#[derive(SystemData, EventDeps)]
+#[derive(SystemDataCustom)]
 pub struct SendDespawnData<'a> {
 	entities: Entities<'a>,
 	conns: Connections<'a>,

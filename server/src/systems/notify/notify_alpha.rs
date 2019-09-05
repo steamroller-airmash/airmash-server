@@ -1,5 +1,3 @@
-use specs::prelude::*;
-
 use std::time::Duration;
 
 use crate::component::event::PlayerJoin;
@@ -13,7 +11,7 @@ pub struct NotifyAlpha {
 	message: String,
 }
 
-#[derive(SystemData, EventDeps)]
+#[derive(SystemDataCustom)]
 pub struct NotifyAlphaData<'a> {
 	conns: Connections<'a>,
 }

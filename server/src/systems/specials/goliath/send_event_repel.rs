@@ -20,7 +20,7 @@ use crate::protocol::server::{EventRepel, EventRepelMob, EventRepelPlayer};
 #[derive(Default)]
 pub struct SendEventRepel;
 
-#[derive(SystemData, EventDeps)]
+#[derive(SystemDataCustom)]
 pub struct SendEventRepelData<'a> {
 	conns: ConnectionsNoTeams<'a>,
 	config: Read<'a, Config>,

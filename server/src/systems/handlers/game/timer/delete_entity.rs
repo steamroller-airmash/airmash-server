@@ -9,7 +9,7 @@ use crate::SystemInfo;
 #[derive(Default)]
 pub struct DeleteEntity;
 
-#[derive(SystemData, EventDeps)]
+#[derive(SystemDataCustom)]
 pub struct DeleteEntityData<'a> {
 	entities: Entities<'a>,
 }

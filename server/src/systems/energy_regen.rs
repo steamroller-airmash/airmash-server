@@ -7,7 +7,7 @@ use crate::component::time::{LastFrame, ThisFrame};
 #[derive(Default)]
 pub struct EnergyRegenSystem;
 
-#[derive(SystemData)]
+#[derive(SystemDataCustom)]
 pub struct EnergyRegenSystemData<'a> {
 	pub lastframe: Read<'a, LastFrame>,
 	pub thisframe: Read<'a, ThisFrame>,

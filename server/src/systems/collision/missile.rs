@@ -13,7 +13,7 @@ pub struct MissileTerrainCollisionSystem {
 	terrain: Terrain,
 }
 
-#[derive(SystemData)]
+#[derive(SystemDataCustom)]
 pub struct MissileTerrainCollisionSystemData<'a> {
 	entities: Entities<'a>,
 	channel: Write<'a, OnMissileTerrainCollision>,

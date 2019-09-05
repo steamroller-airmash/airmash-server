@@ -14,7 +14,7 @@ pub struct ChatEventHandler {
 	say_reader: MaybeInit<OnSayReader>,
 }
 
-#[derive(SystemData, EventDeps)]
+#[derive(SystemDataCustom)]
 pub struct ChatEventHandlerData<'a> {
 	channel_chat: Read<'a, OnChat>,
 	channel_team: Read<'a, OnTeamChat>,

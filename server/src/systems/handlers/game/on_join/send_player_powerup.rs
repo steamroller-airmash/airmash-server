@@ -15,7 +15,7 @@ use crate::utils::{EventHandler, EventHandlerTypeProvider};
 #[derive(Default)]
 pub struct SendPlayerPowerup;
 
-#[derive(SystemData, EventDeps)]
+#[derive(SystemDataCustom)]
 pub struct SendPlayerPowerupData<'a> {
 	config: Read<'a, Config>,
 	channel: Write<'a, OnPlayerPowerup>,

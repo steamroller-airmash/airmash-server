@@ -30,7 +30,7 @@ where
 #[derive(Default)]
 pub struct ScoreBoardTimerHandler;
 
-#[derive(SystemData, EventDeps)]
+#[derive(SystemDataCustom)]
 pub struct ScoreBoardSystemData<'a> {
 	conns: Connections<'a>,
 

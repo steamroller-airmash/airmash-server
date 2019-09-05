@@ -19,7 +19,7 @@ pub type Connections<'a> = ConnsInternal<'a, ReadStorage<'a, Team>, Read<'a, Con
 pub type ConnectionsMut<'a> = ConnsInternal<'a, ReadStorage<'a, Team>, Write<'a, ConnData>>;
 pub type ConnectionsNoTeams<'a> = ConnsInternal<'a, (), Write<'a, ConnData>>;
 
-#[derive(SystemData, EventDeps)]
+#[derive(SystemDataCustom)]
 pub struct ConnsInternal<'a, Teams, Conns>
 where
 	Teams: EventDeps,

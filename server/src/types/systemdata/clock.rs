@@ -11,7 +11,7 @@ use crate::types::ToClock;
 /// This component adapter reads [`StartTime`][0].
 ///
 /// [0]: crate::component::time::StartTime
-#[derive(SystemData, EventDeps)]
+#[derive(SystemDataCustom)]
 pub struct ReadClock<'a> {
 	start: Read<'a, StartTime>,
 }

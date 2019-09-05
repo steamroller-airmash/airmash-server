@@ -60,4 +60,5 @@ pub fn register<'a, 'b>(builder: Builder<'a, 'b>) -> Builder<'a, 'b> {
 		.with_handler::<on_powerup_spawn::SendPacket>()
 		// Powerup Despawn
 		.with_handler::<on_powerup_despawn::SendPacket>()
+		.with_handler::<on_powerup_despawn::Cleanup>()
 }

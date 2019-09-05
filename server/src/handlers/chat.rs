@@ -15,7 +15,7 @@ pub struct ChatHandler {
 	reader: Option<ReaderId<(ConnectionId, Chat)>>,
 }
 
-#[derive(SystemData)]
+#[derive(SystemDataCustom)]
 pub struct ChatHandlerData<'a> {
 	channel: Read<'a, EventChannel<(ConnectionId, Chat)>>,
 	conns: Connections<'a>,

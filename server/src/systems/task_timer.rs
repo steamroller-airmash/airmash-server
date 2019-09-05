@@ -39,7 +39,7 @@ impl Ord for Task {
 pub struct WakerEvent(pub Instant, pub Waker);
 pub type WakerChannel = EventChannel<WakerEvent>;
 
-#[derive(SystemData)]
+#[derive(SystemDataCustom)]
 pub struct TaskTimerData<'a> {
 	frame: Read<'a, ThisFrame>,
 	events: Read<'a, WakerChannel>,

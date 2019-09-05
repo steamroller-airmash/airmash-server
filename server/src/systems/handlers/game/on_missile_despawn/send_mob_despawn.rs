@@ -12,7 +12,7 @@ use crate::utils::{EventHandler, EventHandlerTypeProvider};
 #[derive(Default)]
 pub struct SendMobDespawn;
 
-#[derive(SystemData, EventDeps)]
+#[derive(SystemDataCustom)]
 pub struct SendMobDespawnData<'a> {
 	conns: Connections<'a>,
 }

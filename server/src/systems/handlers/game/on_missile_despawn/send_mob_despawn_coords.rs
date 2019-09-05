@@ -12,7 +12,7 @@ use crate::SystemInfo;
 #[derive(Default)]
 pub struct SendMobDespawnCoords;
 
-#[derive(SystemData, EventDeps)]
+#[derive(SystemDataCustom)]
 pub struct SendMobDespawnCoordsData<'a> {
 	conns: Connections<'a>,
 	mob: ReadStorage<'a, Mob>,

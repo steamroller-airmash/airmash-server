@@ -7,7 +7,7 @@ use crate::server::types::systemdata::*;
 #[derive(Default)]
 pub struct PosUpdate;
 
-#[derive(SystemData)]
+#[derive(SystemDataCustom)]
 pub struct PosUpdateData<'a> {
 	ents: Entities<'a>,
 	pos: WriteStorage<'a, Position>,

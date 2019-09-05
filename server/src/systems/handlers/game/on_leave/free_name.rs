@@ -9,7 +9,7 @@ use crate::{
 #[derive(Default)]
 pub struct FreeName;
 
-#[derive(SystemData, EventDeps)]
+#[derive(SystemDataCustom)]
 pub struct FreeNameData<'a> {
 	pub channel: Read<'a, OnPlayerLeave>,
 	pub player_names: Write<'a, PlayerNames>,

@@ -25,7 +25,7 @@ pub struct MissileFireInfo {
 	pub ty: Mob,
 }
 
-#[derive(SystemData, EventDeps)]
+#[derive(SystemDataCustom)]
 pub struct FireMissiles<'a> {
 	entities: Entities<'a>,
 	this_frame: Read<'a, ThisFrame>,

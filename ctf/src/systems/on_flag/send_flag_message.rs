@@ -13,7 +13,7 @@ use crate::RED_TEAM;
 #[derive(Default)]
 pub struct SendFlagMessageSystem;
 
-#[derive(SystemData, EventDeps)]
+#[derive(SystemDataCustom)]
 pub struct SendFlagMessageSystemData<'a> {
 	conns: Connections<'a>,
 	scores: Write<'a, GameScores>,

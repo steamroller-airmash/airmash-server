@@ -3,7 +3,7 @@ use specs::prelude::*;
 
 use crate::component::flag::{IsDead, IsSpectating};
 
-#[derive(SystemData, EventDeps)]
+#[derive(SystemDataCustom)]
 pub struct IsAlive<'a> {
 	pub is_spec: ReadStorage<'a, IsSpectating>,
 	pub is_dead: ReadStorage<'a, IsDead>,

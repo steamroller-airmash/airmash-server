@@ -15,7 +15,7 @@ use crate::protocol::server::EventStealth;
 #[derive(Default)]
 pub struct SendEventStealth;
 
-#[derive(SystemData, EventDeps)]
+#[derive(SystemDataCustom)]
 pub struct SendEventStealthData<'a> {
 	conns: Connections<'a>,
 

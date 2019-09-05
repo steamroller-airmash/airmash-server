@@ -71,7 +71,7 @@ where
 #[derive(Default)]
 pub struct GivePowerup;
 
-#[derive(SystemData, EventDeps)]
+#[derive(SystemDataCustom)]
 pub struct GivePowerupData<'a> {
 	entities: Entities<'a>,
 	channel: Write<'a, OnPlayerPowerup>,

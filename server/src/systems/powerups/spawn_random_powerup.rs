@@ -21,7 +21,7 @@ pub struct SpawnRandomPowerup {
 	terrain: Terrain,
 }
 
-#[derive(SystemData)]
+#[derive(SystemDataCustom)]
 pub struct SpawnRandomPowerupData<'a> {
 	entities: Entities<'a>,
 	mob: WriteStorage<'a, Mob>,

@@ -17,7 +17,7 @@ use std::str::FromStr;
 #[derive(Default)]
 pub struct Flag;
 
-#[derive(SystemData, EventDeps)]
+#[derive(SystemDataCustom)]
 pub struct FlagData<'a> {
 	conns: Connections<'a>,
 	flags: WriteStorage<'a, FlagCode>,

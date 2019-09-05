@@ -14,7 +14,7 @@ use super::KnownEventSources;
 #[derive(Default)]
 pub struct GiveShield;
 
-#[derive(SystemData, EventDeps)]
+#[derive(SystemDataCustom)]
 pub struct GiveShieldData<'a> {
 	channel: Write<'a, OnPlayerPowerup>,
 	config: Read<'a, Config>,

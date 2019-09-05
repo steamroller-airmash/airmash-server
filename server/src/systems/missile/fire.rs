@@ -7,7 +7,7 @@ use crate::component::time::*;
 #[derive(Default)]
 pub struct MissileFireHandler;
 
-#[derive(SystemData)]
+#[derive(SystemDataCustom)]
 pub struct MissileFireHandlerData<'a> {
 	fire_missile: FireMissiles<'a>,
 	plane: ReadStorage<'a, Plane>,

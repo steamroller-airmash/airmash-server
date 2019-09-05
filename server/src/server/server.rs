@@ -107,6 +107,14 @@ where
 					break;
 				}
 				next_frame += frame_time;
+
+				let now = Instant::now();
+				if next_frame <= now - Duration::from_millis(8) {
+					warn!(
+						"Frame took too long, jumping forward {} ms",
+						(now - next_frame).as_millis()
+					);
+				}
 			} else {
 				let wait_time = next_frame - now;
 

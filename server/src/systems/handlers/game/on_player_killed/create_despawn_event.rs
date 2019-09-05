@@ -11,7 +11,7 @@ use crate::SystemInfo;
 #[derive(Default)]
 pub struct CreateDespawnEvent;
 
-#[derive(SystemData, EventDeps)]
+#[derive(SystemDataCustom)]
 pub struct CreateDespawnEventData<'a> {
 	channel: Write<'a, OnPlayerDespawn>,
 	pos: ReadStorage<'a, Position>,

@@ -10,7 +10,7 @@ use super::SendFlagMessage;
 #[derive(Default)]
 pub struct CheckWin;
 
-#[derive(SystemData, EventDeps)]
+#[derive(SystemDataCustom)]
 pub struct CheckWinData<'a> {
 	win_channel: Write<'a, OnGameWin>,
 	scores: Read<'a, GameScores>,

@@ -15,7 +15,7 @@ use crate::SystemInfo;
 
 pub struct SetStealth;
 
-#[derive(SystemData)]
+#[derive(SystemDataCustom)]
 pub struct SetStealthData<'a> {
 	pub config: Read<'a, Config>,
 	pub entities: Entities<'a>,

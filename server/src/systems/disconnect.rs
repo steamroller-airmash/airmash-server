@@ -36,7 +36,7 @@ pub struct Disconnect {
 	counts: HashMap<ConnectionId, Instant>,
 }
 
-#[derive(SystemData)]
+#[derive(SystemDataCustom)]
 pub struct DisconnectData<'a> {
 	this_frame: Read<'a, ThisFrame>,
 

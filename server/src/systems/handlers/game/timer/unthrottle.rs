@@ -10,7 +10,7 @@ use crate::systems::TimerHandler;
 #[derive(Default)]
 pub struct UnthrottlePlayer;
 
-#[derive(SystemData, EventDeps)]
+#[derive(SystemDataCustom)]
 pub struct UnthrottlePlayerData<'a> {
 	entities: Entities<'a>,
 	throttled: WriteStorage<'a, IsChatThrottled>,

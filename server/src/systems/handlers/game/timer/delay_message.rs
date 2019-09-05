@@ -1,5 +1,3 @@
-use specs::prelude::*;
-
 use crate::component::event::TimerEvent;
 use crate::consts::timer::DELAYED_MESSAGE;
 use crate::protocol::server::ServerMessage;
@@ -10,7 +8,7 @@ use crate::SystemInfo;
 #[derive(Default)]
 pub struct DelayMessage;
 
-#[derive(SystemData, EventDeps)]
+#[derive(SystemDataCustom)]
 pub struct DelayMessageData<'a> {
 	conns: Connections<'a>,
 }

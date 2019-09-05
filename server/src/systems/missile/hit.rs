@@ -13,7 +13,7 @@ use crate::consts::missile::ID_REUSE_TIME;
 #[derive(Default)]
 pub struct MissileHitSystem;
 
-#[derive(SystemData, EventDeps)]
+#[derive(SystemDataCustom)]
 pub struct MissileHitSystemData<'a> {
 	hit_channel: Write<'a, OnPlayerHit>,
 	tasks: WriteExpect<'a, TaskSpawner>,

@@ -12,7 +12,7 @@ use crate::utils::*;
 #[derive(Default)]
 pub struct SayHandler;
 
-#[derive(SystemData, EventDeps)]
+#[derive(SystemDataCustom)]
 pub struct SayHandlerData<'a> {
 	conns: Connections<'a>,
 

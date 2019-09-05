@@ -2,7 +2,7 @@ use specs::prelude::*;
 
 use std::fmt::{Debug, Formatter, Result};
 
-#[derive(SystemData)]
+#[derive(SystemDataCustom)]
 pub struct DebugAdapter<'a> {
 	lazy: Read<'a, LazyUpdate>,
 }

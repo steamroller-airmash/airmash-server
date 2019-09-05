@@ -15,7 +15,7 @@ use crate::systems::EnergyRegenSystem;
 
 pub struct GoliathRepel;
 
-#[derive(SystemData)]
+#[derive(SystemDataCustom)]
 pub struct GoliathRepelData<'a> {
 	channel: Write<'a, OnPlayerRepel>,
 	entities: Entities<'a>,

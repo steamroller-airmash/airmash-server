@@ -9,7 +9,7 @@ use crate::systems::missile::MissileHit;
 
 pub struct HealthRegenSystem;
 
-#[derive(SystemData)]
+#[derive(SystemDataCustom)]
 pub struct HealthRegenSystemData<'a> {
 	pub flag: ReadStorage<'a, IsPlayer>,
 	pub health: WriteStorage<'a, Health>,

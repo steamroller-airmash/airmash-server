@@ -15,7 +15,7 @@ use std::cmp::Ordering;
 #[derive(Default)]
 pub struct PickupFlag;
 
-#[derive(SystemData)]
+#[derive(SystemDataCustom)]
 pub struct PickupFlagData<'a> {
 	entities: Entities<'a>,
 	channel: Write<'a, OnFlag>,

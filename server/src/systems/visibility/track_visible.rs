@@ -33,7 +33,7 @@ pub struct TrackVisible {
 	powerup_despawn: MaybeInit<ReaderId<PowerupDespawnEvent>>,
 }
 
-#[derive(SystemData)]
+#[derive(SystemDataCustom)]
 pub struct TrackVisibleData<'a> {
 	entities: Entities<'a>,
 	config: Read<'a, Config>,

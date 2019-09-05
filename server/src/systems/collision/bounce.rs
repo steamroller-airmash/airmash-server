@@ -12,7 +12,7 @@ use airmash_protocol::server::EventBounce;
 #[derive(Default)]
 pub struct BounceSystem;
 
-#[derive(SystemData, EventDeps)]
+#[derive(SystemDataCustom)]
 pub struct BounceSystemData<'a> {
 	vel: WriteStorage<'a, Velocity>,
 	pos: ReadStorage<'a, Position>,

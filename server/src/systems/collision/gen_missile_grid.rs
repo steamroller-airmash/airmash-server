@@ -9,7 +9,7 @@ use crate::component::flag::IsMissile;
 #[derive(Default)]
 pub struct GenMissileGrid;
 
-#[derive(SystemData)]
+#[derive(SystemDataCustom)]
 pub struct GenMissileGridData<'a> {
 	grid: Write<'a, MissileGrid>,
 

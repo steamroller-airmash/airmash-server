@@ -13,7 +13,7 @@ use airmash_server::protocol::server::{ScoreDetailedFFA, ScoreDetailedFFAEntry};
 #[derive(Default)]
 pub struct SendScoreDetailed;
 
-#[derive(SystemData, EventDeps)]
+#[derive(SystemDataCustom)]
 pub struct SendScoreDetailedData<'a> {
     entities: Entities<'a>,
     conns: Read<'a, Connections>,
