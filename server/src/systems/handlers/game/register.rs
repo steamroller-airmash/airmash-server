@@ -52,4 +52,8 @@ pub fn register<'a, 'b>(builder: Builder<'a, 'b>) -> Builder<'a, 'b> {
 		// Missile Despawn
 		.with_handler::<on_missile_despawn::SendMobDespawn>()
 		.with_handler::<on_missile_despawn::SendMobDespawnCoords>()
+		// Player powerup
+		.with_handler::<on_player_powerup::SendPlayerPowerup>()
+		.with_handler::<on_player_powerup::TriggerUpdate>()
+		.with_handler::<on_player_powerup::GivePowerup>()
 }

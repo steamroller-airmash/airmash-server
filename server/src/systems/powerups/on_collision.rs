@@ -4,7 +4,7 @@ use std::time::Instant;
 use crate::component::{player::IsPlayer, powerup::*};
 use crate::protocol::PowerupType;
 use crate::types::collision::Collision;
-use crate::types::{Config, Mob, Position, PowerupSpawnPoints, Powerups};
+use crate::types::{Config, Mob, Position, PowerupSpawnPoints};
 
 mod inner {
 	use super::*;
@@ -36,7 +36,6 @@ fn handle_collision<'a>(
 	pos: &ReadStorage<'a, Position>,
 	mob: &ReadStorage<'a, Mob>,
 	taken: &mut WriteStorage<'a, AlreadyPickedUp>,
-	powerups: &mut WriteStorage<'a, Powerups>,
 
 	despawn_channel: &mut Write<'a, OnPowerupDespawn>,
 	powerup_channel: &mut Write<'a, OnPlayerPowerup>,
@@ -66,17 +65,6 @@ fn handle_collision<'a>(
 		Mob::Inferno => (config.inferno_duration, PowerupType::Inferno),
 		_ => return,
 	};
-
-	// Add powerup information to the player
-	powerups
-		.insert(
-			player.ent,
-			Powerups {
-				end_time: Instant::now() + duration,
-				ty,
-			},
-		)
-		.unwrap();
 
 	// Handle static powerup spawn points
 	let psps = spawn_points

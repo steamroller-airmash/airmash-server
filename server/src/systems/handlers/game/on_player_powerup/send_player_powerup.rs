@@ -3,9 +3,11 @@ use crate::protocol::server::PlayerPowerup as ServerPlayerPowerup;
 
 use crate::types::systemdata::Connections;
 
+type Deps = (crate::systems::handlers::game::on_player_respawn::SendPlayerRespawn);
+
 /// Add the initial 2s shield when a player joins
 /// and send that packet to all visible players.
-#[event_handler(name=SendPlayerPowerup)]
+#[event_handler(name=SendPlayerPowerup, deps=Deps)]
 fn send_packet<'a>(evt: &PlayerPowerup, conns: &Connections<'a>) {
 	let duration = evt.duration.as_secs() * 1000 + evt.duration.subsec_millis() as u64;
 
