@@ -14,10 +14,33 @@ pub mod on_player_hit;
 pub mod on_player_killed;
 pub mod on_player_powerup;
 pub mod on_player_respawn;
-pub mod on_powerup_despawn;
-pub mod on_powerup_expire;
-pub mod on_powerup_spawn;
 pub mod on_spectate_event;
 pub mod timer;
 
 pub use self::register::register;
+
+// Modules that just forward to ones elsewhere
+
+pub mod on_powerup_despawn {
+	pub use crate::systems::powerups::on_despawn::*;
+
+	use crate::component::powerup::PowerupDespawn;
+	use crate::utils::EventSources;
+	pub type KnownEventSources = EventSources<PowerupDespawn>;
+}
+
+pub mod on_powerup_spawn {
+	pub use crate::systems::powerups::on_spawn::*;
+
+	use crate::component::powerup::PowerupSpawn;
+	use crate::utils::EventSources;
+	pub type KnownEventSources = EventSources<PowerupSpawn>;
+}
+
+pub mod on_powerup_expire {
+	pub use crate::systems::powerups::on_expire::*;
+
+	use crate::component::powerup::PowerupExpire;
+	use crate::utils::EventSources;
+	pub type KnownEventSources = EventSources<PowerupExpire>;
+}

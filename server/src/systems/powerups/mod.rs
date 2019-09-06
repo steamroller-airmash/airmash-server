@@ -1,17 +1,11 @@
-mod check_expired;
-mod despawn;
-mod pickup;
-mod send_despawn;
-mod spawn_fixed_powerup;
 mod spawn_random_powerup;
 
-mod register;
+pub mod on_collision;
+pub mod on_despawn;
+pub mod on_expire;
+pub mod on_spawn;
+pub mod on_upkeep;
 
-pub use self::check_expired::CheckExpired;
-pub use self::despawn::Despawn;
-pub use self::pickup::Pickup;
-pub use self::send_despawn::SendDespawn;
-pub use self::spawn_fixed_powerup::SpawnFixedPowerup;
-pub use self::spawn_random_powerup::SpawnRandomPowerup;
+mod register;
 
 pub use self::register::register;

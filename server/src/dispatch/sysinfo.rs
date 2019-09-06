@@ -49,10 +49,16 @@ pub trait SystemDeps {
 	fn dependencies() -> Vec<&'static str>;
 
 	fn reads_events() -> Vec<TypeId> {
-		<DepsMarker<Self> as SpecializeDeps>::reads()
+		let mut v = <DepsMarker<Self> as SpecializeDeps>::reads();
+		v.append(&mut Self::pseudo_reads());
+		v
 	}
 	fn writes_events() -> Vec<TypeId> {
 		<DepsMarker<Self> as SpecializeDeps>::writes()
+	}
+
+	fn pseudo_reads() -> Vec<TypeId> {
+		Vec::new()
 	}
 }
 
@@ -110,6 +116,17 @@ macro_rules! decl_tuple {
 				}
 				fn writes_events() -> Vec<TypeId> {
 					<TupleMarker<Self> as SpecializeDeps>::writes()
+				}
+
+				fn pseudo_reads() -> Vec<TypeId> {
+					#[allow(unused_mut)]
+					let mut reads = vec![];
+
+					$(
+						reads.append(&mut $param::pseudo_reads());
+					)*
+
+					reads
 				}
 			}
 

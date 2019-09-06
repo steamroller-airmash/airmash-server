@@ -44,10 +44,6 @@ pub fn register<'a, 'b>(builder: Builder<'a, 'b>) -> Builder<'a, 'b> {
 		.with_registrar(on_chat_throttled::register)
 		// Timer events
 		.with_registrar(timer::register)
-		// Powerup expiry
-		.with_handler::<on_powerup_expire::ForceUpdate>()
-		// Powerup Events
-		.with_registrar(on_player_powerup::register)
 		// Enter Horizon
 		.with_handler::<on_enter_horizon::SendMissileUpdate>()
 		.with_handler::<on_enter_horizon::SendPowerupUpdate>()
@@ -56,9 +52,4 @@ pub fn register<'a, 'b>(builder: Builder<'a, 'b>) -> Builder<'a, 'b> {
 		// Missile Despawn
 		.with_handler::<on_missile_despawn::SendMobDespawn>()
 		.with_handler::<on_missile_despawn::SendMobDespawnCoords>()
-		// Powerup Spawn
-		.with_handler::<on_powerup_spawn::SendPacket>()
-		// Powerup Despawn
-		.with_handler::<on_powerup_despawn::SendPacket>()
-		.with_handler::<on_powerup_despawn::Cleanup>()
 }

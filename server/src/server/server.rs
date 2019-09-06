@@ -110,10 +110,12 @@ where
 
 				let now = Instant::now();
 				if next_frame <= now - Duration::from_millis(8) {
+					let diff = now - next_frame;
 					warn!(
 						"Frame took too long, jumping forward {} ms",
 						(now - next_frame).as_millis()
 					);
+					next_frame += diff;
 				}
 			} else {
 				let wait_time = next_frame - now;

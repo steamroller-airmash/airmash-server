@@ -232,6 +232,7 @@ pub struct EnterHorizon {
 	pub player: Entity,
 	pub entered: Entity,
 	pub entered_ty: EntityType,
+	pub just_spawned: bool,
 }
 
 impl Default for TimerEvent {

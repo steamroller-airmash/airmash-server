@@ -14,6 +14,7 @@ mod tuple_array;
 mod debug_entity;
 mod event_deps;
 mod event_handler;
+mod event_sources;
 mod history_storage;
 mod kdtree;
 mod maybe_init;
@@ -22,6 +23,7 @@ pub mod timer;
 pub use self::debug_entity::DebugAdapter;
 pub use self::event_deps::EventDeps;
 pub use self::event_handler::{EventHandler, EventHandlerTypeProvider};
+pub use self::event_sources::EventSources;
 pub use self::history_storage::HistoricalStorageExt;
 pub use self::maybe_init::MaybeInit;
 
