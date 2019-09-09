@@ -12,7 +12,6 @@ use crate::component::time::{LastKeyTime, ThisFrame};
 
 use crate::protocol::server::Error;
 use crate::protocol::ErrorType;
-use crate::systems::PacketHandler;
 use crate::utils::{EventHandler, EventHandlerTypeProvider};
 
 const SPEED_THRESHOLD: f32 = 0.01;
@@ -196,7 +195,7 @@ impl<'a> EventHandler<'a> for Spectate {
 
 system_info! {
 	impl SystemInfo for Spectate {
-		type Dependencies = PacketHandler;
+		type Dependencies = ();
 	}
 }
 

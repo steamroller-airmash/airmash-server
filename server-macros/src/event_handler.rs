@@ -109,7 +109,7 @@ fn event_handler_impl(macro_args: MacroArgs, func: ItemFn) -> Result<TokenStream
         }
 
         impl<#lifetime> #crate_name::utils::EventHandler<#lifetime> for #sys_name {
-            type SystemData = #data_name<'a>;
+            type SystemData = #data_name<#lifetime>;
 
             fn on_event(&mut self, evt: &Self::Event, data: &mut Self::SystemData) {
                 #func_name(

@@ -57,6 +57,7 @@ pub fn derive_event_deps(stream: proc_macro::TokenStream) -> proc_macro::TokenSt
     };
 
     let res = quote! {
+      #[automatically_derived]
       impl<#params> #crate_name::utils::EventDeps for #struct_name<#( #typarams )*>
       #where_clause
       {

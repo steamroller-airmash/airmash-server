@@ -7,8 +7,6 @@ use crate::task::new_connection;
 use crate::types::event::ConnectionOpen;
 use crate::utils::MaybeInit;
 
-use crate::systems::PacketHandler;
-
 #[derive(Default)]
 pub struct OnOpenHandler {
 	reader: MaybeInit<ReaderId<ConnectionOpen>>,
@@ -64,6 +62,6 @@ impl<'a> System<'a> for OnOpenHandler {
 
 system_info! {
 	impl SystemInfo for OnOpenHandler {
-		type Dependencies = PacketHandler;
+		type Dependencies = ();
 	}
 }

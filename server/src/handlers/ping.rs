@@ -9,8 +9,8 @@ use std::time::{Duration, Instant};
 
 use crate::handlers::OnCloseHandler;
 use crate::protocol::server::Ping as ServerPing;
+use crate::systems::core::TimerHandler;
 use crate::systems::handlers::game::on_join::SendLogin;
-use crate::systems::TimerHandler;
 
 pub struct PingTimerHandler {
 	lastping: Instant,

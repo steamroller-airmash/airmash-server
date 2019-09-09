@@ -117,10 +117,9 @@ impl<'a> EventHandler<'a> for ScoreBoardTimerHandler {
 
 use crate::dispatch::SystemInfo;
 use crate::systems::handlers::game::on_join::SendLogin;
-use crate::systems::TimerHandler;
 
 impl SystemInfo for ScoreBoardTimerHandler {
-	type Dependencies = (TimerHandler, SendLogin);
+	type Dependencies = SendLogin;
 
 	fn new() -> Self {
 		Self::default()

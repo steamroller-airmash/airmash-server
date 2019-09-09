@@ -1,23 +1,16 @@
 use serde_json;
 use specs::prelude::*;
 
-use crate::component::event::*;
-use crate::protocol::server::CommandReply;
-use crate::protocol::CommandReplyType;
-use crate::systems::PacketHandler;
+use crate::component::event::CommandEvent;
+use crate::protocol::{server::CommandReply, CommandReplyType};
+use crate::types::systemdata::Connections;
 use crate::types::*;
-
-use crate::utils::{EventHandler, EventHandlerTypeProvider};
-
-/// Print some properties of entities in-game
-#[derive(Default)]
-pub struct DebugPrint;
 
 #[derive(SystemDataCustom)]
 pub struct DebugPrintData<'a> {
 	entities: Entities<'a>,
 	config: Read<'a, Config>,
-	conns: Read<'a, Connections>,
+	conns: Connections<'a>,
 
 	pos: ReadStorage<'a, Position>,
 	vel: ReadStorage<'a, Velocity>,
@@ -26,72 +19,66 @@ pub struct DebugPrintData<'a> {
 	energy: ReadStorage<'a, Energy>,
 }
 
-impl EventHandlerTypeProvider for DebugPrint {
-	type Event = CommandEvent;
-}
+/// Print some properties of entities in-game
+#[event_handler(name=DebugPrint)]
+fn debug_print<'a>(evt: &CommandEvent, data: &DebugPrintData<'a>) {
+	let &(conn, ref packet) = evt;
 
-impl<'a> EventHandler<'a> for DebugPrint {
-	type SystemData = DebugPrintData<'a>;
+	if !data.config.admin_enabled {
+		return;
+	}
 
-	fn on_event(&mut self, evt: &CommandEvent, data: &mut Self::SystemData) {
-		let &(conn, ref packet) = evt;
+	let player = match data.conns.associated_player(conn) {
+		Some(p) => p,
+		None => return,
+	};
 
-		if !data.config.admin_enabled {
-			return;
+	if packet.com != "debug" {
+		return;
+	}
+
+	let res = parse_command(&packet.data).and_then(|x| {
+		if x.id == 0 {
+			return Ok((player, x.ty));
 		}
 
-		let player = match data.conns.associated_player(conn) {
-			Some(p) => p,
-			None => return,
-		};
-
-		if packet.com != "debug" {
-			return;
+		let ent = data.entities.entity(x.id as u32);
+		if !data.entities.is_alive(ent) {
+			return Err(ParseError::NotAnEntity(x.id));
 		}
 
-		let res = parse_command(&packet.data).and_then(|x| {
-			if x.id == 0 {
-				return Ok((player, x.ty));
-			}
+		Ok((ent, x.ty))
+	});
 
-			let ent = data.entities.entity(x.id as u32);
-			if !data.entities.is_alive(ent) {
-				return Err(ParseError::NotAnEntity(x.id));
-			}
-
-			Ok((ent, x.ty))
-		});
-
-		if res.is_err() {
-			data.conns.send_to(
-				conn,
-				CommandReply {
-					ty: CommandReplyType::ShowInConsole,
-					text: serde_json::to_string_pretty(&res.unwrap_err()).unwrap(),
-				},
-			);
-			return;
-		}
-
-		let (target, ty) = res.unwrap();
-
-		let formatted = match ty {
-			"position" => format!("{:?}", data.pos.get(target)),
-			"velocity" => format!("{:?}", data.vel.get(target)),
-			"rotation" => format!("{:?}", data.rot.get(target)),
-			"health" => format!("{:?}", data.health.get(target)),
-			"energy" => format!("{:?}", data.energy.get(target)),
-			_ => format!("no such printable component"),
-		};
-
+	if res.is_err() {
 		data.conns.send_to(
 			conn,
 			CommandReply {
 				ty: CommandReplyType::ShowInConsole,
-				text: formatted,
+				text: serde_json::to_string_pretty(&res.unwrap_err()).unwrap(),
 			},
 		);
+		return;
 	}
+
+	let (target, ty) = res.unwrap();
+
+	let formatted = match ty {
+		"position" => format!("{:?}", data.pos.get(target)),
+		"velocity" => format!("{:?}", data.vel.get(target)),
+		"rotation" => format!("{:?}", data.rot.get(target)),
+		"health" => format!("{:?}", data.health.get(target)),
+		"energy" => format!("{:?}", data.energy.get(target)),
+		_ => format!("no such printable component"),
+	};
+
+	data.conns.send_to(
+		conn,
+		CommandReply {
+			ty: CommandReplyType::ShowInConsole,
+			text: formatted,
+		},
+	);
 }
 
 #[derive(Serialize, Debug)]
@@ -118,10 +105,4 @@ fn parse_command<'a>(s: &'a str) -> Result<ParsedCommand<'a>, ParseError<'a>> {
 	let ty = strs[1];
 
 	Ok(ParsedCommand { id, ty })
-}
-
-system_info! {
-	impl SystemInfo for DebugPrint {
-		type Dependencies = PacketHandler;
-	}
 }

@@ -5,8 +5,6 @@ use crate::component::flag::*;
 use crate::consts::timer::*;
 use crate::utils::{EventHandler, EventHandlerTypeProvider};
 
-use crate::systems::TimerHandler;
-
 #[derive(Default)]
 pub struct UnthrottlePlayer;
 
@@ -49,6 +47,6 @@ impl<'a> EventHandler<'a> for UnthrottlePlayer {
 
 system_info! {
 	impl SystemInfo for UnthrottlePlayer {
-		type Dependencies = TimerHandler;
+		type Dependencies = ();
 	}
 }

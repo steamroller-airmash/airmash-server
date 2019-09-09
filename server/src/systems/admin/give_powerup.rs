@@ -1,15 +1,11 @@
 use crate::types::*;
 use specs::prelude::*;
 
-use crate::utils::{EventHandler, EventHandlerTypeProvider};
-use crate::SystemInfo;
-
 use crate::component::channel::OnPlayerPowerup;
 use crate::component::event::{CommandEvent, PlayerPowerup};
 use crate::component::flag::IsPlayer;
 use crate::protocol::server::CommandReply;
 use crate::protocol::{CommandReplyType, PowerupType};
-use crate::systems::PacketHandler;
 
 use std::convert::TryFrom;
 use std::option::NoneError;
@@ -68,9 +64,6 @@ where
 	Ok((parse_powerup(vals[0])?, parse_id(vals[1])?))
 }
 
-#[derive(Default)]
-pub struct GivePowerup;
-
 #[derive(SystemDataCustom)]
 pub struct GivePowerupData<'a> {
 	entities: Entities<'a>,
@@ -80,96 +73,75 @@ pub struct GivePowerupData<'a> {
 	is_player: ReadStorage<'a, IsPlayer>,
 }
 
-impl GivePowerup {
-	fn do_command<'a, 'b>(
-		evt: &'b CommandEvent,
-		data: &mut GivePowerupData<'a>,
-	) -> Result<(), CommandParseError<'b>> {
-		use self::PowerupType::*;
+fn do_command<'a, 'b>(
+	evt: &'b CommandEvent,
+	data: &mut GivePowerupData<'a>,
+) -> Result<(), CommandParseError<'b>> {
+	use self::PowerupType::*;
 
-		let &(conn, ref packet) = evt;
+	let &(conn, ref packet) = evt;
 
-		if !data.config.admin_enabled {
-			return Ok(());
-		}
+	if !data.config.admin_enabled {
+		return Ok(());
+	}
 
-		if packet.com != "give-powerup" {
-			return Ok(());
-		}
+	if packet.com != "give-powerup" {
+		return Ok(());
+	}
 
-		let source = match data.conns.associated_player(conn) {
-			Some(p) => p,
-			None => return Ok(()),
-		};
+	let source = match data.conns.associated_player(conn) {
+		Some(p) => p,
+		None => return Ok(()),
+	};
 
-		let (ty, id) = parse_command_iter(packet.data.split(" "))?;
-		let player = if id != 0 {
-			data.entities.entity(id as u32)
-		} else {
-			source
-		};
+	let (ty, id) = parse_command_iter(packet.data.split(" "))?;
+	let player = if id != 0 {
+		data.entities.entity(id as u32)
+	} else {
+		source
+	};
 
-		if !data.entities.is_alive(player) {
-			return Err(CommandParseError::NoSuchPlayer(id));
-		}
+	if !data.entities.is_alive(player) {
+		return Err(CommandParseError::NoSuchPlayer(id));
+	}
 
-		if !data.is_player.get(player).is_none() {
-			return Err(CommandParseError::NoSuchPlayer(id));
-		}
+	if !data.is_player.get(player).is_none() {
+		return Err(CommandParseError::NoSuchPlayer(id));
+	}
 
-		let duration = match ty {
-			Shield => data.config.shield_duration,
-			Inferno => data.config.inferno_duration,
-		};
+	let duration = match ty {
+		Shield => data.config.shield_duration,
+		Inferno => data.config.inferno_duration,
+	};
 
-		info!(
-			"Gave powerup of type {:?} to {:?} with duration of {}.{:03}s",
-			ty,
-			player,
-			duration.as_secs(),
-			duration.subsec_millis()
+	info!(
+		"Gave powerup of type {:?} to {:?} with duration of {}.{:03}s",
+		ty,
+		player,
+		duration.as_secs(),
+		duration.subsec_millis()
+	);
+
+	data.channel.single_write(PlayerPowerup {
+		player,
+		duration,
+		ty,
+	});
+
+	Ok(())
+}
+
+#[event_handler(name = GivePowerup)]
+fn give_powerup<'a>(evt: &CommandEvent, data: &mut GivePowerupData<'a>) {
+	if let Err(e) = do_command(evt, data) {
+		let (conn, _) = evt;
+		data.conns.send_to(
+			*conn,
+			CommandReply {
+				ty: CommandReplyType::ShowInPopup,
+				text: format!("{}", serde_json::to_string_pretty(&e).unwrap()),
+			},
 		);
-
-		data.channel.single_write(PlayerPowerup {
-			player,
-			duration,
-			ty,
-		});
-
-		Ok(())
-	}
-}
-
-impl EventHandlerTypeProvider for GivePowerup {
-	type Event = CommandEvent;
-}
-
-impl<'a> EventHandler<'a> for GivePowerup {
-	type SystemData = GivePowerupData<'a>;
-
-	fn on_event(&mut self, evt: &CommandEvent, data: &mut Self::SystemData) {
-		if let Err(e) = Self::do_command(evt, data) {
-			let (conn, _) = evt;
-			data.conns.send_to(
-				*conn,
-				CommandReply {
-					ty: CommandReplyType::ShowInPopup,
-					text: format!("{}", serde_json::to_string_pretty(&e).unwrap()),
-				},
-			);
-		}
-	}
-}
-
-impl SystemInfo for GivePowerup {
-	type Dependencies = PacketHandler;
-
-	fn name() -> &'static str {
-		concat!(module_path!(), "::", line!())
-	}
-
-	fn new() -> Self {
-		Self::default()
 	}
 }
 

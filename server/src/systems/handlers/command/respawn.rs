@@ -16,7 +16,6 @@ use crate::protocol::ErrorType;
 
 use crate::utils::{EventHandler, EventHandlerTypeProvider};
 
-use crate::systems::PacketHandler;
 use crate::SystemInfo;
 
 #[derive(Default)]
@@ -108,7 +107,7 @@ impl<'a> EventHandler<'a> for Respawn {
 }
 
 impl SystemInfo for Respawn {
-	type Dependencies = (PacketHandler);
+	type Dependencies = ();
 
 	fn name() -> &'static str {
 		concat!(module_path!(), "::", line!())

@@ -48,7 +48,7 @@ where
 	///
 	/// [0]: #fn.new
 	pub fn new_no_gamemode(addr: T) -> Self {
-		use crate::systems::{PacketHandler, TimerHandler};
+		use crate::systems::core::{PacketHandler, TimerHandler};
 		use crate::types::{Connections, FutureDispatcher};
 
 		let (event_send, event_recv) = channel();
@@ -58,7 +58,8 @@ where
 		// so they need to be registered now.
 		let builder = Builder::new()
 			.with_args::<PacketHandler, _>(event_recv)
-			.with_args::<TimerHandler, _>(timer_recv);
+			.with_args::<TimerHandler, _>(timer_recv)
+			.with_registrar(crate::systems::core::register);
 
 		let mut world = World::new();
 

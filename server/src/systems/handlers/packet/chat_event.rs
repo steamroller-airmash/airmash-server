@@ -1,7 +1,5 @@
 use specs::prelude::*;
 
-use crate::systems::PacketHandler;
-
 use crate::component::channel::*;
 use crate::component::event::*;
 use crate::utils::MaybeInit;
@@ -73,6 +71,6 @@ impl<'a> System<'a> for ChatEventHandler {
 
 system_info! {
 	impl SystemInfo for ChatEventHandler {
-		type Dependencies = PacketHandler;
+		type Dependencies = ();
 	}
 }

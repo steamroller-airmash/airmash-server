@@ -11,7 +11,7 @@ use crate::types::ConnectionId;
 use crate::utils::MaybeInit;
 use crate::SystemInfo;
 
-use crate::systems::PacketHandler;
+use crate::systems::core::PacketHandler;
 
 const NO_PACKET_TIMEOUT: Duration = Duration::from_secs(10);
 

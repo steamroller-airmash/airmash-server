@@ -5,7 +5,6 @@ use crate::protocol::server::PlayerFlag;
 use crate::protocol::FlagCode;
 use crate::types::systemdata::Connections;
 
-use crate::systems::PacketHandler;
 use crate::utils::{EventHandler, EventHandlerTypeProvider};
 
 use std::str::FromStr;
@@ -55,6 +54,6 @@ impl<'a> EventHandler<'a> for Flag {
 
 system_info! {
 	impl SystemInfo for Flag {
-		type Dependencies = PacketHandler;
+		type Dependencies = ();
 	}
 }

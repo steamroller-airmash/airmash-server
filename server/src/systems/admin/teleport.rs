@@ -6,17 +6,9 @@ use std::option::NoneError;
 use crate::component::event::*;
 use crate::protocol::server::CommandReply;
 use crate::protocol::CommandReplyType;
-use crate::systems::PacketHandler;
 use crate::types::*;
-use crate::SystemInfo;
-
-use crate::utils::{EventHandler, EventHandlerTypeProvider};
 
 use serde_json;
-
-/// Directly set the position of an entity
-#[derive(Default)]
-pub struct Teleport;
 
 #[derive(SystemDataCustom)]
 pub struct TeleportData<'a> {
@@ -26,74 +18,56 @@ pub struct TeleportData<'a> {
 	conns: Read<'a, Connections>,
 }
 
-impl EventHandlerTypeProvider for Teleport {
-	type Event = CommandEvent;
-}
+/// Directly set the position of an entity
+#[event_handler(name = Teleport)]
+fn teleport<'a>(evt: &CommandEvent, data: &mut TeleportData<'a>) {
+	let &(conn, ref packet) = evt;
 
-impl<'a> EventHandler<'a> for Teleport {
-	type SystemData = TeleportData<'a>;
-
-	fn on_event(&mut self, evt: &CommandEvent, data: &mut Self::SystemData) {
-		let &(conn, ref packet) = evt;
-
-		if !data.config.admin_enabled {
-			return;
-		}
-
-		let player = match data.conns.associated_player(conn) {
-			Some(p) => p,
-			None => return,
-		};
-
-		if packet.com != "teleport" {
-			return;
-		}
-
-		let result = parse_command_data(&packet.data).and_then(|x| {
-			if x.id == 0 {
-				return Ok((player, x));
-			}
-
-			let ent = data.entities.entity(x.id as u32);
-
-			if !data.entities.is_alive(ent) {
-				return Err(CommandParseError::NotAnEntity(x.id));
-			}
-
-			return Ok((ent, x));
-		});
-
-		if result.is_err() {
-			data.conns.send_to(
-				conn,
-				CommandReply {
-					ty: CommandReplyType::ShowInConsole,
-					text: format!(
-						"{}",
-						serde_json::to_string_pretty(&result.unwrap_err()).unwrap()
-					),
-				},
-			);
-			return;
-		}
-
-		let (target, command_data) = result.unwrap();
-
-		if let Some(pos) = data.pos.get_mut(target) {
-			*pos = Position::new(command_data.pos_x, command_data.pos_y);
-		}
-	}
-}
-
-impl SystemInfo for Teleport {
-	type Dependencies = PacketHandler;
-
-	fn name() -> &'static str {
-		concat!(module_path!(), "::", line!())
+	if !data.config.admin_enabled {
+		return;
 	}
 
-	fn new() -> Self {
-		Self::default()
+	let player = match data.conns.associated_player(conn) {
+		Some(p) => p,
+		None => return,
+	};
+
+	if packet.com != "teleport" {
+		return;
+	}
+
+	let result = parse_command_data(&packet.data).and_then(|x| {
+		if x.id == 0 {
+			return Ok((player, x));
+		}
+
+		let ent = data.entities.entity(x.id as u32);
+
+		if !data.entities.is_alive(ent) {
+			return Err(CommandParseError::NotAnEntity(x.id));
+		}
+
+		return Ok((ent, x));
+	});
+
+	if result.is_err() {
+		data.conns.send_to(
+			conn,
+			CommandReply {
+				ty: CommandReplyType::ShowInConsole,
+				text: format!(
+					"{}",
+					serde_json::to_string_pretty(&result.unwrap_err()).unwrap()
+				),
+			},
+		);
+		return;
+	}
+
+	let (target, command_data) = result.unwrap();
+
+	if let Some(pos) = data.pos.get_mut(target) {
+		*pos = Position::new(command_data.pos_x, command_data.pos_y);
 	}
 }
 
