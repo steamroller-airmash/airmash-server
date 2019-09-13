@@ -14,108 +14,79 @@ use crate::component::time::*;
 use crate::protocol::server::{Error, PlayerType};
 use crate::protocol::ErrorType;
 
-use crate::utils::{EventHandler, EventHandlerTypeProvider};
+#[event_handler(name=Respawn)]
+pub fn respawn_cmd<'a>(
+	evt: &CommandEvent,
+	health: &mut WriteStorage<'a, Health>,
+	planes: &mut WriteStorage<'a, Plane>,
+	last_respawn: &mut WriteStorage<'a, LastRespawnTime>,
+	is_spec: &mut WriteStorage<'a, IsSpectating>,
+	is_dead: &mut WriteStorage<'a, IsDead>,
+	last_key: &mut WriteStorage<'a, LastKeyTime>,
 
-use crate::SystemInfo;
+	conns: &Connections<'a>,
+	channel: &mut Write<'a, OnPlayerRespawn>,
+	this_frame: &Read<'a, ThisFrame>,
+) {
+	let &(conn, ref packet) = evt;
 
-#[derive(Default)]
-pub struct Respawn;
+	if packet.com != "respawn" {
+		return;
+	}
 
-#[derive(SystemDataCustom)]
-pub struct RespawnData<'a> {
-	health: WriteStorage<'a, Health>,
-	planes: WriteStorage<'a, Plane>,
-	last_respawn: WriteStorage<'a, LastRespawnTime>,
-	is_spec: WriteStorage<'a, IsSpectating>,
-	is_dead: WriteStorage<'a, IsDead>,
-	last_key: ReadStorage<'a, LastKeyTime>,
+	let player = match conns.associated_player(conn) {
+		Some(p) => p,
+		None => return,
+	};
 
-	conns: Connections<'a>,
-	channel: Write<'a, OnPlayerRespawn>,
-	this_frame: Read<'a, ThisFrame>,
-}
+	let allowed = check_allowed(
+		is_dead.get(player).is_some(),
+		is_spec.get(player).is_some(),
+		try_get!(player, health),
+		try_get!(player, last_key),
+		last_respawn.get(player),
+		&*this_frame,
+	);
 
-impl EventHandlerTypeProvider for Respawn {
-	type Event = CommandEvent;
-}
-
-impl<'a> EventHandler<'a> for Respawn {
-	type SystemData = RespawnData<'a>;
-
-	fn on_event(&mut self, evt: &CommandEvent, data: &mut Self::SystemData) {
-		let &(conn, ref packet) = evt;
-
-		let player = match data.conns.associated_player(conn) {
-			Some(p) => p,
-			None => return,
-		};
-
-		if packet.com != "respawn" {
-			return;
-		}
-
-		let plane = match parse_plane(&packet.data) {
-			Ok(p) => p,
-			Err(_) => return,
-		};
-
-		let allowed = check_allowed(
-			data.is_dead.get(player).is_some(),
-			data.is_spec.get(player).is_some(),
-			data.health.get(player).unwrap(),
-			data.last_key.get(player).unwrap(),
-			data.last_respawn.get(player),
-			&*data.this_frame,
+	if !allowed {
+		conns.send_to(
+			conn,
+			Error {
+				error: ErrorType::IdleRequiredBeforeRespawn,
+			},
 		);
 
-		if !allowed {
-			data.conns.send_to(
-				conn,
-				Error {
-					error: ErrorType::IdleRequiredBeforeRespawn,
-				},
-			);
-
-			return;
-		}
-
-		let prev_status =
-			match data.is_spec.get(player).is_some() || data.is_dead.get(player).is_some() {
-				true => PlayerRespawnPrevStatus::Dead,
-				false => PlayerRespawnPrevStatus::Alive,
-			};
-
-		data.planes.insert(player, plane).unwrap();
-		data.is_spec.remove(player);
-		data.last_respawn
-			.insert(player, LastRespawnTime(data.this_frame.0))
-			.unwrap();
-		// Prevent updates from happening until the actual respawn
-		// process is finished.
-		data.is_dead.insert(player, IsDead).unwrap();
-
-		data.channel.single_write(PlayerRespawn {
-			player,
-			prev_status,
-		});
-
-		data.conns.send_to_all(PlayerType {
-			id: player.into(),
-			ty: plane,
-		});
-	}
-}
-
-impl SystemInfo for Respawn {
-	type Dependencies = ();
-
-	fn name() -> &'static str {
-		concat!(module_path!(), "::", line!())
+		return;
 	}
 
-	fn new() -> Self {
-		Self::default()
-	}
+	let plane = match parse_plane(&packet.data) {
+		Ok(p) => p,
+		Err(_) => return,
+	};
+
+	let prev_status = match is_spec.get(player).is_some() || is_dead.get(player).is_some() {
+		true => PlayerRespawnPrevStatus::Dead,
+		false => PlayerRespawnPrevStatus::Alive,
+	};
+
+	planes.insert(player, plane).unwrap();
+	is_spec.remove(player);
+	last_respawn
+		.insert(player, LastRespawnTime(this_frame.0))
+		.unwrap();
+	// Prevent updates from happening until the actual respawn
+	// process is finished.
+	is_dead.insert(player, IsDead).unwrap();
+
+	channel.single_write(PlayerRespawn {
+		player,
+		prev_status,
+	});
+
+	conns.send_to_all(PlayerType {
+		id: player.into(),
+		ty: plane,
+	});
 }
 
 fn check_allowed(

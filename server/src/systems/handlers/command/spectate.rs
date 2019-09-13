@@ -1,202 +1,170 @@
-use crate::types::*;
 use specs::prelude::*;
 
 use std::time::Duration;
 
-use crate::component::channel::*;
-use crate::component::event::PlayerSpectate;
-use crate::component::event::*;
-use crate::component::flag::{IsDead, IsPlayer, IsSpectating};
-use crate::component::reference::PlayerRef;
-use crate::component::time::{LastKeyTime, ThisFrame};
-
-use crate::protocol::server::Error;
-use crate::protocol::ErrorType;
-use crate::utils::{EventHandler, EventHandlerTypeProvider};
+use crate::{
+	component::{
+		channel::OnPlayerSpectate,
+		event::{CommandEvent, PlayerSpectate},
+		flag::{IsDead, IsPlayer, IsSpectating},
+		reference::PlayerRef,
+		time::{LastKeyTime, ThisFrame},
+	},
+	protocol::{server::Error, ErrorType},
+	types::{systemdata::Connections, Config},
+	Health, Velocity,
+};
 
 const SPEED_THRESHOLD: f32 = 0.01;
 const SPEED_THRESHOLD_SQUARED: f32 = SPEED_THRESHOLD * SPEED_THRESHOLD;
 
-#[derive(Default)]
-pub struct Spectate;
+#[event_handler(name=Spectate)]
+fn spectate<'a>(
+	evt: &CommandEvent,
 
-#[derive(SystemDataCustom)]
-pub struct SpectateData<'a> {
-	conns: Read<'a, Connections>,
-	channel: Write<'a, OnPlayerSpectate>,
-	this_frame: Read<'a, ThisFrame>,
-	config: Read<'a, Config>,
+	conns: &Connections<'a>,
+	channel: &mut Write<'a, OnPlayerSpectate>,
+	this_frame: &Read<'a, ThisFrame>,
+	config: &Read<'a, Config>,
 
-	is_spec: WriteStorage<'a, IsSpectating>,
-	is_dead: ReadStorage<'a, IsDead>,
-	is_player: ReadStorage<'a, IsPlayer>,
-	spec_target: ReadStorage<'a, PlayerRef>,
-	entities: Entities<'a>,
-	health: ReadStorage<'a, Health>,
-	last_key: ReadStorage<'a, LastKeyTime>,
-	velocity: ReadStorage<'a, Velocity>,
-}
+	is_spec: &mut WriteStorage<'a, IsSpectating>,
+	is_dead: &ReadStorage<'a, IsDead>,
+	is_player: &ReadStorage<'a, IsPlayer>,
+	spec_target: &ReadStorage<'a, PlayerRef>,
+	entities: &Entities<'a>,
+	health: &ReadStorage<'a, Health>,
+	last_key: &ReadStorage<'a, LastKeyTime>,
+	velocity: &ReadStorage<'a, Velocity>,
+) {
+	use self::SpectateTarget::*;
 
-impl EventHandlerTypeProvider for Spectate {
-	type Event = CommandEvent;
-}
+	let &(conn, ref packet) = evt;
 
-impl<'a> EventHandler<'a> for Spectate {
-	type SystemData = SpectateData<'a>;
+	let player = match conns.associated_player(conn) {
+		Some(p) => p,
+		None => return,
+	};
 
-	fn on_event(&mut self, evt: &CommandEvent, data: &mut SpectateData<'a>) {
-		use self::SpectateTarget::*;
+	if packet.com != "spectate" {
+		return;
+	}
 
-		let Self::SystemData {
-			conns,
-			ref mut channel,
-			this_frame,
-			config,
+	let tgt = match parse_spectate_data(&packet.data) {
+		Ok(tgt) => tgt,
+		Err(_) => return,
+	};
 
-			is_spec,
-			is_dead,
-			is_player,
-			entities,
-			spec_target,
-			health,
-			last_key,
-			velocity,
-		} = data;
+	let mut allowed = check_allowed(
+		is_spec.get(player).is_some(),
+		try_get!(player, health),
+		try_get!(player, last_key),
+		&*this_frame,
+	);
 
-		let &(conn, ref packet) = evt;
+	let vel = *try_get!(player, velocity);
+	let spd2 = vel.length2().inner();
 
-		let player = match conns.associated_player(conn) {
-			Some(p) => p,
-			None => return,
-		};
+	if !config.allow_spectate_while_moving && spd2 >= SPEED_THRESHOLD_SQUARED {
+		allowed = false;
+	}
 
-		if packet.com != "spectate" {
-			return;
-		}
-
-		let tgt = match parse_spectate_data(&packet.data) {
-			Ok(tgt) => tgt,
-			Err(_) => return,
-		};
-
-		let mut allowed = check_allowed(
-			is_spec.get(player).is_some(),
-			try_get!(player, health),
-			try_get!(player, last_key),
-			&*this_frame,
+	if !allowed {
+		conns.send_to(
+			conn,
+			Error {
+				error: ErrorType::IdleRequiredBeforeSpectate,
+			},
 		);
 
-		let vel = *try_get!(player, velocity);
-		let spd2 = vel.length2().inner();
+		return;
+	}
 
-		if !config.allow_spectate_while_moving && spd2 >= SPEED_THRESHOLD_SQUARED {
-			allowed = false;
-		}
+	let mut spec_event = PlayerSpectate {
+		player: player,
+		target: None,
+		is_dead: is_dead.get(player).is_some(),
+		is_spec: is_spec.get(player).is_some(),
+	};
 
-		if !allowed {
-			conns.send_to(
-				conn,
-				Error {
-					error: ErrorType::IdleRequiredBeforeSpectate,
-				},
-			);
-
-			return;
-		}
-
-		let mut spec_event = PlayerSpectate {
-			player: player,
-			target: None,
-			is_dead: is_dead.get(player).is_some(),
-			is_spec: is_spec.get(player).is_some(),
-		};
-
-		if is_spec.get(player).is_none() {
-			match tgt {
-				Next | Prev | Force => {
-					spec_event.target = (&**entities, is_player.mask(), !is_spec.mask())
-						.join()
-						.map(|(ent, ..)| ent)
-						.next();
-				}
-				// A player may not specify the player they wish to
-				// spectate when going into spec. This mimics the
-				// behaviour of the official server.
-				_ => return,
+	if is_spec.get(player).is_none() {
+		match tgt {
+			Next | Prev | Force => {
+				spec_event.target = (&**entities, is_player.mask(), !is_spec.mask())
+					.join()
+					.map(|(ent, ..)| ent)
+					.next();
 			}
-		} else {
-			let current = spec_target.get(player).unwrap().0;
+			// A player may not specify the player they wish to
+			// spectate when going into spec. This mimics the
+			// behaviour of the official server.
+			_ => return,
+		}
+	} else {
+		let current = spec_target.get(player).unwrap().0;
 
-			match tgt {
-				Next => {
-					// Get the next player, wrapping around at the
-					// end and defaulting if there is no other player
-					let forward = (&**entities, is_player.mask(), !is_spec.mask())
+		match tgt {
+			Next => {
+				// Get the next player, wrapping around at the
+				// end and defaulting if there is no other player
+				let forward = (&**entities, is_player.mask(), !is_spec.mask())
+					.join()
+					.skip_while(|(ent, ..)| *ent != current)
+					.filter(|(ent, ..)| *ent != player)
+					.map(|(ent, ..)| ent)
+					.next();
+
+				let forward = forward.map(|x| Some(x)).unwrap_or_else(|| {
+					(&**entities, is_player.mask(), !is_spec.mask())
 						.join()
-						.skip_while(|(ent, ..)| *ent != current)
 						.filter(|(ent, ..)| *ent != player)
 						.map(|(ent, ..)| ent)
-						.next();
+						.next()
+				});
 
-					let forward = forward.map(|x| Some(x)).unwrap_or_else(|| {
-						(&**entities, is_player.mask(), !is_spec.mask())
-							.join()
-							.filter(|(ent, ..)| *ent != player)
-							.map(|(ent, ..)| ent)
-							.next()
-					});
+				spec_event.target = forward;
+			}
+			Prev => {
+				let back = (&**entities, is_player.mask(), !is_spec.mask())
+					.join()
+					.take_while(|(ent, ..)| *ent != current)
+					.filter(|(ent, ..)| *ent != player)
+					.map(|x| x.0)
+					.last();
 
-					spec_event.target = forward;
-				}
-				Prev => {
-					let back = (&**entities, is_player.mask(), !is_spec.mask())
+				let back = back.map(|x| Some(x)).unwrap_or_else(|| {
+					(&**entities, is_player.mask(), !is_spec.mask())
 						.join()
-						.take_while(|(ent, ..)| *ent != current)
 						.filter(|(ent, ..)| *ent != player)
 						.map(|x| x.0)
-						.last();
+						.last()
+				});
 
-					let back = back.map(|x| Some(x)).unwrap_or_else(|| {
-						(&**entities, is_player.mask(), !is_spec.mask())
-							.join()
-							.filter(|(ent, ..)| *ent != player)
-							.map(|x| x.0)
-							.last()
-					});
+				spec_event.target = back;
+			}
+			Force => {
+				// A play is already being spectated, so
+				// there is nothing that _needs_ to be done.
+				// This behaviour can change at a later time.
+			}
+			Target(id) => {
+				let ent = entities.entity(id);
 
-					spec_event.target = back;
+				// Can't spectate an entity that doesn't exist
+				if !entities.is_alive(ent) {
+					return;
 				}
-				Force => {
-					// A play is already being spectated, so
-					// there is nothing that _needs_ to be done.
-					// This behaviour can change at a later time.
+
+				// You can't spectate non-players
+				if is_player.get(ent).is_none() {
+					return;
 				}
-				Target(id) => {
-					let ent = entities.entity(id);
 
-					// Can't spectate an entity that doesn't exist
-					if !entities.is_alive(ent) {
-						return;
-					}
-
-					// You can't spectate non-players
-					if is_player.get(ent).is_none() {
-						return;
-					}
-
-					spec_event.target = Some(ent);
-				}
+				spec_event.target = Some(ent);
 			}
 		}
-
-		channel.single_write(spec_event);
 	}
-}
 
-system_info! {
-	impl SystemInfo for Spectate {
-		type Dependencies = ();
-	}
+	channel.single_write(spec_event);
 }
 
 #[derive(Copy, Clone, Debug, Eq, PartialEq)]
