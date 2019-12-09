@@ -1,4 +1,4 @@
-use super::{DynSystem, DynStorage};
+use super::{DynStorage, DynSystem};
 
 pub trait VTable: Sized + Clone {
     type Trait: ?Sized + 'static;
@@ -13,12 +13,12 @@ pub trait VTable: Sized + Clone {
     /// This is UB unless this vtable was constructed from
     /// an object of the same type as that pointed to by
     /// the data pointer.
-    /// 
+    ///
     /// It is also UB if the resulting reference outlives the
     /// provided data pointer.
-	unsafe fn rebuild<'a, T>(&self, data: &'a T) -> &'a Self::Trait
-	where
-		T: ?Sized;
+    unsafe fn rebuild<'a, T>(&self, data: &'a T) -> &'a Self::Trait
+    where
+        T: ?Sized;
 
     /// Reconstruct a mutable trait object from an existing data
     /// pointer.
@@ -27,9 +27,9 @@ pub trait VTable: Sized + Clone {
     /// This is UB unless this vtable was constructed from
     /// an object of the same type as that pointed to by
     /// the data pointer.
-	unsafe fn rebuild_mut<'a, T>(&self, data: &'a mut T) -> &'a mut Self::Trait
-	where
-		T: ?Sized;
+    unsafe fn rebuild_mut<'a, T>(&self, data: &'a mut T) -> &'a mut Self::Trait
+    where
+        T: ?Sized;
 }
 
 macro_rules! declare_vtable {
@@ -68,7 +68,7 @@ macro_rules! declare_vtable {
 					mem::transmute(raw)
 				}
 
-				unsafe fn rebuild_mut<'a, T>(&self, data: &'a mut T) -> &'a mut Self::Trait 
+				unsafe fn rebuild_mut<'a, T>(&self, data: &'a mut T) -> &'a mut Self::Trait
 				where
 					T: ?Sized
 				{
@@ -90,6 +90,6 @@ macro_rules! declare_vtable {
 }
 
 declare_vtable! {
-	pub struct DynStorageVTable: DynStorage;
-	pub(super) struct DynSystemVTable: DynSystem;
+    pub struct DynStorageVTable: DynStorage;
+    pub(super) struct DynSystemVTable: DynSystem;
 }

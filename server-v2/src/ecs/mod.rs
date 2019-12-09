@@ -5,18 +5,18 @@ mod anyvec;
 mod dispatch;
 mod storage;
 mod system;
+mod systemdata;
 mod vtable;
 mod world;
-mod systemdata;
 
 // Needed for vtable derive macro
-use self::vtable::VTable;
 use self::dispatch::DynSystem;
+use self::vtable::VTable;
 
-pub use self::storage::{Component, DynStorage, Storage};
-pub use self::storage::{VecStorage, NullStorage};
-pub use self::world::World;
 pub use self::dispatch::Builder;
+pub use self::storage::{Component, DynStorage, Storage};
+pub use self::storage::{NullStorage, VecStorage};
+pub use self::world::World;
 
 #[derive(Copy, Clone, Debug, Eq, Hash, PartialEq)]
 pub struct Entity {

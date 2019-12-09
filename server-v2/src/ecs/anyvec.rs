@@ -46,7 +46,7 @@ impl<V: VTable> Drop for AnyVec<V> {
     fn drop(&mut self) {
         for meta in self.meta.drain(..) {
             let ptr = self.data.mut_ptr_at(meta.offset);
-            
+
             unsafe {
                 (meta.drop)(ptr as *mut ());
             }
@@ -56,15 +56,12 @@ impl<V: VTable> Drop for AnyVec<V> {
 
 pub struct AnyVecMutIterator<'a, V: VTable> {
     vec: &'a mut AnyVec<V>,
-    index: usize
+    index: usize,
 }
 
 impl<'a, V: VTable> AnyVecMutIterator<'a, V> {
     pub fn new(vec: &'a mut AnyVec<V>) -> Self {
-        Self {
-            vec,
-            index: 0
-        }
+        Self { vec, index: 0 }
     }
 }
 
@@ -81,9 +78,7 @@ impl<'a, V: VTable> Iterator for AnyVecMutIterator<'a, V> {
         // Safe since the rest of anyvec ensures that this
         // pointer is a valid pointer to the correct type
         // of object here.
-        let obj = unsafe {
-            vtable.rebuild_mut(&mut *offset)
-        };
+        let obj = unsafe { vtable.rebuild_mut(&mut *offset) };
 
         Some(obj)
     }

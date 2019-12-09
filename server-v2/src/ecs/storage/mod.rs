@@ -1,11 +1,10 @@
-
-mod vec;
-mod null;
 mod hashmap;
+mod null;
+mod vec;
 
-pub use self::vec::VecStorage;
-pub use self::null::NullStorage;
 pub use self::hashmap::HashMapStorage;
+pub use self::null::NullStorage;
+pub use self::vec::VecStorage;
 
 use hibitset::BitSet;
 
@@ -28,13 +27,13 @@ pub trait Storage<T>: DynStorage {
     unsafe fn get_unchecked(&self, ent: u32) -> &T {
         match self.get(ent) {
             Some(x) => x,
-            None => unreachable!()
+            None => unreachable!(),
         }
     }
     unsafe fn get_mut_unchecked(&mut self, ent: u32) -> &mut T {
         match self.get_mut(ent) {
             Some(x) => x,
-            None => unreachable!()
+            None => unreachable!(),
         }
     }
 }

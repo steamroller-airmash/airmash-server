@@ -1,7 +1,6 @@
-
-use super::DynStorage;
 use super::anymap::AnyMap;
 use super::vtable::{DynStorageVTable, VTable};
+use super::DynStorage;
 
 use std::any::TypeId;
 use std::cell::{Ref, RefCell, RefMut};
