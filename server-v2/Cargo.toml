@@ -1,0 +1,9 @@
+[package]
+name = "server-v2"
+version = "0.1.0"
+authors = ["STEAMROLLER"]
+edition = "2018"
+
+[dependencies]
+hibitset = "0.6"
+petgraph = "0.4"

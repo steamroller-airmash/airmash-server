@@ -17,5 +17,6 @@ members = [
 	"ffa",
 	"bounded-queue",
 	"special-map",
-	"server-macros"
+	"server-macros",
+	"server-v2"
 ]
