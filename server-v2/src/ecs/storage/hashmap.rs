@@ -1,5 +1,5 @@
 use super::{DynStorage, Storage};
-use hibitset::BitSet;
+use hibitset::{BitSet, BitSetLike, BitSetNot};
 use std::collections::HashMap;
 
 pub struct HashMapStorage<T> {
@@ -18,6 +18,10 @@ impl<T> Default for HashMapStorage<T> {
 }
 
 impl<T> DynStorage for HashMapStorage<T> {
+    fn mask(&self) -> &BitSet {
+        <Self as Storage<_>>::mask(self)
+    }
+
     fn remove(&mut self, ent: u32) {
         <Self as Storage<T>>::remove(self, ent);
     }
@@ -41,9 +45,9 @@ impl<T> Storage<T> for HashMapStorage<T> {
         self.map.remove(&ent)
     }
 
-    fn remove_all(&mut self, bits: &BitSet) {
-        let bitand = bits & self.bitset.clone();
-        self.bitset &= &!bits;
+    fn remove_all<B: BitSetLike>(&mut self, bits: B) {
+        let bitand = self.bitset.clone() & &bits;
+        self.bitset &= &BitSetNot(&bits);
 
         for idx in bitand {
             self.map.remove(&idx);

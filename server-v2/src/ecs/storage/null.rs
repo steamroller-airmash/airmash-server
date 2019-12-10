@@ -1,9 +1,10 @@
 use super::{DynStorage, Storage};
 
-use hibitset::BitSet;
+use hibitset::{BitSet, BitSetLike, BitSetNot};
 
 use std::mem;
 
+#[derive(Default)]
 pub struct NullStorage<T>
 where
     T: Default,
@@ -27,6 +28,10 @@ impl<T: Default> NullStorage<T> {
 }
 
 impl<T: Default> DynStorage for NullStorage<T> {
+    fn mask(&self) -> &BitSet {
+        <Self as Storage<_>>::mask(self)
+    }
+    
     fn remove(&mut self, ent: u32) {
         <Self as Storage<T>>::remove(self, ent);
     }
@@ -56,8 +61,8 @@ impl<T: Default> Storage<T> for NullStorage<T> {
         }
     }
 
-    fn remove_all(&mut self, bits: &BitSet) {
-        self.bitset &= &!bits;
+    fn remove_all<B: BitSetLike>(&mut self, bits: B) {
+        self.bitset &= &BitSetNot(bits);
     }
 
     fn get(&self, ent: u32) -> Option<&T> {

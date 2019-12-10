@@ -1,5 +1,5 @@
 use super::{DynStorage, Storage};
-use hibitset::BitSet;
+use hibitset::{BitSet, BitSetLike, BitSetNot};
 use std::mem::MaybeUninit;
 
 pub struct VecStorage<T> {
@@ -7,7 +7,20 @@ pub struct VecStorage<T> {
     bitset: BitSet,
 }
 
+impl<T> VecStorage<T> {
+    pub fn new() -> Self {
+        Self {
+            backing: Vec::new(),
+            bitset: BitSet::new()
+        }
+    }
+}
+
 impl<T> DynStorage for VecStorage<T> {
+    fn mask(&self) -> &BitSet {
+        <Self as Storage<_>>::mask(self)
+    }
+    
     fn remove(&mut self, ent: u32) {
         <Self as Storage<T>>::remove(self, ent);
     }
@@ -51,9 +64,9 @@ impl<T> Storage<T> for VecStorage<T> {
         }
     }
 
-    fn remove_all(&mut self, bits: &BitSet) {
-        let bitand = bits & self.bitset.clone();
-        self.bitset &= &!bits;
+    fn remove_all<B: BitSetLike>(&mut self, bits: B) {
+        let bitand = self.bitset.clone() & &bits;
+        self.bitset &= &BitSetNot(&bits);
 
         for idx in bitand {
             unsafe {
@@ -101,5 +114,11 @@ impl<T> Drop for VecStorage<T> {
                 .assume_init();
             }
         }
+    }
+}
+
+impl<T> Default for VecStorage<T> {
+    fn default() -> Self {
+        Self::new()
     }
 }

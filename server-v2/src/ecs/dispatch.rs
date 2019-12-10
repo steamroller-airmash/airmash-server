@@ -152,20 +152,6 @@ pub(super) trait DynSystemBuilder {
     fn build(&mut self, world: &mut World, dest: &mut AnyVec<DynSystemVTable>);
 }
 
-pub(super) trait DynSystem {
-    fn run(&mut self, world: &mut World);
-}
-
-impl<S> DynSystem for S
-where
-    S: for<'a> System<'a>,
-{
-    fn run(&mut self, world: &mut World) {
-        let data = S::fetch(self, world);
-        S::run(self, data);
-    }
-}
-
 struct DynSystemBuilderImpl<S>(Option<S>);
 
 impl<S> DynSystemBuilderImpl<S> {

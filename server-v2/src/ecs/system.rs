@@ -10,8 +10,8 @@ pub trait SystemBuilder {
 }
 
 pub trait SystemData<'a> {
-    fn fetch(world: &'a mut World) -> Self;
-    fn setup(world: &'a mut World) -> Self;
+    fn fetch(world: &'a World) -> Self;
+    fn setup(world: &mut World);
 
     fn reads(reads: &mut Vec<TypeId>);
     fn writes(writes: &mut Vec<TypeId>);
@@ -36,5 +36,19 @@ pub trait System<'a> {
 
     fn fetch(&self, world: &'a mut World) -> Self::SystemData {
         Self::SystemData::fetch(world)
+    }
+}
+
+pub trait DynSystem {
+    fn run(&mut self, world: &mut World);
+}
+
+impl<S> DynSystem for S
+where
+    S: for<'a> System<'a>,
+{
+    fn run(&mut self, world: &mut World) {
+        let data = S::fetch(self, world);
+        S::run(self, data);
     }
 }
