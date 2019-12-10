@@ -22,10 +22,10 @@ impl World {
         self.register_storage_lazy(move || val);
     }
 
-    pub fn register_storage_lazy<T, F>(&mut self, func: F) 
+    pub fn register_storage_lazy<T, F>(&mut self, func: F)
     where
         T: DynStorage + 'static,
-        F: FnOnce() -> T
+        F: FnOnce() -> T,
     {
         if !self.storages.contains(TypeId::of::<RefCell<T>>()) {
             let val = func();
@@ -41,7 +41,7 @@ impl World {
     pub fn register_resource_lazy<T, F>(&mut self, func: F)
     where
         T: 'static,
-        F: FnOnce() -> T
+        F: FnOnce() -> T,
     {
         if !self.resources.contains(TypeId::of::<RefCell<T>>()) {
             self.resources.insert(RefCell::new(func()), ());

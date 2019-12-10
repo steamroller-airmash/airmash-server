@@ -31,7 +31,7 @@ impl<T: Default> DynStorage for NullStorage<T> {
     fn mask(&self) -> &BitSet {
         <Self as Storage<_>>::mask(self)
     }
-    
+
     fn remove(&mut self, ent: u32) {
         <Self as Storage<T>>::remove(self, ent);
     }

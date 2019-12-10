@@ -11,7 +11,7 @@ impl<T> VecStorage<T> {
     pub fn new() -> Self {
         Self {
             backing: Vec::new(),
-            bitset: BitSet::new()
+            bitset: BitSet::new(),
         }
     }
 }
@@ -20,7 +20,7 @@ impl<T> DynStorage for VecStorage<T> {
     fn mask(&self) -> &BitSet {
         <Self as Storage<_>>::mask(self)
     }
-    
+
     fn remove(&mut self, ent: u32) {
         <Self as Storage<T>>::remove(self, ent);
     }

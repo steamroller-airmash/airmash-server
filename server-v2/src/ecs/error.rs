@@ -1,4 +1,3 @@
-
 use crate::ecs::Entity;
 
 #[derive(Error, Debug, Copy, Clone)]
@@ -6,12 +5,11 @@ use crate::ecs::Entity;
 pub struct EntityDead(Entity);
 
 impl EntityDead {
-	pub(super) fn new(ent: Entity) -> Self {
-		Self(ent)
-	}
+    pub(super) fn new(ent: Entity) -> Self {
+        Self(ent)
+    }
 
-	pub fn entity(&self) -> Entity {
-		self.0
-	}
+    pub fn entity(&self) -> Entity {
+        self.0
+    }
 }
-

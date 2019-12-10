@@ -10,7 +10,7 @@ pub use self::vec::VecStorage;
 use hibitset::{BitSet, BitSetLike};
 
 /// Dynamic access to storages without knowing its type.
-/// 
+///
 /// As a result of this, the operations that are available
 /// on this trait are rather limited. Generally, you'll
 /// probably want to be using `Storage` instead.
