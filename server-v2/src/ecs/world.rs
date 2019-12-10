@@ -1,6 +1,6 @@
 use super::anymap::AnyMap;
 use super::vtable::{DynStorageVTable, VTable};
-use super::DynStorage;
+use super::{DynStorage, EntityRes};
 
 use std::any::TypeId;
 use std::cell::{Ref, RefCell, RefMut};
@@ -12,10 +12,16 @@ pub struct World {
 
 impl World {
     pub fn new() -> Self {
-        Self {
+        let mut me = Self {
             storages: AnyMap::new(),
             resources: AnyMap::new(),
-        }
+        };
+
+        // Register some core resources that are essential for the
+        // base functions of the ECS.
+        me.register_resource(EntityRes::new());
+
+        me
     }
 
     pub fn register_storage<T: DynStorage + 'static>(&mut self, val: T) {
@@ -79,5 +85,27 @@ impl World {
         self.storages
             .iter_mut()
             .map(|(_, storage, meta)| unsafe { meta.rebuild_mut(storage) })
+    }
+
+    pub fn maintain(&mut self) {
+        // TODO: Are there other maintainance tasks that need to be done?
+        //  - e.g. lazy tasks?
+
+        self._maintain_gc()
+    }
+}
+
+// Maintainance-related utilities
+impl World {
+    /// Clean up any dead entities and drop their components
+    fn _maintain_gc(&mut self) {
+        let removed = match self.fetch_resource_mut::<EntityRes>() {
+            Some(mut res) => res.gc(),
+            None => unreachable!("EntityRes has not been registered")
+        };
+
+        for storage in self.iter_storages_mut() {
+            storage.remove_all(&removed);
+        }
     }
 }

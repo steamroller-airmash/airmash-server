@@ -93,9 +93,12 @@ impl<'a> Entities<'a> {
 
 impl<'a> SystemData<'a> for Entities<'a> {
     fn fetch(world: &'a World) -> Self {
-        let res = world
-            .fetch_resource()
-            .expect("EntitiesRes has not been registered!");
+        let res = match world.fetch_resource() {
+			Some(res) => res,
+			// This should be impossible since it's registered within
+			// the constructor for World.
+			None => unreachable!("EntitiesRes has not been registered!")
+		};
 
         Self { res }
     }

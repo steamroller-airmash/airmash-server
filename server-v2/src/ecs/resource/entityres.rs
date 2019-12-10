@@ -188,12 +188,15 @@ impl EntityRes {
     }
 }
 
+/// A reference to an entity that will prevent it from
+/// being garbage collected.
 pub struct EntityRef {
     counts: Rc<RefCell<RefCounts>>,
     ent: Entity,
 }
 
 impl EntityRef {
+    /// The entity that this reference refers to.
     pub fn entity(&self) -> Entity {
         self.ent
     }
