@@ -1,4 +1,4 @@
-#![feature(raw, unsize, coerce_unsized)]
+#![feature(raw, unsize, specialization)]
 
 #[macro_use]
 extern crate thiserror;
