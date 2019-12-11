@@ -37,8 +37,7 @@ impl<T> Storage<T> for VecStorage<T> {
 
     fn insert(&mut self, ent: u32, val: T) -> Option<T> {
         if self.backing.len() < ent as usize {
-            self.backing
-                .resize_with(ent as usize, || MaybeUninit::uninit());
+            self.backing.resize_with(ent as usize, MaybeUninit::uninit);
         }
 
         let orig = std::mem::replace(&mut self.backing[ent as usize], MaybeUninit::new(val));

@@ -9,7 +9,7 @@ impl EntityDead {
         Self(ent)
     }
 
-    pub fn entity(&self) -> Entity {
+    pub fn entity(self) -> Entity {
         self.0
     }
 }

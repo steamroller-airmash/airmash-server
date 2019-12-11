@@ -47,12 +47,12 @@ impl<'world> Builder<'world> {
 
             builder.reads(&mut tmp);
             for id in tmp.drain(..) {
-                reads.entry(id).or_insert(Vec::new()).push(type_id);
+                reads.entry(id).or_insert_with(Vec::new).push(type_id);
             }
 
             builder.writes(&mut tmp);
             for id in tmp.drain(..) {
-                writes.entry(id).or_insert(Vec::new()).push(type_id);
+                writes.entry(id).or_insert_with(Vec::new).push(type_id);
             }
 
             let node = graph.add_node(idx);

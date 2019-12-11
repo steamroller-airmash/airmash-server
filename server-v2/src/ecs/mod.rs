@@ -35,11 +35,11 @@ impl Entity {
         Self { id, gen }
     }
 
-    pub fn id(&self) -> u32 {
+    pub fn id(self) -> u32 {
         self.id
     }
 
-    pub fn gen(&self) -> u32 {
+    pub fn gen(self) -> u32 {
         self.gen
     }
 }

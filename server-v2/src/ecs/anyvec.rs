@@ -87,10 +87,9 @@ impl<'a, V: VTable> Iterator for AnyVecMutIterator<'a, V> {
 fn align(x: usize, align: usize) -> usize {
     let rem = x % align;
 
-    if rem == 0 {
-        return x;
-    } else {
-        x + (align - rem)
+    match rem {
+        0 => x,
+        _ => x + (align - rem)
     }
 }
 

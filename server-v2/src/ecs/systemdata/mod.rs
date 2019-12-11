@@ -208,7 +208,7 @@ impl<'a, C: Component + 'static> SystemData<'a> for ReadStorage<'a, C> {
 
     fn setup(world: &mut World) {
         Entities::setup(world);
-        world.register_storage_lazy(|| C::Storage::default());
+        world.register_storage_lazy(C::Storage::default);
     }
 
     fn reads(_: &mut Vec<TypeId>) {}
@@ -286,7 +286,7 @@ impl<'a, C: Component + 'static> SystemData<'a> for WriteStorage<'a, C> {
 
     fn setup(world: &mut World) {
         Entities::setup(world);
-        world.register_storage_lazy(|| C::Storage::default());
+        world.register_storage_lazy(C::Storage::default);
     }
 
     fn reads(_: &mut Vec<TypeId>) {}
