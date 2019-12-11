@@ -1,5 +1,6 @@
 use crate::ecs::{
-    Component, Entity, EntityDead, EntityRef, EntityRes, EntityStorageMut, Storage, SystemData, World,
+    Component, Entity, EntityDead, EntityRef, EntityRes, EntityStorageMut, Storage, SystemData,
+    World,
 };
 
 use std::any::TypeId;
@@ -103,12 +104,12 @@ impl<'a> SystemData<'a> for Entities<'a> {
         Self { res }
     }
 
-	#[inline]
+    #[inline]
     fn setup(_: &mut World) {}
 
-	#[inline]
-	fn reads(_: &mut Vec<TypeId>) {}
-	#[inline]
+    #[inline]
+    fn reads(_: &mut Vec<TypeId>) {}
+    #[inline]
     fn writes(_: &mut Vec<TypeId>) {}
 }
 

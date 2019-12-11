@@ -101,7 +101,7 @@ impl World {
     fn _maintain_gc(&mut self) {
         let removed = match self.fetch_resource_mut::<EntityRes>() {
             Some(mut res) => res.gc(),
-            None => unreachable!("EntityRes has not been registered")
+            None => unreachable!("EntityRes has not been registered"),
         };
 
         for storage in self.iter_storages_mut() {

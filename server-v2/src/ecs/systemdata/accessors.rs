@@ -1,8 +1,7 @@
-
+pub use super::Entities;
 pub use crate::ecs::{
     Component, Entity, EntityDead, EntityStorage, EntityStorageMut, Storage, SystemData, World,
 };
-pub use super::Entities;
 
 use hibitset::BitSet;
 use shrev::EventChannel;
@@ -14,43 +13,43 @@ use std::ops::{Deref, DerefMut};
 /// Specializable trait indicating that this resource
 /// reads or writes a type for the purposes of system
 /// scheduling.
-/// 
+///
 /// This is used to implement the `reads` function for
 /// `Read` and `ReadExpect` and the `writes` function
 /// for `Write` and `WriteExpect`.
-/// 
+///
 /// Normally you won't have to do anything with this trait,
 /// it is already implemented for channels which are the
 /// main use-case. However, if you have a custom type
 /// which needs to specify it's own reads and writes
 /// dependencies
 pub trait SpecializedResource {
-	fn reads(types: &mut Vec<TypeId>);
-	fn writes(types: &mut Vec<TypeId>);
+    fn reads(types: &mut Vec<TypeId>);
+    fn writes(types: &mut Vec<TypeId>);
 }
 
 impl<T> SpecializedResource for T {
-	default fn reads(_: &mut Vec<TypeId>) {}
-	default fn writes(_: &mut Vec<TypeId>) {}
+    default fn reads(_: &mut Vec<TypeId>) {}
+    default fn writes(_: &mut Vec<TypeId>) {}
 }
 
 /// Namespace type to ensure that channels don't conflict
 /// with other custom dependencies.
-/// 
+///
 /// This type is never used and should not be exposed
 /// publicly.
 struct EventChannelNamespace<C> {
-	_marker: std::marker::PhantomData<C>
+    _marker: std::marker::PhantomData<C>,
 }
 
 impl<C: 'static> SpecializedResource for EventChannel<C> {
-	fn reads(types: &mut Vec<TypeId>) {
-		types.push(TypeId::of::<EventChannelNamespace<C>>())
-	}
+    fn reads(types: &mut Vec<TypeId>) {
+        types.push(TypeId::of::<EventChannelNamespace<C>>())
+    }
 
-	fn writes(types: &mut Vec<TypeId>) {
-		types.push(TypeId::of::<EventChannelNamespace<C>>())
-	}
+    fn writes(types: &mut Vec<TypeId>) {
+        types.push(TypeId::of::<EventChannelNamespace<C>>())
+    }
 }
 
 /// Fetch a resource immutably.
@@ -77,11 +76,11 @@ impl<'a, R: Default + 'static> SystemData<'a> for Read<'a, R> {
     }
 
     fn reads(types: &mut Vec<TypeId>) {
-		<ReadExpect<R> as SystemData>::reads(types)
-	}
+        <ReadExpect<R> as SystemData>::reads(types)
+    }
     fn writes(types: &mut Vec<TypeId>) {
-		<ReadExpect<R> as SystemData>::reads(types)
-	}
+        <ReadExpect<R> as SystemData>::reads(types)
+    }
 }
 
 impl<R: Default + 'static> Deref for Read<'_, R> {
@@ -116,11 +115,11 @@ impl<'a, R: Default + 'static> SystemData<'a> for Write<'a, R> {
     }
 
     fn reads(types: &mut Vec<TypeId>) {
-		<WriteExpect<R> as SystemData>::reads(types)
-	}
+        <WriteExpect<R> as SystemData>::reads(types)
+    }
     fn writes(types: &mut Vec<TypeId>) {
-		<WriteExpect<R> as SystemData>::writes(types)
-	}
+        <WriteExpect<R> as SystemData>::writes(types)
+    }
 }
 
 impl<R: Default + 'static> Deref for Write<'_, R> {
@@ -163,8 +162,8 @@ impl<'a, R: 'static> SystemData<'a> for ReadExpect<'a, R> {
     fn setup(_: &mut World) {}
 
     fn reads(types: &mut Vec<TypeId>) {
-		<R as SpecializedResource>::reads(types)
-	}
+        <R as SpecializedResource>::reads(types)
+    }
     fn writes(_: &mut Vec<TypeId>) {}
 }
 
@@ -199,12 +198,12 @@ impl<'a, R: 'static> SystemData<'a> for WriteExpect<'a, R> {
         }
     }
 
-	fn setup(_: &mut World) {}
-	
+    fn setup(_: &mut World) {}
+
     fn reads(_: &mut Vec<TypeId>) {}
     fn writes(types: &mut Vec<TypeId>) {
-		<R as SpecializedResource>::writes(types)
-	}
+        <R as SpecializedResource>::writes(types)
+    }
 }
 
 impl<R: 'static> Deref for WriteExpect<'_, R> {

@@ -27,14 +27,14 @@ pub trait Storage<T>: DynStorage + Default {
     fn mask(&self) -> &BitSet;
 
     /// Insert a new element into the storage.
-    /// 
+    ///
     /// If an element exists at that position already,
     /// returns the existing element and inserts the new
     /// one.
     fn insert(&mut self, ent: u32, val: T) -> Option<T>;
 
     /// Remove an element from the storage.
-    /// 
+    ///
     /// If the element is present in the storage, returns
     /// that element.
     fn remove(&mut self, ent: u32) -> Option<T>;
@@ -51,11 +51,11 @@ pub trait Storage<T>: DynStorage + Default {
 
     /// Fetch an element from the storage without performing bounds
     /// checking or checking to see if the entity is valid.
-    /// 
+    ///
     /// # Safety
     /// It is UB to call this method for an invalid index as
     /// specified by the `mask()` method of this trait.
-    /// 
+    ///
     /// # Implementors
     /// This method must not cause UB if an access is performed
     /// for an index which is currently marked alive in the bitset
@@ -66,14 +66,14 @@ pub trait Storage<T>: DynStorage + Default {
             None => unreachable!(),
         }
     }
-    
+
     /// Fetch an element from the storage mutably without performing
     /// bounds checking or checking to see if the entity is valid.
-    /// 
+    ///
     /// # Safety
     /// It is UB to call this method for an invalid index as
     /// specified by the `mask()` method of this trait.
-    /// 
+    ///
     /// # Implementors
     /// This method must not cause UB if an access is performed
     /// for an index which is currently marked alive in the bitset

@@ -89,7 +89,7 @@ fn align(x: usize, align: usize) -> usize {
 
     match rem {
         0 => x,
-        _ => x + (align - rem)
+        _ => x + (align - rem),
     }
 }
 
