@@ -18,7 +18,7 @@ use self::vtable::VTable;
 pub use self::dispatch::Builder;
 pub use self::error::EntityDead;
 pub use self::resource::EntityRef;
-pub use self::storage::{Component, DynStorage, EntityStorage, Storage};
+pub use self::storage::{Component, DynStorage, EntityStorage, EntityStorageMut, Storage};
 pub use self::storage::{NullStorage, VecStorage};
 pub use self::system::{DynSystem, System, SystemBuilder, SystemData, SystemDeps};
 pub use self::systemdata::*;

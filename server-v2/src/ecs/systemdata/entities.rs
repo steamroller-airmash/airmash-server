@@ -1,5 +1,5 @@
 use crate::ecs::{
-    Component, Entity, EntityDead, EntityRef, EntityRes, EntityStorage, Storage, SystemData, World,
+    Component, Entity, EntityDead, EntityRef, EntityRes, EntityStorageMut, Storage, SystemData, World,
 };
 
 use std::any::TypeId;
@@ -64,7 +64,7 @@ impl<'a> Entities<'a> {
 
     /// Check whether an entity is accessible. This includes
     /// both live and zombie entities.
-    pub fn is_accesssible(&self, entity: Entity) -> bool {
+    pub fn is_accessible(&self, entity: Entity) -> bool {
         self.res.is_accessible(entity)
     }
 
@@ -94,20 +94,21 @@ impl<'a> Entities<'a> {
 impl<'a> SystemData<'a> for Entities<'a> {
     fn fetch(world: &'a World) -> Self {
         let res = match world.fetch_resource() {
-			Some(res) => res,
-			// This should be impossible since it's registered within
-			// the constructor for World.
-			None => unreachable!("EntitiesRes has not been registered!")
-		};
+            Some(res) => res,
+            // This should be impossible since it's registered within
+            // the constructor for World.
+            None => unreachable!("EntitiesRes has not been registered!"),
+        };
 
         Self { res }
     }
 
-    fn setup(world: &mut World) {
-        world.register_resource_lazy(|| EntityRes::new());
-    }
+	#[inline]
+    fn setup(_: &mut World) {}
 
-    fn reads(_: &mut Vec<TypeId>) {}
+	#[inline]
+	fn reads(_: &mut Vec<TypeId>) {}
+	#[inline]
     fn writes(_: &mut Vec<TypeId>) {}
 }
 
@@ -129,7 +130,7 @@ impl<'a> EntityBuilder<'a> {
     pub fn with<T, S>(&self, storage: &mut S, val: T) -> &Self
     where
         T: Component<Storage = S::Storage>,
-        S: EntityStorage<T>,
+        S: EntityStorageMut<T>,
     {
         storage.storage_mut().insert(self.entity.id(), val);
         self

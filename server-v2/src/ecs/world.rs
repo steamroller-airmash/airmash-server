@@ -25,7 +25,7 @@ impl World {
     }
 
     pub fn register_storage<T: DynStorage + 'static>(&mut self, val: T) {
-        self.register_storage_lazy(move || val);
+        self.resources.insert(RefCell::new(val), ());
     }
 
     pub fn register_storage_lazy<T, F>(&mut self, func: F)
@@ -41,7 +41,7 @@ impl World {
     }
 
     pub fn register_resource<T: 'static>(&mut self, val: T) {
-        self.register_resource_lazy(move || val);
+        self.resources.insert(RefCell::new(val), ());
     }
 
     pub fn register_resource_lazy<T, F>(&mut self, func: F)

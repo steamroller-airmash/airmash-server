@@ -21,7 +21,7 @@ pub trait DynStorage {
     fn remove_all(&mut self, mask: &BitSet);
 }
 
-pub trait Storage<T>: DynStorage {
+pub trait Storage<T>: DynStorage + Default {
     fn mask(&self) -> &BitSet;
 
     fn insert(&mut self, ent: u32, val: T) -> Option<T>;
@@ -52,6 +52,11 @@ pub trait EntityStorage<T> {
     type Storage: Storage<T>;
 
     fn storage(&self) -> &Self::Storage;
+}
+
+/// (Somewhat) internal trait used to get at the underlying
+/// storage for a wrapper accessor.
+pub trait EntityStorageMut<T>: EntityStorage<T> {
     fn storage_mut(&mut self) -> &mut Self::Storage;
 }
 
