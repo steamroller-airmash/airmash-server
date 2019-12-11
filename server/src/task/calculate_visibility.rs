@@ -221,8 +221,8 @@ pub async fn calculate_visibility(mut data: TaskData) {
 							_ if data.is_powerup.get(ent).is_some() => EntityType::Powerup,
 							_ => {
 								error!(
-									"Entity was not a powerup, missile, or player: {:#?}",
-									world.debug_entity(ent)
+									"Entity was not a powerup, missile, or player",
+									// world.debug_entity(ent)
 								);
 								continue;
 							}
@@ -246,8 +246,8 @@ pub async fn calculate_visibility(mut data: TaskData) {
 							_ if data.is_powerup.get(ent).is_some() => EntityType::Powerup,
 							_ => {
 								error!(
-									"Entity was not a powerup, missile, or player: {:#?}",
-									world.debug_entity(ent)
+									"Entity was not a powerup, missile, or player",
+									// world.debug_entity(ent)
 								);
 								continue;
 							}

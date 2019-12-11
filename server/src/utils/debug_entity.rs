@@ -21,6 +21,7 @@ struct DebugPrinter<'a> {
 
 impl<'a> Debug for DebugPrinter<'a> {
 	fn fmt(&self, fmt: &mut Formatter) -> Result {
-		self.world.debug_entity(self.ent).fmt(fmt)
+		write!(fmt, "<cannot debug entity>")
+		// self.world.debug_entity(self.ent).fmt(fmt)
 	}
 }
