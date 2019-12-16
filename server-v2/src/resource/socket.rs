@@ -24,12 +24,14 @@ pub struct ConnectEvent {
     pub socketid: SocketId,
 }
 
+/// Event for when a message is received in a packet.
 #[derive(Clone, Debug)]
 pub struct MessageEvent {
     pub socket: SocketId,
     pub data: Vec<u8>,
 }
 
+/// Event for when a connection is closed.
 #[derive(Clone, Debug)]
 pub struct CloseEvent {
     pub socket: SocketId,
@@ -39,6 +41,7 @@ pub struct CloseEvent {
 #[derive(Copy, Clone, Debug, Eq, PartialEq, Hash)]
 pub struct SocketId(u64);
 
+#[allow(clippy::new_without_default)]
 impl SocketId {
     /// Create a new unique socket id.
     pub fn new() -> Self {
