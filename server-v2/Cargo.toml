@@ -6,6 +6,21 @@ edition = "2018"
 
 [dependencies]
 hibitset = { version="0.6", default-features=false }
+http = "0.1"
+log = "0.4"
 petgraph = "0.4"
 thiserror = "1.0"
 shrev = "1.1"
+
+[dependencies.tokio-tungstenite]
+git = "https://github.com/dbcfd/tokio-tungstenite"
+branch = "tokio2"
+
+[dependencies.tokio]
+version = "0.2.4"
+features = [ "rt-util", "rt-core", "time", "tcp", "io-util", "sync" ]
+
+[dependencies.futures]
+version = "0.3"
+default-features = false
+features = [ "std", "async-await" ]

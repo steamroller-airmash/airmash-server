@@ -15,7 +15,7 @@ mod world;
 use self::resource::EntityRes;
 use self::vtable::VTable;
 
-pub use self::dispatch::Builder;
+pub use self::dispatch::{Builder, Dispatcher};
 pub use self::error::EntityDead;
 pub use self::resource::EntityRef;
 pub use self::storage::{Component, DynStorage, EntityStorage, EntityStorageMut, Storage};
