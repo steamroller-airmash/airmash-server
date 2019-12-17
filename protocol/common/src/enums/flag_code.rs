@@ -174,11 +174,8 @@ impl TryFrom<String> for FlagCode {
 	type Error = ();
 
 	fn try_from(s: String) -> Result<Self, ()> {
-		use crate::consts::flags::STR_TO_FLAG;
-		let ref_str: &str = &s.to_uppercase();
-
-		match STR_TO_FLAG.get(ref_str) {
-			Some(&f) => Ok(f),
+		match crate::consts::flags::str_to_flag(&s.to_uppercase()) {
+			Some(f) => Ok(f),
 			None => Err(()),
 		}
 	}

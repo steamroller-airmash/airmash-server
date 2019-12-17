@@ -64,11 +64,6 @@ extern crate num_traits;
 #[cfg(feature = "serde")]
 #[cfg_attr(feature = "serde", macro_use)]
 extern crate serde;
-#[cfg(feature = "specs")]
-extern crate specs;
-#[cfg(feature = "specs")]
-#[cfg_attr(feature = "specs", macro_use)]
-extern crate specs_derive;
 
 #[macro_use]
 mod detail;

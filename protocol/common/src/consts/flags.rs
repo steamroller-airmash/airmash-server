@@ -1,8 +1,12 @@
 use crate::enums::FlagCode;
 use fnv::FnvHashMap;
 
+pub fn str_to_flag(s: &str) -> Option<FlagCode> {
+	STR_TO_FLAG.get(s).copied()
+}
+
 lazy_static! {
-	pub static ref STR_TO_FLAG: FnvHashMap<&'static str, FlagCode> = {
+	static ref STR_TO_FLAG: FnvHashMap<&'static str, FlagCode> = {
 		let mut map = FnvHashMap::default();
 
 		map.insert("SY", FlagCode::SyrianArabRepublic);
@@ -144,7 +148,7 @@ mod tests {
 	fn bench_str_to_flag_lookup(b: &mut Bencher) {
 		b.iter(|| {
 			let s = black_box("CA");
-			STR_TO_FLAG[s]
+			str_to_flag(s)
 		})
 	}
 }

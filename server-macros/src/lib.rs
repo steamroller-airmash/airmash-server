@@ -79,7 +79,7 @@ pub fn derive_custom_systemdata(stream: proc_macro::TokenStream) -> proc_macro::
 ///    By default this is `pub`.
 ///
 /// # Example
-/// ```
+/// ```ignore
 /// #[event_handler(name=MyEventHandler)]
 /// fn my_event_handler<'a>(evt: &MyEvent, entities: &Entities<'a>) {
 ///     // Do stuff ...
