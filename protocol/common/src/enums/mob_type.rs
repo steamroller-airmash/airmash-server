@@ -9,7 +9,7 @@ use specs::{Component, DenseVecStorage};
 ///
 /// Used by:
 /// - TODO
-#[derive(Copy, Clone, Debug, Hash, Eq, PartialEq, Primitive)]
+#[derive(Copy, Clone, Debug, Hash, Eq, PartialEq, Conversions)]
 #[cfg_attr(feature = "specs", derive(Component))]
 #[cfg_attr(feature = "serde", derive(Serialize, Deserialize))]
 pub enum MobType {
@@ -23,5 +23,3 @@ pub enum MobType {
 	Shield = 8,
 	Inferno = 9,
 }
-
-impl_try_from2!(MobType);

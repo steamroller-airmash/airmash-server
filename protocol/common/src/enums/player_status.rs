@@ -11,15 +11,13 @@ use specs::{Component, DenseVecStorage};
 /// [0]: server/struct.login.html
 /// [1]: server/struct.loginplayer.html
 /// [2]: server/struct.playernew.html
-#[derive(Copy, Clone, Debug, Hash, Eq, PartialEq, Primitive)]
+#[derive(Copy, Clone, Debug, Hash, Eq, PartialEq, Conversions)]
 #[cfg_attr(feature = "specs", derive(Component))]
 #[cfg_attr(feature = "serde", derive(Serialize, Deserialize))]
 pub enum PlayerStatus {
 	Alive = 0,
 	Dead = 1,
 }
-
-impl_try_from2!(PlayerStatus);
 
 impl Default for PlayerStatus {
 	fn default() -> Self {

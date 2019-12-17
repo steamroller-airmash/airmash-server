@@ -29,7 +29,7 @@ use std::str::FromStr;
 /// [0]: https://doc.rust-lang.org/std/str/trait.FromStr.html
 /// [1]: https://doc.rust-lang.org/std/convert/trait.TryFrom.html
 /// [2]: #variant.UnitedNations
-#[derive(Copy, Clone, Debug, Hash, Eq, PartialEq, Primitive)]
+#[derive(Copy, Clone, Debug, Hash, Eq, PartialEq, Conversions)]
 #[cfg_attr(feature = "specs", derive(Component))]
 #[cfg_attr(feature = "serde", derive(Serialize, Deserialize))]
 pub enum FlagCode {
@@ -160,7 +160,7 @@ pub enum FlagCode {
 	Bulgaria = 125,
 }
 
-impl_try_from2!(FlagCode);
+// impl_try_from2!(FlagCode);
 
 impl<'a> TryFrom<&'a str> for FlagCode {
 	type Error = <Self as TryFrom<String>>::Error;

@@ -5,7 +5,7 @@ use specs::{Component, DenseVecStorage};
 ///
 /// These are all server errors that the vanilla AIRMASH
 /// client (and the current STARMASH client) understands.
-#[derive(Copy, Clone, Debug, Hash, Eq, PartialEq, Primitive)]
+#[derive(Copy, Clone, Debug, Hash, Eq, PartialEq, Conversions)]
 #[cfg_attr(feature = "specs", derive(Component))]
 #[cfg_attr(feature = "serde", derive(Serialize, Deserialize))]
 pub enum ErrorType {
@@ -26,5 +26,3 @@ pub enum ErrorType {
 	FlagChangeThrottled = 31,
 	UnknownCommand = 100,
 }
-
-impl_try_from2!(ErrorType);

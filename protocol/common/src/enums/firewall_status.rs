@@ -2,7 +2,7 @@
 use specs::{Component, DenseVecStorage};
 
 /// TODO: Reverse engineer
-#[derive(Copy, Clone, Debug, Hash, Eq, PartialEq, Primitive)]
+#[derive(Copy, Clone, Debug, Hash, Eq, PartialEq, Conversions)]
 #[cfg_attr(feature = "specs", derive(Component))]
 #[cfg_attr(feature = "serde", derive(Serialize, Deserialize))]
 pub enum FirewallStatus {
@@ -11,5 +11,3 @@ pub enum FirewallStatus {
 	/// remove this once the enum is reverse engineered
 	_Unknown = 0,
 }
-
-impl_try_from2!(FirewallStatus);

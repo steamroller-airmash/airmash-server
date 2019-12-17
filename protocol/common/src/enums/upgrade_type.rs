@@ -2,7 +2,7 @@
 use specs::{Component, DenseVecStorage};
 
 /// All upgrade types.
-#[derive(Copy, Clone, Debug, Hash, Eq, PartialEq, Primitive)]
+#[derive(Copy, Clone, Debug, Hash, Eq, PartialEq, Conversions)]
 #[cfg_attr(feature = "specs", derive(Component))]
 #[cfg_attr(feature = "serde", derive(Serialize, Deserialize))]
 pub enum UpgradeType {
@@ -16,5 +16,3 @@ pub enum UpgradeType {
 	Energy = 3,
 	Missile = 4,
 }
-
-impl_try_from2!(UpgradeType);

@@ -18,7 +18,7 @@ use specs::{Component, DenseVecStorage};
 /// [0]: server/struct.ScoreDetailedFFA.html
 /// [1]: server/struct.ScoreDetailedCTF.html
 /// [2]: server/struct.ScoreDetailedBTR.html
-#[derive(Copy, Clone, Debug, Hash, Eq, PartialEq, Primitive)]
+#[derive(Copy, Clone, Debug, Hash, Eq, PartialEq, Conversions)]
 #[cfg_attr(feature = "specs", derive(Component))]
 #[cfg_attr(feature = "serde", derive(Serialize, Deserialize))]
 pub enum GameType {
@@ -26,8 +26,6 @@ pub enum GameType {
 	CTF = 2,
 	BTR = 3,
 }
-
-impl_try_from2!(GameType);
 
 impl Default for GameType {
 	fn default() -> Self {

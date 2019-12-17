@@ -2,7 +2,7 @@
 use specs::{Component, DenseVecStorage};
 
 /// TODO: Reverse engineer
-#[derive(Copy, Clone, Debug, Hash, Eq, PartialEq, Primitive)]
+#[derive(Copy, Clone, Debug, Hash, Eq, PartialEq, Conversions)]
 #[cfg_attr(feature = "specs", derive(Component))]
 #[cfg_attr(feature = "serde", derive(Serialize, Deserialize))]
 pub enum PowerupType {
@@ -11,8 +11,6 @@ pub enum PowerupType {
 	/// TODO: Verify
 	Inferno = 2,
 }
-
-impl_try_from2!(PowerupType);
 
 impl Default for PowerupType {
 	fn default() -> Self {

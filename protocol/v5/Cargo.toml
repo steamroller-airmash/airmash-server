@@ -10,5 +10,4 @@ repository = 'https://github.com/steamroller-airmash/airmash-protocol-v5'
 
 [dependencies.airmash-protocol]
 path = "../common"
-#git = "https://github.com/steamroller-airmash/airmash-protocol-rs"
 default-features = false
