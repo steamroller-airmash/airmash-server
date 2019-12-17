@@ -14,7 +14,7 @@ pub fn derive_system_data(input: TokenStream) -> TokenStream {
 fn derive_impl(input: TokenStream) -> Result<TokenStream, Error> {
     let input: DeriveInput = syn::parse2(input)?;
 
-    let krate = crate_name();
+    let krate = crate_name("server-v2");
     let lifetime = match input.generics.lifetimes().next() {
         Some(lt) => lt,
         None => {
