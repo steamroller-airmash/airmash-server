@@ -9,6 +9,6 @@ license = "Apache-2.0 OR MIT"
 repository = 'https://github.com/steamroller-airmash/airmash-protocol-v5'
 
 [dependencies.airmash-protocol]
-version = "0.3"
+path = "../common"
 #git = "https://github.com/steamroller-airmash/airmash-protocol-rs"
 default-features = false

@@ -39,11 +39,34 @@ dependencies = [
 ]
 
 [[package]]
+name = "airmash-protocol"
+version = "0.3.0"
+dependencies = [
+ "derive_more 0.15.0 (registry+https://github.com/rust-lang/crates.io-index)",
+ "dimensioned 0.7.0 (registry+https://github.com/rust-lang/crates.io-index)",
+ "enum-primitive-derive 0.1.2 (registry+https://github.com/rust-lang/crates.io-index)",
+ "fnv 1.0.6 (registry+https://github.com/rust-lang/crates.io-index)",
+ "lazy_static 1.4.0 (registry+https://github.com/rust-lang/crates.io-index)",
+ "num-traits 0.2.10 (registry+https://github.com/rust-lang/crates.io-index)",
+ "serde-feature-hack 0.2.0 (registry+https://github.com/rust-lang/crates.io-index)",
+ "serde_json 1.0.44 (registry+https://github.com/rust-lang/crates.io-index)",
+ "specs 0.15.1 (registry+https://github.com/rust-lang/crates.io-index)",
+ "specs-derive 0.4.0 (registry+https://github.com/rust-lang/crates.io-index)",
+]
+
+[[package]]
 name = "airmash-protocol-v5"
 version = "0.0.4"
 source = "git+https://github.com/steamroller-airmash/airmash-protocol-v5#2b02eefc87ab16dac5cdd13c9bc66d4925302f67"
 dependencies = [
  "airmash-protocol 0.3.0 (git+https://github.com/steamroller-airmash/airmash-protocol-rs)",
+]
+
+[[package]]
+name = "airmash-protocol-v5"
+version = "0.0.4"
+dependencies = [
+ "airmash-protocol 0.3.0",
 ]
 
 [[package]]

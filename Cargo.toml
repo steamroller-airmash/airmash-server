@@ -17,5 +17,7 @@ members = [
 	"bounded-queue",
 	"special-map",
 	"server-macros",
-	"server-v2"
+	"server-v2",
+	"protocol/common",
+	"protocol/v5"
 ]
