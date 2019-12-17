@@ -18,6 +18,7 @@ members = [
 	"special-map",
 	"server-macros",
 	"server-v2",
+	"server-v2-macros",
 	"protocol/common",
 	"protocol/v5"
 ]
