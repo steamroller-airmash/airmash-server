@@ -117,7 +117,7 @@ pub fn event_handler(
 ///    By default this is `pub`.
 ///
 /// # Example
-/// ```
+/// ```ignore
 /// # struct Foo;
 /// # struct Bar;
 ///

@@ -141,7 +141,7 @@ where
 	/// Consider a handler for a command `spawn-upgrade`, the
 	/// event it recieves is a `(ConnectionId, Command)` tuple.
 	///
-	/// ```
+	/// ```ignore
 	/// # extern crate airmash_server;
 	/// use airmash_server::component::event::CommandEvent;
 	/// use airmash_server::types::systemdata::SendToAll;
