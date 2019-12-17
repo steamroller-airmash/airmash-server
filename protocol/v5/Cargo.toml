@@ -1,0 +1,14 @@
+[package]
+name = "airmash-protocol-v5"
+version = "0.0.4"
+authors = ["STEAMROLLER"]
+readme = "README.md"
+description = "Protocol backend for version 5 of the AIRMASH protocol"
+keywords = ["protocol", "games"]
+license = "Apache-2.0 OR MIT"
+repository = 'https://github.com/steamroller-airmash/airmash-protocol-v5'
+
+[dependencies.airmash-protocol]
+version = "0.3"
+#git = "https://github.com/steamroller-airmash/airmash-protocol-rs"
+default-features = false
