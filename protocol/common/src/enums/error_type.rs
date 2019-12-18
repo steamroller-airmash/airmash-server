@@ -1,12 +1,8 @@
-#[cfg(feature = "specs")]
-use specs::{Component, DenseVecStorage};
-
 /// All error codes that can be sent to the client.
 ///
 /// These are all server errors that the vanilla AIRMASH
 /// client (and the current STARMASH client) understands.
 #[derive(Copy, Clone, Debug, Hash, Eq, PartialEq, Conversions)]
-#[cfg_attr(feature = "specs", derive(Component))]
 #[cfg_attr(feature = "serde", derive(Serialize, Deserialize))]
 pub enum ErrorType {
 	DisconnectedForPacketFlooding = 1,

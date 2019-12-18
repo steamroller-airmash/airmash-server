@@ -1,6 +1,3 @@
-#[cfg(feature = "specs")]
-use specs::{Component, DenseVecStorage};
-
 /// Upgrade info that a client needs to know about to
 /// calculate movement. This also includes the shielded
 /// state of the player.
@@ -18,7 +15,6 @@ use specs::{Component, DenseVecStorage};
 /// - [`PlayerUpgrade`](server/struct.PlayerUpgrade.html)
 #[derive(Copy, Clone, Debug, Default, Hash, Eq, PartialEq)]
 #[cfg_attr(feature = "serde", derive(Serialize, Deserialize))]
-#[cfg_attr(feature = "specs", derive(Component))]
 pub struct Upgrades {
 	/// The number of speed upgrades that the player currently
 	/// has equipped.

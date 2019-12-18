@@ -1,9 +1,5 @@
-#[cfg(feature = "specs")]
-use specs::{Component, DenseVecStorage};
-
 /// All upgrade types.
 #[derive(Copy, Clone, Debug, Hash, Eq, PartialEq, Conversions)]
-#[cfg_attr(feature = "specs", derive(Component))]
 #[cfg_attr(feature = "serde", derive(Serialize, Deserialize))]
 pub enum UpgradeType {
 	/// This seems to be sent by the official server when a

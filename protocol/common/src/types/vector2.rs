@@ -3,8 +3,6 @@ use std::ops::*;
 use dimensioned::Sqrt;
 #[cfg(feature = "serde")]
 use serde::{Deserialize, Deserializer, Serialize, Serializer};
-#[cfg(feature = "specs")]
-use specs;
 
 /// Required trait to allow specialized impls for self
 /// TODO: Use specialization instead?
@@ -255,11 +253,6 @@ where
 	fn div_assign(&mut self, rhs: U) {
 		*self = self.clone() / rhs;
 	}
-}
-
-#[cfg(feature = "specs")]
-impl<T: 'static + Send + Sync> specs::Component for Vector2<T> {
-	type Storage = specs::VecStorage<Vector2<T>>;
 }
 
 #[cfg(feature = "serde")]

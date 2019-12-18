@@ -1,6 +1,3 @@
-#[cfg(feature = "specs")]
-use specs::{Component, DenseVecStorage};
-
 /// The key that's had it's state changed.
 /// This is only used for client -> server
 /// communication.
@@ -8,7 +5,6 @@ use specs::{Component, DenseVecStorage};
 /// It is used in the following packets:
 /// - TODO
 #[derive(Copy, Clone, Debug, Hash, Eq, PartialEq, Conversions)]
-#[cfg_attr(feature = "specs", derive(Component))]
 #[cfg_attr(feature = "serde", derive(Serialize, Deserialize))]
 pub enum KeyCode {
 	Up = 1,

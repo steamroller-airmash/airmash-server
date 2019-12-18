@@ -1,7 +1,5 @@
 #[cfg(feature = "serde")]
 use serde::{Deserialize, Deserializer, Serialize, Serializer};
-#[cfg(feature = "specs")]
-use specs::{Component, VecStorage};
 
 use std::time::Duration;
 
@@ -86,15 +84,6 @@ impl<U> AirmashUnits<BaseType, U> {
 	pub fn tan(&self) -> BaseType {
 		self.inner().tan()
 	}
-}
-
-#[cfg(feature = "specs")]
-impl<T: 'static, U: 'static> Component for AirmashUnits<T, U>
-where
-	T: Sync + Send,
-	U: Sync + Send,
-{
-	type Storage = VecStorage<AirmashUnits<T, U>>;
 }
 
 impl<T: Default, U> Default for AirmashUnits<T, U> {

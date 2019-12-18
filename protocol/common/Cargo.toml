@@ -17,15 +17,11 @@ maintenance = { status = "experimental" }
 serde = [ "serde-feature-hack", "serde_json" ]
 default = ["custom_data"]
 custom_data = ["serde"]
+specs = []
 
 [dependencies]
-lazy_static = "1.0"
-fnv = "1.0"
 dimensioned = "0.7"
-specs-derive = "0.4"
-derive_more = "0.15"
-enum-primitive-derive = "0.1"
-num-traits = "0.2"
+derive_more = "0.99"
 
 server-v2-macros = { path = "../../server-v2-macros" }
 

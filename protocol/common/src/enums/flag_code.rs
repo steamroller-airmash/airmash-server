@@ -1,5 +1,3 @@
-#[cfg(feature = "specs")]
-use specs::{Component, DenseVecStorage};
 use std::convert::TryFrom;
 use std::str::FromStr;
 
@@ -30,7 +28,6 @@ use std::str::FromStr;
 /// [1]: https://doc.rust-lang.org/std/convert/trait.TryFrom.html
 /// [2]: #variant.UnitedNations
 #[derive(Copy, Clone, Debug, Hash, Eq, PartialEq, Conversions)]
-#[cfg_attr(feature = "specs", derive(Component))]
 #[cfg_attr(feature = "serde", derive(Serialize, Deserialize))]
 pub enum FlagCode {
 	SyrianArabRepublic = 1,
@@ -38,7 +35,7 @@ pub enum FlagCode {
 	Turkmenistan = 3,
 	Tunisia = 4,
 	Turkey = 5,
-	TrinidadandTobago = 6,
+	TrinidadAndTobago = 6,
 	Taiwan = 7,
 	Tanzania = 8,
 	Ukraine = 9,
@@ -47,7 +44,7 @@ pub enum FlagCode {
 	Uruguay = 12,
 	Uzbekistan = 13,
 	Venezuela = 14,
-	VietNam = 15,
+	Vietnam = 15,
 	PuertoRico = 16,
 	Portugal = 17,
 	Paraguay = 18,
@@ -92,7 +89,7 @@ pub enum FlagCode {
 	Indonesia = 57,
 	Ireland = 58,
 	Israel = 59,
-	IsleofMan = 60,
+	IsleOfMan = 60,
 	ImperialJapan = 61,
 	India = 62,
 	Iraq = 63,
@@ -160,8 +157,6 @@ pub enum FlagCode {
 	Bulgaria = 125,
 }
 
-// impl_try_from2!(FlagCode);
-
 impl<'a> TryFrom<&'a str> for FlagCode {
 	type Error = <Self as TryFrom<String>>::Error;
 
@@ -205,7 +200,7 @@ impl<'a> From<FlagCode> for &'a str {
 			Turkmenistan => "TM",
 			Tunisia => "TN",
 			Turkey => "TR",
-			TrinidadandTobago => "TT",
+			TrinidadAndTobago => "TT",
 			Taiwan => "TW",
 			Tanzania => "TZ",
 			Ukraine => "UA",
@@ -214,7 +209,7 @@ impl<'a> From<FlagCode> for &'a str {
 			Uruguay => "UY",
 			Uzbekistan => "UZ",
 			Venezuela => "VE",
-			VietNam => "VN",
+			Vietnam => "VN",
 			PuertoRico => "PR",
 			Portugal => "PT",
 			Paraguay => "PY",
@@ -259,7 +254,7 @@ impl<'a> From<FlagCode> for &'a str {
 			Indonesia => "ID",
 			Ireland => "IE",
 			Israel => "IL",
-			IsleofMan => "IM",
+			IsleOfMan => "IM",
 			ImperialJapan => "IMPERIAL",
 			India => "IN",
 			Iraq => "IQ",

@@ -1,6 +1,3 @@
-#[cfg(feature = "specs")]
-use specs::{Component, DenseVecStorage};
-
 /// Indicates the type of entity that just
 /// went outside of the player's horizon.
 ///
@@ -9,7 +6,6 @@ use specs::{Component, DenseVecStorage};
 /// certain and should be verified before
 /// relying upon them.
 #[derive(Copy, Clone, Debug, Hash, Eq, PartialEq, Conversions)]
-#[cfg_attr(feature = "specs", derive(Component))]
 #[cfg_attr(feature = "serde", derive(Serialize, Deserialize))]
 pub enum LeaveHorizonType {
 	Player = 0,

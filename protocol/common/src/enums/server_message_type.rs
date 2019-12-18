@@ -1,11 +1,7 @@
-#[cfg(feature = "specs")]
-use specs::{Component, DenseVecStorage};
-
 /// Type specifier for server banner messages.
 ///
 /// TODO: Reverse engineer
 #[derive(Copy, Clone, Debug, Hash, Eq, PartialEq, Conversions)]
-#[cfg_attr(feature = "specs", derive(Component))]
 #[cfg_attr(feature = "serde", derive(Serialize, Deserialize))]
 pub enum ServerMessageType {
 	TimeToGameStart = 1,

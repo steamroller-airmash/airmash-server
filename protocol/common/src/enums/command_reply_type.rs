@@ -1,12 +1,8 @@
-#[cfg(feature = "specs")]
-use specs::{Component, DenseVecStorage};
-
 use std::convert::From;
 
 /// Specifies whether the debug reply to a command should
 /// open a popup or be displayed in the chat window.
 #[derive(Copy, Clone, Debug, Hash, Eq, PartialEq)]
-#[cfg_attr(feature = "specs", derive(Component))]
 #[cfg_attr(feature = "serde", derive(Serialize, Deserialize))]
 pub enum CommandReplyType {
 	ShowInConsole = 0,

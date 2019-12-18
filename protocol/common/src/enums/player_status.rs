@@ -1,6 +1,3 @@
-#[cfg(feature = "specs")]
-use specs::{Component, DenseVecStorage};
-
 /// Flag for indicating whether a player is
 /// alive or dead.
 ///
@@ -12,7 +9,6 @@ use specs::{Component, DenseVecStorage};
 /// [1]: server/struct.loginplayer.html
 /// [2]: server/struct.playernew.html
 #[derive(Copy, Clone, Debug, Hash, Eq, PartialEq, Conversions)]
-#[cfg_attr(feature = "specs", derive(Component))]
 #[cfg_attr(feature = "serde", derive(Serialize, Deserialize))]
 pub enum PlayerStatus {
 	Alive = 0,

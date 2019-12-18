@@ -1,6 +1,3 @@
-#[cfg(feature = "specs")]
-use specs::{Component, DenseVecStorage};
-
 /// Types of all mobs present in the game.
 ///
 /// In AIRMASH, mobs are any non-player and non-wall
@@ -10,7 +7,6 @@ use specs::{Component, DenseVecStorage};
 /// Used by:
 /// - TODO
 #[derive(Copy, Clone, Debug, Hash, Eq, PartialEq, Conversions)]
-#[cfg_attr(feature = "specs", derive(Component))]
 #[cfg_attr(feature = "serde", derive(Serialize, Deserialize))]
 pub enum MobType {
 	PredatorMissile = 1,
