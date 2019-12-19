@@ -29,6 +29,19 @@ impl<'world> Builder<'world> {
         self
     }
 
+    /// Call the passed in function with self and
+	/// return whatever the function returns.
+	///
+	/// This is meant as an ease-of-use wrapper
+	/// for `register` style functions.
+    pub fn with_registrar<F>(&mut self, fun: F) -> &mut Self
+    where
+        F: FnOnce(&mut Self)
+    {
+        fun(self);
+        self
+    }
+
     pub fn build(mut self) -> Result<Dispatcher, CycleError> {
         use petgraph::{algo::toposort, Directed, Graph};
         use std::collections::hash_map::RandomState;

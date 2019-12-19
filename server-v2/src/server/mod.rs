@@ -23,14 +23,21 @@ pub struct AirmashServer {
     dispatch: Dispatcher,
     world: Rc<RefCell<World>>,
     config: AirmashServerConfig,
+    localset: LocalSet,
 }
 
 impl AirmashServer {
-    pub fn new(dispatch: Dispatcher, world: World, config: AirmashServerConfig) -> Self {
+    pub fn new(
+        dispatch: Dispatcher,
+        world: World,
+        localset: LocalSet,
+        config: AirmashServerConfig,
+    ) -> Self {
         Self {
             dispatch,
             config,
             world: Rc::new(RefCell::new(world)),
+            localset,
         }
     }
 
@@ -57,34 +64,43 @@ impl AirmashServer {
     pub fn run(mut self) -> Result<(), Box<dyn Error>> {
         self.register_builtins();
 
+        let Self {
+            world,
+            dispatch,
+            config,
+            localset
+        } = self;
+
         let mut runtime = Builder::new()
             .basic_scheduler()
             .enable_time()
             .enable_io()
             .build()?;
 
-        let set = LocalSet::new();
+        localset.spawn_local(websocket_listener(Rc::clone(&world), config.port));
 
-        set.spawn_local(websocket_listener(Rc::clone(&self.world), self.config.port));
-
-        set.block_on(&mut runtime, self.run_server())
+        localset.block_on(&mut runtime, Self::run_server(world, dispatch, config))
     }
 
-    async fn run_server(mut self) -> Result<(), Box<dyn Error>> {
+    async fn run_server(
+        world: Rc<RefCell<World>>,
+        mut dispatch: Dispatcher,
+        config: AirmashServerConfig,
+    ) -> Result<(), Box<dyn Error>> {
         let mut current_frame = Instant::now() - Duration::from_millis(1);
         let mut interval =
-            tokio::time::interval_at(tokio::time::Instant::now(), self.config.frame_duration());
+            tokio::time::interval_at(tokio::time::Instant::now(), config.frame_duration());
 
         loop {
             let now = interval.tick().await;
-            let mut world = self.world.borrow_mut();
+            let mut world = world.borrow_mut();
 
             // Setup frame times
             world.register_resource(LastFrame(current_frame));
             world.register_resource(CurrentFrame(now.into_std()));
             current_frame = now.into_std();
 
-            self.dispatch.dispatch_all(&mut world);
+            dispatch.dispatch_all(&mut world);
             world.maintain();
 
             let shutdown = world
