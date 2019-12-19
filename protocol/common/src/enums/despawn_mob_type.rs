@@ -4,6 +4,6 @@
 #[derive(Copy, Clone, Debug, Hash, Eq, PartialEq, Conversions)]
 #[cfg_attr(feature = "serde", derive(Serialize, Deserialize))]
 pub enum DespawnType {
-	LifetimeEnded = 0,
-	Collided = 1,
+    LifetimeEnded = 0,
+    Collided = 1,
 }

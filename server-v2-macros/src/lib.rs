@@ -2,20 +2,30 @@ extern crate proc_macro;
 
 use proc_macro::TokenStream;
 
-mod systemdata;
-mod conversions;
+#[macro_use]
+mod util;
 
+mod conversions;
+mod system;
+mod systemdata;
+
+/// Derive macro for `SystemData`
 #[proc_macro_derive(SystemData)]
 pub fn derive_system_data(input: TokenStream) -> TokenStream {
     self::systemdata::derive_system_data(input.into()).into()
 }
 
 /// Derive conversions for an enum with discriminants.
-/// 
+///
 /// This is mainly meant for use in airmash-protocol.
 #[proc_macro_derive(Conversions)]
 pub fn derive_conversions(input: TokenStream) -> TokenStream {
     self::conversions::derive_conversions(input.into()).into()
+}
+
+#[proc_macro_attribute]
+pub fn system(attr: TokenStream, input: TokenStream) -> TokenStream {
+    self::system::system(attr.into(), input.into()).into()
 }
 
 fn crate_name(krate: &str) -> proc_macro2::TokenStream {

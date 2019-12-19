@@ -4,9 +4,9 @@ use crate::enums::PowerupType;
 #[derive(Copy, Clone, Debug)]
 #[cfg_attr(feature = "serde", derive(Serialize, Deserialize))]
 pub struct PlayerPowerup {
-	#[cfg_attr(feature = "serde", serde(rename = "type"))]
-	pub ty: PowerupType,
-	// Maybe make this a Duration?
-	/// Lifetime of the powerup, in milliseconds.
-	pub duration: u32,
+    #[cfg_attr(feature = "serde", serde(rename = "type"))]
+    pub ty: PowerupType,
+    // Maybe make this a Duration?
+    /// Lifetime of the powerup, in milliseconds.
+    pub duration: u32,
 }

@@ -4,5 +4,5 @@ use crate::types::Player;
 #[derive(Copy, Clone, Debug)]
 #[cfg_attr(feature = "serde", derive(Serialize, Deserialize))]
 pub struct GameSpectate {
-	pub id: Player,
+    pub id: Player,
 }

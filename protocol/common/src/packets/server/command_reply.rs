@@ -4,7 +4,7 @@ use crate::enums::CommandReplyType;
 #[derive(Clone, Debug)]
 #[cfg_attr(feature = "serde", derive(Serialize, Deserialize))]
 pub struct CommandReply {
-	#[cfg_attr(feature = "serde", serde(rename = "type"))]
-	pub ty: CommandReplyType,
-	pub text: String,
+    #[cfg_attr(feature = "serde", serde(rename = "type"))]
+    pub ty: CommandReplyType,
+    pub text: String,
 }

@@ -8,22 +8,22 @@ use crate::types::{Accel, Energy, EnergyRegen, Mob, Player, Position, Speed, Vel
 #[derive(Copy, Clone, Debug)]
 #[cfg_attr(feature = "serde", derive(Serialize, Deserialize))]
 pub struct PlayerFireProjectile {
-	pub id: Mob,
-	#[cfg_attr(feature = "serde", serde(rename = "type"))]
-	pub ty: MobType,
-	pub pos: Position,
-	pub speed: Velocity,
-	pub accel: Accel,
-	pub max_speed: Speed,
+    pub id: Mob,
+    #[cfg_attr(feature = "serde", serde(rename = "type"))]
+    pub ty: MobType,
+    pub pos: Position,
+    pub speed: Velocity,
+    pub accel: Accel,
+    pub max_speed: Speed,
 }
 
 /// Packet for whan a player fires missiles.
 #[derive(Clone, Debug)]
 #[cfg_attr(feature = "serde", derive(Serialize, Deserialize))]
 pub struct PlayerFire {
-	pub clock: u32,
-	pub id: Player,
-	pub energy: Energy,
-	pub energy_regen: EnergyRegen,
-	pub projectiles: Vec<PlayerFireProjectile>,
+    pub clock: u32,
+    pub id: Player,
+    pub energy: Energy,
+    pub energy_regen: EnergyRegen,
+    pub projectiles: Vec<PlayerFireProjectile>,
 }

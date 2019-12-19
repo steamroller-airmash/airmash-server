@@ -4,11 +4,11 @@ use crate::types::{Player, Position, Rotation, ServerKeyState, Upgrades, Velocit
 #[derive(Copy, Clone, Debug)]
 #[cfg_attr(feature = "serde", derive(Serialize, Deserialize))]
 pub struct PlayerUpdate {
-	pub clock: u32,
-	pub id: Player,
-	pub keystate: ServerKeyState,
-	pub upgrades: Upgrades,
-	pub pos: Position,
-	pub rot: Rotation,
-	pub speed: Velocity,
+    pub clock: u32,
+    pub id: Player,
+    pub keystate: ServerKeyState,
+    pub upgrades: Upgrades,
+    pub pos: Position,
+    pub rot: Rotation,
+    pub speed: Velocity,
 }

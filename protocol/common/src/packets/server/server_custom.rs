@@ -27,7 +27,7 @@ use crate::enums::ServerCustomType;
 #[derive(Clone, Debug)]
 #[cfg_attr(feature = "serde", derive(Serialize, Deserialize))]
 pub struct ServerCustom {
-	#[cfg_attr(feature = "serde", serde(rename = "type"))]
-	pub ty: ServerCustomType,
-	pub data: String,
+    #[cfg_attr(feature = "serde", serde(rename = "type"))]
+    pub ty: ServerCustomType,
+    pub data: String,
 }

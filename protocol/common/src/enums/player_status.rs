@@ -11,12 +11,12 @@
 #[derive(Copy, Clone, Debug, Hash, Eq, PartialEq, Conversions)]
 #[cfg_attr(feature = "serde", derive(Serialize, Deserialize))]
 pub enum PlayerStatus {
-	Alive = 0,
-	Dead = 1,
+    Alive = 0,
+    Dead = 1,
 }
 
 impl Default for PlayerStatus {
-	fn default() -> Self {
-		PlayerStatus::Alive
-	}
+    fn default() -> Self {
+        PlayerStatus::Alive
+    }
 }

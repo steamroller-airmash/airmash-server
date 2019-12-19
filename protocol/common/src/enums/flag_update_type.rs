@@ -13,6 +13,6 @@
 #[derive(Copy, Clone, Debug, Hash, Eq, PartialEq, Conversions)]
 #[cfg_attr(feature = "serde", derive(Serialize, Deserialize))]
 pub enum FlagUpdateType {
-	Position = 1,
-	Carrier = 2,
+    Position = 1,
+    Carrier = 2,
 }

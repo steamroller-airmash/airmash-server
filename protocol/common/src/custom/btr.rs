@@ -18,16 +18,16 @@ use super::utils::*;
 /// [1]: ../enum.FlagCode.html#variant.UnitedNations
 #[derive(Clone, Debug, Serialize, Deserialize)]
 pub struct BTRData {
-	#[serde(rename = "p")]
-	pub player: String,
-	#[serde(rename = "b")]
-	pub bounty: u32,
-	#[serde(rename = "f")]
-	#[serde(with = "flag_code")]
-	pub flag: FlagCode,
-	#[serde(rename = "k")]
-	pub kills: u32,
-	#[serde(rename = "t")]
-	#[serde(with = "duration")]
-	pub duration: Duration,
+    #[serde(rename = "p")]
+    pub player: String,
+    #[serde(rename = "b")]
+    pub bounty: u32,
+    #[serde(rename = "f")]
+    #[serde(with = "flag_code")]
+    pub flag: FlagCode,
+    #[serde(rename = "k")]
+    pub kills: u32,
+    #[serde(rename = "t")]
+    #[serde(with = "duration")]
+    pub duration: Duration,
 }

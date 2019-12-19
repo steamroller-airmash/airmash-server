@@ -9,13 +9,13 @@
 #[derive(Copy, Clone, Debug, Hash, Eq, PartialEq, Conversions)]
 #[cfg_attr(feature = "serde", derive(Serialize, Deserialize))]
 pub enum MobType {
-	PredatorMissile = 1,
-	GoliathMissile = 2,
-	MohawkMissile = 3,
-	Upgrade = 4,
-	TornadoSingleMissile = 5,
-	TornadoTripleMissile = 6,
-	ProwlerMissile = 7,
-	Shield = 8,
-	Inferno = 9,
+    PredatorMissile = 1,
+    GoliathMissile = 2,
+    MohawkMissile = 3,
+    Upgrade = 4,
+    TornadoSingleMissile = 5,
+    TornadoTripleMissile = 6,
+    ProwlerMissile = 7,
+    Shield = 8,
+    Inferno = 9,
 }

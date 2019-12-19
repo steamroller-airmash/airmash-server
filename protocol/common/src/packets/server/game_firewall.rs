@@ -5,10 +5,10 @@ use crate::types::Position;
 #[derive(Copy, Clone, Debug)]
 #[cfg_attr(feature = "serde", derive(Serialize, Deserialize))]
 pub struct GameFirewall {
-	#[cfg_attr(feature = "serde", serde(rename = "type"))]
-	pub ty: FirewallUpdateType,
-	pub status: FirewallStatus,
-	pub pos: Position,
-	pub radius: f32,
-	pub speed: f32,
+    #[cfg_attr(feature = "serde", serde(rename = "type"))]
+    pub ty: FirewallUpdateType,
+    pub status: FirewallStatus,
+    pub pos: Position,
+    pub radius: f32,
+    pub speed: f32,
 }

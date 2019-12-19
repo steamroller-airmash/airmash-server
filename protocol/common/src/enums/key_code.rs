@@ -7,10 +7,10 @@
 #[derive(Copy, Clone, Debug, Hash, Eq, PartialEq, Conversions)]
 #[cfg_attr(feature = "serde", derive(Serialize, Deserialize))]
 pub enum KeyCode {
-	Up = 1,
-	Down = 2,
-	Left = 3,
-	Right = 4,
-	Fire = 5,
-	Special = 6,
+    Up = 1,
+    Down = 2,
+    Left = 3,
+    Right = 4,
+    Fire = 5,
+    Special = 6,
 }

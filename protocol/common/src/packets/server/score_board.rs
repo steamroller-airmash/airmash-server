@@ -4,9 +4,9 @@ use crate::types::{Level, Player, Position, Score};
 #[derive(Copy, Clone, Debug)]
 #[cfg_attr(feature = "serde", derive(Serialize, Deserialize))]
 pub struct ScoreBoardData {
-	pub id: Player,
-	pub score: Score,
-	pub level: Level,
+    pub id: Player,
+    pub score: Score,
+    pub level: Level,
 }
 
 /// Low-res player positions, part of the
@@ -14,8 +14,8 @@ pub struct ScoreBoardData {
 #[derive(Copy, Clone, Debug)]
 #[cfg_attr(feature = "serde", derive(Serialize, Deserialize))]
 pub struct ScoreBoardRanking {
-	pub id: Player,
-	pub pos: Option<Position>,
+    pub id: Player,
+    pub pos: Option<Position>,
 }
 
 /// Leaderboard + Global player positions
@@ -26,6 +26,6 @@ pub struct ScoreBoardRanking {
 #[derive(Clone, Debug)]
 #[cfg_attr(feature = "serde", derive(Serialize, Deserialize))]
 pub struct ScoreBoard {
-	pub data: Vec<ScoreBoardData>,
-	pub rankings: Vec<ScoreBoardRanking>,
+    pub data: Vec<ScoreBoardData>,
+    pub rankings: Vec<ScoreBoardRanking>,
 }

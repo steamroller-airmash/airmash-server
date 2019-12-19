@@ -5,14 +5,14 @@ use crate::types::{Player, Position, Rotation, Team, Upgrades};
 #[derive(Clone, Debug)]
 #[cfg_attr(feature = "serde", derive(Serialize, Deserialize))]
 pub struct PlayerNew {
-	pub id: Player,
-	pub status: PlayerStatus,
-	pub name: String,
-	#[cfg_attr(feature = "serde", serde(rename = "type"))]
-	pub ty: PlaneType,
-	pub team: Team,
-	pub pos: Position,
-	pub rot: Rotation,
-	pub flag: FlagCode,
-	pub upgrades: Upgrades,
+    pub id: Player,
+    pub status: PlayerStatus,
+    pub name: String,
+    #[cfg_attr(feature = "serde", serde(rename = "type"))]
+    pub ty: PlaneType,
+    pub team: Team,
+    pub pos: Position,
+    pub rot: Rotation,
+    pub flag: FlagCode,
+    pub upgrades: Upgrades,
 }

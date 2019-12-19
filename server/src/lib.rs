@@ -1,5 +1,4 @@
 #![feature(try_trait, specialization)]
-
 // Temporary while server-v2 is being developed
 #![allow(unused_parens, array_into_iter)]
 

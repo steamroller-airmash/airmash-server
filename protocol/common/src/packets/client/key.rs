@@ -9,7 +9,7 @@ use crate::enums::KeyCode;
 #[derive(Copy, Clone, Debug)]
 #[cfg_attr(feature = "serde", derive(Serialize, Deserialize))]
 pub struct Key {
-	pub seq: u32,
-	pub key: KeyCode,
-	pub state: bool,
+    pub seq: u32,
+    pub key: KeyCode,
+    pub state: bool,
 }

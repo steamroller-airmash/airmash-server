@@ -14,5 +14,5 @@
 #[derive(Clone, Debug)]
 #[cfg_attr(feature = "serde", derive(Serialize, Deserialize))]
 pub struct Backup {
-	pub token: String,
+    pub token: String,
 }

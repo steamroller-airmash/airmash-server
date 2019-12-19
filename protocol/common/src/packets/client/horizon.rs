@@ -7,6 +7,6 @@
 #[derive(Copy, Clone, Debug)]
 #[cfg_attr(feature = "serde", derive(Serialize, Deserialize))]
 pub struct Horizon {
-	pub horizon_x: u16,
-	pub horizon_y: u16,
+    pub horizon_x: u16,
+    pub horizon_y: u16,
 }

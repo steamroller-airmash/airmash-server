@@ -4,6 +4,8 @@
 use shrev::EventChannel;
 use tokio::sync::mpsc::UnboundedSender;
 
+use std::fmt;
+
 pub type OnConnect = EventChannel<ConnectEvent>;
 pub type OnMessage = EventChannel<MessageEvent>;
 pub type OnClose = EventChannel<CloseEvent>;
@@ -14,6 +16,7 @@ pub type OnClose = EventChannel<CloseEvent>;
 /// logged on.
 #[allow(dead_code)]
 pub struct ConnectEvent {
+    // TODO: Figure out what should be exposed here
     pub(crate) origin: Option<Vec<u8>>,
     pub(crate) forwarded: Option<Vec<u8>>,
     pub(crate) x_forwarded_for: Option<Vec<u8>>,
@@ -56,6 +59,10 @@ impl ConnectEvent {
     pub fn remote_addr(&self) -> Option<&[u8]> {
         unimplemented!()
     }
+
+    pub fn origin(&self) -> Option<&[u8]> {
+        unimplemented!()
+    }
 }
 
 pub struct SocketWriter {
@@ -70,7 +77,7 @@ impl SocketWriter {
         Self { sender }
     }
 
-    pub fn write(&mut self, buf: Vec<u8>) -> Result<(), SendError> {
+    pub fn write(&self, buf: Vec<u8>) -> Result<(), SendError> {
         self.sender
             .send(SocketMessage::Data(buf))
             .map_err(|_| SendError(()))
@@ -85,4 +92,10 @@ impl SocketWriter {
 pub(crate) enum SocketMessage {
     Data(Vec<u8>),
     Close,
+}
+
+impl fmt::Display for SocketId {
+    fn fmt(&self, fmt: &mut fmt::Formatter) -> fmt::Result {
+        self.0.fmt(fmt)
+    }
 }

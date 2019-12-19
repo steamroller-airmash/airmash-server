@@ -9,7 +9,7 @@ use crate::types::Mob;
 #[derive(Copy, Clone, Debug)]
 #[cfg_attr(feature = "serde", derive(Serialize, Deserialize))]
 pub struct MobDespawn {
-	pub id: Mob,
-	#[cfg_attr(feature = "serde", serde(rename = "type"))]
-	pub ty: DespawnType,
+    pub id: Mob,
+    #[cfg_attr(feature = "serde", serde(rename = "type"))]
+    pub ty: DespawnType,
 }

@@ -4,19 +4,19 @@ use crate::types::{Level, Player, Score};
 #[derive(Copy, Clone, Debug)]
 #[cfg_attr(feature = "serde", derive(Serialize, Deserialize))]
 pub struct ScoreDetailedCTFEntry {
-	pub id: Player,
-	pub level: Level,
-	pub captures: u16,
-	pub score: Score,
-	pub kills: u16,
-	pub deaths: u16,
-	pub damage: f32,
-	pub ping: u16,
+    pub id: Player,
+    pub level: Level,
+    pub captures: u16,
+    pub score: Score,
+    pub kills: u16,
+    pub deaths: u16,
+    pub damage: f32,
+    pub ping: u16,
 }
 
 /// Detailed score menu (tab) data for CTF.
 #[derive(Clone, Debug)]
 #[cfg_attr(feature = "serde", derive(Serialize, Deserialize))]
 pub struct ScoreDetailedCTF {
-	pub scores: Vec<ScoreDetailedCTFEntry>,
+    pub scores: Vec<ScoreDetailedCTFEntry>,
 }

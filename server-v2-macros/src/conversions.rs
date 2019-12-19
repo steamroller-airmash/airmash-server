@@ -31,14 +31,14 @@ fn derive_impl(input: TokenStream) -> Result<TokenStream, Error> {
         quote! { u16 },
         quote! { u32 },
         quote! { u64 },
-		quote! { u128 },
-		quote! { i8 },
-		quote! { i16 },
-		quote! { i32 },
-		quote! { i64 },
-		quote! { i128 },
-		quote! { usize },
-		quote! { isize },
+        quote! { u128 },
+        quote! { i8 },
+        quote! { i16 },
+        quote! { i32 },
+        quote! { i64 },
+        quote! { i128 },
+        quote! { usize },
+        quote! { isize },
     ];
 
     let variants: Result<Vec<_>, _> = data
@@ -115,9 +115,9 @@ struct Attr {
 }
 
 impl Parse for Attr {
-	fn parse(input: ParseStream) -> ParseResult<Self> {
-		Ok(Self {
-			types: Punctuated::parse_separated_nonempty(input)?
-		})
-	}
+    fn parse(input: ParseStream) -> ParseResult<Self> {
+        Ok(Self {
+            types: Punctuated::parse_separated_nonempty(input)?,
+        })
+    }
 }

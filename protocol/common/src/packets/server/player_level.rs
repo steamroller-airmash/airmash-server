@@ -7,8 +7,8 @@ use crate::types::{Level, Player};
 #[derive(Copy, Clone, Debug)]
 #[cfg_attr(feature = "serde", derive(Serialize, Deserialize))]
 pub struct PlayerLevel {
-	pub id: Player,
-	#[cfg_attr(feature = "serde", serde(rename = "type"))]
-	pub ty: PlayerLevelType,
-	pub level: Level,
+    pub id: Player,
+    #[cfg_attr(feature = "serde", serde(rename = "type"))]
+    pub ty: PlayerLevelType,
+    pub level: Level,
 }

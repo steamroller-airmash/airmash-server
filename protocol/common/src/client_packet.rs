@@ -24,32 +24,32 @@ use crate::client::*;
 #[derive(Clone, Debug)]
 #[cfg_attr(feature = "serde", derive(Serialize, Deserialize))]
 pub enum ClientPacket {
-	Login(Login),
-	Backup(Backup),
-	Horizon(Horizon),
-	Ack,
-	Pong(Pong),
-	Key(Key),
-	Command(Command),
-	ScoreDetailed,
-	Chat(Chat),
-	TeamChat(TeamChat),
-	Whisper(Whisper),
-	Say(Say),
-	VoteMute(VoteMute),
-	LocalPing(LocalPing),
+    Login(Login),
+    Backup(Backup),
+    Horizon(Horizon),
+    Ack,
+    Pong(Pong),
+    Key(Key),
+    Command(Command),
+    ScoreDetailed,
+    Chat(Chat),
+    TeamChat(TeamChat),
+    Whisper(Whisper),
+    Say(Say),
+    VoteMute(VoteMute),
+    LocalPing(LocalPing),
 }
 
 macro_rules! impl_from_newtype {
-	($type:tt) => {
-		impl_from_newtype_inner!(ClientPacket, $type);
-	};
+    ($type:tt) => {
+        impl_from_newtype_inner!(ClientPacket, $type);
+    };
 }
 
 macro_rules! impl_from_empty {
-	($type:tt) => {
-		impl_from_empty_inner!(ClientPacket, $type);
-	};
+    ($type:tt) => {
+        impl_from_empty_inner!(ClientPacket, $type);
+    };
 }
 
 impl_from_newtype!(Login);

@@ -16,27 +16,27 @@
 #[derive(Copy, Clone, Debug, Default, Hash, Eq, PartialEq)]
 #[cfg_attr(feature = "serde", derive(Serialize, Deserialize))]
 pub struct Upgrades {
-	/// The number of speed upgrades that the player currently
-	/// has equipped.
-	///
-	/// Note that only the first 3 bits of this are used
-	/// in protocol-v5. Any values greater than 7 will be
-	/// mangled.
-	pub speed: u8,
-	/// Whether the player has a shield.
-	///
-	/// While both this and [`inferno`][0] can be
-	/// set at the same time, that doesn't make
-	/// sense within the framework of the game.
-	///
-	/// [0]: #structfield.inferno
-	pub shield: bool,
-	/// Whether the player has an inferno.
-	///
-	/// While both this and [`shield`][0] can be
-	/// set at the same time, that doesn't make
-	/// sense within the framework of the game.
-	///
-	/// [0]: #structfield.shield
-	pub inferno: bool,
+    /// The number of speed upgrades that the player currently
+    /// has equipped.
+    ///
+    /// Note that only the first 3 bits of this are used
+    /// in protocol-v5. Any values greater than 7 will be
+    /// mangled.
+    pub speed: u8,
+    /// Whether the player has a shield.
+    ///
+    /// While both this and [`inferno`][0] can be
+    /// set at the same time, that doesn't make
+    /// sense within the framework of the game.
+    ///
+    /// [0]: #structfield.inferno
+    pub shield: bool,
+    /// Whether the player has an inferno.
+    ///
+    /// While both this and [`shield`][0] can be
+    /// set at the same time, that doesn't make
+    /// sense within the framework of the game.
+    ///
+    /// [0]: #structfield.shield
+    pub inferno: bool,
 }

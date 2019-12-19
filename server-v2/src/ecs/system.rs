@@ -1,4 +1,5 @@
 use std::any::TypeId;
+use std::marker::PhantomData;
 
 use super::World;
 
@@ -51,4 +52,15 @@ where
         let data = S::fetch(self, world);
         S::run(self, data);
     }
+}
+
+// Default Impls
+impl<'a, T> SystemData<'a> for PhantomData<T> {
+    fn fetch(_: &'a World) -> Self {
+        PhantomData
+    }
+    fn setup(_: &mut World) {}
+
+    fn reads(_: &mut Vec<TypeId>) {}
+    fn writes(_: &mut Vec<TypeId>) {}
 }

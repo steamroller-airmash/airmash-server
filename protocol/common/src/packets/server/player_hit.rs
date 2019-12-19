@@ -6,19 +6,19 @@ use crate::types::{Health, HealthRegen, Mob, Player, Position};
 #[derive(Copy, Clone, Debug)]
 #[cfg_attr(feature = "serde", derive(Serialize, Deserialize))]
 pub struct PlayerHitPlayer {
-	pub id: Player,
-	pub health: Health,
-	pub health_regen: HealthRegen,
+    pub id: Player,
+    pub health: Health,
+    pub health_regen: HealthRegen,
 }
 
 /// Event for when players have been hit by a missile.
 #[derive(Clone, Debug)]
 #[cfg_attr(feature = "serde", derive(Serialize, Deserialize))]
 pub struct PlayerHit {
-	pub id: Mob,
-	#[cfg_attr(feature = "serde", serde(rename = "type"))]
-	pub ty: MobType,
-	pub pos: Position,
-	pub owner: Player,
-	pub players: Vec<PlayerHitPlayer>,
+    pub id: Mob,
+    #[cfg_attr(feature = "serde", serde(rename = "type"))]
+    pub ty: MobType,
+    pub pos: Position,
+    pub owner: Player,
+    pub players: Vec<PlayerHitPlayer>,
 }

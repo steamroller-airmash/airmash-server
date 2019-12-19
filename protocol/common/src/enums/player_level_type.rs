@@ -4,12 +4,12 @@
 #[derive(Copy, Clone, Debug, Hash, Eq, PartialEq, Conversions)]
 #[cfg_attr(feature = "serde", derive(Serialize, Deserialize))]
 pub enum PlayerLevelType {
-	Login = 0,
-	LevelUp = 1,
+    Login = 0,
+    LevelUp = 1,
 }
 
 impl Default for PlayerLevelType {
-	fn default() -> Self {
-		PlayerLevelType::Login
-	}
+    fn default() -> Self {
+        PlayerLevelType::Login
+    }
 }
