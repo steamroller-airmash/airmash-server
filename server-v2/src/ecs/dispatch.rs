@@ -111,6 +111,10 @@ pub struct Dispatcher {
 }
 
 impl Dispatcher {
+    pub fn builder<'world>(world: &'world mut World) -> Builder<'world> {
+        Builder::new(world)
+    }
+
     pub fn dispatch_all(&mut self, world: &mut World) {
         for system in self.systems.iter_mut() {
             system.run(world);

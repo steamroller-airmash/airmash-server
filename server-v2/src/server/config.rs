@@ -1,4 +1,4 @@
-use std::net::SocketAddr;
+use std::net::{IpAddr, Ipv4Addr, SocketAddr};
 use std::time::Duration;
 
 // TODO: Validation
@@ -15,6 +15,10 @@ impl AirmashServerConfig {
 
 impl Default for AirmashServerConfig {
     fn default() -> Self {
-        unimplemented!()
+        Self {
+            framerate: 60.0,
+            // 0.0.0.0:3501
+            port: SocketAddr::new(IpAddr::V4(Ipv4Addr::UNSPECIFIED), 3501),
+        }
     }
 }

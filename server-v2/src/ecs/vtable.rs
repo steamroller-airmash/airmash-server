@@ -1,5 +1,7 @@
 use super::{DynStorage, DynSystem};
 
+use std::any::Any;
+
 pub trait VTable: Sized + Clone {
     type Trait: ?Sized + 'static;
 
@@ -90,6 +92,13 @@ macro_rules! declare_vtable {
 }
 
 declare_vtable! {
+    /// VTable for a `DynStorage` trait instance.
     pub struct DynStorageVTable: DynStorage;
+
+    /// VTable for a `DynSystem` trait instance.
     pub(super) struct DynSystemVTable: DynSystem;
+
+    /// Mainly for use in debugging code.
+    #[allow(dead_code)]
+    pub(super) struct AnyVTable: Any;
 }

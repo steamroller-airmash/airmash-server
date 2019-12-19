@@ -26,6 +26,14 @@ pub struct AirmashServer {
 }
 
 impl AirmashServer {
+    pub fn new(dispatch: Dispatcher, world: World, config: AirmashServerConfig) -> Self {
+        Self {
+            dispatch,
+            config,
+            world: Rc::new(RefCell::new(world)),
+        }
+    }
+
     fn register_builtins(&mut self) {
         let mut world = self.world.borrow_mut();
 
@@ -57,7 +65,6 @@ impl AirmashServer {
 
         let set = LocalSet::new();
 
-        // TODO: Spawn network futures here.
         set.spawn_local(websocket_listener(Rc::clone(&self.world), self.config.port));
 
         set.block_on(&mut runtime, self.run_server())

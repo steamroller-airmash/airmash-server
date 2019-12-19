@@ -214,7 +214,7 @@ impl<R: 'static> Deref for WriteExpect<'_, R> {
     }
 }
 
-impl<R: Default + 'static> DerefMut for WriteExpect<'_, R> {
+impl<R: 'static> DerefMut for WriteExpect<'_, R> {
     fn deref_mut(&mut self) -> &mut R {
         &mut *self.res
     }

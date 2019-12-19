@@ -80,6 +80,8 @@ impl<'a, V: VTable> Iterator for AnyVecMutIterator<'a, V> {
         // of object here.
         let obj = unsafe { vtable.rebuild_mut(&mut *offset) };
 
+        self.index += 1;
+
         Some(obj)
     }
 }
@@ -138,16 +140,19 @@ impl AlignUnsafeVec {
     }
 
     pub fn mut_ptr_at(&mut self, offset: usize) -> *mut MaybeUninit<u8> {
-        assert!(!self.data.is_null());
-        assert!(offset < self.len());
+        // Note: offset == self.len() makes sense for zero-sized types
+        assert!(offset <= self.len());
 
-        self.data.wrapping_add(offset)
+        if self.data.is_null() {
+            // This should only happen when this vector only contains ZSTs
+            self.align() as *mut _
+        } else {
+            self.data.wrapping_add(offset)
+        }
     }
 
     fn realloc(&mut self, align: usize, cap: usize) {
-        let layout = Layout::from_size_align(align, cap);
-
-        let layout = match layout {
+        let layout = match Layout::from_size_align(cap, align) {
             Ok(layout) => layout,
             Err(e) => unreachable!(
                 "Tried to create a bad layout using align {} and size {}: {}",
@@ -162,6 +167,9 @@ impl AlignUnsafeVec {
                 // Everything is broken now, use the stdlib OOM handling
                 std::alloc::handle_alloc_error(layout);
             }
+
+            self.capacity = cap;
+            self.align = align;
         } else {
             // Note: We can't take advantage of realloc in the general
             //       case here since we might be allocating with a
@@ -205,8 +213,11 @@ impl AlignUnsafeVec {
     }
 
     fn ensure_can_push(&mut self, layout: Layout) {
-        // Zero-size types don't ever need reallocation
-        if layout.size() == 0 {
+        // Zero-size types don't force us to allocate but might
+        // affect alignment. If they need a greater alignment
+        // then we'll need to reallocate to support that.
+        if layout.size() == 0 && self.data.is_null() {
+            self.align = self.align().max(layout.align());
             return;
         }
 
@@ -214,8 +225,10 @@ impl AlignUnsafeVec {
         let mut new_cap = self.capacity();
         let mut new_align = self.align();
 
-        let start_offset = align(self.len(), layout.align());
-        let new_len = start_offset + layout.size();
+        let new_len = match layout.size() {
+            0 => self.len(),
+            _ => align(self.len(), layout.align()) + layout.size(),
+        };
 
         if self.align < layout.align() {
             should_realloc = true;
@@ -241,8 +254,16 @@ impl AlignUnsafeVec {
         let layout = Layout::for_value(&val);
         self.ensure_can_push(layout);
 
-        let offset = align(self.len(), layout.align());
-        let new_len = offset + layout.size();
+        let (offset, new_len) = match layout.size() {
+            // ZST pointers need only be aligned, the most efficient
+            // way to do this is to have them always be at offset 0
+            // since this avoids unneeded gaps in the backing representation.
+            0 => (0, self.len()),
+            _ => {
+                let offset = align(self.len(), layout.align());
+                (offset, offset + layout.size())
+            }
+        };
 
         // Safe since this offset is a valid location for a
         // value of type T. This is guaranteed by ensure_can_push.
@@ -253,6 +274,20 @@ impl AlignUnsafeVec {
         self.length = new_len;
 
         offset
+    }
+}
+
+impl Drop for AlignUnsafeVec {
+    fn drop(&mut self) {
+        if !self.data.is_null() {
+            let layout = Layout::from_size_align(self.capacity, self.align)
+                .expect("Failed to create layout");
+
+            // Safe since
+            // - The layout is valid (checked by panic above)
+            // - Any non-null data pointer must be valid (AlignUnsafeVec invariant)
+            unsafe { dealloc(self.data as *mut _, layout) }
+        }
     }
 }
 
@@ -267,5 +302,89 @@ impl Deref for AlignUnsafeVec {
 impl DerefMut for AlignUnsafeVec {
     fn deref_mut(&mut self) -> &mut Self::Target {
         unsafe { std::slice::from_raw_parts_mut(self.data, self.length) }
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use crate::ecs::vtable::AnyVTable;
+
+    use std::rc::Rc;
+    use std::sync::atomic::{AtomicUsize, Ordering};
+
+    #[repr(align(128))]
+    struct Aligned;
+
+    #[repr(align(1))]
+    #[derive(Default)]
+    struct Len5([u8; 5]);
+
+    #[repr(align(1))]
+    #[derive(Default)]
+    struct Len3([u8; 3]);
+
+    struct DeathCtr(Rc<AtomicUsize>);
+
+    impl Drop for DeathCtr {
+        fn drop(&mut self) {
+            self.0.fetch_add(1, Ordering::Relaxed);
+        }
+    }
+
+    #[test]
+    fn push_zero_sized() {
+        let mut vec = AlignUnsafeVec::new();
+        vec.push(());
+
+        assert_eq!(vec.capacity(), 0);
+        assert_eq!(vec.len(), 0);
+    }
+
+    #[test]
+    fn push_aligned_zst() {
+        let mut vec = AlignUnsafeVec::new();
+        vec.push(Aligned);
+
+        assert_eq!(vec.capacity(), 0);
+        assert_eq!(vec.len(), 0);
+        assert_eq!(vec.align(), 128);
+    }
+
+    #[test]
+    fn zst_doesnt_make_gaps() {
+        let mut vec = AlignUnsafeVec::new();
+
+        vec.push(Len5::default());
+        vec.push(Aligned);
+        vec.push(Len3::default());
+
+        assert_eq!(vec.len(), 8);
+        assert_eq!(vec.align(), 128);
+        assert!(vec.capacity() >= vec.len());
+    }
+
+    #[test]
+    fn anyvec_drops_elements() {
+        let mut vec: AnyVec<AnyVTable> = AnyVec::new();
+        let ctr = Rc::new(AtomicUsize::new(0));
+
+        vec.push(DeathCtr(Rc::clone(&ctr)));
+
+        drop(vec);
+
+        assert_eq!(ctr.load(Ordering::Relaxed), 1);
+    }
+
+    #[test]
+    fn anyvec_iter_correct_num_elements() {
+        let mut vec: AnyVec<AnyVTable> = AnyVec::new();
+
+        for _ in 0..13 {
+            vec.push(());
+        }
+
+        let count = vec.iter_mut().take(100).count();
+        assert_eq!(count, 13);
     }
 }
