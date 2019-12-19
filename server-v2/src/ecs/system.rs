@@ -42,6 +42,10 @@ pub trait System<'a> {
 
 pub trait DynSystem {
     fn run(&mut self, world: &mut World);
+
+    fn type_name(&self) -> &'static str {
+        std::any::type_name::<Self>()
+    }
 }
 
 impl<S> DynSystem for S

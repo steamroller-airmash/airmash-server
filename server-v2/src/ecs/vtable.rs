@@ -2,6 +2,8 @@ use super::{DynStorage, DynSystem};
 
 use std::any::Any;
 
+/// Trait for trait objects which can be taken apart and
+/// put back together again.
 pub trait VTable: Sized + Clone {
     type Trait: ?Sized + 'static;
 
@@ -14,7 +16,7 @@ pub trait VTable: Sized + Clone {
     /// # Safety
     /// This is UB unless this vtable was constructed from
     /// an object of the same type as that pointed to by
-    /// the data pointer.
+    /// the data pointer (note: this is not necessarily `T`).
     ///
     /// It is also UB if the resulting reference outlives the
     /// provided data pointer.
@@ -28,7 +30,7 @@ pub trait VTable: Sized + Clone {
     /// # Safety
     /// This is UB unless this vtable was constructed from
     /// an object of the same type as that pointed to by
-    /// the data pointer.
+    /// the data pointer (note: this is not necessarily `T`).
     unsafe fn rebuild_mut<'a, T>(&self, data: &'a mut T) -> &'a mut Self::Trait
     where
         T: ?Sized;

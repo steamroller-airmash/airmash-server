@@ -122,6 +122,28 @@ impl Dispatcher {
     }
 }
 
+struct SystemList<'a>(&'a Dispatcher);
+
+impl fmt::Debug for SystemList<'_> {
+    fn fmt(&self, fmt: &mut fmt::Formatter) -> fmt::Result {
+        let mut list = fmt.debug_list();
+
+        for system in self.0.systems.iter() {
+            list.entry(&system.type_name());
+        }
+
+        list.finish()
+    }
+}
+
+impl fmt::Debug for Dispatcher {
+    fn fmt(&self, fmt: &mut fmt::Formatter) -> fmt::Result {
+        fmt.debug_struct("Dispatcher")
+            .field("systems", &SystemList(self))
+            .finish()
+    }
+}
+
 #[derive(Debug)]
 pub struct CycleError {
     system: &'static str,

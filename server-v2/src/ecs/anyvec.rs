@@ -40,6 +40,9 @@ impl<V: VTable> AnyVec<V> {
     pub fn iter_mut(&mut self) -> AnyVecMutIterator<V> {
         AnyVecMutIterator::new(self)
     }
+    pub fn iter(&self) -> AnyVecIterator<V> {
+        AnyVecIterator::new(self)
+    }
 }
 
 impl<V: VTable> Drop for AnyVec<V> {
@@ -51,6 +54,38 @@ impl<V: VTable> Drop for AnyVec<V> {
                 (meta.drop)(ptr as *mut ());
             }
         }
+    }
+}
+
+pub struct AnyVecIterator<'a, V: VTable> {
+    vec: &'a AnyVec<V>,
+    index: usize,
+}
+
+impl<'a, V: VTable> AnyVecIterator<'a, V> {
+    pub fn new(vec: &'a AnyVec<V>) -> Self {
+        Self { vec, index: 0 }
+    }
+}
+
+impl<'a, V: VTable> Iterator for AnyVecIterator<'a, V> {
+    type Item = &'a V::Trait;
+
+    fn next(&mut self) -> Option<Self::Item> {
+        let meta = self.vec.meta.get(self.index)?;
+        let vtable = meta.vtable.clone();
+        let offset = meta.offset;
+
+        let offset = self.vec.data.ptr_at(offset);
+
+        // Safe since the rest of anyvec ensures that this
+        // pointer is a valid pointer to the correct type
+        // of object here.
+        let obj = unsafe { vtable.rebuild(&*offset) };
+
+        self.index += 1;
+
+        Some(obj)
     }
 }
 
@@ -139,6 +174,17 @@ impl AlignUnsafeVec {
         self.length
     }
 
+    pub fn ptr_at(&self, offset: usize) -> *const MaybeUninit<u8> {
+        // Note: offset == self.len() makes sense for zero-sized types
+        assert!(offset <= self.len());
+
+        if self.data.is_null() {
+            // This should only happen when this vector only contains ZSTs
+            self.align() as *const _
+        } else {
+            self.data.wrapping_add(offset)
+        }
+    }
     pub fn mut_ptr_at(&mut self, offset: usize) -> *mut MaybeUninit<u8> {
         // Note: offset == self.len() makes sense for zero-sized types
         assert!(offset <= self.len());
