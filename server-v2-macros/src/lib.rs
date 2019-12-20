@@ -6,6 +6,7 @@ use proc_macro::TokenStream;
 mod util;
 
 mod conversions;
+mod event_handler;
 mod system;
 mod systemdata;
 
@@ -26,6 +27,11 @@ pub fn derive_conversions(input: TokenStream) -> TokenStream {
 #[proc_macro_attribute]
 pub fn system(attr: TokenStream, input: TokenStream) -> TokenStream {
     self::system::system(attr.into(), input.into()).into()
+}
+
+#[proc_macro_attribute]
+pub fn event_handler(attr: TokenStream, input: TokenStream) -> TokenStream {
+    self::event_handler::event_handler(attr.into(), input.into()).into()
 }
 
 fn crate_name(krate: &str) -> proc_macro2::TokenStream {

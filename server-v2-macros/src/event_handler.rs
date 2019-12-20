@@ -6,14 +6,14 @@ use syn::{parse_quote, Error, FnArg, Ident, ItemFn, Token, Type, Visibility};
 
 use crate::util::*;
 
-pub fn system(attr: TokenStream, input: TokenStream) -> TokenStream {
-    match system_impl(input, attr) {
+pub fn event_handler(attr: TokenStream, input: TokenStream) -> TokenStream {
+    match event_handler_impl(input, attr) {
         Ok(tokens) => tokens,
         Err(e) => e.to_compile_error(),
     }
 }
 
-fn system_impl(input: TokenStream, attr: TokenStream) -> Result<TokenStream, Error> {
+fn event_handler_impl(input: TokenStream, attr: TokenStream) -> Result<TokenStream, Error> {
     let func: ItemFn = syn::parse2(input)?;
     let args: MacroArgs = syn::parse2(attr)?;
 
@@ -51,16 +51,16 @@ fn system_impl(input: TokenStream, attr: TokenStream) -> Result<TokenStream, Err
     let phantom_ty = as_phantomdata(&sys_generics);
 
     let skipnum = match &args.state {
-        Some(_) => 1,
-        None => 0,
+        Some(_) => 2,
+        None => 1
     };
 
     let arg_names: Vec<_> = func
         .sig
         .inputs
         .iter()
-        .skip(skipnum)
         .enumerate()
+        .skip(skipnum)
         .map(|(idx, arg)| Ident::new(&format!("__field{}", idx), arg.span()))
         .collect();
     let (arg_tys, opt_refs): (Vec<Type>, Vec<TokenStream>) = func
@@ -78,6 +78,24 @@ fn system_impl(input: TokenStream, attr: TokenStream) -> Result<TokenStream, Err
             acc
         });
 
+    let event_ty = match &args.state {
+        Some(_) => func.sig.inputs.iter().skip(1).next(),
+        None => func.sig.inputs.first()
+    };
+
+    let event_ty = match event_ty {
+        Some(arg) => match arg {
+            FnArg::Typed(pat) => dereference(&pat.ty),
+            _ => unreachable!(),
+        },
+        None => {
+            return Err(Error::new(
+                Span::call_site(),
+                "must have at least one argument to specify the event type",
+            ))
+        }
+    };
+
     let data_name = Ident::new(
         &format!("{}_{}Data_{}", func.sig.ident, sys_name, hash_fn(&func)),
         func.sig.ident.span(),
@@ -85,78 +103,96 @@ fn system_impl(input: TokenStream, attr: TokenStream) -> Result<TokenStream, Err
 
     let decls = if let Some(state) = &args.state {
         let state_ty = &state.value;
-
-        quote! {
-            #[allow(non_camel_case_types)]
+        quote!{
             #[derive(Default)]
+            #[allow(non_camel_case_types)]
             #vis struct #sys_name #sys_generics {
+                reader: Option<#krate::__export::shrev::ReaderId<#event_ty>>,
                 state: #state_ty,
                 _marker: #phantom_ty
-            }
-
-            #[allow(non_camel_case_types)]
-            #[derive(SystemData)]
-            #vis struct #data_name #generics {
-                #[allow(unused)]
-                _dummy: ::core::marker::PhantomData<&#lifetime ()>,
-                #(
-                    #arg_names: #arg_tys,
-                )*
             }
 
             impl #impl_generics #krate::ecs::System<#lifetime> for #sys_name #sys_ty
             #where_clause
             {
-                type SystemData = #data_name #ty_generics;
-
+                type SystemData = (
+                    #krate::ecs::Read<#lifetime, #krate::__export::shrev::EventChannel<#event_ty>>,
+                    #data_name #ty_generics
+                );
+    
                 fn setup(&mut self, world: &mut #krate::ecs::World) {
                     <Self::SystemData as #krate::ecs::SystemData>::setup(world);
-
+    
                     self.state.setup(world);
-                }
 
-                fn run(&mut self, mut data: Self::SystemData) {
-                    #func_name(
-                        &mut self.state,
-                        #( #opt_refs data.#arg_names ),*
-                    );
+                    let mut channel = world.fetch_resource_mut::<#krate::__export::shrev::EventChannel<#event_ty>>();
+                    self.reader = Some(channel.register_reader());
+                }
+    
+                fn run(&mut self, (channel, mut data): Self::SystemData) {
+                    let reader = self.reader.as_mut().unwrap();
+    
+                    for evt in channel.read(reader) {
+                        #func_name(
+                            &mut self.state,
+                            evt,
+                            #( #opt_refs data.#arg_names ),*
+                        );
+                    }
                 }
             }
         }
     } else {
         quote! {
-            #[allow(non_camel_case_types)]
             #[derive(Default)]
-            #vis struct #sys_name #sys_generics {
-                _marker: #phantom_ty
-            }
-
             #[allow(non_camel_case_types)]
-            #[derive(SystemData)]
-            #vis struct #data_name #generics {
-                #[allow(unused)]
-                _dummy: ::core::marker::PhantomData<&#lifetime ()>,
-                #(
-                    #arg_names: #arg_tys,
-                )*
+            #vis struct #sys_name #sys_generics {
+                reader: Option<#krate::__export::shrev::ReaderId<#event_ty>>,
+                _marker: #phantom_ty
             }
 
             impl #impl_generics #krate::ecs::System<#lifetime> for #sys_name #sys_ty
             #where_clause
             {
-                type SystemData = #data_name #ty_generics;
-
-                fn run(&mut self, mut data: Self::SystemData) {
-                    #func_name(
-                        #( #opt_refs data.#arg_names ),*
-                    );
+                type SystemData = (
+                    #krate::ecs::Read<#lifetime, #krate::__export::shrev::EventChannel<#event_ty>>,
+                    #data_name #ty_generics
+                );
+    
+                fn setup(&mut self, world: &mut #krate::ecs::World) {
+                    <Self::SystemData as #krate::ecs::SystemData>::setup(world);
+    
+                    let mut channel = world.fetch_resource_mut::<#krate::__export::shrev::EventChannel<#event_ty>>();
+                    self.reader = Some(channel.register_reader());
+                }
+    
+                fn run(&mut self, (channel, mut data): Self::SystemData) {
+                    let reader = self.reader.as_mut().unwrap();
+    
+                    for evt in channel.read(reader) {
+                        #func_name(
+                            evt,
+                            #( #opt_refs data.#arg_names ),*
+                        );
+                    }
                 }
             }
         }
     };
 
+
     let res = quote! {
         #decls
+
+        #[allow(non_camel_case_types)]
+        #[derive(SystemData)]
+        #vis struct #data_name #generics {
+            #[allow(unused)]
+            _dummy: ::core::marker::PhantomData<&#lifetime ()>,
+            #(
+                #arg_names: #arg_tys,
+            )*
+        }
 
         impl #sys_impl #krate::ecs::SystemBuilder for #sys_name #sys_ty
         #sys_where

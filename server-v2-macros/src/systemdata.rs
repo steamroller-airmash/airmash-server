@@ -83,7 +83,7 @@ fn derive_impl(input: TokenStream) -> Result<TokenStream, Error> {
                 #initializers
             }
 
-            fn setup(world: &mut World) {
+            fn setup(world: &mut #krate::ecs::World) {
                 #( <#field_types as #krate::ecs::SystemData>::setup(world); )*
             }
 
