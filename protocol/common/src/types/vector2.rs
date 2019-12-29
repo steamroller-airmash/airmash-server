@@ -1,6 +1,6 @@
 use std::ops::*;
 
-use dimensioned::Sqrt;
+use crate::types::Sqrt;
 #[cfg(feature = "serde")]
 use serde::{Deserialize, Deserializer, Serialize, Serializer};
 

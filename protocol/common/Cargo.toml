@@ -20,7 +20,7 @@ custom_data = ["serde"]
 specs = []
 
 [dependencies]
-dimensioned = "0.7"
+# dimensioned = "0.7"
 derive_more = "0.99"
 
 server-v2-macros = { path = "../../server-v2-macros" }

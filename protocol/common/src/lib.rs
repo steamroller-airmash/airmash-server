@@ -1,5 +1,6 @@
-#![feature(optin_builtin_traits)]
+#![feature(optin_builtin_traits, const_generics)]
 #![cfg_attr(test, feature(test))]
+#![allow(incomplete_features)]
 
 //! Incomplete protocol interface for [AIRMASH][0]. This crate provides
 //! a strongly typed interface for communicating with an airmash server.
@@ -53,8 +54,8 @@ extern crate test;
 #[macro_use]
 extern crate server_v2_macros;
 
-#[macro_use]
-extern crate dimensioned;
+// #[macro_use]
+// extern crate dimensioned;
 #[macro_use]
 extern crate derive_more;
 
