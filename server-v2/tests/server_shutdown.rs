@@ -8,6 +8,7 @@ use std::time::{Duration, Instant};
 
 use tokio::task::LocalSet;
 
+#[derive(Default)]
 struct ShutdownSystem;
 
 impl<'a> System<'a> for ShutdownSystem {
@@ -35,7 +36,7 @@ fn server_shutdown() {
         let mut world = World::new();
         let mut builder = Dispatcher::builder(&mut world);
 
-        builder.with(ShutdownSystem);
+        builder.with::<ShutdownSystem>();
 
         let dispatch = builder.build().expect("Failed to build dispatcher");
 

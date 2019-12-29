@@ -1,6 +1,6 @@
 use super::anymap::AnyMap;
 use super::vtable::{DynStorageVTable, VTable};
-use super::{DynStorage, EntityRes};
+use super::{DynStorage, Entities, Entity, EntityRes, SystemData, Component, WriteStorage};
 
 use std::any::TypeId;
 use std::cell::{Ref, RefCell, RefMut};
@@ -24,11 +24,11 @@ impl World {
         me
     }
 
-    pub fn register_storage<T: DynStorage + 'static>(&mut self, val: T) {
-        self.resources.insert(RefCell::new(val), ());
+    pub fn register_storage<T: DynStorage + 'static>(&mut self, val: T) -> &mut T {
+        self.resources.insert(RefCell::new(val), ()).get_mut()
     }
 
-    pub fn register_storage_lazy<T, F>(&mut self, func: F)
+    pub fn register_storage_lazy<T, F>(&mut self, func: F) -> &mut T
     where
         T: DynStorage + 'static,
         F: FnOnce() -> T,
@@ -36,44 +36,59 @@ impl World {
         if !self.storages.contains(TypeId::of::<RefCell<T>>()) {
             let val = func();
             let vtable = DynStorageVTable::from_existing(&val);
-            self.storages.insert(RefCell::new(val), vtable);
+            self.storages.insert(RefCell::new(val), vtable).get_mut()
+        } else {
+            self.storages.get_mut().map(|x| x.0).unwrap()
         }
     }
 
-    pub fn register_resource<T: 'static>(&mut self, val: T) {
-        self.resources.insert(RefCell::new(val), ());
+    pub fn register_resource<T: 'static>(&mut self, val: T) -> &mut T {
+        self.resources.insert(RefCell::new(val), ()).get_mut()
     }
 
-    pub fn register_resource_lazy<T, F>(&mut self, func: F)
+    pub fn register_resource_lazy<T, F>(&mut self, func: F) -> &mut T
     where
         T: 'static,
         F: FnOnce() -> T,
     {
         if !self.resources.contains(TypeId::of::<RefCell<T>>()) {
-            self.resources.insert(RefCell::new(func()), ());
+            self.resources.insert(RefCell::new(func()), ()).get_mut()
+        } else {
+            self.resources
+                .get_mut::<RefCell<T>>()
+                .map(|x| x.0.get_mut())
+                .unwrap()
         }
     }
 
-    pub fn fetch_storage<T: 'static>(&self) -> Option<Ref<T>> {
+    pub fn fetch_storage<T: 'static>(&self) -> Ref<T> {
         self.storages
             .get::<RefCell<T>>()
             .map(|(cell, _)| cell.borrow())
+            .unwrap_or_else(|| panic!("Unable to fetch storage `{}`", std::any::type_name::<T>()))
     }
-    pub fn fetch_storage_mut<T: 'static>(&self) -> Option<RefMut<T>> {
+    pub fn fetch_storage_mut<T: 'static>(&self) -> RefMut<T> {
         self.storages
             .get::<RefCell<T>>()
             .map(|(cell, _)| cell.borrow_mut())
+            .unwrap_or_else(|| panic!("Unable to fetch storage `{}`", std::any::type_name::<T>()))
     }
 
-    pub fn fetch_resource<T: 'static>(&self) -> Option<Ref<T>> {
+    pub fn fetch_resource<T: 'static>(&self) -> Ref<T> {
         self.resources
             .get::<RefCell<T>>()
             .map(|(cell, _)| cell.borrow())
+            .unwrap_or_else(|| panic!("Unable to fetch storage `{}`", std::any::type_name::<T>()))
     }
-    pub fn fetch_resource_mut<T: 'static>(&self) -> Option<RefMut<T>> {
+    pub fn fetch_resource_mut<T: 'static>(&self) -> RefMut<T> {
         self.resources
             .get::<RefCell<T>>()
             .map(|(cell, _)| cell.borrow_mut())
+            .unwrap_or_else(|| panic!("Unable to fetch storage `{}`", std::any::type_name::<T>()))
+    }
+
+    pub fn remove_resource<T: 'static>(&mut self) -> bool {
+        self.resources.remove::<T>()
     }
 
     pub fn iter_storages(&self) -> impl Iterator<Item = &(dyn DynStorage + 'static)> {
@@ -85,6 +100,16 @@ impl World {
         self.storages
             .iter_mut()
             .map(|(_, storage, meta)| unsafe { meta.rebuild_mut(storage) })
+    }
+
+    /// Fetch a type implementing `SystemData` from the world.
+    pub fn system_data<'a, S: SystemData<'a>>(&'a self) -> S {
+        S::fetch(self)
+    }
+
+    /// Create a new entity directly using the world.
+    pub fn create_entity<'a>(&'a self) -> WorldEntityBuilder<'a> {
+        WorldEntityBuilder::new(self)
     }
 
     pub fn maintain(&mut self) {
@@ -99,10 +124,7 @@ impl World {
 impl World {
     /// Clean up any dead entities and drop their components
     fn _maintain_gc(&mut self) {
-        let removed = match self.fetch_resource_mut::<EntityRes>() {
-            Some(mut res) => res.gc(),
-            None => unreachable!("EntityRes has not been registered"),
-        };
+        let removed = self.fetch_resource_mut::<EntityRes>().gc();
 
         for storage in self.iter_storages_mut() {
             storage.remove_all(&removed);
@@ -113,5 +135,31 @@ impl World {
 impl Default for World {
     fn default() -> Self {
         Self::new()
+    }
+}
+
+pub struct WorldEntityBuilder<'world> {
+    world: &'world World,
+    entity: Entity,
+}
+
+impl<'w> WorldEntityBuilder<'w> {
+    fn new(world: &'w World) -> Self {
+        let entities: Entities = world.system_data();
+        let entity = entities.create();
+
+        Self { world, entity }
+    }
+
+    pub fn with<C: Component + 'static>(self, component: C) -> Self {
+        let mut storage: WriteStorage<C> = self.world.system_data();
+        storage.insert(self.entity, component)
+            .expect("Entity builder created with dead entity");
+
+        self
+    }
+
+    pub fn build(self) -> Entity {
+        self.entity
     }
 }

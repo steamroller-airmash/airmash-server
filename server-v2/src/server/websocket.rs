@@ -71,9 +71,7 @@ pub async fn websocket_listener(world: Rc<RefCell<World>>, port: SocketAddr) {
     }
 
     let world = world.borrow_mut();
-    let mut flag = world
-        .fetch_resource_mut::<ShutdownFlag>()
-        .expect("No shutdown flag present!");
+    let mut flag = world.fetch_resource_mut::<ShutdownFlag>();
     flag.shutdown();
 }
 
@@ -155,9 +153,7 @@ async fn _drive_socket(
         let saved = saved.unwrap();
 
         let world = world.borrow();
-        let mut channel = world
-            .fetch_resource_mut::<OnConnect>()
-            .expect("OnConnect not established");
+        let mut channel = world.fetch_resource_mut::<OnConnect>();
 
         channel.single_write(saved.into_event(tx, socketid));
     }
@@ -165,9 +161,7 @@ async fn _drive_socket(
     let res = drive_websocket(&mut wsstream, rx, world, socketid).await;
 
     let world = world.borrow();
-    let mut channel = world
-        .fetch_resource_mut::<OnClose>()
-        .expect("No resource OnClose");
+    let mut channel = world.fetch_resource_mut::<OnClose>();
 
     channel.single_write(CloseEvent { socket: socketid });
 
@@ -208,9 +202,7 @@ async fn drive_websocket(
             }
             Task::Read(msg) => {
                 let world = world.borrow();
-                let mut messages = world
-                    .fetch_resource_mut::<OnMessage>()
-                    .expect("No resource OnMessage");
+                let mut messages = world.fetch_resource_mut::<OnMessage>();
 
                 match msg {
                     Message::Binary(data) => {
@@ -260,13 +252,7 @@ fn respond_not_found() -> ErrorResponse {
 }
 
 fn respond_playercount(world: &RefCell<World>) -> ErrorResponse {
-    let nplayers = {
-        let world = world.borrow();
-        world
-            .fetch_resource::<PlayerCount>()
-            .map(|players| players.0)
-            .unwrap_or(0)
-    };
+    let nplayers = world.borrow().fetch_resource::<PlayerCount>().0;
 
     ErrorResponse {
         error_code: StatusCode::from_u16(200).unwrap(),

@@ -10,10 +10,14 @@ http = "0.1"
 log = "0.4"
 petgraph = "0.4"
 thiserror = "1.0"
-shrev = "1.1"
 fxhash = "0.2"
+rand = { version="0.7", default-features=false }
+uuid = { version="0.8", default-features=false, features=["v4"] }
 
+shrev = { git="https://github.com/steamroller-airmash/shrev-rs" }
 airmash-protocol = { path="../protocol/common" }
+airmash-protocol-v5 = { path="../protocol/v5" }
+server-v2-macros = { path="../server-v2-macros" }
 
 [dependencies.tokio-tungstenite]
 git = "https://github.com/dbcfd/tokio-tungstenite"

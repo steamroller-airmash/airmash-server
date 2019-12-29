@@ -1,18 +1,17 @@
 use super::{DynStorage, Storage};
 use hibitset::{BitSet, BitSetLike, BitSetNot};
-use std::collections::HashMap;
+use fxhash::FxHashMap;
 
 pub struct HashMapStorage<T> {
     bitset: BitSet,
-    // TODO: Use a better hasher?
-    map: HashMap<u32, T>,
+    map: FxHashMap<u32, T>,
 }
 
 impl<T> Default for HashMapStorage<T> {
     fn default() -> Self {
         Self {
             bitset: BitSet::new(),
-            map: HashMap::default(),
+            map: FxHashMap::default(),
         }
     }
 }

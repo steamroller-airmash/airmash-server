@@ -8,6 +8,16 @@ struct MapItem<M, V: Any + ?Sized> {
     value: V,
 }
 
+impl<M> MapItem<M, dyn Any> {
+    fn downcast_ref<T: Any>(&self) -> Option<&T> {
+        self.value.downcast_ref()
+    }
+
+    fn downcast_mut<T: Any>(&mut self) -> Option<&mut T> {
+        self.value.downcast_mut()
+    }
+}
+
 pub struct AnyMap<M> {
     map: HashMap<TypeId, Box<MapItem<M, dyn Any>>>,
 }
@@ -19,23 +29,31 @@ impl<M> AnyMap<M> {
         }
     }
 
-    pub fn get<T: Any>(&self) -> Option<(&T, &M)> {
+    pub fn get<T: 'static>(&self) -> Option<(&T, &M)> {
         self.map
             .get(&TypeId::of::<T>())
             .map(|val| (&val.value, &val.meta))
             .and_then(|(x, m)| Some((Any::downcast_ref(x)?, m)))
     }
 
-    pub fn get_mut<T: Any>(&mut self) -> Option<(&mut T, &M)> {
+    pub fn get_mut<T: 'static>(&mut self) -> Option<(&mut T, &M)> {
         self.map
             .get_mut(&TypeId::of::<T>())
             .map(|val| (&mut val.value, &val.meta))
             .and_then(|(x, m)| Some((Any::downcast_mut(x)?, m)))
     }
 
-    pub fn insert<T: Any>(&mut self, value: T, meta: M) {
-        self.map
-            .insert(TypeId::of::<T>(), Box::new(MapItem { meta, value }));
+    pub fn insert<T: 'static>(&mut self, value: T, meta: M) -> &mut T {
+        let mut entry = self.map.entry(TypeId::of::<T>())
+            .insert(Box::new(MapItem { meta, value }));
+        let entry = entry.get_mut().downcast_mut().unwrap();
+
+        // TODO: Is this ok?
+        unsafe { &mut *(entry as *mut _) }
+    }
+
+    pub fn remove<T: 'static>(&mut self) -> bool {
+        self.map.remove(&TypeId::of::<T>()).is_some()
     }
 
     pub fn contains(&self, id: TypeId) -> bool {

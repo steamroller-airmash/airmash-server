@@ -5,7 +5,6 @@ use crate::ecs::{
 
 use std::any::TypeId;
 use std::cell::Ref;
-use std::marker::PhantomData;
 
 /// The entities of this ECS.
 ///
@@ -20,6 +19,7 @@ impl<'a> Entities<'a> {
     pub fn create(&self) -> Entity {
         self.res.create()
     }
+
     /// Delete an existing entity. If the has already been
     /// deleted then an error is returned.
     ///
@@ -59,8 +59,8 @@ impl<'a> Entities<'a> {
 
     /// Create an entity and return a builder that makes it easy
     /// to insert a variety of components into storages.
-    pub fn build(&self) -> EntityBuilder<'a> {
-        EntityBuilder::new(self.create(), self)
+    pub fn build(&self) -> EntityBuilder {
+        EntityBuilder::new(self.create())
     }
 
     /// Check whether an entity is accessible. This includes
@@ -94,14 +94,7 @@ impl<'a> Entities<'a> {
 
 impl<'a> SystemData<'a> for Entities<'a> {
     fn fetch(world: &'a World) -> Self {
-        let res = match world.fetch_resource() {
-            Some(res) => res,
-            // This should be impossible since it's registered within
-            // the constructor for World.
-            None => unreachable!("EntitiesRes has not been registered!"),
-        };
-
-        Self { res }
+        Self { res: world.fetch_resource() }
     }
 
     #[inline]
@@ -114,16 +107,14 @@ impl<'a> SystemData<'a> for Entities<'a> {
 }
 
 /// Helper for creating an entity with a bunch of components.
-pub struct EntityBuilder<'a> {
+pub struct EntityBuilder {
     entity: Entity,
-    _marker: PhantomData<&'a ()>,
 }
 
-impl<'a> EntityBuilder<'a> {
-    fn new(entity: Entity, _: &Entities<'a>) -> Self {
+impl EntityBuilder {
+    fn new(entity: Entity) -> Self {
         Self {
             entity,
-            _marker: PhantomData,
         }
     }
 

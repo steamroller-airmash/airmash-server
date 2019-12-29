@@ -102,6 +102,10 @@ impl<T> Drop for VecStorage<T> {
     fn drop(&mut self) {
         use std::mem;
 
+        if !mem::needs_drop::<T>() {
+            return;
+        }
+
         let bitset = mem::replace(&mut self.bitset, BitSet::new());
 
         for idx in bitset {

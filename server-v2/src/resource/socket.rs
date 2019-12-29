@@ -65,6 +65,7 @@ impl ConnectEvent {
     }
 }
 
+#[derive(Clone)]
 pub struct SocketWriter {
     sender: UnboundedSender<SocketMessage>,
 }

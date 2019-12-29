@@ -9,6 +9,7 @@ mod conversions;
 mod event_handler;
 mod system;
 mod systemdata;
+mod component;
 
 /// Derive macro for `SystemData`
 #[proc_macro_derive(SystemData)]
@@ -22,6 +23,11 @@ pub fn derive_system_data(input: TokenStream) -> TokenStream {
 #[proc_macro_derive(Conversions)]
 pub fn derive_conversions(input: TokenStream) -> TokenStream {
     self::conversions::derive_conversions(input.into()).into()
+}
+
+#[proc_macro_derive(Component, attributes(storage))]
+pub fn derive_component(input: TokenStream) -> TokenStream {
+    self::component::derive_component(input.into()).into()
 }
 
 #[proc_macro_attribute]

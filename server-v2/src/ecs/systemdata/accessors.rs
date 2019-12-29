@@ -8,6 +8,7 @@ use shrev::EventChannel;
 
 use std::any::TypeId;
 use std::cell::{Ref, RefMut};
+use std::marker::PhantomData;
 use std::ops::{Deref, DerefMut};
 
 /// Specializable trait indicating that this resource
@@ -39,7 +40,7 @@ impl<T> SpecializedResource for T {
 /// This type is never used and should not be exposed
 /// publicly.
 struct EventChannelNamespace<C> {
-    _marker: std::marker::PhantomData<C>,
+    _marker: PhantomData<C>,
 }
 
 impl<C: 'static> SpecializedResource for EventChannel<C> {
@@ -52,19 +53,67 @@ impl<C: 'static> SpecializedResource for EventChannel<C> {
     }
 }
 
+/// Trait for types which filter reads and writes markers
+/// for a resource.
+///
+/// Types which implement this trait can be used for
+/// fine-grained control over the read and write dependencies
+/// of a system.
+pub trait AccessorAdapter {
+    fn reads(_: &mut Vec<TypeId>) {}
+    fn writes(_: &mut Vec<TypeId>) {}
+}
+
+/// Adapter which only passes through the read dependencies.
+#[derive(Copy, Clone, Debug)]
+pub struct ReadAdapter<R: SpecializedResource> {
+    _marker: PhantomData<R>,
+}
+
+impl<R: SpecializedResource> AccessorAdapter for ReadAdapter<R> {
+    fn reads(types: &mut Vec<TypeId>) {
+        <R as SpecializedResource>::reads(types);
+    }
+}
+
+/// Adapter which only passes through the write dependencies.
+#[derive(Copy, Clone, Debug)]
+pub struct WriteAdapter<R: SpecializedResource> {
+    _marker: PhantomData<R>,
+}
+
+impl<R: SpecializedResource> AccessorAdapter for WriteAdapter<R> {
+    fn writes(types: &mut Vec<TypeId>) {
+        <R as SpecializedResource>::writes(types);
+    }
+}
+
+/// Adapter which doesn't pass anything through.
+#[derive(Copy, Clone, Debug)]
+pub struct NullAdapter<R: SpecializedResource> {
+    _marker: PhantomData<R>,
+}
+
+impl<R: SpecializedResource> AccessorAdapter for NullAdapter<R> {}
+
 /// Fetch a resource immutably.
 ///
 /// This will panic if the resource doesn't exist but it
 /// will create the resource during setup so that doesn't
 /// happen.
-pub struct Read<'a, R>
+pub struct Read<'a, R, A = ReadAdapter<R>>
 where
     R: Default + 'static,
+    A: AccessorAdapter,
 {
-    inner: ReadExpect<'a, R>,
+    inner: ReadExpect<'a, R, A>,
 }
 
-impl<'a, R: Default + 'static> SystemData<'a> for Read<'a, R> {
+impl<'a, R, A> SystemData<'a> for Read<'a, R, A>
+where
+    R: Default + 'static,
+    A: AccessorAdapter,
+{
     fn fetch(world: &'a World) -> Self {
         Self {
             inner: ReadExpect::fetch(world),
@@ -72,7 +121,7 @@ impl<'a, R: Default + 'static> SystemData<'a> for Read<'a, R> {
     }
 
     fn setup(world: &mut World) {
-        world.register_resource_lazy(R::default)
+        world.register_resource_lazy(R::default);
     }
 
     fn reads(types: &mut Vec<TypeId>) {
@@ -83,7 +132,11 @@ impl<'a, R: Default + 'static> SystemData<'a> for Read<'a, R> {
     }
 }
 
-impl<R: Default + 'static> Deref for Read<'_, R> {
+impl<R, A> Deref for Read<'_, R, A>
+where
+    R: Default + 'static,
+    A: AccessorAdapter,
+{
     type Target = R;
 
     fn deref(&self) -> &R {
@@ -96,14 +149,19 @@ impl<R: Default + 'static> Deref for Read<'_, R> {
 /// This will panic if the resource doesn't exist but it
 /// will create the resource during setup so that doesn't
 /// happen.
-pub struct Write<'a, R>
+pub struct Write<'a, R, A = WriteAdapter<R>>
 where
     R: Default + 'static,
+    A: AccessorAdapter,
 {
-    inner: WriteExpect<'a, R>,
+    inner: WriteExpect<'a, R, A>,
 }
 
-impl<'a, R: Default + 'static> SystemData<'a> for Write<'a, R> {
+impl<'a, R, A> SystemData<'a> for Write<'a, R, A>
+where
+    R: Default + 'static,
+    A: AccessorAdapter,
+{
     fn fetch(world: &'a World) -> Self {
         Self {
             inner: WriteExpect::fetch(world),
@@ -111,7 +169,7 @@ impl<'a, R: Default + 'static> SystemData<'a> for Write<'a, R> {
     }
 
     fn setup(world: &mut World) {
-        world.register_resource_lazy(R::default)
+        world.register_resource_lazy(R::default);
     }
 
     fn reads(types: &mut Vec<TypeId>) {
@@ -122,7 +180,11 @@ impl<'a, R: Default + 'static> SystemData<'a> for Write<'a, R> {
     }
 }
 
-impl<R: Default + 'static> Deref for Write<'_, R> {
+impl<R, A> Deref for Write<'_, R, A>
+where
+    R: Default + 'static,
+    A: AccessorAdapter,
+{
     type Target = R;
 
     fn deref(&self) -> &R {
@@ -130,7 +192,11 @@ impl<R: Default + 'static> Deref for Write<'_, R> {
     }
 }
 
-impl<R: Default + 'static> DerefMut for Write<'_, R> {
+impl<R, A> DerefMut for Write<'_, R, A>
+where
+    R: Default + 'static,
+    A: AccessorAdapter,
+{
     fn deref_mut(&mut self) -> &mut R {
         &mut *self.inner
     }
@@ -141,33 +207,42 @@ impl<R: Default + 'static> DerefMut for Write<'_, R> {
 /// This will **not** create the resource during setup so if you
 /// wish to avoid panics at runtime you will need to register
 /// the resource with the world yourself.
-pub struct ReadExpect<'a, R>
+pub struct ReadExpect<'a, R, A = ReadAdapter<R>>
 where
     R: 'static,
+    A: AccessorAdapter,
 {
     res: Ref<'a, R>,
+    _marker: PhantomData<A>,
 }
 
-impl<'a, R: 'static> SystemData<'a> for ReadExpect<'a, R> {
+impl<'a, R, A> SystemData<'a> for ReadExpect<'a, R, A>
+where
+    R: 'static,
+    A: AccessorAdapter,
+{
     fn fetch(world: &'a World) -> Self {
-        match world.fetch_resource() {
-            Some(res) => Self { res },
-            None => panic!(
-                "Resource with type '{}' wasn't registered!",
-                std::any::type_name::<R>()
-            ),
+        Self {
+            res: world.fetch_resource(),
+            _marker: PhantomData,
         }
     }
 
     fn setup(_: &mut World) {}
 
     fn reads(types: &mut Vec<TypeId>) {
-        <R as SpecializedResource>::reads(types)
+        <A as AccessorAdapter>::reads(types)
     }
-    fn writes(_: &mut Vec<TypeId>) {}
+    fn writes(types: &mut Vec<TypeId>) {
+        <A as AccessorAdapter>::writes(types)
+    }
 }
 
-impl<R: 'static> Deref for ReadExpect<'_, R> {
+impl<R, A> Deref for ReadExpect<'_, R, A>
+where
+    R: 'static,
+    A: AccessorAdapter,
+{
     type Target = R;
 
     fn deref(&self) -> &R {
@@ -180,33 +255,42 @@ impl<R: 'static> Deref for ReadExpect<'_, R> {
 /// This will **not** create the resource during setup so if you
 /// wish to avoid panics at runtime you will need to register
 /// the resource with the world yourself.
-pub struct WriteExpect<'a, R>
+pub struct WriteExpect<'a, R, A = WriteAdapter<R>>
 where
     R: 'static,
+    A: AccessorAdapter,
 {
     res: RefMut<'a, R>,
+    _marker: PhantomData<A>,
 }
 
-impl<'a, R: 'static> SystemData<'a> for WriteExpect<'a, R> {
+impl<'a, R, A> SystemData<'a> for WriteExpect<'a, R, A>
+where
+    R: 'static,
+    A: AccessorAdapter,
+{
     fn fetch(world: &'a World) -> Self {
-        match world.fetch_resource_mut() {
-            Some(res) => Self { res },
-            None => panic!(
-                "Resource with type '{}' wasn't registered!",
-                std::any::type_name::<R>()
-            ),
+        Self {
+            res: world.fetch_resource_mut(),
+            _marker: PhantomData,
         }
     }
 
     fn setup(_: &mut World) {}
 
-    fn reads(_: &mut Vec<TypeId>) {}
+    fn reads(types: &mut Vec<TypeId>) {
+        <A as AccessorAdapter>::reads(types)
+    }
     fn writes(types: &mut Vec<TypeId>) {
-        <R as SpecializedResource>::writes(types)
+        <A as AccessorAdapter>::writes(types)
     }
 }
 
-impl<R: 'static> Deref for WriteExpect<'_, R> {
+impl<R, A> Deref for WriteExpect<'_, R, A>
+where
+    R: 'static,
+    A: AccessorAdapter,
+{
     type Target = R;
 
     fn deref(&self) -> &R {
@@ -214,7 +298,11 @@ impl<R: 'static> Deref for WriteExpect<'_, R> {
     }
 }
 
-impl<R: 'static> DerefMut for WriteExpect<'_, R> {
+impl<R, A> DerefMut for WriteExpect<'_, R, A>
+where
+    R: 'static,
+    A: AccessorAdapter,
+{
     fn deref_mut(&mut self) -> &mut R {
         &mut *self.res
     }
@@ -245,16 +333,8 @@ impl<'a, C: Component + 'static> ReadStorage<'a, C> {
 
 impl<'a, C: Component + 'static> SystemData<'a> for ReadStorage<'a, C> {
     fn fetch(world: &'a World) -> Self {
-        let storage = match world.fetch_storage() {
-            Some(storage) => storage,
-            None => panic!(
-                "Storage for component {} was not registered!",
-                std::any::type_name::<C>()
-            ),
-        };
-
         Self {
-            storage,
+            storage: world.fetch_storage(),
             entities: Entities::fetch(world),
         }
     }
@@ -323,16 +403,8 @@ impl<'a, C: Component + 'static> WriteStorage<'a, C> {
 
 impl<'a, C: Component + 'static> SystemData<'a> for WriteStorage<'a, C> {
     fn fetch(world: &'a World) -> Self {
-        let storage = match world.fetch_storage_mut() {
-            Some(storage) => storage,
-            None => panic!(
-                "Storage for component {} was not registered!",
-                std::any::type_name::<C>()
-            ),
-        };
-
         Self {
-            storage,
+            storage: world.fetch_storage_mut(),
             entities: Entities::fetch(world),
         }
     }

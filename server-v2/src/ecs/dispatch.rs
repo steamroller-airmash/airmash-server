@@ -23,10 +23,14 @@ impl<'world> Builder<'world> {
         &mut *self.world
     }
 
-    pub fn with<S: SystemBuilder + 'static>(&mut self, system: S) -> &mut Self {
+    pub fn with_builder<S: SystemBuilder + 'static>(&mut self, system: S) -> &mut Self {
         self.builders
             .push(Box::new(DynSystemBuilderImpl::new(system)));
         self
+    }
+
+    pub fn with<S: Default + SystemBuilder + 'static>(&mut self) -> &mut Self {
+        self.with_builder(S::default())
     }
 
     /// Call the passed in function with self and

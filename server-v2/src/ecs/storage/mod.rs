@@ -1,11 +1,14 @@
+mod densevec;
 mod hashmap;
 mod null;
 mod vec;
-// mod custom;
+mod flagged;
 
+pub use self::densevec::DenseVecStorage;
 pub use self::hashmap::HashMapStorage;
 pub use self::null::NullStorage;
 pub use self::vec::VecStorage;
+pub use self::flagged::{FlaggedStorage, ComponentEvent};
 
 use hibitset::{BitSet, BitSetLike};
 

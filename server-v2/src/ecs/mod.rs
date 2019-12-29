@@ -19,10 +19,18 @@ pub use self::dispatch::{Builder, Dispatcher};
 pub use self::error::EntityDead;
 pub use self::resource::EntityRef;
 pub use self::storage::{Component, DynStorage, EntityStorage, EntityStorageMut, Storage};
-pub use self::storage::{NullStorage, VecStorage};
+pub use self::storage::{
+    ComponentEvent, DenseVecStorage, FlaggedStorage, HashMapStorage, NullStorage, VecStorage,
+};
 pub use self::system::{DynSystem, System, SystemBuilder, SystemData, SystemDeps};
 pub use self::systemdata::*;
-pub use self::world::World;
+pub use self::world::{World, WorldEntityBuilder};
+
+pub mod prelude {
+    pub use super::{
+        Entities, Entity, Read, ReadExpect, ReadStorage, Write, WriteExpect, WriteStorage,
+    };
+}
 
 #[derive(Copy, Clone, Debug, Eq, Hash, PartialEq)]
 pub struct Entity {

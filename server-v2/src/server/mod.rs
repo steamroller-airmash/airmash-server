@@ -1,7 +1,6 @@
 //! Airmash server setup and config.
 
 mod config;
-mod http;
 mod websocket;
 
 pub use self::config::AirmashServerConfig;
@@ -16,7 +15,7 @@ use tokio::task::LocalSet;
 
 use self::websocket::websocket_listener;
 use crate::ecs::{Dispatcher, World};
-use crate::resource::builtin::{CurrentFrame, LastFrame, PlayerCount, ShutdownFlag};
+use crate::resource::builtin::{CurrentFrame, LastFrame, PlayerCount, ShutdownFlag, StartTime};
 use crate::resource::socket::{OnClose, OnConnect, OnMessage};
 
 pub struct AirmashServer {
@@ -48,6 +47,7 @@ impl AirmashServer {
 
         // Some async systems might see these before they are setup
         // in run_server. Set them here to valid values.
+        world.register_resource(StartTime(Instant::now()));
         world.register_resource(LastFrame(Instant::now()));
         world.register_resource(CurrentFrame(Instant::now()));
 
@@ -59,6 +59,9 @@ impl AirmashServer {
         world.register_resource(OnConnect::default());
         world.register_resource(OnMessage::default());
         world.register_resource(OnClose::default());
+
+        // Useful for tasks and such.
+        world.register_resource(Rc::downgrade(&self.world));
     }
 
     pub fn run(mut self) -> Result<(), Box<dyn Error>> {
@@ -68,7 +71,7 @@ impl AirmashServer {
             world,
             dispatch,
             config,
-            localset
+            localset,
         } = self;
 
         let mut runtime = Builder::new()
@@ -104,8 +107,7 @@ impl AirmashServer {
             world.maintain();
 
             let shutdown = world
-                .fetch_resource::<ShutdownFlag>()
-                .expect("Resource ShutdownFlag not registered");
+                .fetch_resource::<ShutdownFlag>();
 
             if shutdown.value() {
                 break;
