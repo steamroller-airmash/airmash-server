@@ -1,8 +1,8 @@
 use crate::ecs::prelude::*;
-use crate::resource::packet::*;
-use crate::resource::socket::MessageEvent;
 use crate::protocol::client::{Ack, ScoreDetailed};
 use crate::protocol::{ClientPacket as ProtocolClientPacket, ProtocolSerializationExt};
+use crate::resource::packet::*;
+use crate::resource::socket::MessageEvent;
 
 use airmash_protocol_v5::*;
 

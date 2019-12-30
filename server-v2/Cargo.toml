@@ -11,6 +11,9 @@ log = "0.4"
 petgraph = "0.4"
 thiserror = "1.0"
 fxhash = "0.2"
+pdqselect = "0.1"
+smallvec = "0.6"
+arrayvec = "*"
 rand = { version="0.7", default-features=false }
 uuid = { version="0.8", default-features=false, features=["v4"] }
 

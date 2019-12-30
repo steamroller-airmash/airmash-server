@@ -34,13 +34,13 @@ impl<'world> Builder<'world> {
     }
 
     /// Call the passed in function with self and
-	/// return whatever the function returns.
-	///
-	/// This is meant as an ease-of-use wrapper
-	/// for `register` style functions.
+    /// return whatever the function returns.
+    ///
+    /// This is meant as an ease-of-use wrapper
+    /// for `register` style functions.
     pub fn with_registrar<F>(&mut self, fun: F) -> &mut Self
     where
-        F: FnOnce(&mut Self)
+        F: FnOnce(&mut Self),
     {
         fun(self);
         self

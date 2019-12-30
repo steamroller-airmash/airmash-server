@@ -4,6 +4,8 @@
 use shrev::EventChannel;
 use tokio::sync::mpsc::UnboundedSender;
 
+use crate::util::RcBuf;
+
 use std::fmt;
 
 pub type OnConnect = EventChannel<ConnectEvent>;
@@ -78,7 +80,7 @@ impl SocketWriter {
         Self { sender }
     }
 
-    pub fn write(&self, buf: Vec<u8>) -> Result<(), SendError> {
+    pub fn write(&self, buf: RcBuf<u8>) -> Result<(), SendError> {
         self.sender
             .send(SocketMessage::Data(buf))
             .map_err(|_| SendError(()))
@@ -91,7 +93,7 @@ impl SocketWriter {
 
 #[derive(Clone, Debug)]
 pub(crate) enum SocketMessage {
-    Data(Vec<u8>),
+    Data(RcBuf<u8>),
     Close,
 }
 

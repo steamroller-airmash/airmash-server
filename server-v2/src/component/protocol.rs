@@ -1,4 +1,4 @@
-use crate::ecs::{Component, DenseVecStorage, VecStorage};
+use crate::ecs::{Component, DenseVecStorage, Entity, VecStorage};
 use crate::protocol::*;
 
 macro_rules! impl_component {
@@ -29,9 +29,9 @@ impl<V, const L: isize, const T: isize, const H: isize, const E: isize, const R:
 
 impl<T> Component for Vector2<T>
 where
-	T: Component
+    T: Component,
 {
-	type Storage = VecStorage<Self>;
+    type Storage = VecStorage<Self>;
 }
 
 impl_component! {
@@ -43,4 +43,21 @@ impl_component! {
     MobType => DenseVecStorage;
     PlaneType => DenseVecStorage;
     Team => DenseVecStorage;
+}
+
+impl From<Entity> for Player {
+    fn from(ent: Entity) -> Self {
+        assert!(
+            ent.id() < 0xFFFF,
+            "Entity ID too high to convert to player ID"
+        );
+        Player(ent.id() as u16)
+    }
+}
+
+impl From<Entity> for Mob {
+    fn from(ent: Entity) -> Self {
+        assert!(ent.id() < 0xFFFF, "Entity ID too high to convert to mob ID");
+        Mob(ent.id() as u16)
+    }
 }

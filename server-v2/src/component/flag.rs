@@ -1,4 +1,4 @@
-use crate::ecs::{NullStorage, HashMapStorage};
+use crate::ecs::{HashMapStorage, NullStorage};
 
 #[derive(Copy, Clone, Debug, Default, Component)]
 #[storage(NullStorage)]
@@ -28,24 +28,24 @@ pub struct IsDead;
 #[derive(Clone, Debug, Default, Component)]
 #[storage(HashMapStorage)]
 pub struct IsZombie {
-	/// The system that removed the object
-	deleted_by: Vec<&'static str>,
+    /// The system that removed the object
+    deleted_by: Vec<&'static str>,
 }
 
 impl IsZombie {
-	fn new(sys: &'static str) -> Self {
-		Self {
-			deleted_by: vec![sys],
-		}
-	}
+    fn new(sys: &'static str) -> Self {
+        Self {
+            deleted_by: vec![sys],
+        }
+    }
 
-	pub fn from_sys<S>() -> Self {
-		Self::new(std::any::type_name::<S>())
-	}
+    pub fn from_sys<S>() -> Self {
+        Self::new(std::any::type_name::<S>())
+    }
 
-	pub fn merge(&mut self, mut other: IsZombie) {
-		self.deleted_by.append(&mut other.deleted_by);
-	}
+    pub fn merge(&mut self, mut other: IsZombie) {
+        self.deleted_by.append(&mut other.deleted_by);
+    }
 }
 
 #[derive(Copy, Clone, Debug, Default, Component)]

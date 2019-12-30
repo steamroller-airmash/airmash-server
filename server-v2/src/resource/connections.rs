@@ -4,6 +4,7 @@ use std::fmt;
 
 use crate::ecs::Entity;
 use crate::resource::socket::{SocketId, SocketWriter};
+use crate::util::RcBuf;
 
 struct ConnInfo {
     writer: SocketWriter,
@@ -65,8 +66,12 @@ impl Connections {
     ///
     /// Sending can fail if the other end of the socket has
     /// hung up.
-    pub fn send_to(&self, socket: SocketId, data: Vec<u8>) -> Result<bool, NonexistantSocketError> {
-        Ok(self.writer(socket)?.write(data).is_ok())
+    pub fn send_to(
+        &self,
+        socket: SocketId,
+        data: impl Into<RcBuf<u8>>,
+    ) -> Result<bool, NonexistantSocketError> {
+        Ok(self.writer(socket)?.write(data.into()).is_ok())
     }
 
     /// Close an open socket.

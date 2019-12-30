@@ -37,8 +37,8 @@ where
     fn remove_all<B: BitSetLike>(&mut self, mask: B) {
         let removed = Storage::mask(&self.storage) & &mask;
         for event in removed.iter().map(ComponentEvent::Removed) {
-			self.channel.single_write(event);
-		}
+            self.channel.single_write(event);
+        }
 
         Storage::remove_all(&mut self.storage, mask)
     }

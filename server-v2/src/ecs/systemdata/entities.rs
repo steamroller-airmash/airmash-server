@@ -6,6 +6,8 @@ use crate::ecs::{
 use std::any::TypeId;
 use std::cell::Ref;
 
+use hibitset::BitSet;
+
 /// The entities of this ECS.
 ///
 /// This is what you'll need to create, delete, or borrow
@@ -90,11 +92,26 @@ impl<'a> Entities<'a> {
     pub fn borrow(&self, entity: Entity) -> Result<EntityRef, EntityDead> {
         self.res.borrow(entity)
     }
+
+    /// Bitset indicating which entites are alive. A live
+    /// entity is one that was created but hasn't yet been
+    /// deleted.
+    pub fn alive(&self) -> Ref<BitSet> {
+        self.res.alive()
+    }
+
+    /// A bitset indicating which entities have been allocated,
+    /// these are entries which can still be accessed.
+    pub fn allocated(&self) -> Ref<BitSet> {
+        self.res.allocated()
+    }
 }
 
 impl<'a> SystemData<'a> for Entities<'a> {
     fn fetch(world: &'a World) -> Self {
-        Self { res: world.fetch_resource() }
+        Self {
+            res: world.fetch_resource(),
+        }
     }
 
     #[inline]
@@ -113,9 +130,7 @@ pub struct EntityBuilder {
 
 impl EntityBuilder {
     fn new(entity: Entity) -> Self {
-        Self {
-            entity,
-        }
+        Self { entity }
     }
 
     /// Insert a component into the storage for this entity.

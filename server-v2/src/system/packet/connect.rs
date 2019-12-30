@@ -1,10 +1,13 @@
-use crate::component::{counter::*, flag::*, time::*, KeyState, Name, Session};
+use crate::component::{
+    counter::*, flag::*, time::*, AssociatedConnection, KeyState, Name, Session,
+};
 use crate::ecs::prelude::*;
 use crate::ecs::{ReadAdapter, World};
+use crate::event::PlayerJoin;
 use crate::protocol::client::Login;
 use crate::protocol::*;
 use crate::resource::builtin::{CurrentFrame, StartTime};
-use crate::resource::event::{OnPlayerJoin, PlayerJoin};
+use crate::resource::channel::OnPlayerJoin;
 use crate::resource::packet::{ClientPacket, OnLogin};
 use crate::resource::socket::{ConnectEvent, OnConnect, SocketId};
 use crate::resource::{Connections, PlayerNames};
@@ -158,6 +161,7 @@ fn do_login(data: &mut TaskData, conn: SocketId, login: Login) {
             .with(IsPlayer)
             .with(LastShotTime(start_time))
             .with(LastKeyTime(this_frame))
+            .with(AssociatedConnection(conn))
             .build()
     });
 
@@ -190,9 +194,7 @@ fn do_login(data: &mut TaskData, conn: SocketId, login: Login) {
     data.write_storage::<PlaneType, _, _>(|mut res| {
         res.insert(entity, plane).unwrap();
     });
-    data.write_storage::<Position, _, _>(|mut res| {
-        res.insert(entity, pos).unwrap()
-    });
+    data.write_storage::<Position, _, _>(|mut res| res.insert(entity, pos).unwrap());
 
     data.write_resource::<OnPlayerJoin, _, _>(move |mut channel| {
         channel.single_write(PlayerJoin {
@@ -203,7 +205,7 @@ fn do_login(data: &mut TaskData, conn: SocketId, login: Login) {
             conn,
             plane,
             team,
-            flag
+            flag,
         });
     });
 }

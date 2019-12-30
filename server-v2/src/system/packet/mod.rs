@@ -1,13 +1,12 @@
-
-mod parse;
 mod connect;
 mod disconnect;
+mod parse;
 
-pub use self::parse::handle_message;
 pub use self::connect::handle_connect;
+pub use self::parse::handle_message;
 
 use crate::ecs::Builder;
 
 pub fn register(builder: &mut Builder) {
-	builder.with::<handle_message>();
+    builder.with::<handle_message>();
 }

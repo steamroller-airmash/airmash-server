@@ -42,7 +42,7 @@ pub struct CurrentFrame(pub Instant);
 pub struct LastFrame(pub Instant);
 
 /// The time at which the server event loop was started.
-/// 
+///
 /// This will always be before or equal to `CurrentFrame`
 /// and `LastFrame`.
 #[derive(Copy, Clone, Debug)]

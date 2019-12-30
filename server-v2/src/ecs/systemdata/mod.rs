@@ -2,7 +2,7 @@ mod accessors;
 mod entities;
 
 pub use self::accessors::{
-    Read, ReadExpect, ReadStorage, SpecializedResource, Write, WriteExpect, WriteStorage,
-    AccessorAdapter, ReadAdapter, WriteAdapter, NullAdapter
+    AccessorAdapter, NullAdapter, Read, ReadAdapter, ReadExpect, ReadStorage, SpecializedResource,
+    Write, WriteAdapter, WriteExpect, WriteStorage,
 };
 pub use self::entities::{Entities, EntityBuilder};

@@ -1,6 +1,6 @@
 use super::{DynStorage, Storage};
-use hibitset::{BitSet, BitSetLike, BitSetNot};
 use fxhash::FxHashMap;
+use hibitset::{BitSet, BitSetLike, BitSetNot};
 
 pub struct HashMapStorage<T> {
     bitset: BitSet,

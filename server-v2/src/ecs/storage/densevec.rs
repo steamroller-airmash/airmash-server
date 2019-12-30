@@ -79,16 +79,16 @@ impl<T> Storage<T> for DenseVecStorage<T> {
     }
 
     fn get(&self, ent: u32) -> Option<&T> {
-		let index = *self.indices.get(ent)?;
-		
-		debug_assert!(index < self.backing.len());
+        let index = *self.indices.get(ent)?;
+
+        debug_assert!(index < self.backing.len());
         Some(unsafe { self.backing.get_unchecked(index) })
     }
 
     fn get_mut(&mut self, ent: u32) -> Option<&mut T> {
         let index = *self.indices.get(ent)?;
 
-		debug_assert!(index < self.backing.len());
+        debug_assert!(index < self.backing.len());
         Some(unsafe { self.backing.get_unchecked_mut(index) })
     }
 

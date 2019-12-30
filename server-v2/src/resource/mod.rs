@@ -1,22 +1,32 @@
 //! Resources used within the airmash server.
 //!
 
+mod config;
 mod connections;
 
 pub mod builtin;
+pub mod collision;
 pub mod packet;
 pub mod socket;
-pub mod event;
 
-pub use self::connections::Connections;
+pub use self::config::Config;
+pub use self::connections::{Connections, NonexistantSocketError};
 pub use self::inner::PlayerNames;
 
 mod inner {
-	use fxhash::FxHashMap;
-	use crate::ecs::Entity;
+    use crate::ecs::Entity;
+    use fxhash::FxHashMap;
 
-	#[derive(Clone, Debug, Default)]
-	pub struct PlayerNames(pub FxHashMap<String, Entity>);
-
+    #[derive(Clone, Debug, Default)]
+    pub struct PlayerNames(pub FxHashMap<String, Entity>);
 }
 
+pub mod channel {
+    use crate::event::*;
+    use shrev::EventChannel;
+
+    pub type OnAFKTimerEvent = EventChannel<AFKTimerEvent>;
+    pub type OnPlayerJoin = EventChannel<PlayerJoin>;
+    pub type OnPlayerLeave = EventChannel<PlayerLeave>;
+    pub type OnPlayerKilled = EventChannel<PlayerKilled>;
+}

@@ -1,4 +1,4 @@
-use crate::ecs::{prelude::*, World, WorldEntityBuilder, Component};
+use crate::ecs::{prelude::*, Component, World, WorldEntityBuilder};
 use crate::system::builtin::AwakenQueue;
 
 use std::cell::RefCell;
@@ -92,7 +92,7 @@ impl TaskData {
     pub fn write_storage<T, F, R>(&mut self, fun: F) -> R
     where
         F: FnOnce(WriteStorage<T>) -> R,
-        T: Component + 'static
+        T: Component + 'static,
     {
         self.world(move |world| fun(world.system_data()))
     }

@@ -22,16 +22,8 @@ use crate::resource::builtin::{PlayerCount, ShutdownFlag};
 use crate::resource::socket::*;
 
 macro_rules! headers {
-	{
-		$(
-			$hdr:literal : $val:expr
-		),* $(,)?
-	} => {
-		vec![
-			$(
-				( $hdr.to_string(), $val.to_string() ),
-			)*
-		]
+	{ $( $hdr:literal : $val:expr ),* $(,)? } => {
+		vec![ $( ( $hdr.to_string(), $val.to_string() ) ),* ]
 	}
 }
 
@@ -193,8 +185,8 @@ async fn drive_websocket(
 
         match task {
             Task::Write(msg) => {
-                let msg = match msg {
-                    SocketMessage::Data(data) => Message::Binary(data),
+                let msg = match &msg {
+                    SocketMessage::Data(data) => Message::Binary(data.to_vec()),
                     SocketMessage::Close => Message::Close(None),
                 };
 

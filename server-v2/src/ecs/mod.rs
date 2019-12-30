@@ -4,6 +4,7 @@ mod anymap;
 mod anyvec;
 mod dispatch;
 mod error;
+mod join;
 mod resource;
 mod storage;
 mod system;
@@ -17,6 +18,7 @@ use self::vtable::VTable;
 
 pub use self::dispatch::{Builder, Dispatcher};
 pub use self::error::EntityDead;
+pub use self::join::Join;
 pub use self::resource::EntityRef;
 pub use self::storage::{Component, DynStorage, EntityStorage, EntityStorageMut, Storage};
 pub use self::storage::{
@@ -28,7 +30,7 @@ pub use self::world::{World, WorldEntityBuilder};
 
 pub mod prelude {
     pub use super::{
-        Entities, Entity, Read, ReadExpect, ReadStorage, Write, WriteExpect, WriteStorage,
+        Entities, Entity, Join, Read, ReadExpect, ReadStorage, Write, WriteExpect, WriteStorage,
     };
 }
 

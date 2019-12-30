@@ -1,7 +1,7 @@
 use crate::ecs::{Entity, EntityDead};
 use hibitset::{BitSet, BitSetLike};
 
-use std::cell::RefCell;
+use std::cell::{Ref, RefCell};
 use std::rc::Rc;
 
 #[derive(Default)]
@@ -31,7 +31,7 @@ impl RefCounts {
 struct EntityResInner {
     // Entities which have not been deleted
     alive: BitSet,
-    // Entities which can still be accesses (this is what is_accessible uses)
+    // Entities which can still be accessed (this is what is_accessible uses)
     allocated: BitSet,
     gens: Vec<u32>,
     counts: Rc<RefCell<RefCounts>>,
@@ -112,6 +112,13 @@ impl EntityResInner {
         self.alive.contains(entity.id())
     }
 
+    fn alive(&self) -> &BitSet {
+        &self.alive
+    }
+    fn allocated(&self) -> &BitSet {
+        &self.allocated
+    }
+
     fn borrow(&mut self, entity: Entity) -> Result<EntityRef, EntityDead> {
         if !self.is_accessible(entity) {
             return Err(EntityDead::new(entity));
@@ -185,6 +192,13 @@ impl EntityRes {
 
     pub fn gc(&mut self) -> BitSet {
         self.0.get_mut().gc()
+    }
+
+    pub fn alive(&self) -> Ref<BitSet> {
+        Ref::map(self.0.borrow(), |x| x.alive())
+    }
+    pub fn allocated(&self) -> Ref<BitSet> {
+        Ref::map(self.0.borrow(), |x| x.allocated())
     }
 }
 

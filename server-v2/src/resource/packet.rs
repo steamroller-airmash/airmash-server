@@ -3,8 +3,8 @@ use shrev::EventChannel;
 use crate::resource::socket::SocketId;
 
 pub struct ClientPacket<P> {
-	pub connection: SocketId,
-	pub packet: P
+    pub connection: SocketId,
+    pub packet: P,
 }
 
 // So that we can avoid formatting here

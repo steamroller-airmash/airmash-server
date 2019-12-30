@@ -44,7 +44,9 @@ impl<M> AnyMap<M> {
     }
 
     pub fn insert<T: 'static>(&mut self, value: T, meta: M) -> &mut T {
-        let mut entry = self.map.entry(TypeId::of::<T>())
+        let mut entry = self
+            .map
+            .entry(TypeId::of::<T>())
             .insert(Box::new(MapItem { meta, value }));
         let entry = entry.get_mut().downcast_mut().unwrap();
 

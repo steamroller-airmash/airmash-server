@@ -1,6 +1,6 @@
 use proc_macro2::TokenStream;
 use quote::quote;
-use syn::{Data, DeriveInput, Error, Fields};
+use syn::{parse_quote, Data, DeriveInput, Error, Fields, PredicateType, Token, WherePredicate};
 
 use super::crate_name;
 
@@ -25,18 +25,23 @@ fn derive_impl(input: TokenStream) -> Result<TokenStream, Error> {
         }
     };
 
-    let bounds: Vec<_> = input
-        .generics
-        .type_params()
-        .map(|param| {
-            quote! {
-                #param: #krate::ecs::SystemData<#lifetime>,
-            }
-        })
-        .collect();
     let name = input.ident;
     let mut generics = input.generics.clone();
-    generics.make_where_clause();
+    let where_clause = generics.make_where_clause();
+
+    where_clause
+        .predicates
+        .extend(input.generics.type_params().map(|param| -> WherePredicate {
+            let ty = PredicateType {
+                lifetimes: None,
+                bounded_ty: parse_quote! { #param },
+                colon_token: <Token![:]>::default(),
+                bounds: parse_quote! { #krate::ecs::SystemData<#lifetime> },
+            };
+
+            WherePredicate::Type(ty)
+        }));
+
     let (impl_generics, ty_generics, where_clause) = generics.split_for_impl();
 
     let data = match input.data {
@@ -77,7 +82,7 @@ fn derive_impl(input: TokenStream) -> Result<TokenStream, Error> {
 
     Ok(quote! {
         impl #impl_generics #krate::ecs::SystemData<#lifetime> for #name #ty_generics
-        #where_clause #( #bounds, )*
+        #where_clause
         {
             fn fetch(world: & #lifetime #krate::ecs::World) -> Self {
                 #initializers

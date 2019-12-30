@@ -106,8 +106,7 @@ impl AirmashServer {
             dispatch.dispatch_all(&mut world);
             world.maintain();
 
-            let shutdown = world
-                .fetch_resource::<ShutdownFlag>();
+            let shutdown = world.fetch_resource::<ShutdownFlag>();
 
             if shutdown.value() {
                 break;

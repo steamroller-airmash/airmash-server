@@ -1,6 +1,6 @@
 use super::anymap::AnyMap;
 use super::vtable::{DynStorageVTable, VTable};
-use super::{DynStorage, Entities, Entity, EntityRes, SystemData, Component, WriteStorage};
+use super::{Component, DynStorage, Entities, Entity, EntityRes, SystemData, WriteStorage};
 
 use std::any::TypeId;
 use std::cell::{Ref, RefCell, RefMut};
@@ -153,7 +153,8 @@ impl<'w> WorldEntityBuilder<'w> {
 
     pub fn with<C: Component + 'static>(self, component: C) -> Self {
         let mut storage: WriteStorage<C> = self.world.system_data();
-        storage.insert(self.entity, component)
+        storage
+            .insert(self.entity, component)
             .expect("Entity builder created with dead entity");
 
         self

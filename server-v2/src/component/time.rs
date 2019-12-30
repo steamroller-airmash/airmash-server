@@ -48,5 +48,5 @@ macro_rules! impl_default {
 }
 
 impl_default! {
-	LastScoreBoardTime,
+    LastScoreBoardTime,
 }
