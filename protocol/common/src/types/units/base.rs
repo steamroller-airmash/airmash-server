@@ -98,19 +98,19 @@ impl<V, const L: isize, const T: isize, const H: isize, const E: isize, const R:
         value
     }
 
-	pub fn inner(&self) -> V 
-	where
-		V: Clone
-	{
+    pub fn inner(&self) -> V
+    where
+        V: Clone,
+    {
         self.value.clone()
-	}
-	
-	pub fn sqrt(self) -> <Self as Sqrt>::Output
-	where
-		Self: Sqrt
-	{
-		<Self as Sqrt>::sqrt(self)
-	}
+    }
+
+    pub fn sqrt(self) -> <Self as Sqrt>::Output
+    where
+        Self: Sqrt,
+    {
+        <Self as Sqrt>::sqrt(self)
+    }
 }
 
 //===============================================

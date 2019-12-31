@@ -8,5 +8,5 @@ pub use self::parse::handle_message;
 use crate::ecs::Builder;
 
 pub fn register(builder: &mut Builder) {
-    builder.with::<handle_message>();
+    builder.with::<handle_message>().with::<handle_connect>();
 }

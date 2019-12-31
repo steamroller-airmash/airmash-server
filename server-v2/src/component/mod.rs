@@ -6,14 +6,14 @@ pub mod counter;
 pub mod flag;
 pub mod time;
 
-pub use self::inner::{AssociatedConnection, Name, Session};
+pub use self::inner::{AssociatedConnection, Name, Session, Upgrades};
 pub use self::keystate::KeyState;
 pub use self::powerup::{PowerupExt, Powerups};
 
 pub use crate::protocol::{
     Accel, AccelScalar, Distance, Energy, EnergyRegen, FlagCode as Flag, Health, HealthRegen,
-    Level, MobType as Mob, PlaneType as Plane, PlayerStatus as Status, Position, Rotation, Score,
-    Speed, Team, Upgrades, Velocity,
+    Level, MobType as Mob, PlaneType as Plane, PlayerStatus as Status, Position,
+    PowerupType as Powerup, Rotation, Score, Speed, Team, Velocity,
 };
 
 mod inner {
@@ -31,4 +31,13 @@ mod inner {
 
     #[derive(Clone, Debug, Component)]
     pub struct AssociatedConnection(pub SocketId);
+
+    #[derive(Default, Clone, Copy, Debug, Component)]
+    pub struct Upgrades {
+        pub speed: u8,
+        pub defense: u8,
+        pub energy: u8,
+        pub missile: u8,
+        pub unused: u16,
+    }
 }

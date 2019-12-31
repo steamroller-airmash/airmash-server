@@ -12,10 +12,10 @@ petgraph = "0.4"
 thiserror = "1.0"
 fxhash = "0.2"
 pdqselect = "0.1"
-smallvec = "0.6"
-arrayvec = "*"
+arrayvec = "0.5"
 rand = { version="0.7", default-features=false }
 uuid = { version="0.8", default-features=false, features=["v4"] }
+env_logger = "0.6"
 
 shrev = { git="https://github.com/steamroller-airmash/shrev-rs" }
 airmash-protocol = { path="../protocol/common" }

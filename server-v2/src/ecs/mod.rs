@@ -12,6 +12,9 @@ mod systemdata;
 mod vtable;
 mod world;
 
+#[cfg(test)]
+mod tests;
+
 // Needed for vtable derive macro
 use self::resource::EntityRes;
 use self::vtable::VTable;

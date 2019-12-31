@@ -1,6 +1,6 @@
 mod base;
 
-pub use self::base::{BaseUnit as AirmashUnits, BaseType, Sqrt};
+pub use self::base::{BaseType, BaseUnit as AirmashUnits, Sqrt};
 use crate::types::Vector2;
 
 /// On-map distances.

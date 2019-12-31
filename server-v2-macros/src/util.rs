@@ -1,9 +1,9 @@
 use proc_macro2::TokenStream;
+use quote::quote;
 use quote::ToTokens;
 use syn::parse::{Parse, ParseStream, Result as ParseResult};
 use syn::punctuated::Punctuated;
 use syn::*;
-use quote::quote;
 
 use std::mem;
 
@@ -59,8 +59,7 @@ pub fn strip_lifetimes(mut generics: Generics) -> Generics {
 }
 
 pub fn as_phantomdata(generics: &Generics) -> TokenStream {
-    let types = generics.type_params()
-        .map(|param| &param.ident);
+    let types = generics.type_params().map(|param| &param.ident);
 
     quote! {
         ::core::marker::PhantomData<( #( #types ),* )>

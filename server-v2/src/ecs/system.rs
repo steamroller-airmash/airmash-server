@@ -69,8 +69,20 @@ impl<'a, T> SystemData<'a> for PhantomData<T> {
     fn writes(_: &mut Vec<TypeId>) {}
 }
 
+impl<S> SystemDeps for S
+where
+    S: (for<'a> System<'a>) + 'static,
+{
+    fn dependencies(deps: &mut Vec<TypeId>) {
+        deps.push(TypeId::of::<S>());
+    }
+
+    fn reads(_: &mut Vec<TypeId>) {}
+    fn writes(_: &mut Vec<TypeId>) {}
+}
+
 macro_rules! impl_sys_deps {
-    ($first:ident) => {
+    () => {
         impl SystemDeps for () {
             fn dependencies(_: &mut Vec<TypeId>) {}
 
@@ -83,7 +95,7 @@ macro_rules! impl_sys_deps {
         impl_sys_deps![$first, $($rest,)*];
     };
     [ $( $ty:ident ),* $(,)? ] => {
-        impl<$( $ty ),*> SystemDeps for ( $( $ty ),*)
+        impl<$( $ty ),*> SystemDeps for ( $( $ty, )*)
         where
             $( $ty: SystemDeps ),*
         {
@@ -104,7 +116,7 @@ macro_rules! impl_sys_deps {
 impl_sys_deps!(A, B, C, D, E, F, G, H, I, J, K, L, M, N, O, P, Q, R, S, T, U, V, W, X, Y, Z);
 
 macro_rules! impl_sys_data {
-    ($first:ident) => {
+    () => {
         impl<'a> SystemData<'a> for () {
             fn fetch(_: &'a World) -> Self {}
             fn setup(_: &mut World) {}
@@ -118,12 +130,12 @@ macro_rules! impl_sys_data {
         impl_sys_data![$first, $($rest,)*];
     };
     [ $( $ty:ident ),* $(,)? ] => {
-        impl<'a $(, $ty )*> SystemData<'a> for ( $( $ty ),*)
+        impl<'a $(, $ty )*> SystemData<'a> for ( $( $ty, )*)
         where
             $( $ty: SystemData<'a> ),*
         {
             fn fetch(world: &'a World) -> Self {
-                ( $( <$ty as SystemData>::fetch(world) ),* )
+                ( $( <$ty as SystemData>::fetch(world), )* )
             }
             fn setup(world: &mut World) {
                 $( <$ty as SystemData>::setup(world); )*

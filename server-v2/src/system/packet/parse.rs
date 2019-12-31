@@ -44,7 +44,10 @@ macro_rules! single_write {
 		single_write!($channel, $evt, $ty)
 	};
 	([$evt:expr] $ty:ident ($inner:ident) => $channel:expr) => {
-		single_write!($channel, $evt, $inner)
+		{
+			trace!("Received {} from {}", stringify!($ty), $evt.socket);
+			single_write!($channel, $evt, $inner)
+		}
 	};
 	($channel:expr, $evt:expr, $packet:expr) => {
 		$channel.single_write(ClientPacket {

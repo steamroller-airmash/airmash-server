@@ -6,8 +6,6 @@ use std::sync::mpsc::channel;
 use std::thread;
 use std::time::{Duration, Instant};
 
-use tokio::task::LocalSet;
-
 #[derive(Default)]
 struct ShutdownSystem;
 
@@ -41,7 +39,7 @@ fn server_shutdown() {
         let dispatch = builder.build().expect("Failed to build dispatcher");
 
         let config = AirmashServerConfig::default();
-        let server = AirmashServer::new(dispatch, world, LocalSet::new(), config);
+        let server = AirmashServerBuilder::without_gamemode(world, config, dispatch).build();
 
         server.run().expect("Failed to run server");
 

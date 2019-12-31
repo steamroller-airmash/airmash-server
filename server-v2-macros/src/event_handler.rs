@@ -52,7 +52,7 @@ fn event_handler_impl(input: TokenStream, attr: TokenStream) -> Result<TokenStre
 
     let skipnum = match &args.state {
         Some(_) => 2,
-        None => 1
+        None => 1,
     };
 
     let arg_names: Vec<_> = func
@@ -80,7 +80,7 @@ fn event_handler_impl(input: TokenStream, attr: TokenStream) -> Result<TokenStre
 
     let event_ty = match &args.state {
         Some(_) => func.sig.inputs.iter().skip(1).next(),
-        None => func.sig.inputs.first()
+        None => func.sig.inputs.first(),
     };
 
     let event_ty = match event_ty {
@@ -103,7 +103,7 @@ fn event_handler_impl(input: TokenStream, attr: TokenStream) -> Result<TokenStre
 
     let decls = if let Some(state) = &args.state {
         let state_ty = &state.value;
-        quote!{
+        quote! {
             #[derive(Default)]
             #[allow(non_camel_case_types)]
             #vis struct #sys_name #sys_generics {
@@ -119,19 +119,19 @@ fn event_handler_impl(input: TokenStream, attr: TokenStream) -> Result<TokenStre
                     #krate::ecs::Read<#lifetime, #krate::__export::shrev::EventChannel<#event_ty>>,
                     #data_name #ty_generics
                 );
-    
+
                 fn setup(&mut self, world: &mut #krate::ecs::World) {
                     <Self::SystemData as #krate::ecs::SystemData>::setup(world);
-    
+
                     self.state.setup(world);
 
                     let mut channel = world.fetch_resource_mut::<#krate::__export::shrev::EventChannel<#event_ty>>();
                     self.reader = Some(channel.register_reader());
                 }
-    
+
                 fn run(&mut self, (channel, mut data): Self::SystemData) {
                     let reader = self.reader.as_mut().unwrap();
-    
+
                     for evt in channel.read(reader) {
                         #func_name(
                             &mut self.state,
@@ -158,17 +158,17 @@ fn event_handler_impl(input: TokenStream, attr: TokenStream) -> Result<TokenStre
                     #krate::ecs::Read<#lifetime, #krate::__export::shrev::EventChannel<#event_ty>>,
                     #data_name #ty_generics
                 );
-    
+
                 fn setup(&mut self, world: &mut #krate::ecs::World) {
                     <Self::SystemData as #krate::ecs::SystemData>::setup(world);
-    
+
                     let mut channel = world.fetch_resource_mut::<#krate::__export::shrev::EventChannel<#event_ty>>();
                     self.reader = Some(channel.register_reader());
                 }
-    
+
                 fn run(&mut self, (channel, mut data): Self::SystemData) {
                     let reader = self.reader.as_mut().unwrap();
-    
+
                     for evt in channel.read(reader) {
                         #func_name(
                             evt,
@@ -179,7 +179,6 @@ fn event_handler_impl(input: TokenStream, attr: TokenStream) -> Result<TokenStre
             }
         }
     };
-
 
     let res = quote! {
         #decls

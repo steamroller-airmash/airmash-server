@@ -69,8 +69,34 @@ impl<M> AnyMap<M> {
     }
 
     pub fn iter_mut(&mut self) -> impl Iterator<Item = (TypeId, &mut dyn Any, &M)> {
-        self.map
-            .iter_mut()
-            .map(|(id, item)| (*id, &mut item.value, &item.meta))
+        self.map.iter_mut().map(|(id, item)| {
+            dbg!(&item.value as *const _ as *const ());
+
+            (*id, &mut item.value, &item.meta)
+        })
+    }
+}
+
+#[cfg(test)]
+mod test {
+    use super::*;
+
+    #[test]
+    fn insert_iter() {
+        let mut map = AnyMap::new();
+
+        map.insert(0u8, ());
+        map.insert(1u16, ());
+        map.insert(2u32, ());
+
+        let u8ptr = map.get::<u8>().unwrap().0 as *const _ as *const ();
+        let u16ptr = map.get::<u16>().unwrap().0 as *const _ as *const ();
+        let u32ptr = map.get::<u32>().unwrap().0 as *const _ as *const ();
+
+        let elemptrs: Vec<_> = map.iter().map(|x| x.1 as *const _ as *const ()).collect();
+
+        assert!(elemptrs.contains(&u8ptr));
+        assert!(elemptrs.contains(&u16ptr));
+        assert!(elemptrs.contains(&u32ptr));
     }
 }

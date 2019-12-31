@@ -5,6 +5,8 @@ use super::{Component, DynStorage, Entities, Entity, EntityRes, SystemData, Writ
 use std::any::TypeId;
 use std::cell::{Ref, RefCell, RefMut};
 
+use hibitset::BitSetLike;
+
 pub struct World {
     storages: AnyMap<DynStorageVTable>,
     resources: AnyMap<()>,
@@ -25,7 +27,8 @@ impl World {
     }
 
     pub fn register_storage<T: DynStorage + 'static>(&mut self, val: T) -> &mut T {
-        self.resources.insert(RefCell::new(val), ()).get_mut()
+        let vtable = DynStorageVTable::from_existing(&val);
+        self.storages.insert(RefCell::new(val), vtable).get_mut()
     }
 
     pub fn register_storage_lazy<T, F>(&mut self, func: F) -> &mut T
@@ -34,11 +37,13 @@ impl World {
         F: FnOnce() -> T,
     {
         if !self.storages.contains(TypeId::of::<RefCell<T>>()) {
-            let val = func();
-            let vtable = DynStorageVTable::from_existing(&val);
-            self.storages.insert(RefCell::new(val), vtable).get_mut()
+            self.register_storage(func())
         } else {
-            self.storages.get_mut().map(|x| x.0).unwrap()
+            self.storages
+                .get_mut::<RefCell<T>>()
+                .map(|x| x.0)
+                .unwrap()
+                .get_mut()
         }
     }
 
@@ -52,7 +57,7 @@ impl World {
         F: FnOnce() -> T,
     {
         if !self.resources.contains(TypeId::of::<RefCell<T>>()) {
-            self.resources.insert(RefCell::new(func()), ()).get_mut()
+            self.register_resource(func())
         } else {
             self.resources
                 .get_mut::<RefCell<T>>()
@@ -125,6 +130,10 @@ impl World {
     /// Clean up any dead entities and drop their components
     fn _maintain_gc(&mut self) {
         let removed = self.fetch_resource_mut::<EntityRes>().gc();
+
+        if removed.is_empty() {
+            return;
+        }
 
         for storage in self.iter_storages_mut() {
             storage.remove_all(&removed);

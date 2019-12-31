@@ -104,3 +104,21 @@ declare_vtable! {
     #[allow(dead_code)]
     pub(super) struct AnyVTable: Any;
 }
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn vtable_roundtrip() {
+        let value = 32u32;
+
+        let vtable = AnyVTable::from_existing(&value);
+        let ptr = &value as *const _ as *const ();
+
+        let rebuilt: &dyn Any = unsafe { vtable.rebuild(&*ptr) };
+        let val = rebuilt.downcast_ref::<u32>().unwrap();
+
+        assert_eq!(*val, 32);
+    }
+}

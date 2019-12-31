@@ -9,3 +9,5 @@ pub use self::kdtree::KdTree;
 pub use self::maybe_init::MaybeInit;
 pub use self::rcbuf::RcBuf;
 pub use self::to_clock::ToClock;
+
+pub(crate) use self::gamemode::{GameModeInternal, GameModeWrapperImpl};

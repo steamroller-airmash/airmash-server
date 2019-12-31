@@ -5,11 +5,11 @@ use proc_macro::TokenStream;
 #[macro_use]
 mod util;
 
+mod component;
 mod conversions;
 mod event_handler;
 mod system;
 mod systemdata;
-mod component;
 
 /// Derive macro for `SystemData`
 #[proc_macro_derive(SystemData)]

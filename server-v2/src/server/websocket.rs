@@ -111,11 +111,12 @@ async fn _drive_socket(
         if headers.find_first("Sec-Websocket-Protocol").is_some() {
             return Err(respond_bad_protocol());
         }
-        if headers.find_first("Sec-Websocket-Version").is_some() {
-            return Err(respond_bad_protocol());
-        }
+        // if headers.find_first("Sec-Websocket-Version").is_some() {
+        //     return Err(respond_bad_protocol());
+        // }
 
         if !is_ws_upgrade(headers) {
+            debug!("Got non-websocket request");
             return Err(respond_playercount(world));
         }
 
@@ -258,16 +259,30 @@ fn respond_playercount(world: &RefCell<World>) -> ErrorResponse {
 
 fn is_ws_upgrade(headers: &Headers) -> bool {
     if !headers.header_is("Upgrade", "websocket") {
+        trace!("Request had incorrect Upgrade header");
         return false;
     }
 
-    if !headers.header_is("Connection", "Upgrade") {
+    if !headers.find("Connection").any(|h| contains(h, b"Upgrade")) {
+        trace!("Request had incorrect Connection header");
         return false;
     }
 
     if headers.find_first("Sec-Websocket-Key").is_none() {
+        trace!("Request was missing Sec-Websocket-Key header");
         return false;
     }
 
     true
+}
+
+// TODO: Use a more efficient algorithm here
+pub fn contains(a: &[u8], b: &[u8]) -> bool {
+    for window in a.windows(b.len()) {
+        if window == b {
+            return true;
+        }
+    }
+
+    false
 }

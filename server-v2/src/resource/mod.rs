@@ -29,4 +29,5 @@ pub mod channel {
     pub type OnPlayerJoin = EventChannel<PlayerJoin>;
     pub type OnPlayerLeave = EventChannel<PlayerLeave>;
     pub type OnPlayerKilled = EventChannel<PlayerKilled>;
+    pub type OnPlayerPowerup = EventChannel<PlayerPowerup>;
 }

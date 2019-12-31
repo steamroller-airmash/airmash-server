@@ -11,6 +11,7 @@ mod inner {
     pub fn register(builder: &mut Builder) {
         builder
             .with_registrar(builtin::register)
-            .with_registrar(packet::register);
+            .with_registrar(packet::register)
+            .with_registrar(event::register);
     }
 }

@@ -1,18 +1,18 @@
-use crate::component::{
-    counter::*, flag::*, time::*, AssociatedConnection, KeyState, Name, Session,
-};
-use crate::ecs::prelude::*;
-use crate::ecs::{ReadAdapter, World};
+use crate::component::*;
+use crate::component::{counter::*, flag::*, time::*};
+use crate::ecs::{prelude::*, ReadAdapter, SystemData, World};
 use crate::event::PlayerJoin;
 use crate::protocol::client::Login;
-use crate::protocol::*;
-use crate::resource::builtin::{CurrentFrame, StartTime};
-use crate::resource::channel::OnPlayerJoin;
-use crate::resource::packet::{ClientPacket, OnLogin};
-use crate::resource::socket::{ConnectEvent, OnConnect, SocketId};
-use crate::resource::{Connections, PlayerNames};
+use crate::resource::{
+    builtin::{CurrentFrame, StartTime},
+    channel::OnPlayerJoin,
+    packet::{ClientPacket, OnLogin},
+    socket::{ConnectEvent, OnConnect, SocketId},
+    Connections, PlayerNames,
+};
 use crate::sysdata::{GameModeWriter, TaskData, TaskSpawner};
 use crate::util::{GameMode, MaybeInit};
+use crate::*;
 
 use futures::{select, FutureExt};
 use shrev::ReaderId;
@@ -30,8 +30,9 @@ struct HandleConnect {
 
 impl HandleConnect {
     fn setup(&mut self, world: &mut World) {
-        self.login = MaybeInit::new(world.fetch_resource_mut::<OnLogin>().register_reader());
+        ConnectTaskData::setup(world);
 
+        self.login = MaybeInit::new(world.fetch_resource_mut::<OnLogin>().register_reader());
         self.connect = MaybeInit::new(world.fetch_resource_mut::<OnConnect>().register_reader());
     }
 }
@@ -45,6 +46,8 @@ fn handle_connect<'a>(
     tasks: &TaskSpawner<'a>,
 ) {
     for evt in connects.read(&mut state.connect) {
+        debug!("New connection opened with id {}", evt.socketid);
+
         conns.register_new(evt.socketid, evt.socket.clone());
 
         let reader = logins.duplicate_reader(&state.login);
@@ -87,21 +90,26 @@ async fn new_connection(
 ) {
     let wait_time = Duration::from_secs(10);
 
+    trace!("Starting login task for {}", socket);
+
     select! {
         _ = tokio::time::delay_for(wait_time).fuse() => {
             data.world(|world| {
                 let mut conns: Write<Connections> = world.system_data();
                 let _ = conns.close(socket);
             });
+
+            debug!("Client on socket {} failed to login", socket);
         },
         login = wait_for_login(&mut data, &mut reader, socket).fuse() => {
+            trace!("Received Login packet from {}", socket);
             do_login(&mut data, socket, login);
         }
     }
 }
 
 fn do_login(data: &mut TaskData, conn: SocketId, login: Login) {
-    let flag: FlagCode = login.flag.try_into().unwrap_or(FlagCode::UnitedNations);
+    let flag: Flag = login.flag.try_into().unwrap_or(Flag::UnitedNations);
     let session = Uuid::from_str(&login.session).ok();
 
     let CurrentFrame(this_frame) = data.read_resource(|r| *r);
@@ -191,10 +199,12 @@ fn do_login(data: &mut TaskData, conn: SocketId, login: Login) {
     data.write_storage::<Team, _, _>(|mut res| {
         res.insert(entity, team).unwrap();
     });
-    data.write_storage::<PlaneType, _, _>(|mut res| {
+    data.write_storage::<Plane, _, _>(|mut res| {
         res.insert(entity, plane).unwrap();
     });
     data.write_storage::<Position, _, _>(|mut res| res.insert(entity, pos).unwrap());
+
+    info!("Player '{}' joined as {:?}", trunc_name, entity);
 
     data.write_resource::<OnPlayerJoin, _, _>(move |mut channel| {
         channel.single_write(PlayerJoin {
@@ -208,4 +218,42 @@ fn do_login(data: &mut TaskData, conn: SocketId, login: Login) {
             flag,
         });
     });
+}
+
+/// Data types used by the connect task
+///
+/// This struct is never used and is instead an
+/// easy shortcut to setup all the required storages
+/// and resources.
+#[derive(SystemData)]
+#[allow(dead_code)]
+struct ConnectTaskData<'a> {
+    energy: ReadStorage<'a, Energy>,
+    health: ReadStorage<'a, Health>,
+    keystate: ReadStorage<'a, KeyState>,
+    upgrades: ReadStorage<'a, Upgrades>,
+    rotation: ReadStorage<'a, Rotation>,
+    velocity: ReadStorage<'a, Velocity>,
+    level: ReadStorage<'a, Level>,
+    score: ReadStorage<'a, Score>,
+    earnings: ReadStorage<'a, Earnings>,
+    join_time: ReadStorage<'a, JoinTime>,
+    total_kills: ReadStorage<'a, TotalKills>,
+    total_deaths: ReadStorage<'a, TotalDeaths>,
+    last_repel_time: ReadStorage<'a, LastRepelTime>,
+    name: ReadStorage<'a, Name>,
+    session: ReadStorage<'a, Session>,
+    last_stealth_time: ReadStorage<'a, LastStealthTime>,
+    status: ReadStorage<'a, PlayerStatus>,
+    flag: ReadStorage<'a, Flag>,
+    is_player: ReadStorage<'a, IsPlayer>,
+    last_shot_time: ReadStorage<'a, LastShotTime>,
+    last_key_time: ReadStorage<'a, LastKeyTime>,
+    associated: ReadStorage<'a, AssociatedConnection>,
+    team: ReadStorage<'a, Team>,
+    plane: ReadStorage<'a, Plane>,
+    position: ReadStorage<'a, Position>,
+
+    player_names: Read<'a, PlayerNames>,
+    player_join: Write<'a, OnPlayerJoin>,
 }

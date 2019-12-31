@@ -14,6 +14,8 @@ impl<'a> DebugAdapter<'a> {
 		})
 	}
 }
+
+#[allow(dead_code)]
 struct DebugPrinter<'a> {
 	ent: Entity,
 	world: &'a World,

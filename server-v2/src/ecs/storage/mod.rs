@@ -4,6 +4,9 @@ mod hashmap;
 mod null;
 mod vec;
 
+#[cfg(test)]
+mod tests;
+
 pub use self::densevec::DenseVecStorage;
 pub use self::flagged::{ComponentEvent, FlaggedStorage};
 pub use self::hashmap::HashMapStorage;

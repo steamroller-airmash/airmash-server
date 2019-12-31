@@ -7,7 +7,9 @@ pub use self::config::AirmashServerConfig;
 
 use std::cell::RefCell;
 use std::error::Error;
+use std::panic;
 use std::rc::Rc;
+use std::sync::atomic::{AtomicBool, Ordering};
 use std::time::{Duration, Instant};
 
 use tokio::runtime::Builder;
@@ -17,6 +19,53 @@ use self::websocket::websocket_listener;
 use crate::ecs::{Dispatcher, World};
 use crate::resource::builtin::{CurrentFrame, LastFrame, PlayerCount, ShutdownFlag, StartTime};
 use crate::resource::socket::{OnClose, OnConnect, OnMessage};
+use crate::util::{GameMode, GameModeInternal, GameModeWrapperImpl};
+
+static PANIC_FLAG: AtomicBool = AtomicBool::new(false);
+
+pub struct AirmashServerBuilder {
+    config: AirmashServerConfig,
+    world: Rc<RefCell<World>>,
+    localset: LocalSet,
+    dispatch: Dispatcher,
+}
+
+impl AirmashServerBuilder {
+    pub fn without_gamemode(
+        world: World,
+        config: AirmashServerConfig,
+        dispatch: Dispatcher,
+    ) -> Self {
+        Self {
+            world: Rc::new(RefCell::new(world)),
+            config,
+            localset: LocalSet::new(),
+            dispatch,
+        }
+    }
+
+    pub fn new<G: GameMode>(
+        mut world: World,
+        config: AirmashServerConfig,
+        gamemode: G,
+        dispatch: Dispatcher,
+    ) -> Self {
+        world.register_resource(GameModeInternal(Box::new(GameModeWrapperImpl {
+            val: gamemode,
+        })));
+
+        Self::without_gamemode(world, config, dispatch)
+    }
+
+    pub fn build(self) -> AirmashServer {
+        AirmashServer {
+            dispatch: self.dispatch,
+            world: self.world,
+            config: self.config,
+            localset: self.localset,
+        }
+    }
+}
 
 pub struct AirmashServer {
     dispatch: Dispatcher,
@@ -26,20 +75,6 @@ pub struct AirmashServer {
 }
 
 impl AirmashServer {
-    pub fn new(
-        dispatch: Dispatcher,
-        world: World,
-        localset: LocalSet,
-        config: AirmashServerConfig,
-    ) -> Self {
-        Self {
-            dispatch,
-            config,
-            world: Rc::new(RefCell::new(world)),
-            localset,
-        }
-    }
-
     fn register_builtins(&mut self) {
         let mut world = self.world.borrow_mut();
 
@@ -56,16 +91,25 @@ impl AirmashServer {
         world.register_resource(PlayerCount(0));
 
         // Channels needed to handle connection-related things.
-        world.register_resource(OnConnect::default());
-        world.register_resource(OnMessage::default());
-        world.register_resource(OnClose::default());
+        world.register_resource_lazy(OnConnect::default);
+        world.register_resource_lazy(OnMessage::default);
+        world.register_resource_lazy(OnClose::default);
 
         // Useful for tasks and such.
         world.register_resource(Rc::downgrade(&self.world));
     }
 
+    fn setup_panic_hook(&mut self) {
+        let hook = panic::take_hook();
+        panic::set_hook(Box::new(move |panicinfo| {
+            PANIC_FLAG.store(true, Ordering::Relaxed);
+            hook(panicinfo)
+        }));
+    }
+
     pub fn run(mut self) -> Result<(), Box<dyn Error>> {
         self.register_builtins();
+        self.setup_panic_hook();
 
         let Self {
             world,
@@ -110,6 +154,10 @@ impl AirmashServer {
 
             if shutdown.value() {
                 break;
+            }
+
+            if PANIC_FLAG.swap(false, Ordering::Relaxed) {
+                panic!("Another tokio task/thread panicked. Exiting tokio runtime.");
             }
         }
 
