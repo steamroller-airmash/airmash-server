@@ -10,7 +10,7 @@ struct EmptyGameMode;
 
 impl GameMode for EmptyGameMode {
     fn assign_team(&mut self, player: Entity) -> Team {
-        Team(player.id() as u16)
+        Team(player.id() as u16 + 3)
     }
     fn spawn_pos(&mut self, _: Entity, _: Team) -> Position {
         Position::default()

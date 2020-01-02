@@ -56,6 +56,10 @@ pub trait Storage<T>: DynStorage + Default {
     /// Fetch an element from the storage mutably.
     fn get_mut(&mut self, ent: u32) -> Option<&mut T>;
 
+    fn clear(&mut self) {
+        Storage::remove_all(self, hibitset::BitSetAll);
+    }
+
     /// Fetch an element from the storage without performing bounds
     /// checking or checking to see if the entity is valid.
     ///

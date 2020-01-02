@@ -65,6 +65,10 @@ impl<T: Default> Storage<T> for NullStorage<T> {
         self.bitset &= &BitSetNot(bits);
     }
 
+    fn clear(&mut self) {
+        self.bitset.clear();
+    }
+
     fn get(&self, ent: u32) -> Option<&T> {
         if self.bitset.contains(ent) {
             Some(&self.marker)

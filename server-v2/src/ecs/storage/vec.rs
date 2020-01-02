@@ -76,6 +76,11 @@ impl<T> Storage<T> for VecStorage<T> {
         }
     }
 
+    fn clear(&mut self) {
+        self.bitset.clear();
+        self.backing.clear();
+    }
+
     fn get(&self, ent: u32) -> Option<&T> {
         if self.bitset.contains(ent) {
             Some(unsafe { &*self.backing[ent as usize].as_ptr() })

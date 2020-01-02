@@ -12,7 +12,7 @@ macro_rules! try_get {
 		match $storage.get_mut($entity) {
 			Some(x) => x,
 			None => {
-				try_get![__intenral, $entity, $storage];
+				try_get![__internal, $entity, $storage];
 				return;
 			}
 		}

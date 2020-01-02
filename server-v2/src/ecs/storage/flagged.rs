@@ -43,6 +43,14 @@ where
         Storage::remove_all(&mut self.storage, mask)
     }
 
+    fn clear(&mut self) {
+        for idx in Storage::mask(&self.storage) {
+            self.channel.single_write(ComponentEvent::Removed(idx));
+        }
+
+        self.storage.clear();
+    }
+
     fn get(&self, ent: u32) -> Option<&T> {
         self.storage.get(ent)
     }

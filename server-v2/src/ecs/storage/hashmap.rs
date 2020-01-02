@@ -53,6 +53,11 @@ impl<T> Storage<T> for HashMapStorage<T> {
         }
     }
 
+    fn clear(&mut self) {
+        self.bitset.clear();
+        self.map.clear();
+    }
+
     fn get(&self, ent: u32) -> Option<&T> {
         self.map.get(&ent)
     }

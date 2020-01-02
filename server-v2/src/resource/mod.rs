@@ -9,6 +9,7 @@ pub mod collision;
 pub mod packet;
 pub mod socket;
 
+pub use self::builtin::{CurrentFrame, LastFrame, PlayerCount, StartTime};
 pub use self::config::Config;
 pub use self::connections::{Connections, NonexistantSocketError};
 pub use self::inner::PlayerNames;

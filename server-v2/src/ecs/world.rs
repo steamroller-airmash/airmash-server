@@ -70,27 +70,37 @@ impl World {
     pub fn fetch_storage<T: 'static>(&self) -> Ref<T> {
         self.storages
             .get::<RefCell<T>>()
-            .map(|(cell, _)| cell.borrow())
+            .and_then(|(cell, _)| cell.try_borrow().ok())
             .unwrap_or_else(|| panic!("Unable to fetch storage `{}`", std::any::type_name::<T>()))
     }
     pub fn fetch_storage_mut<T: 'static>(&self) -> RefMut<T> {
         self.storages
             .get::<RefCell<T>>()
-            .map(|(cell, _)| cell.borrow_mut())
-            .unwrap_or_else(|| panic!("Unable to fetch storage `{}`", std::any::type_name::<T>()))
+            .and_then(|(cell, _)| cell.try_borrow_mut().ok())
+            .unwrap_or_else(|| {
+                panic!(
+                    "Unable to mutably fetch storage `{}`",
+                    std::any::type_name::<T>()
+                )
+            })
     }
 
     pub fn fetch_resource<T: 'static>(&self) -> Ref<T> {
         self.resources
             .get::<RefCell<T>>()
-            .map(|(cell, _)| cell.borrow())
+            .and_then(|(cell, _)| cell.try_borrow().ok())
             .unwrap_or_else(|| panic!("Unable to fetch resource `{}`", std::any::type_name::<T>()))
     }
     pub fn fetch_resource_mut<T: 'static>(&self) -> RefMut<T> {
         self.resources
             .get::<RefCell<T>>()
-            .map(|(cell, _)| cell.borrow_mut())
-            .unwrap_or_else(|| panic!("Unable to fetch resource `{}`", std::any::type_name::<T>()))
+            .and_then(|(cell, _)| cell.try_borrow_mut().ok())
+            .unwrap_or_else(|| {
+                panic!(
+                    "Unable to mutably fetch resource `{}`",
+                    std::any::type_name::<T>()
+                )
+            })
     }
 
     pub fn remove_resource<T: 'static>(&mut self) -> bool {

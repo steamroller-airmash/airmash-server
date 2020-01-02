@@ -10,7 +10,7 @@ use crate::resource::{
     socket::{ConnectEvent, OnConnect, SocketId},
     Connections, PlayerNames,
 };
-use crate::sysdata::{GameModeWriter, TaskData, TaskSpawner};
+use crate::sysdata::{ConnectionsNoTeams, GameModeWriter, TaskData, TaskSpawner};
 use crate::util::{GameMode, MaybeInit};
 use crate::*;
 
@@ -170,6 +170,7 @@ fn do_login(data: &mut TaskData, conn: SocketId, login: Login) {
             .with(LastShotTime(start_time))
             .with(LastKeyTime(this_frame))
             .with(AssociatedConnection(conn))
+            .with(LastUpdate(start_time))
             .build()
     });
 
@@ -196,13 +197,35 @@ fn do_login(data: &mut TaskData, conn: SocketId, login: Login) {
         (team, plane, pos)
     });
 
-    data.write_storage::<Team, _, _>(|mut res| {
-        res.insert(entity, team).unwrap();
+    let res = data.world(|world| {
+        let mut teams: WriteStorage<Team> = world.system_data();
+        let mut planes: WriteStorage<Plane> = world.system_data();
+        let mut positions: WriteStorage<Position> = world.system_data();
+
+        teams.insert(entity, team).unwrap();
+        planes.insert(entity, plane).unwrap();
+        positions.insert(entity, pos).unwrap();
+
+        let mut conns: ConnectionsNoTeams = world.system_data();
+        if let Err(_) = conns.associate(conn, entity) {
+            warn!(
+                "Socket {:?} disappeared during login for player {:?}",
+                conn, entity
+            );
+
+            // Delete the entity since login failed
+            let entities: Entities = world.system_data();
+            let _ = entities.delete(entity);
+
+            return false;
+        }
+
+        true
     });
-    data.write_storage::<Plane, _, _>(|mut res| {
-        res.insert(entity, plane).unwrap();
-    });
-    data.write_storage::<Position, _, _>(|mut res| res.insert(entity, pos).unwrap());
+
+    if !res {
+        return;
+    }
 
     info!("Player '{}' joined as {:?}", trunc_name, entity);
 

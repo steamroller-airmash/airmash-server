@@ -13,7 +13,7 @@ pub use self::powerup::{PowerupExt, Powerups};
 pub use crate::protocol::{
     Accel, AccelScalar, Distance, Energy, EnergyRegen, FlagCode as Flag, Health, HealthRegen,
     Level, MobType as Mob, PlaneType as Plane, PlayerStatus as Status, Position,
-    PowerupType as Powerup, Rotation, Score, Speed, Team, Velocity,
+    PowerupType as Powerup, Rotation, Score, Speed, Team, Time, Velocity,
 };
 
 mod inner {

@@ -385,6 +385,10 @@ impl<'a, C: Component + 'static> WriteStorage<'a, C> {
         Ok(self.storage.remove(entity.id()))
     }
 
+    pub fn clear(&mut self) {
+        self.storage.clear();
+    }
+
     pub fn get(&self, entity: Entity) -> Option<&C> {
         if !self.entities.is_accessible(entity) {
             return None;

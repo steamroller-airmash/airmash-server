@@ -8,17 +8,6 @@ use serde::{Deserialize, Deserializer, Serialize, Serializer};
 
 pub use self::typedefs::*;
 
-mod inner {
-    pub trait Even {}
-
-    pub struct IsEvenPred<const V: bool>;
-
-    impl Even for IsEvenPred<{ true }> {}
-}
-
-type CheckEven<const X: isize> = self::inner::IsEvenPred<{ X % 2 == 0 }>;
-use self::inner::Even;
-
 /// Inner type used for all unit type declarations.
 ///
 /// All units can be converted into this type by
@@ -116,6 +105,16 @@ impl<V, const L: isize, const T: isize, const H: isize, const E: isize, const R:
 //===============================================
 // Ops Traits
 //===============================================
+
+impl<V: Neg, const L: isize, const T: isize, const H: isize, const E: isize, const R: isize> Neg
+    for BaseUnit<V, L, T, H, E, R>
+{
+    type Output = BaseUnit<<V as Neg>::Output, L, T, H, E, R>;
+
+    fn neg(self) -> Self::Output {
+        BaseUnit::new(-self.value)
+    }
+}
 
 impl<
         V: Add<Output = V>,
@@ -343,14 +342,11 @@ impl<
     }
 }
 
+// TODO: Once there is a way to do it without causing rustc to
+//       crash we should add constraints here to constrain the
+//       unit dimensions to those divisible by 2.
 impl<V: Sqrt, const L: isize, const T: isize, const H: isize, const E: isize, const R: isize> Sqrt
     for BaseUnit<V, L, T, H, E, R>
-where
-    CheckEven<L>: Even,
-    CheckEven<T>: Even,
-    CheckEven<H>: Even,
-    CheckEven<E>: Even,
-    CheckEven<R>: Even,
 {
     type Output = BaseUnit<V::Output, { L / 2 }, { T / 2 }, { H / 2 }, { E / 2 }, { R / 2 }>;
 

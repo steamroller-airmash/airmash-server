@@ -74,7 +74,9 @@ where
         use arrayvec::ArrayVec;
 
         let Self { iter, conns } = self;
-        let iter = iter.filter_map(|ent| conns.associated.get(ent));
+        let iter = iter
+            .map(|ent| ent)
+            .filter_map(|ent| conns.associated.get(ent));
 
         let encoded: ArrayVec<[_; 8]> = match encode_message(msg) {
             Ok(encoded) => encoded.collect(),
@@ -136,14 +138,15 @@ impl<'a, Teams, Conns> ConnsInternal<'a, Teams, Conns>
 where
     Conns: Deref<Target = ConnData>,
 {
-    // /// Get all connections associated with a player
-    // pub fn associated_connections(&self, player: Entity) -> impl Iterator<Item = SocketId> + '_ {
-    // 	unimplemented!()
-    // 	// self.conns
-    //     //     .iter()
-    //     //     .filter(move |data| data.player == Some(player))
-    //     //     .map(move |data| data.id)
-    // }
+    /// Get all connections associated with a player
+    pub fn associated_connections(&self, player: Entity) -> impl Iterator<Item = SocketId> + '_ {
+        self.associated.get(player).map(|x| x.0).into_iter()
+    }
+
+    /// Get the connection associated
+    pub fn player(&self, conn: SocketId) -> Result<Option<Entity>, NonexistantSocketError> {
+        self.conns.player(conn)
+    }
 
     /// Send a packet to the given connection.
     ///

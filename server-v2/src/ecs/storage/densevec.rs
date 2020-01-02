@@ -80,6 +80,12 @@ impl<T> Storage<T> for DenseVecStorage<T> {
         }
     }
 
+    fn clear(&mut self) {
+        self.indices.clear();
+        self.reverse.clear();
+        self.backing.clear();
+    }
+
     fn get(&self, ent: u32) -> Option<&T> {
         let index = *self.indices.get(ent)?;
 
