@@ -27,8 +27,9 @@ impl World {
     }
 
     pub fn register_storage<T: DynStorage + 'static>(&mut self, val: T) -> &mut T {
-        let vtable = DynStorageVTable::from_existing(&val);
-        self.storages.insert(RefCell::new(val), vtable).get_mut()
+        let cell = RefCell::new(val);
+        let vtable = DynStorageVTable::from_existing(&cell);
+        self.storages.insert(cell, vtable).get_mut()
     }
 
     pub fn register_storage_lazy<T, F>(&mut self, func: F) -> &mut T
@@ -42,7 +43,7 @@ impl World {
             self.storages
                 .get_mut::<RefCell<T>>()
                 .map(|x| x.0)
-                .unwrap()
+                .expect("Existing storage actually not present")
                 .get_mut()
         }
     }
@@ -62,7 +63,7 @@ impl World {
             self.resources
                 .get_mut::<RefCell<T>>()
                 .map(|x| x.0.get_mut())
-                .unwrap()
+                .expect("Existing resource actually not present")
         }
     }
 
@@ -83,13 +84,13 @@ impl World {
         self.resources
             .get::<RefCell<T>>()
             .map(|(cell, _)| cell.borrow())
-            .unwrap_or_else(|| panic!("Unable to fetch storage `{}`", std::any::type_name::<T>()))
+            .unwrap_or_else(|| panic!("Unable to fetch resource `{}`", std::any::type_name::<T>()))
     }
     pub fn fetch_resource_mut<T: 'static>(&self) -> RefMut<T> {
         self.resources
             .get::<RefCell<T>>()
             .map(|(cell, _)| cell.borrow_mut())
-            .unwrap_or_else(|| panic!("Unable to fetch storage `{}`", std::any::type_name::<T>()))
+            .unwrap_or_else(|| panic!("Unable to fetch resource `{}`", std::any::type_name::<T>()))
     }
 
     pub fn remove_resource<T: 'static>(&mut self) -> bool {
@@ -171,5 +172,17 @@ impl<'w> WorldEntityBuilder<'w> {
 
     pub fn build(self) -> Entity {
         self.entity
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn has_entityres() {
+        let world = World::new();
+
+        let _ = world.fetch_resource::<EntityRes>();
     }
 }

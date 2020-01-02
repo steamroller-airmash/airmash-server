@@ -17,7 +17,7 @@ impl<T> VecStorage<T> {
 }
 
 impl<T> DynStorage for VecStorage<T> {
-    fn mask(&self) -> &BitSet {
+    fn mask(&mut self) -> &BitSet {
         <Self as Storage<_>>::mask(self)
     }
 

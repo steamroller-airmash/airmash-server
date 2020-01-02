@@ -14,6 +14,7 @@ pub use self::null::NullStorage;
 pub use self::vec::VecStorage;
 
 use hibitset::{BitSet, BitSetLike};
+use std::cell::RefCell;
 
 /// Dynamic access to storages without knowing its type.
 ///
@@ -21,7 +22,7 @@ use hibitset::{BitSet, BitSetLike};
 /// on this trait are rather limited. Generally, you'll
 /// probably want to be using `Storage` instead.
 pub trait DynStorage {
-    fn mask(&self) -> &BitSet;
+    fn mask(&mut self) -> &BitSet;
 
     fn remove(&mut self, ent: u32);
     fn remove_all(&mut self, mask: &BitSet);
@@ -108,4 +109,17 @@ pub trait EntityStorageMut<T>: EntityStorage<T> {
 
 pub trait Component: Sized {
     type Storage: Storage<Self>;
+}
+
+impl<T: DynStorage> DynStorage for RefCell<T> {
+    fn mask(&mut self) -> &BitSet {
+        self.get_mut().mask()
+    }
+
+    fn remove(&mut self, ent: u32) {
+        self.get_mut().remove(ent)
+    }
+    fn remove_all(&mut self, mask: &BitSet) {
+        self.get_mut().remove_all(mask)
+    }
 }

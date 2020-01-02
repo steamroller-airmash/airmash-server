@@ -114,8 +114,9 @@ impl<'a> SystemData<'a> for Entities<'a> {
         }
     }
 
-    #[inline]
-    fn setup(_: &mut World) {}
+    fn setup(world: &mut World) {
+        world.register_resource_lazy(EntityRes::new);
+    }
 
     #[inline]
     fn reads(_: &mut Vec<TypeId>) {}

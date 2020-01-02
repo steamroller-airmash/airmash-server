@@ -21,7 +21,7 @@ impl<T> DenseVecStorage<T> {
 }
 
 impl<T> DynStorage for DenseVecStorage<T> {
-    fn mask(&self) -> &BitSet {
+    fn mask(&mut self) -> &BitSet {
         <Self as Storage<_>>::mask(self)
     }
 
@@ -30,6 +30,8 @@ impl<T> DynStorage for DenseVecStorage<T> {
     }
 
     fn remove_all(&mut self, mask: &BitSet) {
+        eprintln!("Removing from {:?}", self as *mut _);
+
         <Self as Storage<T>>::remove_all(self, mask);
     }
 }

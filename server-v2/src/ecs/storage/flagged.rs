@@ -64,7 +64,7 @@ impl<T, S> DynStorage for FlaggedStorage<T, S>
 where
     S: Storage<T>,
 {
-    fn mask(&self) -> &BitSet {
+    fn mask(&mut self) -> &BitSet {
         <Self as Storage<_>>::mask(self)
     }
 

@@ -28,7 +28,7 @@ impl<T: Default> NullStorage<T> {
 }
 
 impl<T: Default> DynStorage for NullStorage<T> {
-    fn mask(&self) -> &BitSet {
+    fn mask(&mut self) -> &BitSet {
         <Self as Storage<_>>::mask(self)
     }
 
