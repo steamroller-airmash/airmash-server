@@ -2,6 +2,7 @@ use crate::ecs::{Entity, EntityDead};
 use hibitset::{BitSet, BitSetLike};
 
 use std::cell::{Ref, RefCell};
+use std::fmt;
 use std::rc::Rc;
 
 #[derive(Default)]
@@ -230,5 +231,28 @@ impl Clone for EntityRef {
 impl Drop for EntityRef {
     fn drop(&mut self) {
         self.counts.borrow_mut().dec(self.ent.id());
+    }
+}
+
+impl fmt::Debug for EntityRef {
+    fn fmt(&self, fmt: &mut fmt::Formatter) -> fmt::Result {
+        let count = self
+            .counts
+            .try_borrow()
+            .map(|x| Some(x.get(self.ent.id())))
+            .unwrap_or(None);
+
+        let mut debug = fmt.debug_struct("EntityRef");
+
+        debug.field("entity", &self.ent);
+
+        match count {
+            Some(cnt) => debug.field("refcount", &cnt),
+            // Ideally this should never happen, however since
+            // we don't want to cause UB then this will have to do.
+            None => debug.field("refcount", &"<error>"),
+        };
+
+        debug.finish()
     }
 }

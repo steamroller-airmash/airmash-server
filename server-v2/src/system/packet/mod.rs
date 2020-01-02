@@ -3,10 +3,14 @@ mod disconnect;
 mod parse;
 
 pub use self::connect::handle_connect;
+pub use self::disconnect::handle_disconnect;
 pub use self::parse::handle_message;
 
 use crate::ecs::Builder;
 
 pub fn register(builder: &mut Builder) {
-    builder.with::<handle_message>().with::<handle_connect>();
+    builder
+        .with::<handle_message>()
+        .with::<handle_connect>()
+        .with::<handle_disconnect>();
 }

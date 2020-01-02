@@ -1,7 +1,7 @@
 use std::time::{Duration, Instant};
 
 use crate::component::{Name, Session};
-use crate::ecs::Entity;
+use crate::ecs::{Entity, EntityRef};
 use crate::protocol::*;
 use crate::protocol::{FlagCode, PowerupType};
 use crate::resource::socket::SocketId;
@@ -21,8 +21,10 @@ pub struct PlayerJoin {
     pub conn: SocketId,
 }
 
-#[derive(Copy, Clone, Debug)]
-pub struct PlayerLeave(pub Entity);
+#[derive(Clone, Debug)]
+pub struct PlayerLeave {
+    pub player: EntityRef,
+}
 
 #[derive(Copy, Clone, Debug)]
 pub struct PlayerKilled {
