@@ -1,0 +1,13 @@
+[package]
+name = "server-tests"
+version = "0.1.0"
+authors = ["STEAMROLLER"]
+edition = "2018"
+
+[dependencies]
+client           = { path="../client" }
+server-v2        = { path="../server-v2" }
+airmash-protocol = { path="../protocol/common" }
+
+tokio = { version="0.2", features=[ "full" ] }
+url = "2.1.0"

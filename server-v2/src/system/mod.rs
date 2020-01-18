@@ -1,3 +1,4 @@
+pub mod admin;
 pub mod builtin;
 pub mod collision;
 pub mod event;
@@ -19,6 +20,7 @@ mod inner {
             .with_registrar(packet::register)
             .with_registrar(event::register)
             .with_registrar(collision::register)
+            .with_registrar(admin::register)
             //
             .with::<update_positions>();
     }

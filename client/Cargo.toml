@@ -1,0 +1,18 @@
+[package]
+name = "client"
+version = "0.0.0"
+authors = [ "STEAMROLLER" ]
+edition = "2018"
+publish = false
+
+[dependencies]
+tokio = { version="0.2", features=[ "full" ] }
+futures = "0.3"
+lazy_static = "1.0"
+log = "0.4"
+
+airmash-protocol    = { path="../protocol/common" }
+airmash-protocol-v5 = { path="../protocol/v5" }
+
+[dependencies.tokio-tungstenite]
+git = "https://github.com/snapview/tokio-tungstenite"

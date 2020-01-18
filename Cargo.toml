@@ -10,6 +10,7 @@ airmash-protocol-v5 = { git = "https://github.com/steamroller-airmash/airmash-pr
 
 [workspace]
 members = [
+	"client",
 	"server",
 	"base",
 	"ctf",
@@ -17,6 +18,7 @@ members = [
 	"bounded-queue",
 	"special-map",
 	"server-macros",
+	"server-tests",
 	"server-v2",
 	"server-v2-macros",
 	"protocol/common",

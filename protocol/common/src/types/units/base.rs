@@ -430,16 +430,28 @@ impl<const L: isize, const T: isize, const H: isize, const E: isize, const R: is
         self.inner().sin_cos()
     }
     /// Calculate the sine of the inner value.
-    pub fn sin(&self) -> BaseType {
+    pub fn sin(self) -> BaseType {
         self.inner().sin()
     }
     /// Calculate the cosine of the inner value.
-    pub fn cos(&self) -> BaseType {
+    pub fn cos(self) -> BaseType {
         self.inner().cos()
     }
     /// Calculate the tangent of the inner value.
-    pub fn tan(&self) -> BaseType {
+    pub fn tan(self) -> BaseType {
         self.inner().tan()
+    }
+
+    pub fn asin(self) -> BaseType {
+        self.inner().asin()
+    }
+
+    pub fn acos(self) -> BaseType {
+        self.inner().acos()
+    }
+
+    pub fn atan(self) -> BaseType {
+        self.inner().atan()
     }
 }
 

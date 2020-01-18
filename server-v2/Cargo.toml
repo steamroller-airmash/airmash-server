@@ -23,8 +23,7 @@ airmash-protocol-v5 = { path="../protocol/v5" }
 server-v2-macros = { path="../server-v2-macros" }
 
 [dependencies.tokio-tungstenite]
-git = "https://github.com/dbcfd/tokio-tungstenite"
-branch = "tokio2"
+git = "https://github.com/snapview/tokio-tungstenite"
 
 [dependencies.tokio]
 version = "0.2.4"
