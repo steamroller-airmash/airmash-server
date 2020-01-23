@@ -63,9 +63,6 @@ jobs:
       - run:
           name: Test Package
           command: cargo +nightly test
-      - run:
-          name: Integration Tests
-          command: cargo +nightly run --bin server-tests
       - save_cache:
           key: build-cache-{{ checksum "Cargo.lock" }}-{{ checksum "~/rustc.version" }}-{{ arch }}
           paths:
