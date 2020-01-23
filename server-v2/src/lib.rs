@@ -1,10 +1,14 @@
-#![feature(raw, unsize, specialization, entry_insert, const_generics)]
+#![feature(raw, unsize, specialization, entry_insert, const_generics, try_trait)]
 #![allow(incomplete_features)]
 
 #[macro_use]
 extern crate thiserror;
 #[macro_use]
 extern crate log;
+#[macro_use]
+extern crate phf;
+#[macro_use]
+extern crate serde;
 
 #[macro_use]
 extern crate server_v2_macros;

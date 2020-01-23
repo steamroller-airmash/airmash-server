@@ -4,7 +4,7 @@ use std::time::Duration;
 // TODO: Validation
 pub struct AirmashServerConfig {
     pub framerate: f64,
-    pub port: SocketAddr,
+    pub socket: SocketAddr,
 }
 
 impl AirmashServerConfig {
@@ -18,7 +18,7 @@ impl Default for AirmashServerConfig {
         Self {
             framerate: 60.0,
             // 0.0.0.0:3501
-            port: SocketAddr::new(IpAddr::V4(Ipv4Addr::UNSPECIFIED), 3501),
+            socket: SocketAddr::new(IpAddr::V4(Ipv4Addr::UNSPECIFIED), 3501),
         }
     }
 }

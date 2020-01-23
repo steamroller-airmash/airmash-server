@@ -1,9 +1,33 @@
-//! Admin commands for use with debugging
+//! Admin commands for use with debugging.
+//!
+//! These allow for directly modifying internal server
+//! state and performing other debug actions.
+//!
+//! This includes stuff like
+//! - Directly setting the position of an entity
+//! - Shutting down the server
+//! - More to come...
+//!
+//! Note however that none of these broadcast their changes
+//! to other systems to this may result in things appearing
+//! to be wrong. For example, teleporting the flags in CTF
+//! doesn't necessarily end up sending the updated position
+//! of said flags to client.
+
+mod teleport;
 
 pub use self::inner::shutdown;
+pub use self::teleport::*;
 
-pub fn register(builder: &mut crate::ecs::Builder) {
-    builder.with::<shutdown>();
+pub use self::registrar::register;
+
+mod registrar {
+    use super::shutdown;
+    use super::teleport::teleport;
+
+    pub fn register(builder: &mut crate::ecs::Builder) {
+        builder.with::<shutdown>().with::<teleport>();
+    }
 }
 
 mod inner {
@@ -11,8 +35,9 @@ mod inner {
     use crate::protocol::client::Command;
     use crate::resource::{builtin::ShutdownFlag, packet::ClientPacket, Config};
 
+    /// Admin command to shutdown the entire server.
     #[event_handler]
-    fn shutdown<'a>(
+    pub fn shutdown<'a>(
         evt: &ClientPacket<Command>,
 
         config: &Read<'a, Config>,

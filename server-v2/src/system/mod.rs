@@ -1,3 +1,10 @@
+//! Systems and event handlers that are run every frame.
+//!
+//! These specify the behaviours of the server. Each one
+//! handles a small part of the server functionality and
+//! will either change things directly or publish events
+//! which will cause other systems to do things.
+
 pub mod admin;
 pub mod builtin;
 pub mod collision;

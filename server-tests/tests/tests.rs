@@ -1,11 +1,13 @@
-use server_tests::{run_test, TestRunner};
+use server_tests::TestRunner;
+use server_v2_macros::client_test;
 
 use std::error::Error;
 use std::time::Duration;
 
 use airmash_protocol::KeyCode;
 
-async fn _test_movement(runner: TestRunner) -> Result<(), Box<dyn Error>> {
+#[client_test]
+async fn test_movement(runner: TestRunner) -> Result<(), Box<dyn Error>> {
     let mut client = runner.new_client().await?;
 
     client.login("MoveBot").await?;
@@ -23,7 +25,20 @@ async fn _test_movement(runner: TestRunner) -> Result<(), Box<dyn Error>> {
     Ok(())
 }
 
-#[tokio::test]
-async fn test_movement() {
-    run_test(_test_movement, "test_movement").await;
+#[client_test]
+async fn test_teleport(runner: TestRunner) -> Result<(), Box<dyn Error>> {
+    let mut client = runner.new_client().await?;
+
+    client.login("Telebot").await?;
+
+    client.send_command("teleport", "0 1000 1000").await?;
+    // Need to wait for the client to send us an update
+    client.wait(Duration::from_secs(2)).await?;
+
+    let pos = client.world.get_me().pos;
+
+    assert_eq!(pos.x, 1000.0.into());
+    assert_eq!(pos.y, 1000.0.into());
+
+    Ok(())
 }

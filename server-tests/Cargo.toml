@@ -11,3 +11,7 @@ airmash-protocol = { path="../protocol/common" }
 
 tokio = { version="0.2", features=[ "full" ] }
 url = "2.1.0"
+once_cell = "0.1"
+
+[dev-dependencies]
+server-v2-macros = { path="../server-v2-macros" }

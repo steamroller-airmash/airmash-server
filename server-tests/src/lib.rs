@@ -8,13 +8,19 @@ pub use airmash_protocol as protocol;
 
 use std::any::Any;
 use std::future::Future;
+use std::net::{IpAddr, Ipv4Addr, SocketAddr};
 use std::panic::{self, AssertUnwindSafe};
 use std::pin::Pin;
 use std::process::Termination;
-use std::sync::mpsc::channel;
+use std::sync::{
+    atomic::{AtomicU16, Ordering},
+    mpsc::channel,
+    Mutex,
+};
 use std::task::{Context, Poll};
 use std::thread;
 
+use once_cell::{sync::Lazy, sync_lazy};
 use tokio::net::TcpStream;
 use tokio::time::{delay_for, Duration};
 use url::Url;
@@ -42,15 +48,32 @@ impl TestRunner {
     }
 }
 
-pub async fn run_test<T, F, R>(test: T, name: &str) -> bool
+pub async fn run_test<T, F, R>(test: T) -> R
 where
     T: FnOnce(TestRunner) -> F,
     F: Future<Output = R>,
     R: Termination,
 {
-    let (tx, rx) = channel();
+    let socket = SOCKETS.get_socket();
+    let res = CatchPanic(run_test_inner(test, socket)).await;
 
-    eprintln!("Starting test {}", name);
+    SOCKETS.return_socket(socket);
+
+    match res {
+        Ok(x) => x,
+        Err(e) => std::panic::resume_unwind(e),
+    }
+}
+
+async fn run_test_inner<T, F, R>(test: T, socket: SocketAddr) -> R
+where
+    T: FnOnce(TestRunner) -> F,
+    F: Future<Output = R>,
+    R: Termination,
+{
+    eprintln!("Creating server on {}", socket);
+
+    let (tx, rx) = channel();
 
     let handle = thread::spawn(move || {
         let mut world = World::new();
@@ -59,7 +82,8 @@ where
         builder.with_registrar(server_v2::system::register);
         let dispatch = builder.build().expect("Failed to schedule systems");
 
-        let config = AirmashServerConfig::default();
+        let mut config = AirmashServerConfig::default();
+        config.socket = socket;
 
         tx.send(()).unwrap();
 
@@ -71,29 +95,22 @@ where
 
     if let Err(_) = rx.recv() {
         let _ = handle.join();
-        eprintln!("... Test failed");
-        return false;
+        panic!("Server shut down abnormally!");
     }
 
     delay_for(Duration::from_millis(10)).await;
 
-    let url: Url = "ws://localhost:3501".parse().unwrap();
+    let url: Url = format!("ws://{}", socket).parse().unwrap();
     let res = CatchPanic(test(TestRunner::new(url.clone()))).await;
-
-    let rep = match res {
-        Ok(res) => res.report(),
-        Err(_) => 1,
-    };
-
-    if rep != 0 {
-        eprintln!("... Test Failed");
-    }
 
     kill_server(TestRunner::new(url)).await.unwrap();
 
     let _ = handle.join();
 
-    rep == 0
+    match res {
+        Ok(x) => x,
+        Err(e) => std::panic::resume_unwind(e),
+    }
 }
 
 async fn kill_server(runner: TestRunner) -> ClientResult<()> {
@@ -126,7 +143,7 @@ impl GameMode for EmptyGameMode {
 struct CatchPanic<F>(F);
 
 impl<F: Future> Future for CatchPanic<F> {
-    type Output = Result<F::Output, Box<dyn Any>>;
+    type Output = Result<F::Output, Box<dyn Any + Send + 'static>>;
 
     fn poll(self: Pin<&mut Self>, ctx: &mut Context) -> Poll<Self::Output> {
         let inner = unsafe { self.map_unchecked_mut(|me| &mut me.0) };
@@ -136,5 +153,38 @@ impl<F: Future> Future for CatchPanic<F> {
             Ok(x) => x.map(Ok),
             Err(e) => Poll::Ready(Err(e)),
         }
+    }
+}
+
+static SOCKETS: Lazy<SocketManager> = sync_lazy! { SocketManager::new() };
+
+struct SocketManager {
+    available: Mutex<Vec<SocketAddr>>,
+    next: AtomicU16,
+}
+
+impl SocketManager {
+    pub fn new() -> Self {
+        Self {
+            available: Mutex::new(Vec::new()),
+            next: AtomicU16::new(3502),
+        }
+    }
+
+    pub fn get_socket(&self) -> SocketAddr {
+        let mut available = self.available.lock().unwrap();
+
+        match available.pop() {
+            Some(x) => x,
+            None => {
+                let port = self.next.fetch_add(1, Ordering::Relaxed);
+                SocketAddr::new(IpAddr::V4(Ipv4Addr::LOCALHOST), port)
+            }
+        }
+    }
+
+    pub fn return_socket(&self, socket: SocketAddr) {
+        let mut available = self.available.lock().unwrap();
+        available.push(socket);
     }
 }

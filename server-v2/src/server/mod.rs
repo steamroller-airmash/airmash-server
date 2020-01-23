@@ -124,7 +124,7 @@ impl AirmashServer {
             .enable_io()
             .build()?;
 
-        localset.spawn_local(websocket_listener(Rc::clone(&world), config.port));
+        localset.spawn_local(websocket_listener(Rc::clone(&world), config.socket));
 
         localset.block_on(&mut runtime, Self::run_server(world, dispatch, config))
     }
