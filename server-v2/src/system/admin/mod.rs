@@ -14,19 +14,24 @@
 //! doesn't necessarily end up sending the updated position
 //! of said flags to client.
 
+mod dump;
 mod teleport;
 
+pub use self::dump::dump_entity;
 pub use self::inner::shutdown;
 pub use self::teleport::*;
 
 pub use self::registrar::register;
 
 mod registrar {
-    use super::shutdown;
     use super::teleport::teleport;
+    use super::{dump_entity, shutdown};
 
     pub fn register(builder: &mut crate::ecs::Builder) {
-        builder.with::<shutdown>().with::<teleport>();
+        builder
+            .with::<shutdown>()
+            .with::<teleport>()
+            .with::<dump_entity>();
     }
 }
 

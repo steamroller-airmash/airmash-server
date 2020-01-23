@@ -23,12 +23,47 @@ impl DerefMut for PlayerGrid {
     }
 }
 
+pub struct Terrain(pub Grid);
+
+impl Deref for Terrain {
+    type Target = Grid;
+
+    fn deref(&self) -> &Self::Target {
+        &self.0
+    }
+}
+
+impl DerefMut for Terrain {
+    fn deref_mut(&mut self) -> &mut Self::Target {
+        &mut self.0
+    }
+}
+
+impl Default for Terrain {
+    fn default() -> Self {
+        use crate::data::TERRAIN;
+
+        let hcs: Vec<_> = TERRAIN
+            .iter()
+            .copied()
+            .map(|[x, y, r]| HitCircle {
+                pos: Position::new(x as f32, y as f32),
+                rad: Distance::new(r as f32),
+                layer: 0,
+                ent: None,
+            })
+            .collect();
+
+        Self(Grid::new(hcs))
+    }
+}
+
 #[derive(Copy, Clone, Debug, PartialEq)]
 pub struct HitCircle {
     pub pos: Position,
     pub rad: Distance,
     pub layer: u16,
-    pub ent: Entity,
+    pub ent: Option<Entity>,
 }
 
 #[derive(Debug, Clone, Default)]
@@ -65,13 +100,19 @@ impl Grid {
         })
     }
 
-    pub fn rough_collide(&self, hc: HitCircle) -> HashSet<Entity> {
+    /// Find all unique entities that can collide with the given hit circle.
+    /// This means all hit circles that have an entity and are on a different
+    /// layer from `hc`.
+    ///
+    /// This is meant to be mainly used for visibility calculations. In general
+    /// you should be using `collide` instead.
+    pub fn entity_collide(&self, hc: HitCircle) -> HashSet<Entity> {
         let (pos, rad) = pos_accessor(&hc);
 
         self.tree
             .lookup(pos, rad)
             .filter(|x| x.layer != hc.layer)
-            .map(|x| x.ent)
+            .filter_map(|x| x.ent)
             .collect()
     }
 

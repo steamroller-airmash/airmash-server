@@ -26,6 +26,10 @@ fn teleport<'a>(
         return;
     }
 
+    if evt.packet.com != "teleport" {
+        return;
+    }
+
     let player = match conns.player(evt.connection) {
         Ok(Some(p)) => p,
         _ => return,

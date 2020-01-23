@@ -99,6 +99,8 @@ impl AirmashServer {
         world.register_resource(Rc::downgrade(&self.world));
     }
 
+    // TODO: This hack breaks the test framework.
+    #[allow(dead_code)]
     fn setup_panic_hook(&mut self) {
         let hook = panic::take_hook();
         panic::set_hook(Box::new(move |panicinfo| {
@@ -109,7 +111,7 @@ impl AirmashServer {
 
     pub fn run(mut self) -> Result<(), Box<dyn Error>> {
         self.register_builtins();
-        self.setup_panic_hook();
+        // self.setup_panic_hook();
 
         let Self {
             world,

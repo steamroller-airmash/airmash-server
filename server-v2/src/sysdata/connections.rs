@@ -210,12 +210,11 @@ where
         &'b self,
         pos: Position,
     ) -> SendIter<impl Iterator<Item = Entity> + 'b, &'b Self> {
-        let ent = self.entities.forge(0);
-        let vals = self.grid.0.rough_collide(HitCircle {
+        let vals = self.grid.0.entity_collide(HitCircle {
             pos,
             rad: self.config.view_radius,
             layer: 0,
-            ent,
+            ent: None,
         });
 
         SendIter::new(&self, vals.into_iter())

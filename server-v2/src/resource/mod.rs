@@ -23,6 +23,7 @@ mod inner {
 }
 
 pub mod channel {
+    use crate::event::collision::*;
     use crate::event::*;
     use shrev::EventChannel;
 
@@ -31,4 +32,6 @@ pub mod channel {
     pub type OnPlayerLeave = EventChannel<PlayerLeave>;
     pub type OnPlayerKilled = EventChannel<PlayerKilled>;
     pub type OnPlayerPowerup = EventChannel<PlayerPowerup>;
+
+    pub type OnPlayerTerrainCollision = EventChannel<PlayerTerrainCollision>;
 }

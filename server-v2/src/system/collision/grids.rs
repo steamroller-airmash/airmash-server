@@ -3,7 +3,9 @@ use crate::ecs::prelude::*;
 use crate::resource::collision::{HitCircle, PlayerGrid};
 use crate::sysdata::IsAlive;
 
-#[system]
+use crate::system::update_positions;
+
+#[system(deps = update_positions)]
 fn build_player_grid<'a>(
     grid: &mut Write<'a, PlayerGrid>,
 
@@ -19,7 +21,7 @@ fn build_player_grid<'a>(
             pos,
             rad: Distance::new(0.0),
             layer: team.0,
-            ent,
+            ent: Some(ent),
         })
         .collect();
 

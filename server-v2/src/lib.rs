@@ -18,6 +18,8 @@ extern crate self as server_v2;
 #[macro_use]
 mod macros;
 
+mod data;
+
 pub mod component;
 pub mod ecs;
 pub mod event;

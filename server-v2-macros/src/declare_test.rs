@@ -24,6 +24,7 @@ fn test_impl(input: TokenStream) -> Result<TokenStream, Error> {
     let ident = sig.ident.clone();
 
     sig.inputs = Punctuated::new();
+    sig.asyncness = None;
 
     if old.inputs.len() != 1 {
         return Err(Error::new(
@@ -40,12 +41,17 @@ fn test_impl(input: TokenStream) -> Result<TokenStream, Error> {
     }
 
     Ok(quote! {
-        #[tokio::test]
+        #[test]
         #vis #sig {
             #( #attrs )*
             #old { #block }
 
-            #krate::run_test(#ident).await
+            tokio::runtime::Builder::new()
+                .basic_scheduler()
+                .enable_all()
+                .build()
+                .expect("Failed to create runtime")
+                .block_on(async { #krate::run_test(#ident).await })
         }
     })
 }

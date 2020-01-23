@@ -506,7 +506,8 @@ macro_rules! display_unit {
     ($fmt:expr, $name:literal, $count:expr) => {
         match $count {
             0 => Ok(()),
-            cnt => write!($fmt, " {}", cnt),
+            1 => write!($fmt, " {}", $name),
+            cnt => write!($fmt, " {}^{}", $name, cnt),
         }
     };
 }
