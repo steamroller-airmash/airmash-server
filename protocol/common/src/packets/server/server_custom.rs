@@ -1,5 +1,7 @@
 use crate::enums::ServerCustomType;
 
+use std::borrow::Cow;
+
 /// End of game packet for CTF and BTR.
 ///
 /// # CTF
@@ -26,8 +28,8 @@ use crate::enums::ServerCustomType;
 ///        closed by the player.)
 #[derive(Clone, Debug)]
 #[cfg_attr(feature = "serde", derive(Serialize, Deserialize))]
-pub struct ServerCustom {
+pub struct ServerCustom<'data> {
     #[cfg_attr(feature = "serde", serde(rename = "type"))]
     pub ty: ServerCustomType,
-    pub data: String,
+    pub data: Cow<'data, str>,
 }

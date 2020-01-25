@@ -25,10 +25,10 @@ impl Protocol for ProtocolV5 {
         Ok(Box::new(once(Serializer::serialize(packet)?)))
     }
 
-    fn deserialize_client(&self, bytes: &[u8]) -> Result<ClientPacket, DeserializeError> {
+    fn deserialize_client(&self, bytes: &[u8]) -> Result<ClientPacket<'static>, DeserializeError> {
         Deserializer::deserialize(bytes)
     }
-    fn deserialize_server(&self, bytes: &[u8]) -> Result<ServerPacket, DeserializeError> {
+    fn deserialize_server(&self, bytes: &[u8]) -> Result<ServerPacket<'static>, DeserializeError> {
         Deserializer::deserialize(bytes)
     }
 }

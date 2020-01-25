@@ -8,7 +8,7 @@ use crate::resource::{
     channel::OnPlayerJoin,
     packet::{ClientPacket, OnLogin},
     socket::{ConnectEvent, OnConnect, SocketId},
-    Connections, PlayerNames,
+    Config, Connections, PlayerNames,
 };
 use crate::sysdata::{ConnectionsNoTeams, GameModeWriter, TaskData, TaskSpawner};
 use crate::util::{GameMode, MaybeInit};
@@ -24,7 +24,7 @@ use std::str::FromStr;
 
 #[derive(Default)]
 struct HandleConnect {
-    login: MaybeInit<ReaderId<ClientPacket<Login>>>,
+    login: MaybeInit<ReaderId<ClientPacket<Login<'static>>>>,
     connect: MaybeInit<ReaderId<ConnectEvent>>,
 }
 
@@ -61,9 +61,9 @@ fn handle_connect<'a>(
 
 async fn wait_for_login(
     data: &mut TaskData,
-    reader: &mut ReaderId<ClientPacket<Login>>,
+    reader: &mut ReaderId<ClientPacket<Login<'static>>>,
     socket: SocketId,
-) -> Login {
+) -> Login<'static> {
     loop {
         let packet = data.world(|world| {
             let channel: Read<OnLogin> = world.system_data();
@@ -85,7 +85,7 @@ async fn wait_for_login(
 
 async fn new_connection(
     mut data: TaskData,
-    mut reader: ReaderId<ClientPacket<Login>>,
+    mut reader: ReaderId<ClientPacket<Login<'static>>>,
     socket: SocketId,
 ) {
     let wait_time = Duration::from_secs(10);
@@ -109,7 +109,7 @@ async fn new_connection(
 }
 
 fn do_login(data: &mut TaskData, conn: SocketId, login: Login) {
-    let flag: Flag = login.flag.try_into().unwrap_or(Flag::UnitedNations);
+    let flag: Flag = (*login.flag).try_into().unwrap_or(Flag::UnitedNations);
     let session = Uuid::from_str(&login.session).ok();
 
     let CurrentFrame(this_frame) = data.read_resource(|r| *r);
@@ -122,9 +122,9 @@ fn do_login(data: &mut TaskData, conn: SocketId, login: Login) {
 
         let dist = Uniform::from(0..1000);
         let mut rng = rand::thread_rng();
-        let mut name = name.clone();
+        let mut name = name.to_string();
 
-        if !names.0.contains_key(&name) {
+        if !names.0.contains_key(&*name) {
             return name;
         }
 
@@ -197,6 +197,19 @@ fn do_login(data: &mut TaskData, conn: SocketId, login: Login) {
         (team, plane, pos)
     });
 
+    data.world(|world| {
+        let config: Read<Config> = world.system_data();
+        let mut energy_regen: WriteStorage<EnergyRegen> = world.system_data();
+        let mut health_regen: WriteStorage<HealthRegen> = world.system_data();
+
+        energy_regen
+            .insert(entity, config.planes[plane].energy_regen)
+            .unwrap();
+        health_regen
+            .insert(entity, config.planes[plane].health_regen)
+            .unwrap();
+    });
+
     let res = data.world(|world| {
         let mut teams: WriteStorage<Team> = world.system_data();
         let mut planes: WriteStorage<Plane> = world.system_data();
@@ -257,6 +270,10 @@ struct ConnectTaskData<'a> {
     upgrades: ReadStorage<'a, Upgrades>,
     rotation: ReadStorage<'a, Rotation>,
     velocity: ReadStorage<'a, Velocity>,
+
+    energy_regen: ReadStorage<'a, EnergyRegen>,
+    health_regen: ReadStorage<'a, HealthRegen>,
+
     level: ReadStorage<'a, Level>,
     score: ReadStorage<'a, Score>,
     earnings: ReadStorage<'a, Earnings>,

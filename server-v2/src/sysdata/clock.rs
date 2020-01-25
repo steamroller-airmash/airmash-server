@@ -15,7 +15,7 @@ pub struct ReadClock<'a> {
 }
 
 impl<'a> ReadClock<'a> {
-    pub fn get(&self) -> u32 {
+    pub fn ticks(&self) -> u32 {
         (self.frame.0 - self.start.0).to_clock()
     }
 }

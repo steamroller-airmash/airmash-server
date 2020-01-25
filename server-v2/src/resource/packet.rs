@@ -14,19 +14,19 @@ mod inner {
 	use super::*;
 
 	pub type OnAck      	 = EventChannel<ClientPacket<Ack>>;
-	pub type OnBackup    	 = EventChannel<ClientPacket<Backup>>;
-	pub type OnChat      	 = EventChannel<ClientPacket<Chat>>;
-	pub type OnCommand   	 = EventChannel<ClientPacket<Command>>;
+	pub type OnBackup    	 = EventChannel<ClientPacket<Backup<'static>>>;
+	pub type OnChat      	 = EventChannel<ClientPacket<Chat<'static>>>;
+	pub type OnCommand   	 = EventChannel<ClientPacket<Command<'static>>>;
 	pub type OnHorizon   	 = EventChannel<ClientPacket<Horizon>>;
 	pub type OnKey			 = EventChannel<ClientPacket<Key>>;
 	pub type OnLocalPing	 = EventChannel<ClientPacket<LocalPing>>;
-	pub type OnLogin		 = EventChannel<ClientPacket<Login>>;
+	pub type OnLogin		 = EventChannel<ClientPacket<Login<'static>>>;
 	pub type OnPong			 = EventChannel<ClientPacket<Pong>>;
-	pub type OnSay			 = EventChannel<ClientPacket<Say>>;
+	pub type OnSay			 = EventChannel<ClientPacket<Say<'static>>>;
 	pub type OnScoreDetailed = EventChannel<ClientPacket<ScoreDetailed>>;
-	pub type OnTeamChat		 = EventChannel<ClientPacket<TeamChat>>;
+	pub type OnTeamChat		 = EventChannel<ClientPacket<TeamChat<'static>>>;
 	pub type OnVoteMute		 = EventChannel<ClientPacket<VoteMute>>;
-	pub type OnWhisper		 = EventChannel<ClientPacket<Whisper>>;
+	pub type OnWhisper		 = EventChannel<ClientPacket<Whisper<'static>>>;
 }
 
 pub use self::inner::*;

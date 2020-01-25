@@ -1941,6 +1941,8 @@ version = "0.1.0"
 dependencies = [
  "airmash-protocol 0.3.0",
  "client 0.0.0",
+ "env_logger 0.7.1 (registry+https://github.com/rust-lang/crates.io-index)",
+ "log 0.4.8 (registry+https://github.com/rust-lang/crates.io-index)",
  "once_cell 0.1.8 (registry+https://github.com/rust-lang/crates.io-index)",
  "server-v2 0.1.0",
  "server-v2-macros 0.1.0",

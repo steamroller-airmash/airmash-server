@@ -6,6 +6,7 @@ use crate::sysdata::Connections;
 
 use phf::Map;
 
+use std::borrow::Cow;
 use std::option::NoneError;
 
 /// Admin command to teleport a named entity anywhere within
@@ -16,7 +17,7 @@ use std::option::NoneError;
 /// as teleporting the player that issued the command.
 #[event_handler]
 fn teleport<'a>(
-    evt: &ClientPacket<Command>,
+    evt: &ClientPacket<Command<'static>>,
     entities: &Entities<'a>,
     pos: &mut WriteStorage<'a, Position>,
     config: &Read<'a, Config>,
@@ -54,7 +55,9 @@ fn teleport<'a>(
         Err(e) => {
             let reply = CommandReply {
                 ty: CommandReplyType::ShowInConsole,
-                text: serde_json::to_string_pretty(&e).expect("Failed to serialize error message"),
+                text: Cow::Owned(
+                    serde_json::to_string_pretty(&e).expect("Failed to serialize error message"),
+                ),
             };
 
             conns.send_to(evt.connection, reply);

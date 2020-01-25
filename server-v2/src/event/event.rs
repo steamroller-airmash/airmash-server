@@ -81,7 +81,7 @@ pub struct PlayerRepel {
 
 #[derive(Clone, Debug)]
 pub struct MissileFire {
-    pub player: Entity,
+    pub player: EntityRef,
     pub missiles: Vec<Entity>,
 }
 

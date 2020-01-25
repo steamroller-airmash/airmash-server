@@ -5,12 +5,14 @@ use crate::protocol::{client::Command, server::CommandReply, CommandReplyType};
 use crate::resource::{packet::ClientPacket, Config};
 use crate::sysdata::Connections;
 
+use std::borrow::Cow;
+
 /// Admin command to dump some part of the fields of an entity.
 ///
 /// Feel free to add new fields here as desired.
 #[event_handler]
 fn dump_entity<'a>(
-    evt: &ClientPacket<Command>,
+    evt: &ClientPacket<Command<'static>>,
 
     entities: &Entities<'a>,
     config: &Read<'a, Config>,
@@ -22,6 +24,8 @@ fn dump_entity<'a>(
     team: &ReadStorage<'a, Team>,
     plane: &ReadStorage<'a, Plane>,
     mob: &ReadStorage<'a, Mob>,
+    health: &ReadStorage<'a, Health>,
+    energy: &ReadStorage<'a, Energy>,
 
     is_missile: &ReadStorage<'a, IsMissile>,
     is_player: &ReadStorage<'a, IsPlayer>,
@@ -31,7 +35,7 @@ fn dump_entity<'a>(
         return;
     }
 
-    if evt.packet.com != "dump-entity" {
+    if evt.packet.com != "debug-entity" {
         return;
     }
 
@@ -66,6 +70,8 @@ fn dump_entity<'a>(
                 vel: *(vel.get(target)?),
                 team: *(team.get(target)?),
                 plane: *(plane.get(target)?),
+                energy: *(energy.get(target)?),
+                health: *(health.get(target)?),
             });
         }
 
@@ -96,8 +102,9 @@ fn dump_entity<'a>(
         evt.connection,
         CommandReply {
             ty: CommandReplyType::ShowInConsole,
-            text: serde_json::to_string_pretty(&data)
-                .expect("Failed to convert EntityData to JSON"),
+            text: Cow::Owned(
+                serde_json::to_string_pretty(&data).expect("Failed to convert EntityData to JSON"),
+            ),
         },
     );
 }
@@ -111,6 +118,8 @@ enum EntityData {
         vel: Velocity,
         team: Team,
         plane: Plane,
+        energy: Energy,
+        health: Health,
     },
     Powerup {
         pos: Position,

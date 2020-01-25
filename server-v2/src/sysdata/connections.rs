@@ -62,9 +62,9 @@ where
     }
 
     /// Send the messages to all players that match the conditions
-    pub fn send_all<I>(self, msg: I)
+    pub fn send_all<'d, I>(self, msg: I)
     where
-        I: Into<ServerPacket>,
+        I: Into<ServerPacket<'d>>,
     {
         self.send_all_ref(&msg.into());
     }
@@ -87,6 +87,8 @@ where
         };
 
         for assoc in iter {
+            // trace!("Sent packet to {}: {:#?}", assoc.0, msg);
+
             for buf in encoded.iter().cloned() {
                 if let Err(e) = conns.conns.send_to(assoc.0, buf) {
                     warn!("Unable to send to connection {:?}: {}", assoc.0, e);
@@ -155,9 +157,9 @@ where
     /// use [`send_to_ref()`][0] instead.
     ///
     /// [0]: #method.send_to_ref
-    pub fn send_to<I>(&self, conn: SocketId, msg: I)
+    pub fn send_to<'d, I>(&self, conn: SocketId, msg: I)
     where
-        I: Into<ServerPacket>,
+        I: Into<ServerPacket<'d>>,
     {
         let msg = msg.into();
         self.send_to_ref(conn, &msg);
@@ -182,9 +184,9 @@ where
     }
 
     /// Send a packet to the primary connection for the player.
-    pub fn send_to_player<I>(&self, player: Entity, msg: I)
+    pub fn send_to_player<'d, I>(&self, player: Entity, msg: I)
     where
-        I: Into<ServerPacket>,
+        I: Into<ServerPacket<'d>>,
     {
         self.send_to_player_ref(player, &msg.into());
     }
@@ -221,9 +223,9 @@ where
     }
 
     /// Send a packet to the primary connection for all players.
-    pub fn send_to_all<I>(&self, msg: I)
+    pub fn send_to_all<'d, I>(&self, msg: I)
     where
-        I: Into<ServerPacket>,
+        I: Into<ServerPacket<'d>>,
     {
         self.send_to_all_ref(&msg.into());
     }
@@ -234,9 +236,9 @@ where
     }
 
     /// Send to all players except one.
-    pub fn send_to_others<I>(&self, player: Entity, msg: I)
+    pub fn send_to_others<'d, I>(&self, player: Entity, msg: I)
     where
-        I: Into<ServerPacket>,
+        I: Into<ServerPacket<'d>>,
     {
         self.send_to_others_ref(player, &msg.into())
     }
@@ -247,17 +249,17 @@ where
     }
 
     /// Send to all players that could see the given position.
-    pub fn send_to_visible<I>(&self, pos: Position, msg: I)
+    pub fn send_to_visible<'d, I>(&self, pos: Position, msg: I)
     where
-        I: Into<ServerPacket>,
+        I: Into<ServerPacket<'d>>,
     {
         self.send_visible(pos).send_all(msg);
     }
 
     /// Send to all players that could see the given position except one.
-    pub fn send_to_visible_others<I>(&self, pos: Position, ent: Entity, msg: I)
+    pub fn send_to_visible_others<'d, I>(&self, pos: Position, ent: Entity, msg: I)
     where
-        I: Into<ServerPacket>,
+        I: Into<ServerPacket<'d>>,
     {
         self.send_visible(pos).except(ent).send_all(msg);
     }
@@ -268,18 +270,18 @@ where
     Conns: SystemData<'a> + Deref<Target = ConnData>,
 {
     /// Send to all players on a team
-    pub fn send_to_team<I>(&self, team: Team, msg: I)
+    pub fn send_to_team<'d, I>(&self, team: Team, msg: I)
     where
-        I: Into<ServerPacket>,
+        I: Into<ServerPacket<'d>>,
     {
         self.send_iter().on_team(team).send_all(msg);
     }
 
     /// Send to all players on the given team that have
     /// the given position within their horizon.
-    pub fn send_to_team_visible<I>(&self, pos: Position, team: Team, msg: I)
+    pub fn send_to_team_visible<'d, I>(&self, pos: Position, team: Team, msg: I)
     where
-        I: Into<ServerPacket>,
+        I: Into<ServerPacket<'d>>,
     {
         self.send_visible(pos).on_team(team).send_all(msg);
     }

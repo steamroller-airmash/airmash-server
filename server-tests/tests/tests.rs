@@ -73,3 +73,47 @@ async fn test_bounce(runner: TestRunner) -> Result<(), Box<dyn Error>> {
 
     Ok(())
 }
+
+/// Fire a missile and ensure that it appears.
+#[client_test]
+async fn test_missile_fire(runner: TestRunner) -> Result<(), Box<dyn Error>> {
+    let mut client = runner.new_client().await?;
+
+    // Need to wait some time since the server initializes
+    // the last-shot time to the time it was started.
+    client.wait(Duration::from_millis(1000)).await?;
+    client.login("MissileBot").await?;
+
+    client.press_key(KeyCode::Fire).await?;
+    client.wait(Duration::from_millis(100)).await?;
+    client.release_key(KeyCode::Fire).await?;
+    client.wait(Duration::from_millis(500)).await?;
+
+    let num_missiles = client
+        .world
+        .mobs
+        .iter()
+        .filter(|mob| mob.1.missile())
+        .count();
+    assert_ne!(num_missiles, 0);
+
+    Ok(())
+}
+
+/// Join and disconnect a bunch of bots in order to trigger a crash
+#[client_test]
+async fn test_join_leave_crash(runner: TestRunner) -> Result<(), Box<dyn Error>> {
+    let mut c1 = runner.new_client().await?;
+    let mut c2 = runner.new_client().await?;
+    let mut c3 = runner.new_client().await?;
+
+    c1.login("B1").await?;
+    c2.login("B2").await?;
+    c1.wait(Duration::from_millis(100)).await?;
+    c1.quit().await?;
+    c3.login("B3").await?;
+    c2.quit().await?;
+    c3.quit().await?;
+
+    Ok(())
+}

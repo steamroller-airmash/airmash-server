@@ -10,6 +10,8 @@ use crate::resource::{channel::OnPlayerPowerup, Config};
 use crate::sysdata::{Connections, ReadClock};
 use crate::util::{GameMode, GameModeWriter};
 
+use std::borrow::Cow;
+
 pub fn register(builder: &mut Builder) {
     builder
         .with::<send_login>()
@@ -66,7 +68,7 @@ fn send_login<'a>(evt: &PlayerJoin, data: &SendLoginData<'a>, conns: &Connection
                     id: ent.into(),
                     status: *status,
                     level: *level,
-                    name: name.0.clone(),
+                    name: Cow::Borrowed(&*name.0),
                     ty: *plane,
                     team: *team,
                     pos: *pos,
@@ -80,14 +82,14 @@ fn send_login<'a>(evt: &PlayerJoin, data: &SendLoginData<'a>, conns: &Connection
 
     let gamemode = data.gamemode.get();
     let packet = Login {
-        clock: data.clock.get(),
+        clock: data.clock.ticks(),
         id: evt.id.into(),
-        room: gamemode.room(),
+        room: Cow::Owned(gamemode.room()),
         success: true,
         token: try_get!(evt.id, data.session)
             .0
-            .map(|x| x.to_string())
-            .unwrap_or_else(|| "none".to_owned()),
+            .map(|x| Cow::Owned(x.to_string()))
+            .unwrap_or_else(|| Cow::Borrowed("none")),
         team: *try_get!(evt.id, data.team),
         ty: gamemode.gametype(),
         players: player_data,
@@ -137,7 +139,7 @@ fn send_player_new<'a>(evt: &PlayerJoin, data: &SendPlayerNewData<'a>) {
     let player_new = PlayerNew {
         id: evt.id.into(),
         status: *try_get!(evt.id, data.status),
-        name: try_get!(evt.id, data.name).0.clone(),
+        name: Cow::Borrowed(&try_get!(evt.id, data.name).0),
         ty: *try_get!(evt.id, data.plane),
         team: *try_get!(evt.id, data.team),
         pos: *try_get!(evt.id, data.pos),

@@ -11,7 +11,7 @@ use crate::sysdata::Connections;
 /// all players in the game.
 #[event_handler]
 fn handle_chat<'a>(
-    evt: &ClientPacket<client::Chat>,
+    evt: &ClientPacket<client::Chat<'static>>,
 
     is_muted: &ReadStorage<'a, IsChatMuted>,
     is_throttled: &ReadStorage<'a, IsChatThrottled>,
@@ -42,7 +42,7 @@ fn handle_chat<'a>(
 /// all players on the sending player's team.
 #[event_handler]
 fn handle_team_chat<'a>(
-    evt: &ClientPacket<client::TeamChat>,
+    evt: &ClientPacket<client::TeamChat<'static>>,
 
     is_muted: &ReadStorage<'a, IsChatMuted>,
     is_throttled: &ReadStorage<'a, IsChatThrottled>,
@@ -79,7 +79,7 @@ fn handle_team_chat<'a>(
 /// the target player.
 #[event_handler]
 fn handle_whisper<'a>(
-    evt: &ClientPacket<client::Whisper>,
+    evt: &ClientPacket<client::Whisper<'static>>,
 
     is_muted: &ReadStorage<'a, IsChatMuted>,
     is_throttled: &ReadStorage<'a, IsChatThrottled>,
@@ -132,7 +132,7 @@ fn handle_whisper<'a>(
 /// all players that are within visible range.
 #[event_handler]
 fn handle_say<'a>(
-    evt: &ClientPacket<client::Say>,
+    evt: &ClientPacket<client::Say<'static>>,
 
     is_muted: &ReadStorage<'a, IsChatMuted>,
     is_throttled: &ReadStorage<'a, IsChatThrottled>,

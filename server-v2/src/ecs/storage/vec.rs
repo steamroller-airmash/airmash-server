@@ -1,5 +1,7 @@
 use super::{DynStorage, Storage};
 use hibitset::{BitSet, BitSetLike, BitSetNot};
+
+use std::fmt;
 use std::mem::MaybeUninit;
 
 pub struct VecStorage<T> {
@@ -70,8 +72,7 @@ impl<T> Storage<T> for VecStorage<T> {
 
         for idx in bitand {
             unsafe {
-                std::mem::replace(&mut self.backing[idx as usize], MaybeUninit::uninit())
-                    .assume_init();
+                std::ptr::drop_in_place(self.backing[idx as usize].as_mut_ptr());
             }
         }
     }
@@ -116,11 +117,7 @@ impl<T> Drop for VecStorage<T> {
 
         for idx in bitset {
             unsafe {
-                mem::replace(
-                    self.backing.get_unchecked_mut(idx as usize),
-                    MaybeUninit::uninit(),
-                )
-                .assume_init();
+                std::ptr::drop_in_place(self.backing[idx as usize].as_mut_ptr());
             }
         }
     }
@@ -129,5 +126,36 @@ impl<T> Drop for VecStorage<T> {
 impl<T> Default for VecStorage<T> {
     fn default() -> Self {
         Self::new()
+    }
+}
+
+impl<T: Clone> Clone for VecStorage<T> {
+    fn clone(&self) -> Self {
+        let bitset = self.bitset.clone();
+        let mut backing = Vec::new();
+        backing.resize_with(self.backing.len(), MaybeUninit::uninit);
+
+        let mut maxidx = 0;
+        for idx in &bitset {
+            maxidx = maxidx.max(idx);
+
+            backing[idx as usize] = MaybeUninit::new(self.get(idx).unwrap().clone());
+        }
+
+        backing.truncate(maxidx as usize + 1);
+
+        Self { bitset, backing }
+    }
+}
+
+impl<T: fmt::Debug> fmt::Debug for VecStorage<T> {
+    fn fmt(&self, fmt: &mut fmt::Formatter) -> fmt::Result {
+        fmt.debug_list()
+            .entries(
+                (&self.bitset)
+                    .iter()
+                    .map(|x| (x, self.get(x).expect("Entry in map but not present"))),
+            )
+            .finish()
     }
 }

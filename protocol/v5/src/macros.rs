@@ -1,16 +1,17 @@
 macro_rules! impl_serde_inner {
 	{
-		struct $src:ty {
+		struct $src:ident $([$lt:lifetime])?  {
 			$(
 				$field:ident : $ty:ident,
 			)*
 		}
 	} => {
-		impl Serialize for $src {
-			fn serialize(&self, ser: &mut Serializer) -> Result<(), SerializeError> {
+		impl$(<$lt>)? Serialize for $src$(<$lt>)? {
+			fn serialize(&self, ser: &mut Serializer) -> Result<(), $crate::error::SerializeError> {
 				// Ensure that all serialize/deserialize pairs are in scope
 				#[allow(unused_imports)]
 				use funcs::*;
+				#[allow(unused_imports)]
 				use error::{ChainError, FieldSpec, FieldName};
 
 				$(
@@ -27,8 +28,8 @@ macro_rules! impl_serde_inner {
 			}
 		}
 
-		impl Deserialize for $src {
-			fn deserialize<'de>(de: &mut Deserializer<'de>) -> Result<Self, DeserializeError> {
+		impl$(<$lt>)? Deserialize for $src$(<$lt>)? {
+			fn deserialize<'de>(de: &mut Deserializer<'de>) -> Result<Self, $crate::error::DeserializeError> {
 				// Ensure that all serialize/deserialize pairs are in scope
 				#[allow(unused_imports)]
 				use funcs::*;
@@ -54,7 +55,7 @@ macro_rules! impl_serde_inner {
 macro_rules! impl_serde {
 	{
 		$(
-			struct $src:ty {
+			struct $src:ident $([$lt:lifetime])? {
 				$(
 					$field:ident : $ty:ident
 				),*
@@ -64,7 +65,7 @@ macro_rules! impl_serde {
 	} => {
 		$(
 			impl_serde_inner!{
-				struct $src {
+				struct $src $([$lt])? {
 					$(
 						$field : $ty,
 					)*

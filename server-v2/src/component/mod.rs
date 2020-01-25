@@ -6,7 +6,7 @@ pub mod counter;
 pub mod flag;
 pub mod time;
 
-pub use self::inner::{AssociatedConnection, Name, Session, Upgrades};
+pub use self::inner::{AssociatedConnection, MissileOwner, Name, Session, Upgrades};
 pub use self::keystate::KeyState;
 pub use self::powerup::{PowerupExt, Powerups};
 
@@ -17,7 +17,7 @@ pub use crate::protocol::{
 };
 
 mod inner {
-    use crate::ecs::HashMapStorage;
+    use crate::ecs::{EntityRef, HashMapStorage};
     use crate::resource::socket::SocketId;
     use uuid::Uuid;
 
@@ -40,4 +40,8 @@ mod inner {
         pub missile: u8,
         pub unused: u16,
     }
+
+    #[derive(Clone, Debug, Component)]
+    #[storage(HashMapStorage)]
+    pub struct MissileOwner(pub EntityRef);
 }

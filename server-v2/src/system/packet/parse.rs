@@ -75,6 +75,8 @@ fn handle_message<'a>(evt: &MessageEvent, data: &mut SystemData<'a>) {
         }
     };
 
+    debug!("Recieved packet: {:?}", packet);
+
     #[rustfmt::skip]
 	single_write! {
 		match [evt] packet {

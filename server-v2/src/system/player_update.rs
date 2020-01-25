@@ -179,7 +179,7 @@ fn step_players(data: &mut PositionUpdateData, config: &Config) {
 }
 
 fn send_updates(data: &mut PositionUpdateData, lastupdate: &mut WriteStorage<LastUpdate>) {
-    let clock = data.clock.get();
+    let clock = data.clock.ticks();
     let thisframe = data.thisframe.0;
 
     let iter = (
@@ -238,7 +238,7 @@ fn send_updates(data: &mut PositionUpdateData, lastupdate: &mut WriteStorage<Las
 }
 
 fn send_outdated(data: &mut PositionUpdateData, lastupdate: &mut WriteStorage<LastUpdate>) {
-    let clock = data.clock.get();
+    let clock = data.clock.ticks();
 
     let iter = (
         lastupdate,

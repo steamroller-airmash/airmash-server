@@ -55,9 +55,9 @@ pub trait Protocol: Sync + Send {
     /// [0]: struct.ServerPacket.html
     /// [1]: struct.ClientPacket.html
     /// [2]: trait.ProtocolSerializationExt.html#ty.serialize
-    fn serialize_client(
+    fn serialize_client<'data>(
         &self,
-        packet: &ClientPacket,
+        packet: &ClientPacket<'data>,
     ) -> Result<ServerPacketIterator, Self::SerializeError>;
 
     /// Serialize a server packet into some number of
@@ -87,16 +87,22 @@ pub trait Protocol: Sync + Send {
     /// [0]: struct.ServerPacket.html
     /// [1]: struct.ClientPacket.html
     /// [2]: trait.ProtocolSerializationExt.html#ty.serialize
-    fn serialize_server(
+    fn serialize_server<'data>(
         &self,
-        packet: &ServerPacket,
+        packet: &ServerPacket<'data>,
     ) -> Result<ServerPacketIterator, Self::SerializeError>;
 
     /// Deserialize a binary packet into a client packet.
-    fn deserialize_client(&self, data: &[u8]) -> Result<ClientPacket, Self::DeserializeError>;
+    fn deserialize_client(
+        &self,
+        data: &[u8],
+    ) -> Result<ClientPacket<'static>, Self::DeserializeError>;
 
     /// Deserialize a binary packet into a server packet.
-    fn deserialize_server(&self, data: &[u8]) -> Result<ServerPacket, Self::DeserializeError>;
+    fn deserialize_server(
+        &self,
+        data: &[u8],
+    ) -> Result<ServerPacket<'static>, Self::DeserializeError>;
 }
 
 /// Helper trait to make working with protocols easier.
@@ -134,34 +140,34 @@ pub trait ProtocolSerializationExt<T>: Protocol {
     fn deserialize(&self, data: &[u8]) -> Result<T, Self::DeserializeError>;
 }
 
-impl<T> ProtocolSerializationExt<ServerPacket> for T
+impl<'data, T> ProtocolSerializationExt<ServerPacket<'data>> for T
 where
     T: Protocol + Sync + Send,
 {
     fn serialize<U>(&self, packet: U) -> Result<ServerPacketIterator, Self::SerializeError>
     where
-        U: Into<ServerPacket>,
+        U: Into<ServerPacket<'data>>,
     {
         self.serialize_server(&packet.into())
     }
 
-    fn deserialize(&self, data: &[u8]) -> Result<ServerPacket, Self::DeserializeError> {
+    fn deserialize(&self, data: &[u8]) -> Result<ServerPacket<'static>, Self::DeserializeError> {
         self.deserialize_server(data)
     }
 }
 
-impl<T> ProtocolSerializationExt<ClientPacket> for T
+impl<'data, T> ProtocolSerializationExt<ClientPacket<'data>> for T
 where
     T: Protocol + Sync + Send,
 {
     fn serialize<U>(&self, packet: U) -> Result<ServerPacketIterator, Self::SerializeError>
     where
-        U: Into<ClientPacket>,
+        U: Into<ClientPacket<'data>>,
     {
         self.serialize_client(&packet.into())
     }
 
-    fn deserialize(&self, data: &[u8]) -> Result<ClientPacket, Self::DeserializeError> {
+    fn deserialize(&self, data: &[u8]) -> Result<ClientPacket<'static>, Self::DeserializeError> {
         self.deserialize_client(data)
     }
 }

@@ -9,9 +9,11 @@ client           = { path="../client" }
 server-v2        = { path="../server-v2" }
 airmash-protocol = { path="../protocol/common" }
 
-tokio = { version="0.2", features=[ "full" ] }
-url = "2.1.0"
-once_cell = "0.1"
+tokio      = { version="0.2", features=[ "full" ] }
+url        = "2.1.0"
+once_cell  = "0.1"
+log        = "0.4"
+env_logger = "0.7"
 
 [dev-dependencies]
 server-v2-macros = { path="../server-v2-macros" }

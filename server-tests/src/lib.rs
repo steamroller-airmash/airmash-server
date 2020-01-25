@@ -4,6 +4,8 @@
 
 pub extern crate client;
 
+mod logger;
+
 pub use airmash_protocol as protocol;
 
 use std::any::Any;
@@ -34,6 +36,13 @@ use server_v2::{
     Position, Team,
 };
 
+static LOGGER: Lazy<env_logger::Logger> = sync_lazy! {
+    env_logger::builder()
+        .is_test(true)
+        .format_timestamp_micros()
+        .build()
+};
+
 pub struct TestRunner {
     url: Url,
 }
@@ -54,10 +63,14 @@ where
     F: Future<Output = R>,
     R: Termination,
 {
+    crate::logger::init();
+
     let socket = SOCKETS.get_socket();
     let res = CatchPanic(run_test_inner(test, socket)).await;
 
     SOCKETS.return_socket(socket);
+
+    crate::logger::log_recorded(&*LOGGER);
 
     match res {
         Ok(x) => x,
@@ -75,7 +88,9 @@ where
 
     let (tx, rx) = channel();
 
+    let logbuffer = crate::logger::current();
     let handle = thread::spawn(move || {
+        crate::logger::set_buffer(logbuffer);
         let mut world = World::new();
         let mut builder = Builder::new(&mut world);
 

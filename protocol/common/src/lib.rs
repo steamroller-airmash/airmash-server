@@ -87,3 +87,34 @@ pub use self::packets::*;
 pub use self::server_packet::*;
 pub use self::traits::*;
 pub use self::types::*;
+
+// Namespace for really common types in error messages
+// so that the error messages end up being shorter.
+mod d {
+    #[derive(Copy, Clone, Default)]
+    pub struct BaseUnit<
+        T,
+        const LENGTH: isize,
+        const TIME: isize,
+        const HEALTH: isize,
+        const ENERGY: isize,
+        const ROT: isize,
+    > {
+        pub value: T,
+    }
+
+    /// A 2D Vector that works with unit conversions.
+    ///
+    /// **Note:** [`Position`][0], [`Velocity`][1],
+    /// and [`Accel`][2] are all instances of this struct
+    /// with different units.
+    ///
+    /// [0]: type.Position.html
+    /// [1]: type.Velocity.html
+    /// [2]: type.Accel.html
+    #[derive(Default, Clone, Copy, PartialEq, Debug)]
+    pub struct Vector2<T> {
+        pub x: T,
+        pub y: T,
+    }
+}

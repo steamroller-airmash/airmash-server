@@ -3,7 +3,10 @@ use super::{Mob, Player};
 use crate::config::CONFIG;
 
 use airmash_protocol::server::*;
-use airmash_protocol::*;
+use airmash_protocol::{
+    GameType, LeaveHorizonType, PlayerStatus, Position, ServerKeyState, ServerPacket, Time,
+    Velocity,
+};
 
 use std::collections::HashMap;
 use std::ops::{Add, Rem};
@@ -258,7 +261,7 @@ impl World {
     fn handle_player_new(&mut self, packet: &PlayerNew) {
         let new = Player {
             id: packet.id.into(),
-            name: packet.name.clone(),
+            name: packet.name.to_string(),
             status: packet.status,
             plane: packet.ty,
             team: packet.team,
@@ -273,7 +276,7 @@ impl World {
         if let Some(_old) = self.players.insert(packet.id.into(), new) {
             warn_unknown_player!(PlayerNew, packet.id);
         }
-        self.names.insert(packet.name.clone(), packet.id.into());
+        self.names.insert(packet.name.to_string(), packet.id.into());
     }
     fn handle_player_leave(&mut self, packet: &PlayerLeave) {
         let removed = self.players.remove(&packet.id.into());
@@ -400,11 +403,11 @@ impl World {
     fn handle_login(&mut self, packet: &Login) {
         self.me = CurrentPlayer {
             id: packet.id.into(),
-            token: packet.token.clone(),
+            token: packet.token.to_string(),
             ..Default::default()
         };
         self.game_ty = packet.ty;
-        self.room = packet.room.clone();
+        self.room = packet.room.to_string();
 
         self.players = packet
             .players
@@ -419,7 +422,7 @@ impl World {
                     level,
                     id: player.id.into(),
                     status: player.status.into(),
-                    name: player.name.clone(),
+                    name: player.name.to_string(),
                     plane: player.ty,
                     team: player.team,
                     pos: player.pos,

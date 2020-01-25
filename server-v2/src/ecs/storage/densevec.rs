@@ -4,6 +4,7 @@ use hibitset::{BitSet, BitSetLike};
 
 use std::mem;
 
+#[derive(Clone, Debug)]
 pub struct DenseVecStorage<T> {
     backing: Vec<T>,
     indices: VecStorage<usize>,
@@ -43,10 +44,7 @@ impl<T> Storage<T> for DenseVecStorage<T> {
 
     fn insert(&mut self, ent: u32, val: T) -> Option<T> {
         if let Some(&index) = self.indices.get(ent) {
-            return Some(mem::replace(
-                unsafe { self.backing.get_unchecked_mut(index) },
-                val,
-            ));
+            return Some(mem::replace(&mut self.backing[index], val));
         }
 
         let index = self.backing.len();
@@ -64,11 +62,18 @@ impl<T> Storage<T> for DenseVecStorage<T> {
 
         let prev_ent = match self.reverse.remove(&prev) {
             Some(prev) => prev,
-            None => unreachable!(),
+            None => {
+                unreachable!("DenseVecStorage reverse map did not contain entry for existing item")
+            }
         };
 
-        if prev_ent != ent {
+        if index != self.backing.len() {
+            assert_ne!(
+                prev_ent, ent,
+                "Entry stored at two locations within DenseVecStorage"
+            );
             self.reverse.insert(index, prev_ent).unwrap();
+            self.indices.insert(prev_ent, index).unwrap();
         }
 
         Some(value)
@@ -88,16 +93,12 @@ impl<T> Storage<T> for DenseVecStorage<T> {
 
     fn get(&self, ent: u32) -> Option<&T> {
         let index = *self.indices.get(ent)?;
-
-        debug_assert!(index < self.backing.len());
-        Some(unsafe { self.backing.get_unchecked(index) })
+        Some(&self.backing[index])
     }
 
     fn get_mut(&mut self, ent: u32) -> Option<&mut T> {
         let index = *self.indices.get(ent)?;
-
-        debug_assert!(index < self.backing.len());
-        Some(unsafe { self.backing.get_unchecked_mut(index) })
+        Some(&mut self.backing[index])
     }
 
     unsafe fn get_unchecked(&self, ent: u32) -> &T {
@@ -114,5 +115,22 @@ impl<T> Storage<T> for DenseVecStorage<T> {
 impl<T> Default for DenseVecStorage<T> {
     fn default() -> Self {
         Self::new()
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::{DenseVecStorage, Storage};
+
+    #[test]
+    fn add_then_remove() {
+        let mut storage = DenseVecStorage::new();
+
+        dbg!(&mut storage).insert(0, ());
+        dbg!(&mut storage).insert(1, ());
+        dbg!(&mut storage).remove(0);
+        dbg!(&mut storage).insert(0, ());
+        dbg!(&mut storage).remove(1);
+        dbg!(&mut storage).remove(0);
     }
 }

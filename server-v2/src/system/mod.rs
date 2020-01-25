@@ -9,11 +9,14 @@ pub mod admin;
 pub mod builtin;
 pub mod collision;
 pub mod event;
+pub mod missile;
 pub mod packet;
 
-mod position_update;
+mod energy_regen;
+mod player_update;
 
-pub use self::position_update::update_positions;
+pub use self::energy_regen::update_player_energy;
+pub use self::player_update::update_positions;
 
 pub use self::inner::register;
 
@@ -28,7 +31,9 @@ mod inner {
             .with_registrar(event::register)
             .with_registrar(collision::register)
             .with_registrar(admin::register)
+            .with_registrar(missile::register)
             //
-            .with::<update_positions>();
+            .with::<update_positions>()
+            .with::<update_player_energy>();
     }
 }

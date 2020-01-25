@@ -4,29 +4,16 @@ use crate::types::Sqrt;
 #[cfg(feature = "serde")]
 use serde::{Deserialize, Deserializer, Serialize, Serializer};
 
+pub use crate::d::Vector2;
+
 /// Required trait to allow specialized impls for self
 /// TODO: Use specialization instead?
 #[doc(hidden)]
 // The current version of rustfmt will format this into
 // a syntax error
-#[cfg_attr(rustfmt, rustfmt_skip)]
+#[cfg_attr(rustfmt, rustfmt::skip)]
 pub auto trait NotVec {}
 impl<T> !NotVec for Vector2<T> {}
-
-/// A 2D Vector that works with unit conversions.
-///
-/// **Note:** [`Position`][0], [`Velocity`][1],
-/// and [`Accel`][2] are all instances of this struct
-/// with different units.
-///
-/// [0]: type.Position.html
-/// [1]: type.Velocity.html
-/// [2]: type.Accel.html
-#[derive(Default, Clone, Copy, PartialEq, Debug)]
-pub struct Vector2<T> {
-    pub x: T,
-    pub y: T,
-}
 
 impl<T> Vector2<T> {
     /// Create a new vector with components that convert
@@ -53,6 +40,14 @@ impl<T> Vector2<T> {
             x: x.into(),
             y: y.into(),
         }
+    }
+
+    /// Create a vector with every element set to `v`.
+    pub fn broadcast(v: T) -> Self
+    where
+        T: Clone,
+    {
+        Self { x: v.clone(), y: v }
     }
 
     /// Take the dot product of two vectors.

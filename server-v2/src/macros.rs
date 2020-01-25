@@ -1,3 +1,9 @@
+/// Attempt to fetch data from a storage.
+///
+/// If there is no such data for that entity then prints
+/// an error message and returns from the current function.
+///
+/// Usage: `try_get!(<entity>, (mut)? <storage>)`
 macro_rules! try_get {
 	($entity:expr, $storage:expr) => {
 		match $storage.get($entity) {
@@ -26,4 +32,15 @@ macro_rules! try_get {
 			line!()
 		);
 	}
+}
+
+/// Similar to the standard library's `dbg!` macro, except outputs
+/// at the debug log level.
+#[allow(unused_macros)]
+macro_rules! logdbg {
+    ($expr:expr) => {{
+        let value = $expr;
+        debug!("[line {}] {} = {:#?}", line!(), stringify!($expr), value);
+        value
+    }};
 }

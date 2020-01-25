@@ -1,9 +1,12 @@
-use error::*;
-use protocol_common::*;
-use serde::*;
+use protocol_common::{client::*, ClientPacket, KeyCode, Player};
+
+use crate::error::{
+    ChainError, DeserializeError, DeserializeErrorType, FieldName, FieldSpec, SerializeError,
+};
+use crate::serde::{Deserialize, Deserializer, Serialize, Serializer};
 
 impl_serde! {
-    struct client::Login {
+    struct Login['d] {
         protocol: u8,
         name: text,
         session: text,
@@ -12,52 +15,52 @@ impl_serde! {
         flag: text,
     }
 
-    struct client::Backup {
+    struct Backup['d] {
         token: text,
     }
 
-    struct client::Horizon {
+    struct Horizon {
         horizon_x: u16,
         horizon_y: u16,
     }
 
-    struct client::Pong {
+    struct Pong {
         num: u32,
     }
 
-    struct client::Key {
+    struct Key {
         seq: u32,
         key: KeyCode,
         state: bool
     }
 
-    struct client::Command {
+    struct Command['d] {
         com: text,
         data: text
     }
 
-    struct client::Chat {
+    struct Chat['d] {
         text: text
     }
 
-    struct client::Whisper {
+    struct Whisper['d] {
         id: Player,
         text: text
     }
 
-    struct client::Say {
+    struct Say['d] {
         text: text
     }
 
-    struct client::TeamChat {
+    struct TeamChat['d] {
         text: text
     }
 
-    struct client::VoteMute {
+    struct VoteMute {
         id: Player
     }
 
-    struct client::LocalPing {
+    struct LocalPing {
         auth: u32
     }
 }
@@ -79,7 +82,7 @@ mod consts {
     pub const LOCALPING: u8 = 255;
 }
 
-impl Serialize for ClientPacket {
+impl<'d> Serialize for ClientPacket<'d> {
     fn serialize(&self, ser: &mut Serializer) -> Result<(), SerializeError> {
         use self::consts::*;
         use self::ClientPacket::*;
@@ -117,7 +120,7 @@ macro_rules! match_case {
     };
 }
 
-impl Deserialize for ClientPacket {
+impl<'d> Deserialize for ClientPacket<'d> {
     fn deserialize<'de>(de: &mut Deserializer<'de>) -> Result<Self, DeserializeError> {
         use self::consts::*;
         use self::ClientPacket::*;

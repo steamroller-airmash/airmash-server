@@ -1,8 +1,10 @@
 use crate::types::Player;
 
+use std::borrow::Cow;
+
 #[derive(Clone, Debug)]
 #[cfg_attr(feature = "serde", derive(Serialize, Deserialize))]
-pub struct ChatTeam {
+pub struct ChatTeam<'data> {
     pub id: Player,
-    pub text: String,
+    pub text: Cow<'data, str>,
 }

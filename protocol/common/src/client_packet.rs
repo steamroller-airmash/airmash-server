@@ -21,49 +21,33 @@ use crate::client::*;
 ///
 /// [0]: https://doc.rust-lang.org/std/convert/trait.From.html
 /// [1]: https://doc.rust-lang.org/std/convert/trait.Into.html#tymethod.into
-#[derive(Clone, Debug)]
+#[derive(Clone, Debug, From)]
 #[cfg_attr(feature = "serde", derive(Serialize, Deserialize))]
-pub enum ClientPacket {
-    Login(Login),
-    Backup(Backup),
+pub enum ClientPacket<'data> {
+    Login(Login<'data>),
+    Backup(Backup<'data>),
     Horizon(Horizon),
     Ack,
     Pong(Pong),
     Key(Key),
-    Command(Command),
+    Command(Command<'data>),
     ScoreDetailed,
-    Chat(Chat),
-    TeamChat(TeamChat),
-    Whisper(Whisper),
-    Say(Say),
+    Chat(Chat<'data>),
+    TeamChat(TeamChat<'data>),
+    Whisper(Whisper<'data>),
+    Say(Say<'data>),
     VoteMute(VoteMute),
     LocalPing(LocalPing),
 }
 
-macro_rules! impl_from_newtype {
-    ($type:tt) => {
-        impl_from_newtype_inner!(ClientPacket, $type);
-    };
+impl From<Ack> for ClientPacket<'_> {
+    fn from(_: Ack) -> Self {
+        Self::Ack
+    }
 }
 
-macro_rules! impl_from_empty {
-    ($type:tt) => {
-        impl_from_empty_inner!(ClientPacket, $type);
-    };
+impl From<ScoreDetailed> for ClientPacket<'_> {
+    fn from(_: ScoreDetailed) -> Self {
+        Self::ScoreDetailed
+    }
 }
-
-impl_from_newtype!(Login);
-impl_from_newtype!(Backup);
-impl_from_newtype!(Horizon);
-impl_from_newtype!(Pong);
-impl_from_newtype!(Key);
-impl_from_newtype!(Command);
-impl_from_newtype!(Chat);
-impl_from_newtype!(TeamChat);
-impl_from_newtype!(Whisper);
-impl_from_newtype!(Say);
-impl_from_newtype!(VoteMute);
-impl_from_newtype!(LocalPing);
-
-impl_from_empty!(Ack);
-impl_from_empty!(ScoreDetailed);

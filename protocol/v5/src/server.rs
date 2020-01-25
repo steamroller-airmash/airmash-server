@@ -1,9 +1,10 @@
+use crate::serde::{Deserialize, Deserializer, Serialize, Serializer};
 use error::*;
+use protocol_common::server::*;
 use protocol_common::*;
-use serde::*;
 
 impl_serde! {
-    struct server::LoginPlayer {
+    struct LoginPlayer['d] {
         id: Player,
         status: PlayerStatus,
         level: Level,
@@ -16,7 +17,7 @@ impl_serde! {
         upgrades: Upgrades
     }
 
-    struct server::Login {
+    struct Login['d] {
         success: bool,
         id: Player,
         team: Team,
@@ -27,23 +28,23 @@ impl_serde! {
         players: array_large
     }
 
-    struct server::Ping {
+    struct Ping {
         clock: u32,
         num: u32
     }
 
-    struct server::PingResult {
+    struct PingResult {
         ping: u16,
         players_total: u32,
         players_game: u32
     }
 
-    struct server::CommandReply {
+    struct CommandReply['d] {
         ty: CommandReplyType,
         text: text_big
     }
 
-    struct server::PlayerNew {
+    struct PlayerNew['d] {
         id: Player,
         status: PlayerStatus,
         name: text,
@@ -55,11 +56,11 @@ impl_serde! {
         upgrades: Upgrades
     }
 
-    struct server::PlayerLeave {
+    struct PlayerLeave {
         id: Player,
     }
 
-    struct server::PlayerUpdate {
+    struct PlayerUpdate {
         clock: u32,
         id: Player,
         keystate: ServerKeyState,
@@ -69,7 +70,7 @@ impl_serde! {
         speed: velocity
     }
 
-    struct server::PlayerFireProjectile {
+    struct PlayerFireProjectile {
         id: Mob,
         ty: MobType,
         pos: position,
@@ -78,7 +79,7 @@ impl_serde! {
         max_speed: speed
     }
 
-    struct server::PlayerFire {
+    struct PlayerFire {
         clock: u32,
         id: Player,
         energy: energy,
@@ -86,31 +87,31 @@ impl_serde! {
         projectiles: array_small
     }
 
-    struct server::PlayerRespawn {
+    struct PlayerRespawn {
         id: Player,
         pos: position24,
         rot: rotation,
         upgrades: Upgrades
     }
 
-    struct server::PlayerFlag {
+    struct PlayerFlag {
         id: Player,
         flag: FlagCode
     }
 
-    struct server::PlayerLevel {
+    struct PlayerLevel {
         id: Player,
         ty: PlayerLevelType,
         level: Level
     }
 
-    struct server::PlayerHitPlayer {
+    struct PlayerHitPlayer {
         id: Player,
         health: health,
         health_regen: health_regen
     }
 
-    struct server::PlayerHit {
+    struct PlayerHit {
         id: Mob,
         ty: MobType,
         pos: position,
@@ -118,13 +119,13 @@ impl_serde! {
         players: array_small
     }
 
-    struct server::PlayerKill {
+    struct PlayerKill {
         id: Player,
         killer: option_player,
         pos: position
     }
 
-    struct server::PlayerUpgrade {
+    struct PlayerUpgrade {
         upgrades: u16,
         ty: UpgradeType,
         speed: u8,
@@ -133,26 +134,26 @@ impl_serde! {
         missile: u8
     }
 
-    struct server::PlayerType {
+    struct PlayerType {
         id: Player,
         ty: PlaneType
     }
 
-    struct server::PlayerPowerup {
+    struct PlayerPowerup {
         ty: PowerupType,
         duration: u32,
     }
 
-    struct server::PlayerReteamPlayer {
+    struct PlayerReteamPlayer {
         id: Player,
         team: Team
     }
 
-    struct server::PlayerReteam {
+    struct PlayerReteam {
         players: array_large
     }
 
-    struct server::GameFlag {
+    struct GameFlag {
         ty: FlagUpdateType,
         flag: Flag,
         id: option_player,
@@ -161,15 +162,15 @@ impl_serde! {
         redteam: u8
     }
 
-    struct server::GameSpectate {
+    struct GameSpectate {
         id: Player
     }
 
-    struct server::GamePlayersAlive {
+    struct GamePlayersAlive {
         players: u16,
     }
 
-    struct server::GameFirewall {
+    struct GameFirewall {
         ty: FirewallUpdateType,
         status: FirewallStatus,
         pos: position,
@@ -177,7 +178,7 @@ impl_serde! {
         speed: f32
     }
 
-    struct server::EventRepelPlayer {
+    struct EventRepelPlayer {
         id: Player,
         keystate: ServerKeyState,
         pos: position,
@@ -189,7 +190,7 @@ impl_serde! {
         health_regen: health_regen
     }
 
-    struct server::EventRepelMob {
+    struct EventRepelMob {
         id: Mob,
         ty: MobType,
         pos: position,
@@ -198,7 +199,7 @@ impl_serde! {
         max_speed: speed
     }
 
-    struct server::EventRepel {
+    struct EventRepel {
         clock: u32,
         id: Player,
         pos: position,
@@ -210,7 +211,7 @@ impl_serde! {
         mobs: array_small
     }
 
-    struct server::EventBoost {
+    struct EventBoost {
         clock: u32,
         id: Player,
         boost: bool,
@@ -221,7 +222,7 @@ impl_serde! {
         energy_regen: energy_regen
     }
 
-    struct server::EventBounce {
+    struct EventBounce {
         clock: u32,
         id: Player,
         keystate: ServerKeyState,
@@ -230,19 +231,19 @@ impl_serde! {
         speed: velocity
     }
 
-    struct server::EventStealth {
+    struct EventStealth {
         id: Player,
         state: bool,
         energy: energy,
         energy_regen: energy_regen
     }
 
-    struct server::EventLeaveHorizon {
+    struct EventLeaveHorizon {
         ty: LeaveHorizonType,
         id: u16
     }
 
-    struct server::MobUpdate {
+    struct MobUpdate {
         clock: u32,
         id: Mob,
         ty: MobType,
@@ -252,24 +253,24 @@ impl_serde! {
         max_speed: speed
     }
 
-    struct server::MobUpdateStationary {
+    struct MobUpdateStationary {
         id: Mob,
         ty: MobType,
         pos: position_f32,
     }
 
-    struct server::MobDespawn {
+    struct MobDespawn {
         id: Mob,
         ty: DespawnType
     }
 
-    struct server::MobDespawnCoords {
+    struct MobDespawnCoords {
         id: Mob,
         ty: MobType,
         pos: position,
     }
 
-    struct server::ScoreUpdate {
+    struct ScoreUpdate {
         id: Player,
         score: Score,
         earnings: Score,
@@ -278,23 +279,23 @@ impl_serde! {
         total_deaths: u32
     }
 
-    struct server::ScoreBoardData {
+    struct ScoreBoardData {
         id: Player,
         score: Score,
         level: Level
     }
 
-    struct server::ScoreBoardRanking {
+    struct ScoreBoardRanking {
         id: Player,
         pos: low_res_pos,
     }
 
-    struct server::ScoreBoard {
+    struct ScoreBoard {
         data: array_large,
         rankings: array_large
     }
 
-    struct server::ScoreDetailedFFAEntry {
+    struct ScoreDetailedFFAEntry {
         id: Player,
         level: Level,
         score: Score,
@@ -304,11 +305,11 @@ impl_serde! {
         ping: u16
     }
 
-    struct server::ScoreDetailedFFA {
+    struct ScoreDetailedFFA {
         scores: array_large
     }
 
-    struct server::ScoreDetailedCTFEntry {
+    struct ScoreDetailedCTFEntry {
         id: Player,
         level: Level,
         captures: u16,
@@ -319,11 +320,11 @@ impl_serde! {
         ping: u16
     }
 
-    struct server::ScoreDetailedCTF {
+    struct ScoreDetailedCTF {
         scores: array_large
     }
 
-    struct server::ScoreDetailedBTREntry {
+    struct ScoreDetailedBTREntry {
         id: Player,
         level: Level,
         alive: bool,
@@ -335,47 +336,47 @@ impl_serde! {
         ping: u16
     }
 
-    struct server::ScoreDetailedBTR {
+    struct ScoreDetailedBTR {
         scores: array_large
     }
 
-    struct server::ChatTeam {
+    struct ChatTeam['d] {
         id: Player,
         text: text
     }
 
-    struct server::ChatPublic {
+    struct ChatPublic['d] {
         id: Player,
         text: text
     }
 
-    struct server::ChatSay {
+    struct ChatSay['d] {
         id: Player,
         text: text
     }
 
-    struct server::ChatWhisper {
+    struct ChatWhisper['d] {
         from: Player,
         to: Player,
         text: text
     }
 
-    struct server::ChatVoteMutePassed {
+    struct ChatVoteMutePassed {
         id: Player
     }
 
-    struct server::ServerMessage {
+    struct ServerMessage['d] {
         ty: ServerMessageType,
         duration: u32,
         text: text_big
     }
 
-    struct server::ServerCustom {
+    struct ServerCustom['d] {
         ty: ServerCustomType,
         data: text_big
     }
 
-    struct server::Error {
+    struct Error {
         error: ErrorType
     }
 }
@@ -429,7 +430,7 @@ mod consts {
     pub const SERVER_CUSTOM: u8 = 91;
 }
 
-impl Serialize for ServerPacket {
+impl<'data> Serialize for ServerPacket<'data> {
     fn serialize(&self, ser: &mut Serializer) -> Result<(), SerializeError> {
         use self::consts::*;
         use self::ServerPacket::*;
@@ -497,7 +498,7 @@ macro_rules! match_case {
     };
 }
 
-impl Deserialize for ServerPacket {
+impl Deserialize for ServerPacket<'static> {
     fn deserialize<'de>(de: &mut Deserializer<'de>) -> Result<Self, DeserializeError> {
         use self::consts::*;
         use self::ServerPacket::*;

@@ -14,10 +14,10 @@
 //! doesn't necessarily end up sending the updated position
 //! of said flags to client.
 
-mod dump;
+mod debug;
 mod teleport;
 
-pub use self::dump::dump_entity;
+pub use self::debug::dump_entity;
 pub use self::inner::shutdown;
 pub use self::teleport::*;
 
@@ -43,7 +43,7 @@ mod inner {
     /// Admin command to shutdown the entire server.
     #[event_handler]
     pub fn shutdown<'a>(
-        evt: &ClientPacket<Command>,
+        evt: &ClientPacket<Command<'static>>,
 
         config: &Read<'a, Config>,
         flag: &mut WriteExpect<'a, ShutdownFlag>,

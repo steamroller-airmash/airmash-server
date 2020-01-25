@@ -16,17 +16,7 @@ pub use self::typedefs::*;
 /// [0]: struct.AirmashUnits.html#method.inner
 pub type BaseType = f32;
 
-#[derive(Copy, Clone, Default)]
-pub struct BaseUnit<
-    T,
-    const LENGTH: isize,
-    const TIME: isize,
-    const HEALTH: isize,
-    const ENERGY: isize,
-    const ROT: isize,
-> {
-    value: T,
-}
+pub use crate::d::BaseUnit;
 
 pub trait UnitOps<B> {
     type Mul;

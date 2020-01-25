@@ -50,9 +50,9 @@ where
         Ok(self.stream.send(Message::Binary(buf)).await?)
     }
 
-    pub async fn send<P>(&mut self, packet: P) -> ClientResult<()>
+    pub async fn send<'d, P>(&mut self, packet: P) -> ClientResult<()>
     where
-        P: Into<ClientPacket> + 'static,
+        P: Into<ClientPacket<'d>>,
     {
         let packets = ProtocolV5 {}.serialize_client(&packet.into())?;
 
@@ -63,7 +63,7 @@ where
         Ok(())
     }
 
-    pub async fn next(&mut self) -> ClientResult<Option<ServerPacket>> {
+    pub async fn next(&mut self) -> ClientResult<Option<ServerPacket<'static>>> {
         let buf = loop {
             let msg = match self.stream.next().await {
                 Some(x) => x?,
@@ -86,11 +86,11 @@ where
         Ok(Some(val))
     }
 
-    async fn packet_update<'a>(&'a mut self, packet: &'a ServerPacket) -> ClientResult<()> {
+    async fn packet_update<'a>(&'a mut self, packet: &'a ServerPacket<'_>) -> ClientResult<()> {
         use self::ServerPacket::*;
         use airmash_protocol::client::Pong;
 
-        self.world.handle_packet(packet);
+        self.world.handle_packet(dbg!(packet));
 
         match packet {
             Ping(p) => self.send(Pong { num: p.num }).await?,
@@ -120,7 +120,7 @@ where
     pub async fn next_timeout(
         &mut self,
         timeout: Duration,
-    ) -> ClientResult<Timeout<Option<ServerPacket>>> {
+    ) -> ClientResult<Timeout<Option<ServerPacket<'static>>>> {
         use tokio::time::{delay_until, Instant};
 
         let stop = Instant::now() + timeout;
@@ -252,24 +252,24 @@ where
     }
 
     /// Say something in chat
-    pub async fn chat(&mut self, text: String) -> ClientResult<()> {
-        self.send(client::Chat { text }).await
+    pub async fn chat(&mut self, text: &str) -> ClientResult<()> {
+        self.send(client::Chat { text: text.into() }).await
     }
 
     /// Say something in a text bubble
-    pub async fn team_chat(&mut self, text: String) -> ClientResult<()> {
-        self.send(client::TeamChat { text }).await
+    pub async fn team_chat(&mut self, text: &str) -> ClientResult<()> {
+        self.send(client::TeamChat { text: text.into() }).await
     }
 
     /// Say something in a text bubble
-    pub async fn say(&mut self, text: String) -> ClientResult<()> {
-        self.send(client::Say { text }).await
+    pub async fn say(&mut self, text: &str) -> ClientResult<()> {
+        self.send(client::Say { text: text.into() }).await
     }
 
     /// Wait to receive a login packet. If the
     /// connection closes before receiving the
     /// packet then it will return `None`.
-    pub async fn wait_for_login(&mut self) -> ClientResult<Option<server::Login>> {
+    pub async fn wait_for_login(&mut self) -> ClientResult<Option<server::Login<'static>>> {
         while let Some(x) = self.next().await? {
             if let ServerPacket::Login(p) = x {
                 return Ok(Some(p));
@@ -280,18 +280,18 @@ where
     }
 
     /// Login to the server with the given name
-    pub async fn login(&mut self, name: &str) -> ClientResult<Option<server::Login>> {
+    pub async fn login(&mut self, name: &str) -> ClientResult<Option<server::Login<'static>>> {
         use airmash_protocol::client::Login;
 
-        self.send(Login {
-            flag: "JOLLY".to_string(),
-            name: name.to_string(),
+        let login = Login {
+            flag: "JOLLY".into(),
+            name: name.into(),
             horizon_x: 4000,
             horizon_y: 4000,
             protocol: 5,
-            session: "".to_string(),
-        })
-        .await?;
+            session: "".into(),
+        };
+        self.send(login).await?;
 
         self.wait_for_login().await
     }
@@ -386,8 +386,8 @@ where
         use airmash_protocol::client::Command;
 
         self.send(Command {
-            com: cmd.to_string(),
-            data: args.to_string(),
+            com: cmd.into(),
+            data: args.into(),
         })
         .await
     }

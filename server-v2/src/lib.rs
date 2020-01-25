@@ -33,7 +33,7 @@ pub use airmash_protocol as protocol;
 
 pub use crate::protocol::{
     AccelScalar, Distance, Energy, EnergyRegen, Health, HealthRegen, MobType as Mob,
-    PlaneType as Plane, PlayerStatus, Position, Rotation, RotationRate, Speed, Team, Vector2,
+    PlaneType as Plane, PlayerStatus, Position, Rotation, RotationRate, Speed, Team, Time, Vector2,
     Velocity,
 };
 
