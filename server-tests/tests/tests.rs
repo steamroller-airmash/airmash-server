@@ -5,7 +5,10 @@ use server_v2_macros::client_test;
 use std::error::Error;
 use std::time::Duration;
 
-use airmash_protocol::KeyCode;
+use airmash_protocol::{KeyCode, ServerPacket};
+use client::Timeout;
+
+use log::info;
 
 /// Test to see that pressing the up key does, in fact, cause
 /// the player to move.
@@ -114,6 +117,36 @@ async fn test_join_leave_crash(runner: TestRunner) -> Result<(), Box<dyn Error>>
     c3.login("B3").await?;
     c2.quit().await?;
     c3.quit().await?;
+
+    Ok(())
+}
+
+#[client_test]
+async fn missile_hits_terrain(runner: TestRunner) -> Result<(), Box<dyn Error>> {
+    let mut client = runner.new_client().await?;
+
+    client.login("MissileBot").await?;
+    // Need to wait 1 sec before we can fire missiles
+    client.wait(Duration::from_secs(1)).await?;
+    client.send_command("teleport", "0 -272 -1214").await?;
+    client.press_key(KeyCode::Fire).await?;
+    client.wait(Duration::from_millis(200)).await?;
+    client.release_key(KeyCode::Fire).await?;
+
+    let packet = client
+        .wait_for_pred(Duration::from_secs(5), |packet| {
+            info!("{:?}", packet);
+            match packet {
+                ServerPacket::MobDespawnCoords { .. } => true,
+                _ => false,
+            }
+        })
+        .await?;
+
+    match packet {
+        Timeout::Value(Some(_)) => (),
+        _ => panic!("Fired missile did not impact terrain"),
+    }
 
     Ok(())
 }

@@ -36,6 +36,8 @@ use server_v2::{
     Position, Team,
 };
 
+use log::info;
+
 static LOGGER: Lazy<env_logger::Logger> = sync_lazy! {
     env_logger::builder()
         .is_test(true)
@@ -53,6 +55,7 @@ impl TestRunner {
     }
 
     pub async fn new_client(&self) -> ClientResult<Client<TcpStream>> {
+        eprintln!("Connecting to {}", self.url);
         Client::connect(self.url.clone()).await
     }
 }
@@ -65,10 +68,23 @@ where
 {
     crate::logger::init();
 
-    let socket = SOCKETS.get_socket();
-    let res = CatchPanic(run_test_inner(test, socket)).await;
+    let external = match std::env::var("AIRMASH_TEST_SERVER") {
+        Ok(e) => e.parse().ok(),
+        Err(_) => None,
+    };
 
-    SOCKETS.return_socket(socket);
+    let is_external = external.is_some();
+
+    if is_external {
+        info!("Using external address: {}", external.as_ref().unwrap());
+    }
+
+    let socket = external.unwrap_or_else(|| SOCKETS.get_socket());
+    let res = CatchPanic(run_test_inner(test, socket, is_external)).await;
+
+    if !is_external {
+        SOCKETS.return_socket(socket);
+    }
 
     crate::logger::log_recorded(&*LOGGER);
 
@@ -78,18 +94,25 @@ where
     }
 }
 
-async fn run_test_inner<T, F, R>(test: T, socket: SocketAddr) -> R
+async fn run_test_inner<T, F, R>(test: T, socket: SocketAddr, external: bool) -> R
 where
     T: FnOnce(TestRunner) -> F,
     F: Future<Output = R>,
     R: Termination,
 {
-    eprintln!("Creating server on {}", socket);
+    if !external {
+        eprintln!("Creating server on {}", socket);
+    }
 
     let (tx, rx) = channel();
 
     let logbuffer = crate::logger::current();
     let handle = thread::spawn(move || {
+        if external {
+            tx.send(()).unwrap();
+            return;
+        }
+
         crate::logger::set_buffer(logbuffer);
         let mut world = World::new();
         let mut builder = Builder::new(&mut world);
@@ -118,7 +141,9 @@ where
     let url: Url = format!("ws://{}", socket).parse().unwrap();
     let res = CatchPanic(test(TestRunner::new(url.clone()))).await;
 
-    kill_server(TestRunner::new(url)).await.unwrap();
+    if !external {
+        kill_server(TestRunner::new(url)).await.unwrap();
+    }
 
     let _ = handle.join();
 

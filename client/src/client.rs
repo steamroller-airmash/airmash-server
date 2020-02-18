@@ -111,6 +111,7 @@ impl<S> Client<S>
 where
     S: AsyncRead + AsyncWrite + Unpin,
 {
+    /// Just process packets indefinitely.
     pub async fn process_indefinitely(&mut self) -> ClientResult<()> {
         loop {
             let _ = self.next().await?;
@@ -128,6 +129,44 @@ where
         select! {
             _ = delay_until(stop).fuse() => Ok(Timeout::Timeout(std::time::Instant::now())),
             packet = self.next().fuse() => Ok(Timeout::Value(packet?))
+        }
+    }
+
+    async fn _wait_for_pred<P>(
+        &mut self,
+        mut pred: P,
+    ) -> ClientResult<Option<ServerPacket<'static>>>
+    where
+        P: FnMut(&ServerPacket<'static>) -> bool,
+    {
+        loop {
+            let value = self.next().await?;
+            match &value {
+                Some(ref x) if pred(&x) => (),
+                None => (),
+                _ => continue,
+            }
+
+            return Ok(value);
+        }
+    }
+
+    /// Wait until the predicate returns true or we time out.
+    pub async fn wait_for_pred<P>(
+        &mut self,
+        timeout: Duration,
+        pred: P,
+    ) -> ClientResult<Timeout<Option<ServerPacket<'static>>>>
+    where
+        P: FnMut(&ServerPacket<'static>) -> bool,
+    {
+        use tokio::time::{delay_until, Instant};
+
+        let stop = Instant::now() + timeout;
+
+        select! {
+            _ = delay_until(stop).fuse() => Ok(Timeout::Timeout(std::time::Instant::now())),
+            packet = self._wait_for_pred(pred).fuse() => Ok(Timeout::Value(packet?))
         }
     }
 
@@ -266,9 +305,8 @@ where
         self.send(client::Say { text: text.into() }).await
     }
 
-    /// Wait to receive a login packet. If the
-    /// connection closes before receiving the
-    /// packet then it will return `None`.
+    /// Wait to receive a login packet. If the connection closes before
+    /// receiving the packet then it will return `None`.
     pub async fn wait_for_login(&mut self) -> ClientResult<Option<server::Login<'static>>> {
         while let Some(x) = self.next().await? {
             if let ServerPacket::Login(p) = x {
@@ -348,6 +386,10 @@ where
         self.release_key(KeyCode::Up).await
     }
 
+    /// Follow a player until the client shuts down.
+    ///
+    /// If you want to only follow a player for a certain amount of
+    /// time, use select to only run this for a certiain amount of time.
     pub async fn follow(&mut self, player: u16) -> ClientResult<()> {
         let mut pos;
         let mut prev = Instant::now();
@@ -382,6 +424,8 @@ where
         self.release_key(KeyCode::Up).await
     }
 
+    /// Send a server command. This is used for things such as respawning,
+    /// admin commands, changing the flag, and more.
     pub async fn send_command(&mut self, cmd: &str, args: &str) -> ClientResult<()> {
         use airmash_protocol::client::Command;
 

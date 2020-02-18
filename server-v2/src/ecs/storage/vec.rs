@@ -67,6 +67,10 @@ impl<T> Storage<T> for VecStorage<T> {
     }
 
     fn remove_all<B: BitSetLike>(&mut self, bits: B) {
+        if !std::mem::needs_drop::<T>() {
+            self.bitset &= &BitSetNot(&bits);
+            return;
+        }
         let bitand = self.bitset.clone() & &bits;
         self.bitset &= &BitSetNot(&bits);
 

@@ -6,38 +6,34 @@ use fxhash::FxHashSet as HashSet;
 
 use std::ops::{Deref, DerefMut};
 
+macro_rules! impl_deref {
+    ($type:ident) => {
+        impl Deref for $type {
+            type Target = Grid;
+
+            fn deref(&self) -> &Self::Target {
+                &self.0
+            }
+        }
+
+        impl DerefMut for $type {
+            fn deref_mut(&mut self) -> &mut Self::Target {
+                &mut self.0
+            }
+        }
+    };
+}
+
 #[derive(Default)]
 pub struct PlayerGrid(pub Grid);
-
-impl Deref for PlayerGrid {
-    type Target = Grid;
-
-    fn deref(&self) -> &Self::Target {
-        &self.0
-    }
-}
-
-impl DerefMut for PlayerGrid {
-    fn deref_mut(&mut self) -> &mut Self::Target {
-        &mut self.0
-    }
-}
+#[derive(Default)]
+pub struct MissileGrid(pub Grid);
 
 pub struct Terrain(pub Grid);
 
-impl Deref for Terrain {
-    type Target = Grid;
-
-    fn deref(&self) -> &Self::Target {
-        &self.0
-    }
-}
-
-impl DerefMut for Terrain {
-    fn deref_mut(&mut self) -> &mut Self::Target {
-        &mut self.0
-    }
-}
+impl_deref!(PlayerGrid);
+impl_deref!(MissileGrid);
+impl_deref!(Terrain);
 
 impl Default for Terrain {
     fn default() -> Self {

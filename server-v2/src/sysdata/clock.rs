@@ -16,6 +16,6 @@ pub struct ReadClock<'a> {
 
 impl<'a> ReadClock<'a> {
     pub fn ticks(&self) -> u32 {
-        (self.frame.0 - self.start.0).to_clock()
+        (self.frame.0 - self.start.0).to_clock() as u32
     }
 }

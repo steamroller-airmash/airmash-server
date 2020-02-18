@@ -38,7 +38,7 @@ fn player_bounce<'a>(
     *try_get!(entity, mut vel) = speed;
 
     let packet = EventBounce {
-        clock: (current.0 - start.0).to_clock(),
+        clock: (current.0 - start.0).to_clock() as u32,
         id: entity.into(),
         pos,
         rot,

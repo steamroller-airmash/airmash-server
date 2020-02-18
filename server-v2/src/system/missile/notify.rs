@@ -6,7 +6,7 @@ use crate::sysdata::{Connections, ReadClock};
 use crate::{Energy, EnergyRegen, Mob, Position, Velocity};
 
 #[event_handler]
-fn missile_notify<'a>(
+fn missile_notify_fire<'a>(
     evt: &MissileFire,
 
     mob: &ReadStorage<'a, Mob>,

@@ -12,3 +12,15 @@ impl PlayerTerrainCollision {
         self.player.ent
     }
 }
+
+#[derive(Copy, Clone, Debug)]
+pub struct MissileTerrainCollision {
+    pub missile: HitCircle,
+    pub terrain: HitCircle,
+}
+
+impl MissileTerrainCollision {
+    pub fn missile(&self) -> Option<Entity> {
+        self.missile.ent
+    }
+}

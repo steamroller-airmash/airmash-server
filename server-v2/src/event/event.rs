@@ -60,15 +60,6 @@ pub struct PlayerSpectate {
     pub is_spec: bool,
 }
 
-// #[derive(Copy, Clone, Debug, Hash, PartialEq, Eq)]
-// pub struct PlayerTerrainCollision(pub Collision);
-// #[derive(Copy, Clone, Debug, Hash, PartialEq, Eq)]
-// pub struct PlayerMissileCollision(pub Collision);
-// #[derive(Copy, Clone, Debug, Hash, PartialEq, Eq)]
-// pub struct MissileTerrainCollision(pub Collision);
-// #[derive(Copy, Clone, Debug, Hash, PartialEq, Eq)]
-// pub struct PlayerPowerupCollision(pub Collision);
-
 #[derive(Copy, Clone, Debug)]
 pub struct PlayerStealth {
     pub stealthed: bool,
@@ -174,12 +165,12 @@ pub enum MissileDespawnType {
     LifetimeEnded,
 }
 
-#[derive(Copy, Clone, Debug)]
+#[derive(Clone, Debug)]
 pub struct MissileDespawn {
-    pub missile: Entity,
+    pub missile: EntityRef,
     pub ty: MissileDespawnType,
     pub pos: Position,
-    pub mob: Mob,
+    pub mob: MobType,
 }
 
 #[derive(Copy, Clone, Debug, Eq, Hash, PartialEq)]

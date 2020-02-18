@@ -34,6 +34,8 @@ pub mod channel {
     pub type OnPlayerPowerup = EventChannel<PlayerPowerup>;
 
     pub type OnPlayerTerrainCollision = EventChannel<PlayerTerrainCollision>;
+    pub type OnMissileTerrainCollision = EventChannel<MissileTerrainCollision>;
 
     pub type OnMissileFire = EventChannel<MissileFire>;
+    pub type OnMissileDespawn = EventChannel<MissileDespawn>;
 }

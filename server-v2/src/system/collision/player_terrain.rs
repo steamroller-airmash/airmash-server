@@ -4,8 +4,9 @@ use crate::ecs::prelude::*;
 use crate::event::collision::PlayerTerrainCollision;
 use crate::resource::channel::OnPlayerTerrainCollision;
 use crate::resource::collision::*;
+use crate::system::update_positions;
 
-#[system]
+#[system(deps = update_positions)]
 fn player_terrain_collision<'a>(
     entities: Entities<'a>,
     pos: ReadStorage<'a, Position>,
