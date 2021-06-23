@@ -31,12 +31,12 @@ macro_rules! hit_circle {
 					value_unsafe: $y as f32,
 					_marker: PhantomData,
 				},
-				},
+			},
 			radius: Distance {
 				value_unsafe: $r as f32,
 				_marker: PhantomData,
-				},
-			}
+			},
+		}
 	};
 }
 

@@ -9,7 +9,7 @@ macro_rules! try_get_error {
 			stringify!($storage),
 			ent,
 			line!()
-			);
+		);
 
 		#[cfg(features = "sentry")]
 		$crate::utils::_internal_log_sentry_error(
@@ -17,7 +17,7 @@ macro_rules! try_get_error {
 			line!(),
 			stringify!($storage),
 			ent,
-			);
+		);
 	};
 }
 
@@ -52,8 +52,8 @@ macro_rules! log_none {
 			None => {
 				try_get_error!($ent, $storage);
 				None
-				}
 			}
+		}
 	};
 	($ent:expr, mut $storage:expr) => {
 		match $storage.get_mut($ent) {
@@ -61,8 +61,8 @@ macro_rules! log_none {
 			None => {
 				try_get_error!($ent, $storage);
 				None
-				}
 			}
+		}
 	};
 }
 
@@ -75,8 +75,8 @@ macro_rules! try_get {
 			None => {
 				try_get_error!($ent, $storage);
 				return;
-				}
 			}
+		}
 	};
 	($ent:expr, mut $storage:expr) => {
 		match $storage.get_mut($ent) {
@@ -84,7 +84,7 @@ macro_rules! try_get {
 			None => {
 				try_get_error!($ent, $storage);
 				return;
-				}
 			}
+		}
 	};
 }
