@@ -10,6 +10,8 @@ members = [
 	# "base",
 	# "ctf",
 	# "ffa",
+	"server-next",
 	"utils/bounded-queue",
-	"utils/special-map"
+	"utils/special-map",
+	"utils/kdtree"
 ]
