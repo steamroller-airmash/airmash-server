@@ -4,8 +4,6 @@
 #[macro_use]
 extern crate log;
 #[macro_use]
-extern crate specs_derive;
-#[macro_use]
 extern crate shred_derive;
 #[macro_use]
 extern crate lazy_static;
@@ -13,7 +11,7 @@ extern crate lazy_static;
 extern crate serde;
 
 // Regular Dependencies
-extern crate airmash_protocol_v5 as protocol_v5;
+// extern crate airmash_protocol_v5 as protocol_v5;
 
 // Public dependencies
 pub extern crate airmash_protocol as protocol;

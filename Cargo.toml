@@ -14,6 +14,6 @@ members = [
 	"base",
 	"ctf",
 	"ffa",
-	"bounded-queue",
-	"special-map"
+	"utils/bounded-queue",
+	"utils/special-map"
 ]
