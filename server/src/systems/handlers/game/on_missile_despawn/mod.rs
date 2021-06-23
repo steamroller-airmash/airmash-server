@@ -6,7 +6,7 @@ pub use self::send_mob_despawn_coords::SendMobDespawnCoords;
 
 pub type AllEventHandlers = (SendMobDespawn, SendMobDespawnCoords);
 pub type KnownEventSources = (
-	crate::systems::missile::MissileCull,
-	crate::systems::missile::MissileHit,
-	crate::systems::collision::MissileExplodeSystem,
+  crate::systems::missile::MissileCull,
+  crate::systems::missile::MissileHit,
+  crate::systems::collision::MissileExplodeSystem,
 );

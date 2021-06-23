@@ -9,10 +9,10 @@ pub use self::send_packet::SendPlayerLeave;
 pub use self::update_players_game::UpdatePlayersGame;
 
 pub type AllLeaveHandlers = (
-	CreateDespawnEvent,
-	FreeName,
-	UpdatePlayersGame,
-	SendPlayerLeave,
+  CreateDespawnEvent,
+  FreeName,
+  UpdatePlayersGame,
+  SendPlayerLeave,
 );
 
 pub type KnownEventSources = (crate::systems::handlers::packet::OnCloseHandler);

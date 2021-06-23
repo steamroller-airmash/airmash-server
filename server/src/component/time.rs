@@ -58,8 +58,8 @@ macro_rules! impl_default {
 }
 
 impl_default! {
-	LastFrame,
-	ThisFrame,
-	StartTime,
-	LastScoreBoardTime,
+  LastFrame,
+  ThisFrame,
+  StartTime,
+  LastScoreBoardTime,
 }

@@ -16,36 +16,37 @@ pub struct ResetKeyState;
 
 #[derive(SystemData)]
 pub struct ResetKeyStateData<'a> {
-	entities: Entities<'a>,
-	keystate: WriteStorage<'a, KeyState>,
+  entities: Entities<'a>,
+  keystate: WriteStorage<'a, KeyState>,
 }
 
 impl EventHandlerTypeProvider for ResetKeyState {
-	type Event = PlayerRespawn;
+  type Event = PlayerRespawn;
 }
 
 impl<'a> EventHandler<'a> for ResetKeyState {
-	type SystemData = ResetKeyStateData<'a>;
+  type SystemData = ResetKeyStateData<'a>;
 
-	fn on_event(&mut self, evt: &PlayerRespawn, data: &mut Self::SystemData) {
-		if !data.entities.is_alive(evt.player) {
-			return;
-		}
+  fn on_event(&mut self, evt: &PlayerRespawn, data: &mut Self::SystemData) {
+    if !data.entities.is_alive(evt.player) {
+      return;
+    }
 
-		data.keystate
-			.insert(evt.player, KeyState::default())
-			.unwrap();
-	}
+    data
+      .keystate
+      .insert(evt.player, KeyState::default())
+      .unwrap();
+  }
 }
 
 impl SystemInfo for ResetKeyState {
-	type Dependencies = (AllJoinHandlers, AllCommandHandlers);
+  type Dependencies = (AllJoinHandlers, AllCommandHandlers);
 
-	fn name() -> &'static str {
-		concat!(module_path!(), "::", line!())
-	}
+  fn name() -> &'static str {
+    concat!(module_path!(), "::", line!())
+  }
 
-	fn new() -> Self {
-		Self::default()
-	}
+  fn new() -> Self {
+    Self::default()
+  }
 }

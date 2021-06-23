@@ -14,62 +14,62 @@ use crate::utils::*;
 pub struct OnCloseHandler;
 
 impl EventHandlerTypeProvider for OnCloseHandler {
-	type Event = ConnectionClose;
+  type Event = ConnectionClose;
 }
 
 impl<'a> EventHandler<'a> for OnCloseHandler {
-	type SystemData = (
-		Entities<'a>,
-		Write<'a, Connections>,
-		Write<'a, PlayersGame>,
-		Write<'a, OnPlayerLeave>,
-	);
+  type SystemData = (
+    Entities<'a>,
+    Write<'a, Connections>,
+    Write<'a, PlayersGame>,
+    Write<'a, OnPlayerLeave>,
+  );
 
-	fn on_event(
-		&mut self,
-		evt: &ConnectionClose,
-		(entities, connections, players, onleave): &mut Self::SystemData,
-	) {
-		let (player, ty) = {
-			let conn = match connections.conns.get(&evt.conn) {
-				Some(c) => c,
-				None => {
-					// This can sometimes happen legitimately if a disconnect occurrs.
-					return;
-				}
-			};
+  fn on_event(
+    &mut self,
+    evt: &ConnectionClose,
+    (entities, connections, players, onleave): &mut Self::SystemData,
+  ) {
+    let (player, ty) = {
+      let conn = match connections.conns.get(&evt.conn) {
+        Some(c) => c,
+        None => {
+          // This can sometimes happen legitimately if a disconnect occurrs.
+          return;
+        }
+      };
 
-			(conn.player, conn.ty)
-		};
+      (conn.player, conn.ty)
+    };
 
-		if ty == ConnectionType::Primary {
-			if let Some(ent) = player {
-				connections.remove_player(ent);
-				players.0 -= 1;
+    if ty == ConnectionType::Primary {
+      if let Some(ent) = player {
+        connections.remove_player(ent);
+        players.0 -= 1;
 
-				onleave.single_write(EvtPlayerLeave(ent));
-				// Delete player entity
-				entities.delete(ent).unwrap();
+        onleave.single_write(EvtPlayerLeave(ent));
+        // Delete player entity
+        entities.delete(ent).unwrap();
 
-				// Log
-				info!("Player {:?} left", ent);
-			} else {
-				connections.remove(evt.conn);
-			}
-		} else {
-			connections.remove(evt.conn);
-		}
-	}
+        // Log
+        info!("Player {:?} left", ent);
+      } else {
+        connections.remove(evt.conn);
+      }
+    } else {
+      connections.remove(evt.conn);
+    }
+  }
 }
 
 impl SystemInfo for OnCloseHandler {
-	type Dependencies = OnOpenHandler;
+  type Dependencies = OnOpenHandler;
 
-	fn new() -> Self {
-		Self::default()
-	}
+  fn new() -> Self {
+    Self::default()
+  }
 
-	fn name() -> &'static str {
-		concat!(module_path!(), line!())
-	}
+  fn name() -> &'static str {
+    concat!(module_path!(), line!())
+  }
 }

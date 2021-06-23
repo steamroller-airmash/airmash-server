@@ -13,36 +13,36 @@ pub struct CreateDespawnEvent;
 
 #[derive(SystemData)]
 pub struct CreateDespawnEventData<'a> {
-	channel: Write<'a, OnPlayerDespawn>,
-	pos: ReadStorage<'a, Position>,
+  channel: Write<'a, OnPlayerDespawn>,
+  pos: ReadStorage<'a, Position>,
 }
 
 impl EventHandlerTypeProvider for CreateDespawnEvent {
-	type Event = PlayerSpectate;
+  type Event = PlayerSpectate;
 }
 
 impl<'a> EventHandler<'a> for CreateDespawnEvent {
-	type SystemData = CreateDespawnEventData<'a>;
+  type SystemData = CreateDespawnEventData<'a>;
 
-	fn on_event(&mut self, evt: &PlayerSpectate, data: &mut Self::SystemData) {
-		let &pos = try_get!(evt.player, data.pos);
+  fn on_event(&mut self, evt: &PlayerSpectate, data: &mut Self::SystemData) {
+    let &pos = try_get!(evt.player, data.pos);
 
-		data.channel.single_write(PlayerDespawn {
-			ty: PlayerDespawnType::Spectate,
-			player: evt.player,
-			pos,
-		})
-	}
+    data.channel.single_write(PlayerDespawn {
+      ty: PlayerDespawnType::Spectate,
+      player: evt.player,
+      pos,
+    })
+  }
 }
 
 impl SystemInfo for CreateDespawnEvent {
-	type Dependencies = super::KnownEventSources;
+  type Dependencies = super::KnownEventSources;
 
-	fn name() -> &'static str {
-		concat!(module_path!(), "::", line!())
-	}
+  fn name() -> &'static str {
+    concat!(module_path!(), "::", line!())
+  }
 
-	fn new() -> Self {
-		Self::default()
-	}
+  fn new() -> Self {
+    Self::default()
+  }
 }

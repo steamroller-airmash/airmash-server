@@ -20,48 +20,48 @@ pub struct Flag;
 
 #[derive(SystemData)]
 pub struct FlagData<'a> {
-	conns: SendToAll<'a>,
-	flags: WriteStorage<'a, FlagCode>,
+  conns: SendToAll<'a>,
+  flags: WriteStorage<'a, FlagCode>,
 }
 
 impl EventHandlerTypeProvider for Flag {
-	type Event = CommandEvent;
+  type Event = CommandEvent;
 }
 
 impl<'a> EventHandler<'a> for Flag {
-	type SystemData = FlagData<'a>;
+  type SystemData = FlagData<'a>;
 
-	fn on_event(&mut self, evt: &CommandEvent, data: &mut FlagData) {
-		let &(conn, ref packet) = evt;
+  fn on_event(&mut self, evt: &CommandEvent, data: &mut FlagData) {
+    let &(conn, ref packet) = evt;
 
-		let player = match data.conns.associated_player(conn) {
-			Some(p) => p,
-			None => return,
-		};
+    let player = match data.conns.associated_player(conn) {
+      Some(p) => p,
+      None => return,
+    };
 
-		if packet.com != "flag" {
-			return;
-		}
+    if packet.com != "flag" {
+      return;
+    }
 
-		let flag = FlagCode::from_str(&packet.data).unwrap_or(FlagCode::UnitedNations);
+    let flag = FlagCode::from_str(&packet.data).unwrap_or(FlagCode::UnitedNations);
 
-		data.conns.send_to_all(PlayerFlag {
-			id: player.into(),
-			flag: flag,
-		});
+    data.conns.send_to_all(PlayerFlag {
+      id: player.into(),
+      flag: flag,
+    });
 
-		data.flags.insert(player, flag).unwrap();
-	}
+    data.flags.insert(player, flag).unwrap();
+  }
 }
 
 impl SystemInfo for Flag {
-	type Dependencies = PacketHandler;
+  type Dependencies = PacketHandler;
 
-	fn name() -> &'static str {
-		concat!(module_path!(), "::", line!())
-	}
+  fn name() -> &'static str {
+    concat!(module_path!(), "::", line!())
+  }
 
-	fn new() -> Self {
-		Self::default()
-	}
+  fn new() -> Self {
+    Self::default()
+  }
 }

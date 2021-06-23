@@ -11,10 +11,10 @@ pub use self::send_player_respawn::SendPlayerRespawn;
 pub use self::set_traits::SetTraits;
 
 pub type AllRespawnHandlers = (
-	ResetKeyState,
-	SendPlayerRespawn,
-	SetTraits,
-	CreateDespawnEvent,
+  ResetKeyState,
+  SendPlayerRespawn,
+  SetTraits,
+  CreateDespawnEvent,
 );
 
 pub type KnownEventSources = (crate::systems::handlers::command::Respawn);

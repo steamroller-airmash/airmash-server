@@ -30,61 +30,61 @@ const NO_PACKET_TIMEOUT: Duration = Duration::from_secs(10);
 /// bot clients.
 #[derive(Default)]
 pub struct Disconnect {
-	message: MaybeInit<OnMessageReader>,
-	close: MaybeInit<OnCloseReader>,
+  message: MaybeInit<OnMessageReader>,
+  close: MaybeInit<OnCloseReader>,
 
-	counts: HashMap<ConnectionId, Instant>,
+  counts: HashMap<ConnectionId, Instant>,
 }
 
 #[derive(SystemData)]
 pub struct DisconnectData<'a> {
-	this_frame: Read<'a, ThisFrame>,
+  this_frame: Read<'a, ThisFrame>,
 
-	on_message: Read<'a, OnMessage>,
-	on_close: Write<'a, OnClose>,
+  on_message: Read<'a, OnMessage>,
+  on_close: Write<'a, OnClose>,
 }
 
 impl<'a> System<'a> for Disconnect {
-	type SystemData = DisconnectData<'a>;
+  type SystemData = DisconnectData<'a>;
 
-	fn setup(&mut self, res: &mut Resources) {
-		Self::SystemData::setup(res);
+  fn setup(&mut self, res: &mut Resources) {
+    Self::SystemData::setup(res);
 
-		self.message = MaybeInit::init(res.fetch_mut::<OnMessage>().register_reader());
-		self.close = MaybeInit::init(res.fetch_mut::<OnClose>().register_reader());
-	}
+    self.message = MaybeInit::init(res.fetch_mut::<OnMessage>().register_reader());
+    self.close = MaybeInit::init(res.fetch_mut::<OnClose>().register_reader());
+  }
 
-	fn run(&mut self, mut data: Self::SystemData) {
-		let this_frame = data.this_frame.0;
+  fn run(&mut self, mut data: Self::SystemData) {
+    let this_frame = data.this_frame.0;
 
-		for evt in data.on_message.read(&mut self.message) {
-			self.counts.insert(evt.conn, this_frame);
-		}
+    for evt in data.on_message.read(&mut self.message) {
+      self.counts.insert(evt.conn, this_frame);
+    }
 
-		for evt in data.on_close.read(&mut self.close) {
-			self.counts.remove(&evt.conn);
-		}
+    for evt in data.on_close.read(&mut self.close) {
+      self.counts.remove(&evt.conn);
+    }
 
-		let iter = self
-			.counts
-			.iter()
-			.filter(|(_, inst)| this_frame - **inst > NO_PACKET_TIMEOUT)
-			.map(|(conn, _)| *conn);
+    let iter = self
+      .counts
+      .iter()
+      .filter(|(_, inst)| this_frame - **inst > NO_PACKET_TIMEOUT)
+      .map(|(conn, _)| *conn);
 
-		for conn in iter {
-			data.on_close.single_write(ConnectionClose { conn });
-		}
-	}
+    for conn in iter {
+      data.on_close.single_write(ConnectionClose { conn });
+    }
+  }
 }
 
 impl SystemInfo for Disconnect {
-	type Dependencies = PacketHandler;
+  type Dependencies = PacketHandler;
 
-	fn name() -> &'static str {
-		concat!(module_path!(), "::", line!())
-	}
+  fn name() -> &'static str {
+    concat!(module_path!(), "::", line!())
+  }
 
-	fn new() -> Self {
-		Self::default()
-	}
+  fn new() -> Self {
+    Self::default()
+  }
 }

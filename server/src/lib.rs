@@ -23,7 +23,7 @@ pub extern crate airmash_protocol as protocol;
 // namespace can be accessed by doing ::airmash_server.
 #[allow(unused)]
 mod airmash_server {
-	pub use crate::*;
+  pub use crate::*;
 }
 
 // Needs to be first because of macros
@@ -47,7 +47,7 @@ pub use crate::server::{AirmashServer, AirmashServerConfig};
 pub use crate::dispatch::{Builder, SystemDeps, SystemInfo};
 
 pub use crate::types::{
-	Accel, AccelScalar, Config, Connections, Distance, Energy, EnergyRegen, Flag, FutureDispatcher,
-	GameMode, GameModeWriter, Health, HealthRegen, KeyState, Level, Mob, Name, Plane, Position,
-	Score, Speed, Team, Time, Vector2, Velocity,
+  Accel, AccelScalar, Config, Connections, Distance, Energy, EnergyRegen, Flag, FutureDispatcher,
+  GameMode, GameModeWriter, Health, HealthRegen, KeyState, Level, Mob, Name, Plane, Position,
+  Score, Speed, Team, Time, Vector2, Velocity,
 };

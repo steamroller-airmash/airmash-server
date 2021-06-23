@@ -3,21 +3,21 @@ use crate::types::collision::Grid;
 use std::ops::{Deref, DerefMut};
 
 macro_rules! impl_newtype_deref_grid {
-	($name:ty) => {
-		impl Deref for $name {
-			type Target = Grid;
+  ($name:ty) => {
+    impl Deref for $name {
+      type Target = Grid;
 
-			fn deref(&self) -> &Grid {
-				&self.0
-			}
-		}
+      fn deref(&self) -> &Grid {
+        &self.0
+      }
+    }
 
-		impl DerefMut for $name {
-			fn deref_mut(&mut self) -> &mut Grid {
-				&mut self.0
-			}
-		}
-	};
+    impl DerefMut for $name {
+      fn deref_mut(&mut self) -> &mut Grid {
+        &mut self.0
+      }
+    }
+  };
 }
 
 /// Precomputed grid for collision applications.
