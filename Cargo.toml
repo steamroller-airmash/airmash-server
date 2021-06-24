@@ -11,6 +11,7 @@ members = [
 	# "ctf",
 	# "ffa",
 	"server-next",
+	"server-macros",
 	"utils/bounded-queue",
 	"utils/special-map",
 	"utils/kdtree"
