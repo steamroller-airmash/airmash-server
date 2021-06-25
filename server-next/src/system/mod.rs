@@ -7,13 +7,13 @@ mod handler;
 mod keys;
 mod network;
 mod physics;
-mod energy;
+mod regen;
 mod specials;
 
 #[allow(dead_code)]
 pub fn update(game: &mut AirmashWorld) {
   self::physics::update(game);
-  self::energy::update(game);
+  self::regen::update(game);
   self::specials::update(game);
 
   self::collision::update(game);

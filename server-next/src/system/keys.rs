@@ -29,7 +29,6 @@ fn update_keystate(event: &KeyEvent, game: &mut AirmashWorld) {
   }
 }
 
-
 /// If a key event would cause a plane to perform its special then emit the
 /// correct event for that special.
 ///

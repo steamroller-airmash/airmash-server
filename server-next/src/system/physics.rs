@@ -155,8 +155,10 @@ fn send_update_packets(game: &mut AirmashWorld) {
 
   let this_frame = game.resources.read::<ThisFrame>().0;
 
-  for (ent, (pos, rot, vel, plane, keystate, upgrades, powerup, last_update, team, active, alive)) in
-    query.iter()
+  for (
+    ent,
+    (pos, rot, vel, plane, keystate, upgrades, powerup, last_update, team, active, alive),
+  ) in query.iter()
   {
     if !alive.0 {
       continue;

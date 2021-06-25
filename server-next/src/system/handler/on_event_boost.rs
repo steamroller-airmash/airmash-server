@@ -1,7 +1,7 @@
 use crate::component::*;
 use crate::event::EventBoost;
-use crate::AirmashWorld;
 use crate::resource::Config;
+use crate::AirmashWorld;
 
 /// When an internal EventBoost occurs we also need to forward it on so that
 /// clients know that it has happened as well.
