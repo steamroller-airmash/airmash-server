@@ -9,6 +9,7 @@ mod network;
 mod physics;
 mod regen;
 mod specials;
+mod despawn;
 
 #[allow(dead_code)]
 pub fn update(game: &mut AirmashWorld) {
@@ -20,4 +21,5 @@ pub fn update(game: &mut AirmashWorld) {
 
   // Note: most events will happen here
   self::network::process_packets(game);
+  self::keys::update(game);
 }

@@ -55,6 +55,7 @@ dependencies = [
  "serde-deserialize-over",
  "server-macros",
  "shrev",
+ "smallvec",
  "tokio",
  "tokio-tungstenite",
  "uuid",

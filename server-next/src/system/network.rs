@@ -172,7 +172,7 @@ fn make_unique_name(names: &mut TakenNames, name: &mut BString) {
 fn handle_login(game: &mut AirmashWorld, mut login: Login, conn: ConnectionId) {
   use crate::component::*;
   use crate::protocol::{server as s, Vector2};
-  use crate::resource::EntityMapping;
+  use crate::resource::{EntityMapping, StartTime};
 
   debug!("Handling login on {}", conn);
 
@@ -183,6 +183,7 @@ fn handle_login(game: &mut AirmashWorld, mut login: Login, conn: ConnectionId) {
     let mut conn_mgr = game.resources.write::<ConnectionMgr>();
     let mut names = game.resources.write::<TakenNames>();
     let mut mapping = game.resources.write::<EntityMapping>();
+    let start_time = game.resources.read::<StartTime>().0;
 
     if login.protocol != 5 {
       game.send_to_conn(
@@ -228,7 +229,9 @@ fn handle_login(game: &mut AirmashWorld, mut login: Login, conn: ConnectionId) {
       .add(IsAlive(true))
       .add(Session(Uuid::new_v4()))
       .add(KeyState::default())
-      .add(SpecialActive(false));
+      .add(LastFireTime(start_time))
+      .add(SpecialActive(false))
+      .add(Powerup::default());
 
     let entity = game.world.spawn(builder.build());
 

@@ -23,7 +23,7 @@ fn send_login_packet(event: &PlayerJoin, game: &mut AirmashWorld) {
       &Rotation,
       &FlagCode,
       &Upgrades,
-      Option<&Powerup>,
+      &Powerup,
     )>()
     .with::<IsPlayer>();
   let players = query
@@ -112,7 +112,7 @@ fn send_player_new(event: &PlayerJoin, game: &mut AirmashWorld) {
     &Rotation,
     &FlagCode,
     &Upgrades,
-    Option<&Powerup>,
+    &Powerup,
   )>(event.player)
   {
     Ok(query) => query.with::<IsPlayer>(),

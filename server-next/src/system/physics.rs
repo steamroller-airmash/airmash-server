@@ -1,8 +1,10 @@
 use airmash_protocol::server::PlayerUpdate;
+use airmash_protocol::MobType;
+use nalgebra::vector;
 
 use crate::component::*;
 use crate::event::PlayerJoin;
-use crate::protocol::{PlaneType, PowerupType, Upgrades as ServerUpgrades, Vector2};
+use crate::protocol::{PlaneType, Upgrades as ServerUpgrades, Vector2};
 use crate::resource::*;
 use crate::util::get_current_clock;
 use crate::AirmashWorld;
@@ -11,10 +13,14 @@ use std::time::Duration;
 
 pub fn update(game: &mut AirmashWorld) {
   update_player_positions(game);
+  update_missile_positions(game);
   send_update_packets(game);
 }
 
 fn update_player_positions(game: &mut AirmashWorld) {
+  let config = game.resources.read::<Config>();
+  let delta = game.frame_delta();
+
   let query = game
     .world
     .query_mut::<(
@@ -23,20 +29,12 @@ fn update_player_positions(game: &mut AirmashWorld) {
       &mut Velocity,
       &KeyState,
       &Upgrades,
-      Option<&Powerup>,
+      &Powerup,
       &PlaneType,
       &SpecialActive,
       &IsAlive,
     )>()
     .with::<IsPlayer>();
-
-  let config = game
-    .resources
-    .get::<Config>()
-    .expect("Missing game config!");
-  let this_frame = game.resources.get::<ThisFrame>().unwrap();
-  let last_frame = game.resources.get::<LastFrame>().unwrap();
-  let delta = crate::util::convert_time(this_frame.0 - last_frame.0);
 
   for (_entity, (pos, rot, vel, keystate, upgrades, powerup, plane, active, alive)) in query {
     if !alive.0 {
@@ -90,7 +88,7 @@ fn update_player_positions(game: &mut AirmashWorld) {
 
     if let Some(angle) = movement_angle {
       let mult = info.accel_factor * delta * boost_factor;
-      vel.0 += Vector2::new(mult * angle.sin(), mult * -angle.cos());
+      vel.0 += vector![mult * angle.sin(), mult * -angle.cos()];
     }
 
     let old_vel = vel.0;
@@ -102,7 +100,7 @@ fn update_player_positions(game: &mut AirmashWorld) {
       max_speed *= config.upgrades.speed.factor[upgrades.speed as usize];
     }
 
-    if powerup.map(|x| x.ty) == Some(PowerupType::Inferno) {
+    if powerup.inferno() {
       max_speed *= info.inferno_factor;
     }
 
@@ -123,12 +121,48 @@ fn update_player_positions(game: &mut AirmashWorld) {
     pos.0 += old_vel * delta + (vel.0 - old_vel) * delta * 0.5;
     rot.0 = (rot.0 % TAU + TAU) % TAU;
 
-    let bound = Vector2::new(16352.0, 8160.0);
+    let bound = vector![16352.0, 8160.0];
     if pos.x.abs() > bound.x {
       pos.x = pos.x.signum() * bound.x;
     }
     if pos.y.abs() > bound.y {
       pos.y = pos.y.signum() * bound.y;
+    }
+  }
+}
+
+fn update_missile_positions(game: &mut AirmashWorld) {
+  let config = game.resources.read::<Config>();
+  let delta = game.frame_delta();
+
+  let mut query = game
+    .world
+    .query::<(&mut Position, &mut Velocity, &MobType)>()
+    .with::<IsMissile>();
+
+  for (_, (pos, vel, mob)) in query.iter() {
+    let info = config.mobs[*mob]
+      .missile
+      .expect("Missile had invalid mob type");
+
+    let oldvel = vel.0;
+    vel.0 += vel.normalize() * info.accel * delta;
+
+    let speed = vel.norm();
+    if speed > info.max_speed {
+      vel.0 *= info.max_speed / speed;
+    }
+
+    pos.0 += oldvel * delta + (vel.0 - oldvel) * delta * 0.5;
+
+    let bounds = vector![16384.0, 8192.0];
+    let size = bounds * 2.0;
+
+    if pos.x.abs() > bounds.x {
+      pos.x -= pos.x.signum() * size.x;
+    }
+    if pos.y.abs() > bounds.y {
+      pos.y -= pos.y.signum() * size.x;
     }
   }
 }
@@ -145,7 +179,7 @@ fn send_update_packets(game: &mut AirmashWorld) {
       &PlaneType,
       &KeyState,
       &Upgrades,
-      Option<&Powerup>,
+      &Powerup,
       &mut LastUpdateTime,
       &Team,
       &SpecialActive,
@@ -171,12 +205,8 @@ fn send_update_packets(game: &mut AirmashWorld) {
 
     let ups = ServerUpgrades {
       speed: upgrades.speed,
-      shield: powerup
-        .map(|x| x.ty == PowerupType::Shield)
-        .unwrap_or(false),
-      inferno: powerup
-        .map(|x| x.ty == PowerupType::Inferno)
-        .unwrap_or(false),
+      shield: powerup.shield(),
+      inferno: powerup.inferno(),
     };
 
     let mut state = keystate.to_server(plane);

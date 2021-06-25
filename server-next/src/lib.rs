@@ -20,6 +20,7 @@ mod consts;
 mod dispatch;
 mod system;
 mod world;
+mod worldext;
 
 pub mod component;
 pub mod event;
@@ -32,6 +33,7 @@ pub use server_macros::handler;
 pub use self::dispatch::{Event, EventDispatcher, EventHandler, HANDLERS};
 pub use self::network::ConnectionMgr;
 pub use self::world::AirmashWorld;
+pub use self::worldext::FireMissileInfo;
 
 /// Notable priorities for event handlers.
 ///

@@ -1,8 +1,9 @@
 use crate::component::Powerup;
 use crate::component::Upgrades;
-use crate::protocol::{PowerupType, Time};
+use crate::protocol::{Time, Vector2};
 use crate::resource::*;
 use crate::AirmashWorld;
+use nalgebra::vector;
 use std::time::Duration;
 
 pub fn convert_time(dur: Duration) -> Time {
@@ -23,17 +24,15 @@ pub fn get_current_clock(game: &AirmashWorld) -> u32 {
   (((duration.as_secs() * 1_000_000) + duration.subsec_micros() as u64) / 10) as u32
 }
 
-pub fn get_server_upgrades(
-  upgrades: &Upgrades,
-  powerup: Option<&Powerup>,
-) -> crate::protocol::Upgrades {
+pub fn get_server_upgrades(upgrades: &Upgrades, powerup: &Powerup) -> crate::protocol::Upgrades {
   crate::protocol::Upgrades {
     speed: upgrades.speed,
-    shield: powerup
-      .map(|x| x.ty == PowerupType::Shield)
-      .unwrap_or(false),
-    inferno: powerup
-      .map(|x| x.ty == PowerupType::Inferno)
-      .unwrap_or(false),
+    shield: powerup.shield(),
+    inferno: powerup.inferno(),
   }
+}
+
+pub fn rotate(v: Vector2<f32>, angle: f32) -> Vector2<f32> {
+  let (sin, cos) = angle.sin_cos();
+  vector![v.x * cos - v.y * sin, v.x * sin + v.y * cos]
 }

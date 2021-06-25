@@ -1,12 +1,81 @@
 use airmash_protocol::{KeyCode, PlaneType};
+use hecs::Entity;
+use nalgebra::vector;
+use smallvec::smallvec;
+use smallvec::SmallVec;
 
 use crate::{
   component::*,
   consts::*,
   event::{EventStealth, KeyEvent},
   resource::{Config, StartTime, ThisFrame},
-  AirmashWorld,
+  AirmashWorld, FireMissileInfo,
 };
+
+pub fn update(game: &mut AirmashWorld) {
+  fire_missiles(game);
+}
+
+fn fire_missiles(game: &mut AirmashWorld) {
+  let config = game.resources.read::<Config>();
+  let this_frame = game.this_frame();
+
+  let mut query = game
+    .world
+    .query::<(&KeyState, &LastFireTime, &mut Energy, &PlaneType, &Powerup)>()
+    .with::<IsPlayer>();
+
+  let mut events: Vec<(Entity, SmallVec<[FireMissileInfo; 3]>)> = Vec::new();
+  for (ent, (keystate, last_fire, energy, plane, powerup)) in query.iter() {
+    let info = &config.planes[*plane];
+
+    if !keystate.fire {
+      continue;
+    }
+
+    if this_frame - last_fire.0 < info.fire_delay {
+      continue;
+    }
+
+    if energy.0 < info.fire_energy {
+      continue;
+    }
+
+    energy.0 -= info.fire_energy;
+
+    // TODO: Mohawk missile offset
+    let mut missile_info = smallvec![FireMissileInfo {
+      pos_offset: vector![0.0, info.missile_offset],
+      rot_offset: 0.0,
+      ty: info.missile_type
+    }];
+
+    if powerup.inferno() {
+      missile_info.push(FireMissileInfo {
+        pos_offset: vector![info.missile_inferno_offset_x, info.missile_inferno_offset_y],
+        rot_offset: -info.missile_inferno_angle,
+        ty: info.missile_type,
+      });
+      missile_info.push(FireMissileInfo {
+        pos_offset: vector![
+          -info.missile_inferno_offset_x,
+          info.missile_inferno_offset_y
+        ],
+        rot_offset: info.missile_inferno_angle,
+        ty: info.missile_type,
+      });
+    }
+
+    events.push((ent, missile_info));
+  }
+
+  drop(config);
+  drop(query);
+
+  for (ent, missiles) in events {
+    let _ = game.fire_missiles(ent, &missiles);
+  }
+}
 
 /// Update the keystate component when a new key event comes in
 #[handler(priority = crate::priority::HIGH)]
