@@ -54,6 +54,11 @@ impl<E: Event> DelayedEvent for ConcreteDelayedEvent<E> {
 struct BaseEventDispatcher {
   lists: RefCell<AnyMap>,
   queue: RefCell<VecDeque<Box<dyn DelayedEvent>>>,
+  /// Cleanup tasks that need to be done after all the derivative events have
+  /// been executed.
+  ///
+  /// This is not exposed outside of this crate.
+  cleanup: RefCell<VecDeque<Box<dyn FnMut(&mut AirmashWorld)>>>,
 }
 
 impl BaseEventDispatcher {
@@ -61,6 +66,7 @@ impl BaseEventDispatcher {
     Self {
       lists: RefCell::new(AnyMap::new()),
       queue: RefCell::new(VecDeque::new()),
+      cleanup: RefCell::new(VecDeque::new()),
     }
   }
 
@@ -105,6 +111,30 @@ impl BaseEventDispatcher {
     while let Some(mut event) = self.next_queued() {
       event.dispatch(world, &mut lists);
     }
+
+    drop(lists);
+    let mut cleanup = self.cleanup.borrow_mut();
+    for mut func in cleanup.drain(..) {
+      func(world);
+    }
+  }
+
+  /// Add a function to the cleanup queue. If no event is currently executing
+  /// then it will be executed immediately.
+  fn add_cleanup<F>(&self, world: &mut AirmashWorld, func: F)
+  where
+    F: FnOnce(&mut AirmashWorld) + 'static,
+  {
+    if self.lists.try_borrow_mut().is_ok() {
+      func(world);
+      return;
+    }
+
+    let mut cleanup = self.cleanup.borrow_mut();
+    let mut func = Some(func);
+    cleanup.push_back(Box::new(move |game| {
+      (func.take().unwrap())(game);
+    }));
   }
 
   fn next_queued(&self) -> Option<Box<dyn DelayedEvent>> {
@@ -137,6 +167,13 @@ impl EventDispatcher {
     E: Event,
   {
     self.dispatcher.dispatch(event, world);
+  }
+
+  pub(crate) fn cleanup<F>(&self, world: &mut AirmashWorld, func: F)
+  where
+    F: FnOnce(&mut AirmashWorld) + 'static,
+  {
+    self.dispatcher.add_cleanup(world, func);
   }
 }
 

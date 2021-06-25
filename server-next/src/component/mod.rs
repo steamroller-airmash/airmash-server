@@ -30,6 +30,7 @@ def_wrappers! {
   pub type LastUpdateTime = Instant;
   pub type LastSpecialTime = Instant;
   pub type LastFireTime = Instant;
+  pub type Expiry = Instant;
 
   /// The time at which a missile spawned.
   pub type SpawnTime = Instant;
@@ -47,6 +48,8 @@ pub struct IsPlayer;
 pub struct IsMissile;
 #[derive(Copy, Clone, Debug, Default, Eq, PartialEq, Hash)]
 pub struct IsMob;
+#[derive(Copy, Clone, Debug, Default, Eq, PartialEq, Hash)]
+pub struct IsZombie;
 
 #[derive(Copy, Clone, Debug, Eq, PartialEq, Hash)]
 pub struct PowerupData {

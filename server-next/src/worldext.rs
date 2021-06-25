@@ -1,9 +1,10 @@
+use std::time::Duration;
 use std::time::Instant;
 
 use airmash_protocol::{MobType, Vector2};
 use hecs::{Entity, EntityBuilder, NoSuchEntity};
-use smallvec::SmallVec;
 use nalgebra::vector;
+use smallvec::SmallVec;
 
 use crate::component::*;
 use crate::event::PlayerFire;
@@ -122,5 +123,27 @@ impl AirmashWorld {
     }
 
     Ok(entities)
+  }
+
+  pub fn despawn(&mut self, entity: Entity) {
+    use crate::event::EntityDespawn;
+
+    if !self.world.contains(entity) {
+      return;
+    }
+
+    self.dispatch(EntityDespawn { entity });
+    let dispatch = self.dispatcher.clone();
+    dispatch.cleanup(self, move |game| {
+      let _ = game.world.despawn(entity);
+
+      // The airmash client doesn't like it if you reuse ids soon after they get
+      // destroyed. By reserving them for a minute we should prevent having dead
+      // missiles just lying around.
+      game.world.spawn_at(
+        entity,
+        (Expiry(Instant::now() + Duration::from_secs(60)), IsZombie),
+      );
+    });
   }
 }

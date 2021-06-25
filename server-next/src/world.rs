@@ -14,7 +14,7 @@ use std::time::{Duration, Instant};
 pub struct AirmashWorld {
   pub world: hecs::World,
   pub resources: Resources,
-  dispatcher: EventDispatcher,
+  pub(crate) dispatcher: EventDispatcher,
 
   shutdown: Arc<AtomicBool>,
 }

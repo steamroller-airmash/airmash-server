@@ -1,9 +1,11 @@
 use crate::protocol::KeyCode;
 use hecs::Entity;
 
+mod missile;
 mod packet;
 mod player;
 
+pub use self::missile::*;
 pub use self::packet::*;
 pub use self::player::*;
 
@@ -12,6 +14,11 @@ pub use self::player::*;
 /// This is useful for registering resources at startup if so desired.
 #[derive(Copy, Clone, Debug)]
 pub struct ServerStartup;
+
+#[derive(Copy, Clone, Debug)]
+pub struct EntityDespawn {
+  pub entity: Entity,
+}
 
 #[derive(Copy, Clone, Debug)]
 pub struct KeyEvent {
