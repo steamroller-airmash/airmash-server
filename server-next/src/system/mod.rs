@@ -2,11 +2,11 @@
 
 use crate::AirmashWorld;
 
-mod keys;
-mod physics;
-mod network;
 mod collision;
 mod handler;
+mod keys;
+mod network;
+mod physics;
 
 #[allow(dead_code)]
 pub fn update(game: &mut AirmashWorld) {

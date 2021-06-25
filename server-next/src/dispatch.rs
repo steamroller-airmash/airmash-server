@@ -73,7 +73,7 @@ impl BaseEventDispatcher {
     let list = lists.entry::<HandlerList<E>>().or_insert_with(Vec::new);
 
     list.push(HandlerWithPriority(priority, Box::new(handler)));
-    list.sort_unstable();
+    list.sort();
   }
 
   fn dispatch_raw<E>(event: E, world: &mut AirmashWorld, lists: &mut AnyMap)

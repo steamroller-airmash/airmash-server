@@ -1,12 +1,11 @@
 use airmash_protocol::{PlaneType, Vector2};
 
-
 type HitCircle = (Vector2<f32>, f32);
 
 macro_rules! hit_circle {
   ($x:expr, $y:expr, $r:expr) => {
     (Vector2::new($x as f32, $y as f32), $r as f32)
-  }
+  };
 }
 
 const PRED_HC: &'static [HitCircle] = &[
@@ -57,6 +56,6 @@ pub fn hitcircles_for_plane(plane: PlaneType) -> &'static [HitCircle] {
     PlaneType::Goliath => GOLI_HC,
     PlaneType::Mohawk => MOHAWK_HC,
     PlaneType::Prowler => PROWLER_HC,
-    PlaneType::Tornado => TORNADO_HC
+    PlaneType::Tornado => TORNADO_HC,
   }
 }

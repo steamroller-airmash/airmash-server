@@ -172,6 +172,9 @@ fn make_unique_name(names: &mut TakenNames, name: &mut BString) {
 fn handle_login(game: &mut AirmashWorld, mut login: Login, conn: ConnectionId) {
   use crate::component::*;
   use crate::protocol::{server as s, Vector2};
+  use crate::resource::EntityMapping;
+
+  debug!("Handling login on {}", conn);
 
   let entity = {
     let config = game.resources.read::<Config>();
@@ -179,6 +182,7 @@ fn handle_login(game: &mut AirmashWorld, mut login: Login, conn: ConnectionId) {
 
     let mut conn_mgr = game.resources.write::<ConnectionMgr>();
     let mut names = game.resources.write::<TakenNames>();
+    let mut mapping = game.resources.write::<EntityMapping>();
 
     if login.protocol != 5 {
       game.send_to_conn(
@@ -204,6 +208,7 @@ fn handle_login(game: &mut AirmashWorld, mut login: Login, conn: ConnectionId) {
 
     let mut builder = EntityBuilder::new();
     builder
+      .add(IsPlayer)
       .add(Position(Vector2::zeros()))
       .add(Velocity(Vector2::zeros()))
       .add(Rotation(0.0))
@@ -213,16 +218,16 @@ fn handle_login(game: &mut AirmashWorld, mut login: Login, conn: ConnectionId) {
       .add(HealthRegen(info.health_regen))
       .add(PlaneType::Predator)
       .add(FlagCode::from_str(&login.flag.to_string()).unwrap_or(FlagCode::UnitedNations))
-      .add(IsPlayer)
       .add(Level(0))
       .add(Score(0))
       .add(KillCount(0))
       .add(DeathCount(0))
       .add(Upgrades::default())
-      .add(Name(login.name))
+      .add(Name(login.name.clone()))
       .add(Team(0))
       .add(IsAlive(true))
-      .add(Session(Uuid::new_v4()));
+      .add(Session(Uuid::new_v4()))
+      .add(KeyState::default());
 
     let entity = game.world.spawn(builder.build());
 
@@ -238,7 +243,13 @@ fn handle_login(game: &mut AirmashWorld, mut login: Login, conn: ConnectionId) {
       return;
     }
 
+    debug!(
+      "Player {} with id {:?} login on connection {}",
+      login.name, entity, conn
+    );
+
     conn_mgr.associate(entity, conn);
+    mapping.insert(entity.id() as u16, entity);
 
     entity
   };

@@ -1,15 +1,15 @@
 //! Components used within airmash
 
-use std::time::Instant;
-use bstr::BString;
-use uuid::Uuid;
 use crate::protocol::PowerupType;
+use bstr::BString;
+use std::time::Instant;
+use uuid::Uuid;
 
 mod keystate;
 
 pub use self::keystate::KeyState;
 
-def_wrappers!{
+def_wrappers! {
   pub type Position = crate::protocol::Position;
   pub type Velocity = crate::protocol::Velocity;
   pub type Rotation = crate::protocol::Rotation;
@@ -43,7 +43,7 @@ pub struct IsMob;
 #[derive(Copy, Clone, Debug, Eq, PartialEq, Hash)]
 pub struct Powerup {
   pub ty: PowerupType,
-  pub end_time: Instant
+  pub end_time: Instant,
 }
 
 #[derive(Default, Clone, Copy, Debug, PartialEq, Eq, Hash)]
@@ -59,7 +59,7 @@ impl From<IsAlive> for crate::protocol::PlayerStatus {
   fn from(x: IsAlive) -> Self {
     match x.0 {
       true => crate::protocol::PlayerStatus::Alive,
-      false => crate::protocol::PlayerStatus::Dead
+      false => crate::protocol::PlayerStatus::Dead,
     }
   }
 }

@@ -25,7 +25,7 @@ fn send_login_packet(event: &PlayerJoin, game: &mut AirmashWorld) {
       &Upgrades,
       Option<&Powerup>,
     )>()
-    .with::<&IsPlayer>();
+    .with::<IsPlayer>();
   let players = query
     .into_iter()
     .map(
@@ -49,9 +49,11 @@ fn send_login_packet(event: &PlayerJoin, game: &mut AirmashWorld) {
   let room = game.resources.read::<GameRoom>().clone();
 
   let mut query = match game.world.query_one::<(&Team, &Session)>(event.player) {
-    Ok(query) => query.with::<&IsPlayer>(),
+    Ok(query) => query.with::<IsPlayer>(),
     Err(_) => return,
   };
+
+  debug!("Sending login packet to player id {:?}", event.player);
 
   if let Some((team, session)) = query.get() {
     let packet = Login {
@@ -66,7 +68,14 @@ fn send_login_packet(event: &PlayerJoin, game: &mut AirmashWorld) {
     };
 
     game.send_to(event.player, packet);
+  } else {
+    warn!("Player {:?} missing required components", event.player);
   }
+
+  debug!(
+    "is_player: {}",
+    game.world.get::<IsPlayer>(event.player).is_ok()
+  );
 }
 
 #[handler]
@@ -74,7 +83,7 @@ fn send_level_packet(event: &PlayerJoin, game: &mut AirmashWorld) {
   use crate::protocol::server::PlayerLevel;
 
   let mut query = match game.world.query_one::<&Level>(event.player) {
-    Ok(query) => query.with::<&IsPlayer>(),
+    Ok(query) => query.with::<IsPlayer>(),
     Err(_) => return,
   };
 
@@ -106,7 +115,7 @@ fn send_player_new(event: &PlayerJoin, game: &mut AirmashWorld) {
     Option<&Powerup>,
   )>(event.player)
   {
-    Ok(query) => query.with::<&IsPlayer>(),
+    Ok(query) => query.with::<IsPlayer>(),
     Err(_) => return,
   };
 

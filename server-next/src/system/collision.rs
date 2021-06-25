@@ -17,7 +17,7 @@ fn generate_player_pos_db(game: &mut AirmashWorld) {
   let query = game
     .world
     .query_mut::<(&Position, &Team)>()
-    .with::<&IsPlayer>();
+    .with::<IsPlayer>();
   let mut entries = Vec::new();
 
   for (entity, (pos, team)) in query {
@@ -44,7 +44,7 @@ fn generate_player_collide_db(game: &mut AirmashWorld) {
   let query = game
     .world
     .query_mut::<(&Position, &Rotation, &PlaneType, &Team)>()
-    .with::<&IsMissile>();
+    .with::<IsMissile>();
   let mut entries = Vec::new();
 
   for (entity, (pos, rot, plane, team)) in query {
@@ -69,7 +69,7 @@ fn generate_missile_collide_db(game: &mut AirmashWorld) {
   let query = game
     .world
     .query_mut::<(&Position, &Team)>()
-    .with::<&IsMissile>();
+    .with::<IsMissile>();
   let mut entries = Vec::new();
 
   for (entity, (pos, team)) in query {
@@ -77,7 +77,7 @@ fn generate_missile_collide_db(game: &mut AirmashWorld) {
       entity,
       pos: pos.0,
       radius: 0.0,
-      layer: team.0
+      layer: team.0,
     });
   }
 

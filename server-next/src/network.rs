@@ -1,5 +1,6 @@
 use std::{
   collections::HashMap,
+  fmt,
   net::SocketAddr,
   sync::atomic::{AtomicBool, AtomicUsize, Ordering},
   sync::Arc,
@@ -179,7 +180,7 @@ async fn run_server(
         let (stream, addr) = res?;
 
         tokio::spawn(async move {
-          let _ = run_connection(stream, addr, conn, &send);
+          let _ = run_connection(stream, addr, conn, &send).await;
           let _ = send.send((conn, InternalEvent::Closed));
         });
       }
@@ -276,4 +277,10 @@ fn generate_status_response() -> ErrorResponse {
       NUM_PLAYERS.load(Ordering::Relaxed)
     )))
     .expect("Failed to generate status response")
+}
+
+impl fmt::Display for ConnectionId {
+  fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+    write!(f, "{}", self.0)
+  }
 }

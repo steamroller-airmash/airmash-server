@@ -25,7 +25,7 @@ dependencies = [
 [[package]]
 name = "airmash-protocol"
 version = "0.4.0"
-source = "git+https://github.com/steamroller-airmash/airmash-protocol-rs?branch=remove-dimensioned#d36f86ee103f91b0e301017353474d2ee1289172"
+source = "git+https://github.com/steamroller-airmash/airmash-protocol-rs?branch=remove-dimensioned#0290558c339e002b24111371125758ccbc497cbb"
 dependencies = [
  "bstr",
  "nalgebra",

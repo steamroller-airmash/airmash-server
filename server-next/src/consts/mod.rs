@@ -1,13 +1,13 @@
 #![allow(dead_code)]
 
-use std::time::Duration;
 use crate::protocol::*;
+use std::time::Duration;
 
-mod terrain;
 mod hitcircles;
+mod terrain;
 
-pub use self::terrain::TERRAIN;
 pub use self::hitcircles::hitcircles_for_plane;
+pub use self::terrain::TERRAIN;
 
 /// The pred special causes negative energy regen this value is the rate at
 /// which it causes energy to decrease.

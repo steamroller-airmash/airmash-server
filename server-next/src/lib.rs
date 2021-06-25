@@ -30,8 +30,8 @@ pub mod util;
 pub use server_macros::handler;
 
 pub use self::dispatch::{Event, EventDispatcher, EventHandler, HANDLERS};
-pub use self::world::AirmashWorld;
 pub use self::network::ConnectionMgr;
+pub use self::world::AirmashWorld;
 
 /// Notable priorities for event handlers.
 ///

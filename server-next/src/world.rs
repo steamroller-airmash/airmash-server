@@ -1,4 +1,5 @@
 use crate::component::IsPlayer;
+use crate::event::ServerStartup;
 use crate::network::{ConnectionId, ConnectionMgr};
 use crate::protocol::{v5, ServerPacket, Team, Vector2};
 use crate::{Event, EventDispatcher, EventHandler};
@@ -22,6 +23,11 @@ impl AirmashWorld {
   pub fn run_until_shutdown(&mut self) {
     use crate::resource::*;
 
+    // Having entities with id 0 screws up some assumptions that airmash makes
+    self.world.spawn_at(Entity::from_bits(0), ());
+
+    self.dispatch(ServerStartup);
+
     let timestep = Duration::from_secs_f32(1.0 / 60.0);
     let mut current = Instant::now();
 
@@ -41,7 +47,7 @@ impl AirmashWorld {
       {
         let mut last_frame = self.resources.write::<LastFrame>();
         let mut this_frame = self.resources.write::<ThisFrame>();
-        
+
         last_frame.0 = this_frame.0;
         this_frame.0 = current;
       }
@@ -180,7 +186,7 @@ impl AirmashWorld {
     let mut query = self
       .world
       .query::<&crate::component::Team>()
-      .with::<&IsPlayer>();
+      .with::<IsPlayer>();
 
     let data = match v5::serialize(packet) {
       Ok(data) => data,
@@ -225,12 +231,29 @@ impl AirmashWorld {
     }
   }
 
+  pub fn send_to_all(&self, packet: impl Into<ServerPacket>) {
+    self._send_to_all(&packet.into());
+  }
+  pub fn _send_to_all(&self, packet: &ServerPacket) {
+    let mut connmgr = self.resources.write::<ConnectionMgr>();
+    let mut query = self.world.query::<()>().with::<IsPlayer>();
+
+    let data = match v5::serialize(packet) {
+      Ok(data) => data,
+      Err(_) => return,
+    };
+
+    for (ent, ..) in query.iter() {
+      connmgr.send_to(ent, data.clone());
+    }
+  }
+
   pub fn send_to_others(&self, player: Entity, packet: impl Into<ServerPacket>) {
     self._send_to_others(player, &packet.into());
   }
   fn _send_to_others(&self, player: Entity, packet: &ServerPacket) {
     let mut connmgr = self.resources.write::<ConnectionMgr>();
-    let mut query = self.world.query::<()>().with::<&IsPlayer>();
+    let mut query = self.world.query::<()>().with::<IsPlayer>();
 
     let data = match v5::serialize(packet) {
       Ok(data) => data,

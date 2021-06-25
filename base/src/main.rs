@@ -18,7 +18,7 @@ fn main() {
 		.get_matches();
 
 	env::set_var("RUST_BACKTRACE", "1");
-	env::set_var("RUST_LOG", "info");
+	env::set_var("RUST_LOG", "debug");
 
 	env_logger::init();
 

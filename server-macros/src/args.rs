@@ -1,11 +1,10 @@
 use quote::ToTokens;
-use syn::{Ident, Token, parse::Parse};
-
+use syn::{parse::Parse, Ident, Token};
 
 pub struct AttrArg<P> {
   pub ident: Ident,
   pub equals_token: Token![=],
-  pub value: P
+  pub value: P,
 }
 
 impl<P: Parse> Parse for AttrArg<P> {
@@ -13,7 +12,7 @@ impl<P: Parse> Parse for AttrArg<P> {
     Ok(Self {
       ident: input.parse()?,
       equals_token: input.parse()?,
-      value: input.parse()?
+      value: input.parse()?,
     })
   }
 }
@@ -24,4 +23,4 @@ impl<P: ToTokens> ToTokens for AttrArg<P> {
     self.equals_token.to_tokens(tokens);
     self.value.to_tokens(tokens);
   }
-} 
+}
