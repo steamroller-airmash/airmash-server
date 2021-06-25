@@ -1,6 +1,7 @@
 use crate::component::*;
 use crate::event::EventBoost;
 use crate::AirmashWorld;
+use crate::resource::Config;
 
 /// When an internal EventBoost occurs we also need to forward it on so that
 /// clients know that it has happened as well.
@@ -31,5 +32,22 @@ fn send_boost_packet(event: &EventBoost, game: &mut AirmashWorld) {
     };
 
     game.send_to_visible(pos.0, packet);
+  }
+}
+
+/// When boosting the player has negative regen. We need to set that.
+#[handler]
+fn set_player_energy_regen(event: &EventBoost, game: &mut AirmashWorld) {
+  let regen = match game.world.query_one_mut::<&mut EnergyRegen>(event.player) {
+    Ok(query) => query,
+    Err(_) => return,
+  };
+
+  let config = game.resources.read::<Config>();
+
+  if event.boosting {
+    regen.0 = crate::consts::PREDATOR_SPECIAL_REGEN;
+  } else {
+    regen.0 = config.planes.predator.energy_regen;
   }
 }

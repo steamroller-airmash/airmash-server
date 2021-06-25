@@ -9,7 +9,7 @@ use crate::AirmashWorld;
 use std::f32::consts::{FRAC_PI_2, PI, TAU};
 use std::time::Duration;
 
-pub fn frame_update(game: &mut AirmashWorld) {
+pub fn update(game: &mut AirmashWorld) {
   update_player_positions(game);
   send_update_packets(game);
 }
@@ -148,13 +148,14 @@ fn send_update_packets(game: &mut AirmashWorld) {
       Option<&Powerup>,
       &mut LastUpdateTime,
       &Team,
+      &SpecialActive,
       &IsAlive,
     )>()
     .with::<IsPlayer>();
 
   let this_frame = game.resources.read::<ThisFrame>().0;
 
-  for (ent, (pos, rot, vel, plane, keystate, upgrades, powerup, last_update, team, alive)) in
+  for (ent, (pos, rot, vel, plane, keystate, upgrades, powerup, last_update, team, active, alive)) in
     query.iter()
   {
     if !alive.0 {
@@ -176,7 +177,10 @@ fn send_update_packets(game: &mut AirmashWorld) {
         .unwrap_or(false),
     };
 
-    let state = keystate.to_server(plane);
+    let mut state = keystate.to_server(plane);
+    if *plane == PlaneType::Predator {
+      state.boost = active.0;
+    }
 
     let packet = PlayerUpdate {
       clock,

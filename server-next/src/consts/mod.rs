@@ -11,7 +11,7 @@ pub use self::terrain::TERRAIN;
 
 /// The pred special causes negative energy regen this value is the rate at
 /// which it causes energy to decrease.
-pub const PREDATOR_SPECIAL_REGEN: EnergyRegen = 0.01;
+pub const PREDATOR_SPECIAL_REGEN: EnergyRegen = -0.01;
 
 pub const GOLIATH_SPECIAL_ENERGY: Energy = 0.5;
 // TODO: Replace this with real value (see issue #2)

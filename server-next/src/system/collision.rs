@@ -5,7 +5,7 @@ use crate::consts::hitcircles_for_plane;
 use crate::resource::collision::*;
 use crate::AirmashWorld;
 
-pub fn generate_lookups(game: &mut AirmashWorld) {
+pub fn update(game: &mut AirmashWorld) {
   generate_player_pos_db(game);
   generate_player_collide_db(game);
   generate_missile_collide_db(game);

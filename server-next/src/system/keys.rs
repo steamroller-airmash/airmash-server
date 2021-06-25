@@ -3,7 +3,7 @@ use airmash_protocol::{KeyCode, PlaneType};
 use crate::{
   component::*,
   consts::*,
-  event::{EventBoost, EventStealth, KeyEvent},
+  event::{EventStealth, KeyEvent},
   resource::{Config, StartTime, ThisFrame},
   AirmashWorld,
 };
@@ -29,79 +29,6 @@ fn update_keystate(event: &KeyEvent, game: &mut AirmashWorld) {
   }
 }
 
-/// Special handling for tracking predator boosts.
-#[handler]
-fn track_predator_boost(event: &KeyEvent, game: &mut AirmashWorld) {
-  match event.key {
-    KeyCode::Up | KeyCode::Down | KeyCode::Special => (),
-    _ => return,
-  }
-
-  let (keystate, plane, energy, active, ..) = match game.world.query_one_mut::<(
-    &KeyState,
-    &PlaneType,
-    &Energy,
-    &mut SpecialActive,
-    &IsPlayer,
-  )>(event.player)
-  {
-    Ok(query) => query,
-    Err(_) => return,
-  };
-
-  if *plane != PlaneType::Predator {
-    return;
-  }
-
-  if !keystate.special {
-    if active.0 {
-      active.0 = false;
-      game.dispatch(EventBoost {
-        player: event.player,
-        boosting: false,
-      });
-    }
-    return;
-  }
-
-  if active.0 {
-    // If we don't have the energy to perform a boost then boost is disabled
-    if energy.0 < PREDATOR_SPECIAL_REGEN {
-      active.0 = false;
-      game.dispatch(EventBoost {
-        player: event.player,
-        boosting: false,
-      });
-      return;
-    }
-
-    // No boosting occurs if neither the up or down keys are pressed
-    if !keystate.up && !keystate.down {
-      active.0 = false;
-      game.dispatch(EventBoost {
-        player: event.player,
-        boosting: false,
-      });
-      return;
-    }
-
-    // ... Otherwise we continue boosting
-  } else {
-    if energy.0 < PREDATOR_SPECIAL_REGEN {
-      return;
-    }
-
-    // Player pressed a key so now we start boosting
-    if keystate.up || keystate.down {
-      active.0 = true;
-      game.dispatch(EventBoost {
-        player: event.player,
-        boosting: true,
-      });
-      return;
-    }
-  }
-}
 
 /// If a key event would cause a plane to perform its special then emit the
 /// correct event for that special.

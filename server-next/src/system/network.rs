@@ -228,7 +228,7 @@ fn handle_login(game: &mut AirmashWorld, mut login: Login, conn: ConnectionId) {
       .add(IsAlive(true))
       .add(Session(Uuid::new_v4()))
       .add(KeyState::default())
-      .add(SpecialActive(true));
+      .add(SpecialActive(false));
 
     let entity = game.world.spawn(builder.build());
 
