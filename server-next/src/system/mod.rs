@@ -6,8 +6,13 @@ mod keys;
 mod physics;
 mod network;
 mod collision;
+mod handler;
 
+#[allow(dead_code)]
 pub fn update(game: &mut AirmashWorld) {
   self::physics::frame_update(game);
+  self::collision::generate_lookups(game);
+
+  // Note: most events will happen here
   self::network::process_packets(game);
 }

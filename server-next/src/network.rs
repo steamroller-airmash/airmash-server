@@ -2,11 +2,12 @@ use std::{
   collections::HashMap,
   net::SocketAddr,
   sync::atomic::{AtomicBool, AtomicUsize, Ordering},
+  sync::Arc,
   thread::JoinHandle,
 };
 
 use crossbeam_channel::{unbounded, Receiver, Sender};
-use futures::{SinkExt, StreamExt};
+use futures_util::{sink::SinkExt, stream::StreamExt};
 use hecs::Entity;
 use tokio::net::{TcpListener, TcpStream};
 use tokio::sync::mpsc::{unbounded_channel, UnboundedSender as AsyncSender};
@@ -17,7 +18,6 @@ use tokio_tungstenite::tungstenite::{
 };
 
 pub static NUM_PLAYERS: AtomicUsize = AtomicUsize::new(0);
-pub static SHUTDOWN: AtomicBool = AtomicBool::new(false);
 
 #[derive(Copy, Clone, Debug, PartialEq, Eq, Hash)]
 pub struct ConnectionId(usize);
@@ -47,13 +47,17 @@ pub struct ConnectionMgr {
 
   recv: Receiver<(ConnectionId, InternalEvent)>,
   handle: Option<JoinHandle<()>>,
+  shutdown: Arc<AtomicBool>,
 }
 
 impl ConnectionMgr {
-  pub fn with_server(addr: SocketAddr) -> Self {
+  pub(crate) fn with_server(addr: SocketAddr, shutdown: Arc<AtomicBool>) -> Self {
     let (evttx, evtrx) = unbounded();
 
-    let handle = std::thread::spawn(move || server_thread(addr, evttx));
+    let handle = std::thread::spawn({
+      let shutdown = Arc::clone(&shutdown);
+      move || server_thread(addr, evttx, shutdown)
+    });
 
     Self {
       conns: Default::default(),
@@ -61,6 +65,20 @@ impl ConnectionMgr {
       known: Default::default(),
       recv: evtrx,
       handle: Some(handle),
+      shutdown,
+    }
+  }
+
+  /// Create a connection manager with no associated server. This is meant to
+  /// allow for testing and generally shouldn't be used otherwise.
+  pub fn disconnected() -> Self {
+    Self {
+      conns: Default::default(),
+      primary: Default::default(),
+      known: Default::default(),
+      recv: unbounded().1,
+      handle: None,
+      shutdown: Arc::new(AtomicBool::new(false)),
     }
   }
 
@@ -115,12 +133,18 @@ impl ConnectionMgr {
 
 impl Drop for ConnectionMgr {
   fn drop(&mut self) {
-    SHUTDOWN.store(true, Ordering::Relaxed);
-    let _ = self.handle.take().unwrap().join();
+    self.shutdown.store(true, Ordering::Relaxed);
+    if let Some(handle) = self.handle.take() {
+      let _ = handle.join();
+    }
   }
 }
 
-fn server_thread(addr: SocketAddr, send: Sender<(ConnectionId, InternalEvent)>) {
+fn server_thread(
+  addr: SocketAddr,
+  send: Sender<(ConnectionId, InternalEvent)>,
+  shutdown: Arc<AtomicBool>,
+) {
   use tokio::runtime::Builder;
 
   let rt = Builder::new_current_thread()
@@ -128,23 +152,24 @@ fn server_thread(addr: SocketAddr, send: Sender<(ConnectionId, InternalEvent)>) 
     .build()
     .expect("Failed to initialize tokio runtime");
 
-  if let Err(e) = rt.block_on(run_server(addr, send)) {
+  if let Err(e) = rt.block_on(run_server(addr, send, shutdown.clone())) {
     error!("Websocket server shutting down with error: {}", e);
   }
 
-  SHUTDOWN.store(true, Ordering::Relaxed);
+  shutdown.store(true, Ordering::Relaxed);
 }
 
 async fn run_server(
   addr: SocketAddr,
   send: Sender<(ConnectionId, InternalEvent)>,
+  shutdown: Arc<AtomicBool>,
 ) -> std::io::Result<()> {
   let socket = TcpListener::bind(&addr).await?;
   info!("Listening on {}", addr);
 
   let mut connid: usize = 0;
 
-  while !SHUTDOWN.load(Ordering::Relaxed) {
+  while !shutdown.load(Ordering::Relaxed) {
     let send = send.clone();
     let conn = ConnectionId(connid);
     connid += 1;

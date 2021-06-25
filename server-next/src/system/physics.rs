@@ -8,7 +8,6 @@ use crate::AirmashWorld;
 use std::f32::consts::{FRAC_PI_2, PI, TAU};
 use std::time::Duration;
 
-#[allow(dead_code)]
 pub fn frame_update(game: &mut AirmashWorld) {
   update_player_positions(game);
   send_update_packets(game);

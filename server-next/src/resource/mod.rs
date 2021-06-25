@@ -1,7 +1,7 @@
 
 use std::time::Instant;
-use kdtree::KdTree;
-use hecs::Entity;
+use std::collections::HashSet;
+use bstr::BString;
 
 mod config;
 pub mod collision;
@@ -14,5 +14,8 @@ def_wrappers! {
   pub type StartTime = Instant;
 
   ##[nocopy]
-  pub type Terrain = KdTree<Entity>;
+  pub type GameRoom = String;
+  
+  ##[nocopy]
+  pub type TakenNames = HashSet<BString>;
 }

@@ -7,12 +7,15 @@ use airmash_protocol::client::{self as c, Login};
 use airmash_protocol::ClientPacket;
 use airmash_protocol::FlagCode;
 use airmash_protocol::PlaneType;
+use bstr::BString;
 use hecs::EntityBuilder;
+use uuid::Uuid;
 
 use crate::component::IsPlayer;
 use crate::event::*;
 use crate::protocol::v5::deserialize;
 use crate::resource::Config;
+use crate::resource::TakenNames;
 use crate::{network::*, AirmashWorld};
 
 pub fn process_packets(game: &mut AirmashWorld) {
@@ -145,35 +148,100 @@ pub fn process_packets(game: &mut AirmashWorld) {
   }
 }
 
-fn handle_login(game: &mut AirmashWorld, login: Login, conn: ConnectionId) {
+fn make_unique_name(names: &mut TakenNames, name: &mut BString) {
+  'outer: while names.contains(name) {
+    let mut ext = 0;
+    for _ in 0..100 {
+      ext = rand::random::<u32>() % 1000;
+
+      name.append(&mut format!("#{:03}", ext).into_bytes());
+      if !names.contains(name) {
+        break 'outer;
+      }
+      let len = name.len();
+      name.truncate(len - 4);
+    }
+
+    name.append(&mut format!("#{:03}", ext).into_bytes());
+  }
+
+  name.truncate(255);
+  names.insert(name.clone());
+}
+
+fn handle_login(game: &mut AirmashWorld, mut login: Login, conn: ConnectionId) {
   use crate::component::*;
-  use crate::protocol::Vector2;
+  use crate::protocol::{server as s, Vector2};
 
-  let config = game.resources.read::<Config>();
-  let mut conn_mgr = game.resources.write::<ConnectionMgr>();
-  let info = &config.planes[PlaneType::Predator];
+  let entity = {
+    let config = game.resources.read::<Config>();
+    let info = &config.planes[PlaneType::Predator];
 
-  let mut builder = EntityBuilder::new();
-  builder
-    .add(Position(Vector2::zeros()))
-    .add(Velocity(Vector2::zeros()))
-    .add(Rotation(0.0))
-    .add(Energy(1.0))
-    .add(Health(1.0))
-    .add(EnergyRegen(info.energy_regen))
-    .add(HealthRegen(info.health_regen))
-    .add(PlaneType::Predator)
-    .add(FlagCode::from_str(&login.flag.to_string()).unwrap_or(FlagCode::UnitedNations))
-    .add(IsPlayer)
-    .add(Upgrades::default())
-    .add(IsAlive);
+    let mut conn_mgr = game.resources.write::<ConnectionMgr>();
+    let mut names = game.resources.write::<TakenNames>();
 
-  let entity = game.world.spawn(builder.build());
+    if login.protocol != 5 {
+      game.send_to_conn(
+        conn,
+        s::Error {
+          error: airmash_protocol::ErrorType::IncorrectProtocolLevel,
+        },
+      );
+      return;
+    }
 
-  conn_mgr.associate(entity, conn);
+    if login.name.len() > 40 {
+      game.send_to_conn(
+        conn,
+        s::Error {
+          error: airmash_protocol::ErrorType::InvalidLogin,
+        },
+      );
+      return;
+    }
 
-  drop(conn_mgr);
-  drop(config);
+    make_unique_name(&mut names, &mut login.name);
+
+    let mut builder = EntityBuilder::new();
+    builder
+      .add(Position(Vector2::zeros()))
+      .add(Velocity(Vector2::zeros()))
+      .add(Rotation(0.0))
+      .add(Energy(1.0))
+      .add(Health(1.0))
+      .add(EnergyRegen(info.energy_regen))
+      .add(HealthRegen(info.health_regen))
+      .add(PlaneType::Predator)
+      .add(FlagCode::from_str(&login.flag.to_string()).unwrap_or(FlagCode::UnitedNations))
+      .add(IsPlayer)
+      .add(Level(0))
+      .add(Score(0))
+      .add(KillCount(0))
+      .add(DeathCount(0))
+      .add(Upgrades::default())
+      .add(Name(login.name))
+      .add(Team(0))
+      .add(IsAlive(true))
+      .add(Session(Uuid::new_v4()));
+
+    let entity = game.world.spawn(builder.build());
+
+    if entity.id() > u16::MAX as _ {
+      game.send_to_conn(
+        conn,
+        s::Error {
+          error: airmash_protocol::ErrorType::UnknownError,
+        },
+      );
+      let _ = game.world.despawn(entity);
+
+      return;
+    }
+
+    conn_mgr.associate(entity, conn);
+
+    entity
+  };
 
   game.dispatch(PlayerJoin { player: entity });
 }

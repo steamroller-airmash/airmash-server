@@ -1,8 +1,3 @@
-extern crate airmash_server;
-extern crate clap;
-extern crate env_logger;
-extern crate serde_json;
-extern crate specs;
 #[macro_use]
 extern crate log;
 
@@ -10,25 +5,9 @@ use std::env;
 use std::fs::File;
 
 use airmash_server::protocol::GameType;
+use airmash_server::resource::Config;
+use airmash_server::resource::GameRoom;
 use airmash_server::*;
-use specs::Entity;
-
-struct EmptyGameMode;
-
-impl GameMode for EmptyGameMode {
-	fn assign_team(&mut self, player: Entity) -> Team {
-		Team(player.id() as u16)
-	}
-	fn spawn_pos(&mut self, _: Entity, _: Team) -> Position {
-		Position::default()
-	}
-	fn gametype(&self) -> GameType {
-		GameType::FFA
-	}
-	fn room(&self) -> String {
-		"matrix".to_owned()
-	}
-}
 
 fn main() {
 	let matches = clap::App::new("airmash-server-ffa")
@@ -43,7 +22,9 @@ fn main() {
 
 	env_logger::init();
 
-	let mut config = AirmashServerConfig::new("0.0.0.0:3501", EmptyGameMode).with_engine();
+	let mut game = AirmashWorld::with_network("0.0.0.0:3501".parse().unwrap());
+	game.resources.insert(GameRoom("matrix".to_owned()));
+	game.resources.insert(GameType::FFA);
 
 	if let Some(path) = matches.value_of("config") {
 		let file = match File::open(path) {
@@ -54,14 +35,13 @@ fn main() {
 			}
 		};
 
-		let serverconfig: Config = serde_json::from_reader(file).unwrap_or_else(|e| {
+		let mut config = game.resources.write::<Config>();
+		*config = serde_json::from_reader(file).unwrap_or_else(|e| {
 			error!("Unable to parse config file! Using default config.");
 			error!("Config file error was: {}", e);
 			Default::default()
 		});
-
-		config.world.add_resource(serverconfig);
 	}
 
-	AirmashServer::new(config).run().unwrap();
+	game.run_until_shutdown();
 }

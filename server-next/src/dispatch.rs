@@ -1,13 +1,14 @@
 use crate::AirmashWorld;
 use anymap::AnyMap;
+use linkme::distributed_slice;
 use std::cell::RefCell;
 use std::collections::VecDeque;
 use std::rc::Rc;
 
-use linkme::distributed_slice;
-
 #[distributed_slice]
 pub static HANDLERS: [fn(&EventDispatcher)] = [..];
+
+pub const DEFAULT_PRIORITY: isize = 0;
 
 /// Marker trait for events.
 ///
@@ -24,14 +25,15 @@ pub trait EventHandler<E: Event>: 'static {
 impl<F, E> EventHandler<E> for F
 where
   F: FnMut(&E, &mut AirmashWorld) + 'static,
-  E: Event
+  E: Event,
 {
   fn on_event(&mut self, event: &E, world: &mut AirmashWorld) {
     self(event, world);
   }
 }
 
-type HandlerList<E> = Vec<Box<dyn EventHandler<E>>>;
+struct HandlerWithPriority<E>(isize, Box<dyn EventHandler<E>>);
+type HandlerList<E> = Vec<HandlerWithPriority<E>>;
 
 trait DelayedEvent {
   fn dispatch(&mut self, world: &mut AirmashWorld, map: &mut AnyMap);
@@ -62,16 +64,16 @@ impl BaseEventDispatcher {
     }
   }
 
-  fn register<E, H>(&self, handler: H)
+  fn register_with_priority<E, H>(&self, priority: isize, handler: H)
   where
     H: EventHandler<E>,
     E: Event,
   {
     let mut lists = self.lists.borrow_mut();
-    lists
-      .entry::<HandlerList<E>>()
-      .or_insert_with(Vec::new)
-      .push(Box::new(handler));
+    let list = lists.entry::<HandlerList<E>>().or_insert_with(Vec::new);
+
+    list.push(HandlerWithPriority(priority, Box::new(handler)));
+    list.sort_unstable();
   }
 
   fn dispatch_raw<E>(event: E, world: &mut AirmashWorld, lists: &mut AnyMap)
@@ -79,8 +81,8 @@ impl BaseEventDispatcher {
     E: Event,
   {
     if let Some(list) = lists.get_mut::<HandlerList<E>>() {
-      for handler in list {
-        handler.on_event(&event, world);
+      for handler in list.iter_mut() {
+        handler.1.on_event(&event, world);
       }
     }
   }
@@ -122,12 +124,12 @@ impl EventDispatcher {
     }
   }
 
-  pub fn register<E, H>(&self, handler: H)
+  pub fn register_with_priority<E, H>(&self, priority: isize, handler: H)
   where
     H: EventHandler<E>,
     E: Event,
   {
-    self.dispatcher.register(handler)
+    self.dispatcher.register_with_priority(priority, handler)
   }
 
   pub fn dispatch<E>(&self, event: E, world: &mut AirmashWorld)
@@ -143,3 +145,23 @@ impl Default for EventDispatcher {
     Self::new()
   }
 }
+
+impl<E> PartialEq for HandlerWithPriority<E> {
+  fn eq(&self, other: &Self) -> bool {
+    self.0 == other.0
+  }
+}
+
+impl<E> PartialOrd for HandlerWithPriority<E> {
+  fn partial_cmp(&self, other: &Self) -> Option<std::cmp::Ordering> {
+    Some(other.0.cmp(&self.0))
+  }
+}
+
+impl<E> Ord for HandlerWithPriority<E> {
+  fn cmp(&self, other: &Self) -> std::cmp::Ordering {
+    other.0.cmp(&self.0)
+  }
+}
+
+impl<E> Eq for HandlerWithPriority<E> {}

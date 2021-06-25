@@ -7,7 +7,7 @@ debug = true
 [workspace]
 members = [
 	# "server",
-	# "base",
+	"base",
 	# "ctf",
 	# "ffa",
 	"server-next",
