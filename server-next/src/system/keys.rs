@@ -9,7 +9,7 @@ use crate::{
 };
 
 /// Update the keystate component when a new key event comes in
-#[handler]
+#[handler(priority = crate::priority::HIGH)]
 fn update_keystate(event: &KeyEvent, game: &mut AirmashWorld) {
   let (keystate, ..) = match game
     .world
@@ -29,6 +29,80 @@ fn update_keystate(event: &KeyEvent, game: &mut AirmashWorld) {
   }
 }
 
+/// Special handling for tracking predator boosts.
+#[handler]
+fn track_predator_boost(event: &KeyEvent, game: &mut AirmashWorld) {
+  match event.key {
+    KeyCode::Up | KeyCode::Down | KeyCode::Special => (),
+    _ => return,
+  }
+
+  let (keystate, plane, energy, active, ..) = match game.world.query_one_mut::<(
+    &KeyState,
+    &PlaneType,
+    &Energy,
+    &mut SpecialActive,
+    &IsPlayer,
+  )>(event.player)
+  {
+    Ok(query) => query,
+    Err(_) => return,
+  };
+
+  if *plane != PlaneType::Predator {
+    return;
+  }
+
+  if !keystate.special {
+    if active.0 {
+      active.0 = false;
+      game.dispatch(EventBoost {
+        player: event.player,
+        boosting: false,
+      });
+    }
+    return;
+  }
+
+  if active.0 {
+    // If we don't have the energy to perform a boost then boost is disabled
+    if energy.0 < PREDATOR_SPECIAL_REGEN {
+      active.0 = false;
+      game.dispatch(EventBoost {
+        player: event.player,
+        boosting: false,
+      });
+      return;
+    }
+
+    // No boosting occurs if neither the up or down keys are pressed
+    if !keystate.up && !keystate.down {
+      active.0 = false;
+      game.dispatch(EventBoost {
+        player: event.player,
+        boosting: false,
+      });
+      return;
+    }
+
+    // ... Otherwise we continue boosting
+  } else {
+    if energy.0 < PREDATOR_SPECIAL_REGEN {
+      return;
+    }
+
+    // Player pressed a key so now we start boosting
+    if keystate.up || keystate.down {
+      active.0 = true;
+      game.dispatch(EventBoost {
+        player: event.player,
+        boosting: true,
+      });
+      return;
+    }
+  }
+}
+
 /// If a key event would cause a plane to perform its special then emit the
 /// correct event for that special.
 ///
@@ -45,55 +119,27 @@ fn send_special_event(event: &KeyEvent, game: &mut AirmashWorld) {
     return;
   }
 
-  let (keystate, &plane, energy, regen, last_special, active, ..) =
-    match game.world.query_one_mut::<(
-      &mut KeyState,
-      &PlaneType,
-      &mut Energy,
-      &mut EnergyRegen,
-      &mut LastSpecialTime,
-      &mut SpecialActive,
-      &IsPlayer,
-    )>(event.player)
-    {
-      Ok(query) => query,
-      Err(_) => return,
-    };
+  let (&plane, energy, last_special, active, ..) = match game.world.query_one_mut::<(
+    &PlaneType,
+    &mut Energy,
+    &mut LastSpecialTime,
+    &mut SpecialActive,
+    &IsPlayer,
+  )>(event.player)
+  {
+    Ok(query) => query,
+    Err(_) => return,
+  };
 
   let config = game.resources.read::<Config>();
   let this_frame = *game.resources.read::<ThisFrame>();
 
   let time_since_last = this_frame.0 - last_special.0;
-  let prev_active = active.0;
 
   match plane {
     PlaneType::Mohawk => active.0 = event.state,
-    PlaneType::Predator => {
-      if event.state {
-        if energy.0 <= PREDATOR_SPECIAL_REGEN {
-          return;
-        }
-
-        if !keystate.up && !keystate.down {
-          return;
-        }
-
-        regen.0 = PREDATOR_SPECIAL_REGEN;
-      } else {
-        regen.0 = config.planes.predator.energy_regen;
-      }
-
-      active.0 = event.state;
-
-      drop(config);
-      // Only emit the event if something changed
-      if prev_active == active.0 {
-        game.dispatch(EventBoost {
-          player: event.player,
-          boosting: event.state,
-        });
-      }
-    }
+    // Predator boost behaviour is somewhat complicated so it's handled in track_predator_boost
+    PlaneType::Predator => (),
     PlaneType::Prowler => {
       if !event.state {
         return;

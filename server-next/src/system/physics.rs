@@ -25,6 +25,7 @@ fn update_player_positions(game: &mut AirmashWorld) {
       &Upgrades,
       Option<&Powerup>,
       &PlaneType,
+      &SpecialActive,
       &IsAlive,
     )>()
     .with::<IsPlayer>();
@@ -37,14 +38,14 @@ fn update_player_positions(game: &mut AirmashWorld) {
   let last_frame = game.resources.get::<LastFrame>().unwrap();
   let delta = crate::util::convert_time(this_frame.0 - last_frame.0);
 
-  for (_entity, (pos, rot, vel, keystate, upgrades, powerup, plane, alive)) in query {
+  for (_entity, (pos, rot, vel, keystate, upgrades, powerup, plane, active, alive)) in query {
     if !alive.0 {
       continue;
     }
 
     let mut movement_angle = None;
     let info = &config.planes[*plane];
-    let boost_factor = match keystate.boost(plane) {
+    let boost_factor = match *plane == PlaneType::Predator && active.0 {
       true => info.boost_factor,
       false => 1.0,
     };
