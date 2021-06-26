@@ -29,6 +29,7 @@ pub mod resource;
 pub mod util;
 
 pub use server_macros::handler;
+pub use crate::protocol::Vector2;
 
 pub use self::dispatch::{Event, EventDispatcher, EventHandler, HANDLERS};
 pub use self::network::ConnectionMgr;

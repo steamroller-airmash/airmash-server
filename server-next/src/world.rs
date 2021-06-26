@@ -3,6 +3,7 @@ use crate::event::ServerStartup;
 use crate::network::{ConnectionId, ConnectionMgr};
 use crate::protocol::{v5, ServerPacket, Team, Vector2};
 use crate::{Event, EventDispatcher, EventHandler};
+use airmash_protocol::GameType;
 use anymap::AnyMap;
 use hecs::Entity;
 use std::cell::{Ref, RefCell, RefMut};
@@ -68,15 +69,17 @@ impl AirmashWorld {
     }
   }
 
+  /// An airmash server with the full networking backend enabled.
   pub fn with_network(addr: SocketAddr) -> Self {
-    let mut me = Self::with_partial_defaults();
+    let mut me = Self::with_test_defaults();
     me.resources
       .insert(ConnectionMgr::with_server(addr, me.shutdown.clone()));
 
     me
   }
 
-  pub fn with_partial_defaults() -> Self {
+  /// An airmash server with all the functionality needed for testing
+  pub fn with_test_defaults() -> Self {
     let mut me = Self::uninit();
     me.init_defaults();
     me
@@ -97,6 +100,9 @@ impl AirmashWorld {
     self.resources.insert(PlayerCollideDb(SpatialTree::new()));
     self.resources.insert(MissileCollideDb(SpatialTree::new()));
 
+    self.resources.insert(GameRoom("default-uninit".to_owned()));
+    self.resources.insert(GameType::FFA);
+    
     // Having entities with id 0 screws up some assumptions that airmash makes
     self.world.spawn_at(Entity::from_bits(0), ());
 

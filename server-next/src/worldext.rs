@@ -42,6 +42,27 @@ impl AirmashWorld {
     crate::util::convert_time(self.this_frame() - self.last_frame())
   }
 
+  /// Get the entity corresponding to the provided id.
+  ///
+  /// TODO: Currently this performs a linear scan on all entities. It should be
+  /// accelerated with a hashmap.
+  pub fn get_entity_by_id(&self, id: u16) -> Option<Entity> {
+    let mut query = self
+      .world
+      .query::<(Option<&IsPlayer>, Option<&IsMissile>, Option<&IsMob>)>();
+    for (ent, (player, missile, mob)) in query.iter() {
+      if player.is_none() && missile.is_none() && mob.is_none() {
+        continue;
+      }
+
+      if ent.id() as u16 == id {
+        return Some(ent);
+      }
+    }
+
+    None
+  }
+
   /// Fire a number of missiles from a plane.
   ///
   /// This will create the entities for the missiles and also dispatch the

@@ -11,7 +11,7 @@ pub fn generate_collision_lookups(game: &mut AirmashWorld) {
   generate_missile_collide_db(game);
 }
 
-pub fn check_collisions(game: &mut AirmashWorld) {
+pub fn check_collisions(_game: &mut AirmashWorld) {
 
 }
 

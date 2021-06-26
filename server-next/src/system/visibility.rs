@@ -92,39 +92,6 @@ fn record_entity_spawn_frame(event: &EntitySpawn, game: &mut AirmashWorld) {
   );
 }
 
-#[handler]
-fn send_horizon_packet(event: &EventHorizon, game: &mut AirmashWorld) {
-  use crate::protocol::server as s;
-  use crate::protocol::LeaveHorizonType;
-
-  if event.in_horizon {
-    return;
-  }
-
-  if !game.world.get::<IsPlayer>(event.player).is_ok() {
-    return;
-  }
-
-  let query = game
-    .world
-    .query_one_mut::<(Option<&IsPlayer>, Option<&IsMissile>, Option<&IsMob>)>(event.entity);
-
-  let ty = match query {
-    Ok((Some(_), None, None)) => LeaveHorizonType::Player,
-    Ok((None, Some(_), None)) => LeaveHorizonType::Mob,
-    Ok((None, None, Some(_))) => LeaveHorizonType::Mob,
-    _ => return,
-  };
-
-  game.send_to(
-    event.player,
-    s::EventLeaveHorizon {
-      id: event.entity.id() as _,
-      ty,
-    },
-  );
-}
-
 /// New missiles need to be added to the respective visible entity set of
 /// players within range.
 ///

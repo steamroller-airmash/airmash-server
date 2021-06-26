@@ -7,6 +7,7 @@ use std::{
   thread::JoinHandle,
 };
 
+use airmash_protocol::{ClientPacket, ServerPacket};
 use crossbeam_channel::{unbounded, Receiver, Sender};
 use futures_util::{sink::SinkExt, stream::StreamExt};
 use hecs::Entity;
@@ -149,6 +150,40 @@ impl Drop for ConnectionMgr {
   }
 }
 
+pub struct MockReceiver {
+  rx: UnboundedReceiver<Vec<u8>>,
+  conn: ConnectionId,
+}
+
+impl MockReceiver {
+  pub fn conn(&self) -> ConnectionId {
+    self.conn
+  }
+
+  pub fn next_raw(&mut self) -> Option<Vec<u8>> {
+    use std::task::{Context, Poll};
+
+    let waker = futures_util::task::noop_waker_ref();
+    let mut ctx = Context::from_waker(waker);
+    match self.rx.poll_recv(&mut ctx) {
+      Poll::Pending => None,
+      Poll::Ready(x) => x,
+    }
+  }
+
+  pub fn next_packet(&mut self) -> Option<ServerPacket> {
+    let data = self.next_raw()?;
+    let packet = crate::protocol::v5::deserialize(&data).unwrap_or_else(|e| {
+      panic!(
+        "Server sent invalid packet. Error is {}. Packet is:\n  {:?}",
+        e, data
+      )
+    });
+
+    Some(packet)
+  }
+}
+
 pub struct MockConnectionEndpoint {
   sender: Sender<(ConnectionId, InternalEvent)>,
   nextid: usize,
@@ -159,25 +194,38 @@ impl MockConnectionEndpoint {
     Self { sender, nextid: 0 }
   }
 
-  pub fn open(&mut self) -> (ConnectionId, UnboundedReceiver<Vec<u8>>) {
+  pub fn open(&mut self) -> (ConnectionId, MockReceiver) {
     let conn = ConnectionId(self.nextid);
     self.nextid += 1;
 
     let (tx, rx) = unbounded_channel();
 
-    let _ = self.sender.send((
-      conn,
-      InternalEvent::Opened(ConnectionData {
-        send: tx,
-        addr: SocketAddr::new(IpAddr::from([0; 4]), 0),
-      }),
-    ));
+    self
+      .sender
+      .send((
+        conn,
+        InternalEvent::Opened(ConnectionData {
+          send: tx,
+          addr: SocketAddr::new(IpAddr::from([0; 4]), 0),
+        }),
+      ))
+      .expect("Network event channel is closed");
 
-    (conn, rx)
+    let recv = MockReceiver { rx, conn };
+
+    (conn, recv)
   }
 
   pub fn send_raw(&mut self, conn: ConnectionId, data: Vec<u8>) {
-    let _ = self.sender.send((conn, InternalEvent::Data(data)));
+    self
+      .sender
+      .send((conn, InternalEvent::Data(data)))
+      .expect("Network event channel is closed");
+  }
+
+  pub fn send(&mut self, conn: ConnectionId, packet: impl Into<ClientPacket>) {
+    let data = crate::protocol::v5::serialize(&packet.into()).expect("Failed to serialize packet");
+    self.send_raw(conn, data);
   }
 
   pub fn close(&mut self, conn: ConnectionId) {

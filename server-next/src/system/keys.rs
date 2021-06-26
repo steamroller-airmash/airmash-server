@@ -33,13 +33,13 @@ fn fire_missiles(game: &mut AirmashWorld) {
       continue;
     }
 
-    // if this_frame - last_fire.0 < info.fire_delay {
-    //   continue;
-    // }
+    if this_frame - last_fire.0 < info.fire_delay {
+      continue;
+    }
 
-    // if energy.0 < info.fire_energy {
-    //   continue;
-    // }
+    if energy.0 < info.fire_energy {
+      continue;
+    }
 
     energy.0 -= info.fire_energy;
 
