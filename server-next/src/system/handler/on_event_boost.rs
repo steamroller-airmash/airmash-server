@@ -19,8 +19,6 @@ fn send_boost_packet(event: &EventBoost, game: &mut AirmashWorld) {
     Err(_) => return,
   };
 
-  debug!("evtboost: {:?}", event);
-
   if let Some((pos, rot, vel, energy, regen)) = query.get() {
     let packet = s::EventBoost {
       clock,
