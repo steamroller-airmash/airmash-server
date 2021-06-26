@@ -1,6 +1,7 @@
 use airmash_protocol::Vector2;
 use hecs::Entity;
 use kdtree::KdTree;
+use nalgebra::vector;
 
 def_wrappers! {
   ##[nocopy]
@@ -70,7 +71,7 @@ impl Default for Terrain {
     for [x, y, r] in TERRAIN {
       entries.push(Entry {
         entity: Entity::from_bits(0),
-        pos: Vector2::new(x as f32, y as f32),
+        pos: vector![x as f32, y as f32],
         radius: r as f32,
         layer: 0,
       });
