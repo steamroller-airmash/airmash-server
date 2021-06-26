@@ -21,6 +21,21 @@ pub struct EntityDespawn {
 }
 
 #[derive(Copy, Clone, Debug)]
+pub struct EntitySpawn {
+  pub entity: Entity,
+}
+
+/// An entity (player, missile, or mob) has left the horizon of another player.
+#[derive(Copy, Clone, Debug)]
+pub struct EventHorizon {
+  pub player: Entity,
+  /// The entity leaving/entering the horizon
+  pub entity: Entity,
+  /// The current state of the entity relative to the player
+  pub in_horizon: bool,
+}
+
+#[derive(Copy, Clone, Debug)]
 pub struct KeyEvent {
   pub player: Entity,
   pub key: KeyCode,

@@ -7,6 +7,7 @@ use nalgebra::vector;
 use smallvec::SmallVec;
 
 use crate::component::*;
+use crate::event::EntitySpawn;
 use crate::event::PlayerFire;
 use crate::{
   resource::{Config, LastFrame, ThisFrame},
@@ -89,7 +90,7 @@ impl AirmashWorld {
         .add(info.ty)
         .add(IsMissile)
         .add(Owner(player))
-        .add(team.0)
+        .add(Team(team.0))
         .add(SpawnTime(this_frame))
         .add(MissileTrajectory {
           start: pos,
@@ -111,6 +112,8 @@ impl AirmashWorld {
         let _ = self.world.despawn(entity);
         continue;
       }
+
+      self.dispatch(EntitySpawn { entity });
 
       entities.push(entity);
     }

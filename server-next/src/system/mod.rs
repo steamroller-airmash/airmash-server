@@ -10,6 +10,7 @@ mod network;
 mod physics;
 mod regen;
 mod specials;
+mod visibility;
 
 #[allow(dead_code)]
 pub fn update(game: &mut AirmashWorld) {
@@ -17,7 +18,9 @@ pub fn update(game: &mut AirmashWorld) {
   self::regen::update(game);
   self::specials::update(game);
 
-  self::collision::update(game);
+  self::collision::generate_collision_lookups(game);
+  self::visibility::generate_horizon_events(game);
+  self::collision::check_collisions(game);
 
   // Note: most events will happen here
   self::network::process_packets(game);

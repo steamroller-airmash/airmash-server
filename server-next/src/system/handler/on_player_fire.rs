@@ -55,7 +55,7 @@ pub fn send_player_fire(event: &PlayerFire, game: &mut AirmashWorld) {
     Err(_) => return,
   };
 
-  if let Some((pos, energy, regen)) = query.get() {
+  if let Some((&pos, energy, regen)) = query.get() {
     let packet = s::PlayerFire {
       clock,
       id: event.player.id() as _,
@@ -64,12 +64,10 @@ pub fn send_player_fire(event: &PlayerFire, game: &mut AirmashWorld) {
       projectiles,
     };
 
-    let pos = pos.0;
-
     drop(query);
     drop(config);
 
-    game.send_to_visible(pos, packet);
+    game.send_to_visible(pos.0, packet);
   } else {
     warn!("Player {:?} missing required components", event.player);
     return;

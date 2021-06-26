@@ -20,12 +20,21 @@ pub struct AirmashWorld {
 }
 
 impl AirmashWorld {
-  pub fn run_until_shutdown(&mut self) {
+  pub fn run_once(&mut self, now: Instant) {
     use crate::resource::*;
 
-    // Having entities with id 0 screws up some assumptions that airmash makes
-    self.world.spawn_at(Entity::from_bits(0), ());
+    {
+      let mut last_frame = self.resources.write::<LastFrame>();
+      let mut this_frame = self.resources.write::<ThisFrame>();
 
+      last_frame.0 = this_frame.0;
+      this_frame.0 = now;
+    }
+
+    crate::system::update(self);
+  }
+
+  pub fn run_until_shutdown(&mut self) {
     self.dispatch(ServerStartup);
 
     let timestep = Duration::from_secs_f32(1.0 / 60.0);
@@ -44,15 +53,7 @@ impl AirmashWorld {
         std::thread::sleep(current - now);
       }
 
-      {
-        let mut last_frame = self.resources.write::<LastFrame>();
-        let mut this_frame = self.resources.write::<ThisFrame>();
-
-        last_frame.0 = this_frame.0;
-        this_frame.0 = current;
-      }
-
-      crate::system::update(self);
+      self.run_once(current);
     }
   }
 }
@@ -95,6 +96,9 @@ impl AirmashWorld {
     self.resources.insert(PlayerPosDb(SpatialTree::new()));
     self.resources.insert(PlayerCollideDb(SpatialTree::new()));
     self.resources.insert(MissileCollideDb(SpatialTree::new()));
+
+    // Having entities with id 0 screws up some assumptions that airmash makes
+    self.world.spawn_at(Entity::from_bits(0), ());
 
     for func in crate::HANDLERS {
       func(&self.dispatcher);
@@ -311,6 +315,10 @@ impl Resources {
   }
   pub fn remove<T: 'static>(&mut self) -> Option<T> {
     self.map.remove::<RefCell<T>>().map(|x| x.into_inner())
+  }
+
+  pub fn entry<T: 'static>(&mut self) -> anymap::Entry<dyn anymap::any::Any, T> {
+    self.map.entry::<T>()
   }
 }
 

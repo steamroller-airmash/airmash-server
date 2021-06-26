@@ -258,5 +258,6 @@ fn handle_login(game: &mut AirmashWorld, mut login: Login, conn: ConnectionId) {
     entity
   };
 
+  game.dispatch(EntitySpawn { entity });
   game.dispatch(PlayerJoin { player: entity });
 }

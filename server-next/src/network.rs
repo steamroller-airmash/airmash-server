@@ -1,7 +1,7 @@
 use std::{
   collections::HashMap,
   fmt,
-  net::SocketAddr,
+  net::{IpAddr, SocketAddr},
   sync::atomic::{AtomicBool, AtomicUsize, Ordering},
   sync::Arc,
   thread::JoinHandle,
@@ -10,8 +10,11 @@ use std::{
 use crossbeam_channel::{unbounded, Receiver, Sender};
 use futures_util::{sink::SinkExt, stream::StreamExt};
 use hecs::Entity;
-use tokio::net::{TcpListener, TcpStream};
 use tokio::sync::mpsc::{unbounded_channel, UnboundedSender as AsyncSender};
+use tokio::{
+  net::{TcpListener, TcpStream},
+  sync::mpsc::UnboundedReceiver,
+};
 use tokio_tungstenite::tungstenite::{
   handshake::server::{ErrorResponse, Response},
   http::Request,
@@ -72,15 +75,20 @@ impl ConnectionMgr {
 
   /// Create a connection manager with no associated server. This is meant to
   /// allow for testing and generally shouldn't be used otherwise.
-  pub fn disconnected() -> Self {
-    Self {
+  pub fn disconnected() -> (Self, MockConnectionEndpoint) {
+    let (tx, rx) = unbounded();
+
+    let me = Self {
       conns: Default::default(),
       primary: Default::default(),
       known: Default::default(),
-      recv: unbounded().1,
+      recv: rx,
       handle: None,
       shutdown: Arc::new(AtomicBool::new(false)),
-    }
+    };
+    let mock = MockConnectionEndpoint::new(tx);
+
+    (me, mock)
   }
 
   pub fn send_to_conn(&mut self, conn: ConnectionId, message: Vec<u8>) {
@@ -138,6 +146,42 @@ impl Drop for ConnectionMgr {
     if let Some(handle) = self.handle.take() {
       let _ = handle.join();
     }
+  }
+}
+
+pub struct MockConnectionEndpoint {
+  sender: Sender<(ConnectionId, InternalEvent)>,
+  nextid: usize,
+}
+
+impl MockConnectionEndpoint {
+  fn new(sender: Sender<(ConnectionId, InternalEvent)>) -> Self {
+    Self { sender, nextid: 0 }
+  }
+
+  pub fn open(&mut self) -> (ConnectionId, UnboundedReceiver<Vec<u8>>) {
+    let conn = ConnectionId(self.nextid);
+    self.nextid += 1;
+
+    let (tx, rx) = unbounded_channel();
+
+    let _ = self.sender.send((
+      conn,
+      InternalEvent::Opened(ConnectionData {
+        send: tx,
+        addr: SocketAddr::new(IpAddr::from([0; 4]), 0),
+      }),
+    ));
+
+    (conn, rx)
+  }
+
+  pub fn send_raw(&mut self, conn: ConnectionId, data: Vec<u8>) {
+    let _ = self.sender.send((conn, InternalEvent::Data(data)));
+  }
+
+  pub fn close(&mut self, conn: ConnectionId) {
+    let _ = self.sender.send((conn, InternalEvent::Closed));
   }
 }
 
