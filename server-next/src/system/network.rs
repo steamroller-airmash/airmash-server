@@ -247,6 +247,8 @@ fn handle_login(game: &mut AirmashWorld, mut login: Login, conn: ConnectionId) {
       return;
     }
 
+    game.world.get_mut::<Team>(entity).unwrap().0 = entity.id() as _;
+
     debug!(
       "Player {} with id {:?} login on connection {}",
       login.name, entity, conn

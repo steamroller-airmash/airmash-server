@@ -24,7 +24,7 @@ fn run_energy_regen(game: &mut AirmashWorld) {
   }
 }
 
-pub fn run_health_regen(game: &mut AirmashWorld) {
+fn run_health_regen(game: &mut AirmashWorld) {
   let last_frame = game.resources.read::<LastFrame>().0;
   let this_frame = game.resources.read::<ThisFrame>().0;
 

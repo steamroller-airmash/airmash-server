@@ -16,3 +16,10 @@ pub struct PlayerFire {
   pub player: Entity,
   pub missiles: SmallVec<[Entity; 3]>,
 }
+
+#[derive(Copy, Clone, Debug)]
+pub struct PlayerKilled {
+  pub player: Entity,
+  pub missile: Entity,
+  pub killer: Entity,
+}

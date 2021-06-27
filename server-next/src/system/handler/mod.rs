@@ -11,3 +11,4 @@ mod on_missile_despawn;
 mod on_missile_terrain_collision;
 mod on_player_fire;
 mod on_player_join;
+mod on_player_missile_collision;

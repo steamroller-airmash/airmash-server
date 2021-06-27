@@ -1,12 +1,14 @@
 use std::time::Duration;
 
 use airmash_protocol::PlaneType;
+use itertools::Itertools;
 use smallvec::SmallVec;
 
 use crate::component::*;
 use crate::consts::hitcircles_for_plane;
 use crate::event::EventBounce;
 use crate::event::MissileTerrainCollision;
+use crate::event::PlayerMissileCollision;
 use crate::resource::{collision::*, LastFrame, ThisFrame};
 use crate::AirmashWorld;
 
@@ -40,6 +42,7 @@ pub fn check_collisions(game: &mut AirmashWorld) {
     collide_player_terrain(game);
   }
 
+  collide_player_missile(game);
   collide_missile_terrain(game);
 }
 
@@ -195,8 +198,6 @@ fn collide_missile_terrain(game: &mut AirmashWorld) {
 
   let mut events = SmallVec::<[_; 32]>::new();
   for collision in collisions {
-    // panic!("collision: ({}, {})", collision.0.pos.x, collision.0.pos.y);
-
     events.push(MissileTerrainCollision {
       missile: collision.0.entity,
     });
@@ -208,5 +209,33 @@ fn collide_missile_terrain(game: &mut AirmashWorld) {
   for event in events {
     game.dispatch(event);
     game.despawn(event.missile);
+  }
+}
+
+fn collide_player_missile(game: &mut AirmashWorld) {
+  let missiles = game.resources.read::<MissileCollideDb>();
+  let players = game.resources.read::<PlayerCollideDb>();
+
+  let mut collisions = Vec::new();
+  missiles.query_all_pairs(&players.0, &mut collisions);
+
+  collisions.retain(|(a, b)| a.layer != b.layer);
+  collisions.sort_unstable_by_key(|c| (c.0.entity.id(), c.1.entity.id()));
+
+  let mut events = SmallVec::<[_; 32]>::new();
+  for (missile, group) in &collisions.into_iter().group_by(|(a, _)| a.entity) {
+    events.push(PlayerMissileCollision {
+      missile,
+      players: group.map(|x| x.1.entity).collect(),
+    });
+  }
+
+  drop(missiles);
+  drop(players);
+
+  for event in events {
+    let entity = event.missile;
+    game.dispatch(event);
+    game.despawn(entity);
   }
 }

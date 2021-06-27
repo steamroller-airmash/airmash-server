@@ -1,9 +1,9 @@
 use std::time::{Duration, Instant};
 
 use airmash_protocol::ServerPacket;
-use server::test::{MockReceiver, MockConnectionEndpoint};
 use server::event::ServerStartup;
 use server::protocol::client as c;
+use server::test::{MockConnectionEndpoint, MockReceiver};
 use server::{AirmashWorld, ConnectionMgr};
 
 pub fn create_login_packet(name: &str) -> c::Login {
