@@ -1,11 +1,13 @@
 use std::time::Duration;
 
 use airmash_protocol::PlaneType;
+use smallvec::SmallVec;
 
 use crate::component::*;
 use crate::consts::hitcircles_for_plane;
 use crate::event::EventBounce;
-use crate::resource::{collision::*, ThisFrame, LastFrame};
+use crate::event::MissileTerrainCollision;
+use crate::resource::{collision::*, LastFrame, ThisFrame};
 use crate::AirmashWorld;
 
 struct FrameId(usize);
@@ -37,6 +39,8 @@ pub fn check_collisions(game: &mut AirmashWorld) {
   if frame_id % 2 == 0 || elapsed_time > Duration::from_millis(30) {
     collide_player_terrain(game);
   }
+
+  collide_missile_terrain(game);
 }
 
 fn generate_player_pos_db(game: &mut AirmashWorld) {
@@ -115,6 +119,7 @@ fn collide_player_terrain(game: &mut AirmashWorld) {
   let mut collisions = Vec::new();
   players.query_all_pairs(&terrain.0, &mut collisions);
 
+  // Only count the collision with the smallest distance
   collisions.sort_unstable_by(|a, b| match a.0.entity.id().cmp(&b.0.entity.id()) {
     Ordering::Equal => {
       let da: f32 = (a.0.pos - a.1.pos).norm_squared();
@@ -132,7 +137,7 @@ fn collide_player_terrain(game: &mut AirmashWorld) {
   });
   collisions.dedup_by_key(|entry| entry.0.entity);
 
-  let mut events = Vec::new();
+  let mut events =  SmallVec::<[_; 32]>::new();
   for collision in collisions {
     let query = game
       .world
@@ -157,5 +162,49 @@ fn collide_player_terrain(game: &mut AirmashWorld) {
 
   for event in events {
     game.dispatch(event);
+  }
+}
+
+fn collide_missile_terrain(game: &mut AirmashWorld) {
+  use std::cmp::Ordering;
+
+  let missiles = game.resources.read::<MissileCollideDb>();
+  let terrain = game.resources.read::<Terrain>();
+
+  let mut collisions = Vec::new();
+  missiles.query_all_pairs(&terrain.0, &mut collisions);
+
+  // Only count the collision with the smallest distance (so the missile only
+  // explodes once)
+  collisions.sort_unstable_by(|a, b| match a.0.entity.id().cmp(&b.0.entity.id()) {
+    Ordering::Equal => {
+      let da: f32 = (a.0.pos - a.1.pos).norm_squared();
+      let db: f32 = (a.0.pos - b.1.pos).norm_squared();
+
+      da.partial_cmp(&db)
+        .unwrap_or_else(|| match (da.is_nan(), db.is_nan()) {
+          (true, true) => Ordering::Equal,
+          (true, false) => Ordering::Greater,
+          (false, true) => Ordering::Less,
+          (false, false) => unreachable!(),
+        })
+    }
+    x => x,
+  });
+  collisions.dedup_by_key(|entry| entry.0.entity);
+
+  let mut events = SmallVec::<[_; 32]>::new();
+  for collision in collisions {
+    events.push(MissileTerrainCollision {
+      missile: collision.0.entity
+    });
+  }
+
+  drop(missiles);
+  drop(terrain);
+
+  for event in events {
+    game.dispatch(event);
+    game.despawn(event.missile);
   }
 }
