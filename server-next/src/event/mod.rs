@@ -1,13 +1,16 @@
 use crate::protocol::KeyCode;
+use airmash_protocol::Vector2;
 use hecs::Entity;
 
 mod missile;
 mod packet;
 mod player;
+mod collision;
 
 pub use self::missile::*;
 pub use self::packet::*;
 pub use self::player::*;
+pub use self::collision::*;
 
 /// Emitted during server startup.
 ///
@@ -59,4 +62,10 @@ pub struct EventRepel {
 pub struct EventStealth {
   pub player: Entity,
   pub stealthed: bool,
+}
+
+#[derive(Copy, Clone, Debug)]
+pub struct EventBounce {
+  pub player: Entity,
+  pub old_vel: Vector2<f32>,
 }

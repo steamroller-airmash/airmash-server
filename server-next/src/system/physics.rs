@@ -209,15 +209,10 @@ fn send_update_packets(game: &mut AirmashWorld) {
       inferno: powerup.inferno(),
     };
 
-    let mut state = keystate.to_server(plane);
-    if *plane == PlaneType::Predator {
-      state.boost = active.0;
-    }
-
     let packet = PlayerUpdate {
       clock,
       id: ent.id() as u16,
-      keystate: state,
+      keystate: keystate.to_server(plane, active),
       pos: pos.0,
       rot: rot.0,
       speed: vel.0,

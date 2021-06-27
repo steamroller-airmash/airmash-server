@@ -61,6 +61,14 @@ impl SpatialTree {
       out.push(entry.entity);
     }
   }
+
+  pub fn query_all_pairs<'a>(
+    &'a self,
+    other: &'a SpatialTree,
+    out: &mut Vec<(&'a Entry, &'a Entry)>,
+  ) {
+    self.tree.lookup_all_pairs(&other.tree, out);
+  }
 }
 
 impl Default for Terrain {

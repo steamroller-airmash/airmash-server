@@ -1,4 +1,5 @@
 use crate::protocol::{PlaneType, ServerKeyState};
+use crate::component::SpecialActive;
 
 #[derive(Default, Clone, Debug)]
 pub struct KeyState {
@@ -16,20 +17,17 @@ pub struct KeyState {
 }
 
 impl KeyState {
-  pub fn boost(&self, plane: &PlaneType) -> bool {
-    *plane == PlaneType::Predator && self.special && (self.up || self.down)
-  }
   pub fn strafe(&self, plane: &PlaneType) -> bool {
     *plane == PlaneType::Mohawk && self.special
   }
 
-  pub fn to_server(&self, plane: &PlaneType) -> ServerKeyState {
+  pub fn to_server(&self, plane: &PlaneType, active: &SpecialActive) -> ServerKeyState {
     ServerKeyState {
       up: self.up,
       down: self.down,
       left: self.left,
       right: self.right,
-      boost: self.boost(plane),
+      boost: *plane == PlaneType::Predator && active.0,
       strafe: self.strafe(plane),
       stealth: self.stealthed,
       flagspeed: self.flagspeed,

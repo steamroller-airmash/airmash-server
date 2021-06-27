@@ -269,6 +269,25 @@ impl<T> KdTree<T> {
   {
     *self = Self::new_inner(points, func, std::mem::replace(&mut self.nodes, vec![]));
   }
+
+  pub fn lookup_all_pairs<'a>(&'a self, other: &'a KdTree<T>, out: &mut Vec<(&'a T, &'a T)>) {
+    // TODO: Optimized implementation
+    let mut lookup = Vec::new();
+
+    for node in &self.nodes {
+      match node {
+        KdTreeNode::Children { .. } | KdTreeNode::Invalid => (),
+        &KdTreeNode::Data {
+          point,
+          radius,
+          ref value,
+        } => {
+          other.lookup(point, radius, &mut lookup);
+          out.extend(lookup.drain(..).map(|x| (value, x)));
+        }
+      }
+    }
+  }
 }
 
 impl AABB {
