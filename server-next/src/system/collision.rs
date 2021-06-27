@@ -137,7 +137,7 @@ fn collide_player_terrain(game: &mut AirmashWorld) {
   });
   collisions.dedup_by_key(|entry| entry.0.entity);
 
-  let mut events =  SmallVec::<[_; 32]>::new();
+  let mut events = SmallVec::<[_; 32]>::new();
   for collision in collisions {
     let query = game
       .world
@@ -196,7 +196,7 @@ fn collide_missile_terrain(game: &mut AirmashWorld) {
   let mut events = SmallVec::<[_; 32]>::new();
   for collision in collisions {
     events.push(MissileTerrainCollision {
-      missile: collision.0.entity
+      missile: collision.0.entity,
     });
   }
 

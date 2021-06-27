@@ -1,4 +1,3 @@
-
 use hecs::Entity;
 use smallvec::SmallVec;
 
@@ -10,5 +9,5 @@ pub struct PlayerMissileCollision {
 
 #[derive(Copy, Clone, Debug)]
 pub struct MissileTerrainCollision {
-  pub missile: Entity
+  pub missile: Entity,
 }

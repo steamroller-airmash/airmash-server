@@ -99,7 +99,10 @@ fn record_entity_spawn_frame(event: &EntitySpawn, game: &mut AirmashWorld) {
 /// player's horizon within a single frame.
 #[handler]
 fn record_new_missiles(event: &PlayerFire, game: &mut AirmashWorld) {
-  let ppos = match game.world.query_one_mut::<(&Position, &IsPlayer)>(event.player) {
+  let ppos = match game
+    .world
+    .query_one_mut::<(&Position, &IsPlayer)>(event.player)
+  {
     Ok((pos, _)) => pos.0,
     Err(_) => return,
   };

@@ -2,15 +2,15 @@ use crate::protocol::KeyCode;
 use airmash_protocol::Vector2;
 use hecs::Entity;
 
+mod collision;
 mod missile;
 mod packet;
 mod player;
-mod collision;
 
+pub use self::collision::*;
 pub use self::missile::*;
 pub use self::packet::*;
 pub use self::player::*;
-pub use self::collision::*;
 
 /// Emitted during server startup.
 ///

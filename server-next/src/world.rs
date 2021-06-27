@@ -102,7 +102,7 @@ impl AirmashWorld {
 
     self.resources.insert(GameRoom("default-uninit".to_owned()));
     self.resources.insert(GameType::FFA);
-    
+
     // Having entities with id 0 screws up some assumptions that airmash makes
     self.world.spawn_at(Entity::from_bits(0), ());
 

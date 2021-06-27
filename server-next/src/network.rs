@@ -27,6 +27,12 @@ pub static NUM_PLAYERS: AtomicUsize = AtomicUsize::new(0);
 #[derive(Copy, Clone, Debug, PartialEq, Eq, Hash)]
 pub struct ConnectionId(usize);
 
+impl ConnectionId {
+  pub fn id(&self) -> usize {
+    self.0
+  }
+}
+
 struct ConnectionData {
   send: AsyncSender<Vec<u8>>,
 
@@ -179,6 +185,8 @@ impl MockReceiver {
         e, data
       )
     });
+
+    println!("{}: {:#?}", self.conn.id(), packet);
 
     Some(packet)
   }

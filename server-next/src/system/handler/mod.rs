@@ -8,6 +8,6 @@ mod on_event_bounce;
 mod on_event_horizon;
 mod on_key_packet;
 mod on_missile_despawn;
+mod on_missile_terrain_collision;
 mod on_player_fire;
 mod on_player_join;
-mod on_missile_terrain_collision;

@@ -159,8 +159,6 @@ impl AirmashWorld {
     self.dispatch(EntityDespawn { entity });
     let dispatch = self.dispatcher.clone();
     dispatch.cleanup(self, move |game| {
-      let _ = game.world.despawn(entity);
-
       // The airmash client doesn't like it if you reuse ids soon after they get
       // destroyed. By reserving them for a minute we should prevent having dead
       // missiles just lying around.

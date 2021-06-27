@@ -1,6 +1,7 @@
 #[macro_use]
 extern crate log;
 
+use serde_deserialize_over::DeserializeOver;
 use std::env;
 use std::fs::File;
 
@@ -36,11 +37,11 @@ fn main() {
 		};
 
 		let mut config = game.resources.write::<Config>();
-		*config = serde_json::from_reader(file).unwrap_or_else(|e| {
-			error!("Unable to parse config file! Using default config.");
-			error!("Config file error was: {}", e);
-			Default::default()
-		});
+		let mut de = serde_json::Deserializer::new(serde_json::de::IoRead::new(file));
+		if let Err(e) = config.deserialize_over(&mut de) {
+			error!("Unable to parse config file: {}", e);
+			return;
+		}
 	}
 
 	game.run_until_shutdown();

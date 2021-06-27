@@ -25,9 +25,10 @@ dependencies = [
 [[package]]
 name = "airmash-protocol"
 version = "0.4.0"
-source = "git+https://github.com/steamroller-airmash/airmash-protocol-rs?branch=remove-dimensioned#0290558c339e002b24111371125758ccbc497cbb"
+source = "git+https://github.com/steamroller-airmash/airmash-protocol-rs?branch=remove-dimensioned#6e111dd9ad8f12573bf4d02d6e88669599831722"
 dependencies = [
  "bstr",
+ "derivative",
  "nalgebra",
  "num-traits",
  "phf",
@@ -69,6 +70,7 @@ dependencies = [
  "clap",
  "env_logger",
  "log",
+ "serde-deserialize-over",
  "serde_json",
 ]
 
@@ -209,6 +211,17 @@ checksum = "d82cfc11ce7f2c3faef78d8a684447b40d503d9681acebed6cb728d45940c4db"
 dependencies = [
  "cfg-if",
  "lazy_static",
+]
+
+[[package]]
+name = "derivative"
+version = "2.2.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "fcc3dd5e9e9c0b295d6e1e4d811fb6f157d5ffd784b8d202fc62eac8035a770b"
+dependencies = [
+ "proc-macro2",
+ "quote",
+ "syn",
 ]
 
 [[package]]
@@ -642,9 +655,9 @@ dependencies = [
 
 [[package]]
 name = "pin-project-lite"
-version = "0.2.6"
+version = "0.2.7"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "dc0e1f259c92177c30a4c9d177246edd0a3568b25756a977d0632cf8fa37e905"
+checksum = "8d31d11c69a6b52a174b42bdc0c30e5e11670f90788b2c471c31c1d17d449443"
 
 [[package]]
 name = "pin-utils"

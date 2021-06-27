@@ -32,7 +32,10 @@ pub fn create_mock_server() -> (GameWrapper, MockConnectionEndpoint) {
   let (connmgr, mock) = ConnectionMgr::disconnected();
   game.resources.insert(connmgr);
 
-  (GameWrapper::new(game), mock)
+  let mut wrapper = GameWrapper::new(game);
+  wrapper.run_count(60);
+
+  (wrapper, mock)
 }
 
 pub struct GameWrapper {

@@ -19,7 +19,7 @@ fn send_despawn_packet(event: &MissileTerrainCollision, game: &mut AirmashWorld)
   let packet = MobDespawnCoords {
     id: event.missile.id() as _,
     ty: mob,
-    pos: pos.0
+    pos: pos.0,
   };
   game.send_to_visible(packet.pos, packet);
 }

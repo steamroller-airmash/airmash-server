@@ -1,5 +1,5 @@
-use crate::protocol::{PlaneType, ServerKeyState};
 use crate::component::SpecialActive;
+use crate::protocol::{PlaneType, ServerKeyState};
 
 #[derive(Default, Clone, Debug)]
 pub struct KeyState {

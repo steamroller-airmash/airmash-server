@@ -1,0 +1,25 @@
+{
+  "planes": {
+    "predator": {
+      "fire_delay": { "secs": 0, "nanos": 0 },
+      "fire_energy": 0
+    },
+    "tornado": {
+      "fire_delay": { "secs": 0, "nanos": 0 },
+      "fire_energy": 0
+    },
+    "prowler": {
+      "fire_delay": { "secs": 0, "nanos": 0 },
+      "fire_energy": 0
+    },
+    "mohawk": {
+      "fire_delay": { "secs": 0, "nanos": 0 },
+      "fire_energy": 0
+    },
+    "goliath": {
+      "fire_delay": { "secs": 0, "nanos": 0 },
+      "fire_energy": 0
+    }
+  },
+  "view_radius": 500.0
+}

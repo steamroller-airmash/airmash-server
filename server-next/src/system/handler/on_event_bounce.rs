@@ -15,7 +15,7 @@ fn send_bounce_packet(event: &EventBounce, game: &mut AirmashWorld) {
     &KeyState,
     &PlaneType,
     &Team,
-    &SpecialActive
+    &SpecialActive,
   )>(event.player);
   let (pos, vel, rot, keystate, plane, team, active) = match query {
     Ok(query) => query,
