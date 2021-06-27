@@ -71,11 +71,6 @@ fn send_login_packet(event: &PlayerJoin, game: &mut AirmashWorld) {
   } else {
     warn!("Player {:?} missing required components", event.player);
   }
-
-  debug!(
-    "is_player: {}",
-    game.world.get::<IsPlayer>(event.player).is_ok()
-  );
 }
 
 #[handler]

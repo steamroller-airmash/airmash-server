@@ -18,6 +18,7 @@ mod macros;
 
 mod consts;
 mod dispatch;
+mod mock;
 mod system;
 mod world;
 mod worldext;
@@ -60,4 +61,9 @@ pub mod priority {
   /// response then your event handler will need to have a greater priority than
   /// this.
   pub const LOGIN: isize = 1000;
+}
+
+/// Utilities to help with writing tests for server functionality.
+pub mod test {
+  pub use crate::mock::*;
 }

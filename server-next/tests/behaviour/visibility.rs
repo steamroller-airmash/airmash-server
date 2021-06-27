@@ -16,16 +16,16 @@ use server::protocol::client as c;
 fn out_of_visibility_missiles_properly_deleted() {
   let (mut game, mut mock) = crate::utils::create_mock_server();
 
-  let (conn1, mut rx1) = mock.open();
-  let (conn2, mut rx2) = mock.open();
+  let mut client1 = mock.open();
+  let mut client2 = mock.open();
 
-  mock.send(conn1, crate::utils::create_login_packet("test-1"));
-  mock.send(conn2, crate::utils::create_login_packet("test-2"));
+  client1.send(crate::utils::create_login_packet("test-1"));
+  client2.send(crate::utils::create_login_packet("test-2"));
 
   game.run_once();
 
-  let id1 = crate::utils::get_login_id(&mut rx1);
-  let id2 = crate::utils::get_login_id(&mut rx2);
+  let id1 = crate::utils::get_login_id(&mut client1);
+  let id2 = crate::utils::get_login_id(&mut client2);
 
   let ent2 = game.get_entity_by_id(id2).unwrap();
 
@@ -37,18 +37,15 @@ fn out_of_visibility_missiles_properly_deleted() {
   game.world.get_mut::<Position>(ent2).unwrap().0 = vector![0.0, -view_radius + 1.0];
   game.run_count(60);
 
-  mock.send(
-    conn2,
-    c::Key {
-      key: airmash_protocol::KeyCode::Fire,
-      seq: 0,
-      state: true,
-    },
-  );
+  client2.send(c::Key {
+    key: airmash_protocol::KeyCode::Fire,
+    seq: 0,
+    state: true,
+  });
 
   game.run_count(5);
 
-  while let Some(packet) = rx1.next_packet() {
+  while let Some(packet) = client1.next_packet() {
     match packet {
       ServerPacket::EventLeaveHorizon(evt) => {
         assert_ne!(evt.id, id1);
@@ -73,57 +70,45 @@ fn out_of_visibility_missiles_properly_deleted() {
 fn out_of_visibility_collision() {
   let (mut game, mut mock) = crate::utils::create_mock_server();
 
-  let (conn1, mut rx1) = mock.open();
-  let (conn2, mut rx2) = mock.open();
+  let offset = {
+    let mut config = game.resources.write::<Config>();
+    config.planes.predator.missile_offset = 500.0;
+    config.view_radius = 100.0;
 
-  mock.send(conn1, crate::utils::create_login_packet("test-1"));
-  mock.send(conn2, crate::utils::create_login_packet("test-2"));
+    config.planes.predator.missile_offset
+  };
+
+  let mut client1 = mock.open();
+  let mut client2 = mock.open();
+
+  client1.send(crate::utils::create_login_packet("test-1"));
+  client2.send(crate::utils::create_login_packet("test-2"));
 
   game.run_once();
 
-  let id1 = crate::utils::get_login_id(&mut rx1);
-  let id2 = crate::utils::get_login_id(&mut rx2);
+  let id1 = crate::utils::get_login_id(&mut client1);
+  let id2 = crate::utils::get_login_id(&mut client2);
 
   let ent1 = game.get_entity_by_id(id1).unwrap();
   let ent2 = game.get_entity_by_id(id2).unwrap();
 
-  let view_radius = {
-    let config = game.resources.read::<Config>();
-    config.view_radius
-  };
-
   // There is a mountain at (x: -252, y: -1504) with r = 60
   let object = vector![-252.0, -1504.0];
-  let radius = 60.0;
 
-  let pos1 = vector![object.x, object.y - radius - 30.0];
-  let pos2 = vector![object.x, pos1.y - view_radius];
+  let pos = vector![object.x, object.y - offset];
 
-  game.world.get_mut::<Position>(ent1).unwrap().0 = pos1;
-  game.world.get_mut::<Position>(ent2).unwrap().0 = pos2;
+  game.world.get_mut::<Position>(ent1).unwrap().0 = pos;
+  game.world.get_mut::<Position>(ent2).unwrap().0 = pos;
 
-  mock.send(
-    conn1,
-    c::Key {
-      key: airmash_protocol::KeyCode::Fire,
-      seq: 0,
-      state: true,
-    },
-  );
-  game.run_count(1);
-  mock.send(
-    conn1,
-    c::Key {
-      key: airmash_protocol::KeyCode::Fire,
-      seq: 1,
-      state: false,
-    },
-  );
-
+  client1.send(c::Key {
+    key: airmash_protocol::KeyCode::Fire,
+    seq: 0,
+    state: true,
+  });
   game.run_count(5);
 
   loop {
-    match rx2.next_packet() {
+    match client2.next_packet() {
       Some(ServerPacket::PlayerFire(evt)) => {
         assert_eq!(evt.id, id1);
         break;
@@ -134,19 +119,19 @@ fn out_of_visibility_collision() {
   }
 
   loop {
-    match rx2.next_packet() {
+    match client2.next_packet() {
       Some(ServerPacket::MobDespawnCoords(evt)) => {
         assert_ne!(evt.id, id1);
         assert_ne!(evt.id, id2);
-        return;
+        break;
       }
       Some(ServerPacket::EventLeaveHorizon(evt)) => {
         assert_ne!(evt.id, id1);
         assert_ne!(evt.id, id2);
-        return;
+        break;
       }
       Some(_) => (),
-      None => panic!("Never recieved MobDespawnCoords or PlayerFire packet"),
+      None => panic!("Never recieved MobDespawnCoords or EventLeaveHorizon packet"),
     }
   }
 }

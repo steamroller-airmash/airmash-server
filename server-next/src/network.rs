@@ -1,31 +1,29 @@
 use std::{
   collections::HashMap,
   fmt,
-  net::{IpAddr, SocketAddr},
+  net::SocketAddr,
   sync::atomic::{AtomicBool, AtomicUsize, Ordering},
   sync::Arc,
   thread::JoinHandle,
 };
 
-use airmash_protocol::{ClientPacket, ServerPacket};
 use crossbeam_channel::{unbounded, Receiver, Sender};
 use futures_util::{sink::SinkExt, stream::StreamExt};
 use hecs::Entity;
+use tokio::net::{TcpListener, TcpStream};
 use tokio::sync::mpsc::{unbounded_channel, UnboundedSender as AsyncSender};
-use tokio::{
-  net::{TcpListener, TcpStream},
-  sync::mpsc::UnboundedReceiver,
-};
 use tokio_tungstenite::tungstenite::{
   handshake::server::{ErrorResponse, Response},
   http::Request,
   Message,
 };
 
+use crate::mock::MockConnectionEndpoint;
+
 pub static NUM_PLAYERS: AtomicUsize = AtomicUsize::new(0);
 
 #[derive(Copy, Clone, Debug, PartialEq, Eq, Hash)]
-pub struct ConnectionId(usize);
+pub struct ConnectionId(pub(crate) usize);
 
 impl ConnectionId {
   pub fn id(&self) -> usize {
@@ -33,13 +31,12 @@ impl ConnectionId {
   }
 }
 
-struct ConnectionData {
-  send: AsyncSender<Vec<u8>>,
-
-  addr: SocketAddr,
+pub(crate) struct ConnectionData {
+  pub(crate) send: AsyncSender<Vec<u8>>,
+  pub(crate) addr: SocketAddr,
 }
 
-enum InternalEvent {
+pub(crate) enum InternalEvent {
   Opened(ConnectionData),
   Data(Vec<u8>),
   Closed,
@@ -153,91 +150,6 @@ impl Drop for ConnectionMgr {
     if let Some(handle) = self.handle.take() {
       let _ = handle.join();
     }
-  }
-}
-
-pub struct MockReceiver {
-  rx: UnboundedReceiver<Vec<u8>>,
-  conn: ConnectionId,
-}
-
-impl MockReceiver {
-  pub fn conn(&self) -> ConnectionId {
-    self.conn
-  }
-
-  pub fn next_raw(&mut self) -> Option<Vec<u8>> {
-    use std::task::{Context, Poll};
-
-    let waker = futures_util::task::noop_waker_ref();
-    let mut ctx = Context::from_waker(waker);
-    match self.rx.poll_recv(&mut ctx) {
-      Poll::Pending => None,
-      Poll::Ready(x) => x,
-    }
-  }
-
-  pub fn next_packet(&mut self) -> Option<ServerPacket> {
-    let data = self.next_raw()?;
-    let packet = crate::protocol::v5::deserialize(&data).unwrap_or_else(|e| {
-      panic!(
-        "Server sent invalid packet. Error is {}. Packet is:\n  {:?}",
-        e, data
-      )
-    });
-
-    println!("{}: {:#?}", self.conn.id(), packet);
-
-    Some(packet)
-  }
-}
-
-pub struct MockConnectionEndpoint {
-  sender: Sender<(ConnectionId, InternalEvent)>,
-  nextid: usize,
-}
-
-impl MockConnectionEndpoint {
-  fn new(sender: Sender<(ConnectionId, InternalEvent)>) -> Self {
-    Self { sender, nextid: 0 }
-  }
-
-  pub fn open(&mut self) -> (ConnectionId, MockReceiver) {
-    let conn = ConnectionId(self.nextid);
-    self.nextid += 1;
-
-    let (tx, rx) = unbounded_channel();
-
-    self
-      .sender
-      .send((
-        conn,
-        InternalEvent::Opened(ConnectionData {
-          send: tx,
-          addr: SocketAddr::new(IpAddr::from([0; 4]), 0),
-        }),
-      ))
-      .expect("Network event channel is closed");
-
-    let recv = MockReceiver { rx, conn };
-
-    (conn, recv)
-  }
-
-  pub fn send_raw(&mut self, conn: ConnectionId, data: Vec<u8>) {
-    self
-      .sender
-      .send((conn, InternalEvent::Data(data)))
-      .expect("Network event channel is closed");
-  }
-
-  pub fn send(&mut self, conn: ConnectionId, packet: impl Into<ClientPacket>) {
-    let data = crate::protocol::v5::serialize(&packet.into()).expect("Failed to serialize packet");
-    self.send_raw(conn, data);
-  }
-
-  pub fn close(&mut self, conn: ConnectionId) {
-    let _ = self.sender.send((conn, InternalEvent::Closed));
   }
 }
 

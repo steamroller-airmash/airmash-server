@@ -195,6 +195,8 @@ fn collide_missile_terrain(game: &mut AirmashWorld) {
 
   let mut events = SmallVec::<[_; 32]>::new();
   for collision in collisions {
+    // panic!("collision: ({}, {})", collision.0.pos.x, collision.0.pos.y);
+
     events.push(MissileTerrainCollision {
       missile: collision.0.entity,
     });

@@ -34,3 +34,6 @@ features = [ "sink" ]
 git = "https://github.com/steamroller-airmash/airmash-protocol-rs"
 branch = "remove-dimensioned"
 features = [ "serde" ]
+
+[dev-dependencies]
+simple-log = "1.0"

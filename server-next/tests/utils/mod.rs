@@ -1,9 +1,8 @@
 use std::time::{Duration, Instant};
 
 use airmash_protocol::ServerPacket;
-use airmash_server::network::MockReceiver;
+use server::test::{MockReceiver, MockConnectionEndpoint};
 use server::event::ServerStartup;
-use server::network::MockConnectionEndpoint;
 use server::protocol::client as c;
 use server::{AirmashWorld, ConnectionMgr};
 
@@ -28,6 +27,8 @@ pub fn get_login_id(mock: &mut MockReceiver) -> u16 {
 }
 
 pub fn create_mock_server() -> (GameWrapper, MockConnectionEndpoint) {
+  // let _ = simple_log::console("debug");
+
   let mut game = AirmashWorld::with_test_defaults();
   let (connmgr, mock) = ConnectionMgr::disconnected();
   game.resources.insert(connmgr);
