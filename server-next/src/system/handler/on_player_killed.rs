@@ -31,17 +31,19 @@ fn launch_respawn_task(event: &PlayerKilled, game: &mut AirmashWorld) {
     move |game: &mut AirmashWorld| {
       let query = game
         .world
-        .query_one_mut::<(&mut RespawnAllowed, &IsPlayer)>(event.player);
-      let (can_respawn, ..) = match query {
+        .query_one_mut::<(&mut RespawnAllowed, &IsSpectating, &IsPlayer)>(event.player);
+      let (can_respawn, spectating, ..) = match query {
         Ok(query) => query,
         Err(_) => return,
       };
 
       can_respawn.0 = true;
 
-      game.dispatch(PlayerRespawn {
-        player: event.player,
-      });
+      if !spectating.0 {
+        game.dispatch(PlayerRespawn {
+          player: event.player,
+        });
+      }
     },
   );
 }
