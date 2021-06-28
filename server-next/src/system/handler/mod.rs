@@ -13,4 +13,5 @@ mod on_player_fire;
 mod on_player_join;
 mod on_player_killed;
 mod on_player_missile_collision;
+mod on_player_powerup;
 mod on_player_respawn;

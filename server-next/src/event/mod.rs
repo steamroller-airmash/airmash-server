@@ -69,3 +69,8 @@ pub struct EventBounce {
   pub player: Entity,
   pub old_vel: Vector2<f32>,
 }
+
+#[derive(Copy, Clone, Debug)]
+pub struct PowerupExpire {
+  pub player: Entity,
+}

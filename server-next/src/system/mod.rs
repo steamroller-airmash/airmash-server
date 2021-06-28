@@ -8,6 +8,7 @@ mod handler;
 mod keys;
 mod network;
 mod physics;
+mod powerups;
 mod regen;
 mod specials;
 mod visibility;
@@ -26,6 +27,7 @@ pub fn update(game: &mut AirmashWorld) {
 
   self::keys::update(game);
   self::despawn::update(game);
+  self::powerups::update(game);
 
   update_tasks(game);
   cull_zombies(game);
