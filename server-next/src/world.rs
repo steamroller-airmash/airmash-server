@@ -99,6 +99,7 @@ impl AirmashWorld {
     self.resources.insert(PlayerPosDb(SpatialTree::new()));
     self.resources.insert(PlayerCollideDb(SpatialTree::new()));
     self.resources.insert(MissileCollideDb(SpatialTree::new()));
+    self.resources.insert(TaskScheduler::new());
 
     self.resources.insert(GameRoom("default-uninit".to_owned()));
     self.resources.insert(GameType::FFA);

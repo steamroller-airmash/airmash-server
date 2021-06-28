@@ -12,7 +12,6 @@ mod regen;
 mod specials;
 mod visibility;
 
-#[allow(dead_code)]
 pub fn update(game: &mut AirmashWorld) {
   self::physics::update(game);
   self::regen::update(game);
@@ -28,6 +27,7 @@ pub fn update(game: &mut AirmashWorld) {
   self::keys::update(game);
   self::despawn::update(game);
 
+  update_tasks(game);
   cull_zombies(game);
 }
 
@@ -55,4 +55,15 @@ fn cull_zombies(game: &mut AirmashWorld) {
   for entity in dead {
     let _ = game.world.despawn(entity);
   }
+}
+
+/// This system is responsible for running delayed tasks that have been
+/// scheduled by other code.
+fn update_tasks(game: &mut AirmashWorld) {
+  use crate::resource::{TaskScheduler, ThisFrame};
+
+  let task_sched = game.resources.read::<TaskScheduler>().clone();
+  let this_frame = game.resources.read::<ThisFrame>().0;
+
+  task_sched.update(this_frame, game);
 }
