@@ -131,7 +131,12 @@ pub struct Config {
   pub spawn_shield_duration: Duration,
   pub shield_duration: Duration,
   pub inferno_duration: Duration,
+
+  /// The radius in which the player can observe events happening.
   pub view_radius: Distance,
+
+  /// The delay between a player dying and them being allowed to respawn.
+  pub respawn_delay: Duration,
 }
 
 impl MobInfos {
@@ -257,6 +262,7 @@ impl Default for Config {
       shield_duration: Duration::from_secs(10),
       inferno_duration: Duration::from_secs(10),
       view_radius: 2250.0,
+      respawn_delay: Duration::from_secs(2),
     }
   }
 }

@@ -221,6 +221,7 @@ fn handle_login(game: &mut AirmashWorld, mut login: Login, conn: ConnectionId) {
       .add(FlagCode::from_str(&login.flag.to_string()).unwrap_or(FlagCode::UnitedNations))
       .add(Level(0))
       .add(Score(0))
+      .add(Earnings(0))
       .add(KillCount(0))
       .add(DeathCount(0))
       .add(Upgrades::default())
@@ -231,6 +232,7 @@ fn handle_login(game: &mut AirmashWorld, mut login: Login, conn: ConnectionId) {
       .add(KeyState::default())
       .add(LastFireTime(start_time))
       .add(SpecialActive(false))
+      .add(RespawnAllowed(true))
       .add(Powerup::default());
 
     let entity = game.world.spawn(builder.build());

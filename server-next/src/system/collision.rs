@@ -72,11 +72,15 @@ fn generate_player_collide_db(game: &mut AirmashWorld) {
 
   let query = game
     .world
-    .query_mut::<(&Position, &Rotation, &PlaneType, &Team)>()
+    .query_mut::<(&Position, &Rotation, &PlaneType, &Team, &IsAlive)>()
     .with::<IsPlayer>();
   let mut entries = Vec::new();
 
-  for (entity, (pos, rot, plane, team)) in query {
+  for (entity, (pos, rot, plane, team, alive)) in query {
+    if !alive.0 {
+      continue;
+    }
+    
     for hc in hitcircles_for_plane(*plane) {
       let offset = crate::util::rotate(hc.0, rot.0);
 

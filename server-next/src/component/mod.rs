@@ -24,12 +24,14 @@ def_wrappers! {
   ##[nocopy]
   pub type Name = BString;
   pub type Score = u32;
-  pub type KillCount = u16;
-  pub type DeathCount = u16;
+  pub type Earnings = u32;
+  pub type KillCount = u32;
+  pub type DeathCount = u32;
 
   pub type LastUpdateTime = Instant;
   pub type LastSpecialTime = Instant;
   pub type LastFireTime = Instant;
+  pub type LastActionTime = Instant;
   pub type Expiry = Instant;
 
   /// The time at which a missile spawned.
@@ -37,6 +39,7 @@ def_wrappers! {
 
   pub type SpecialActive = bool;
   pub type IsAlive = bool;
+  pub type RespawnAllowed = bool;
 
   pub type Session = Uuid;
   pub type Owner = Entity;

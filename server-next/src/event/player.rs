@@ -23,3 +23,8 @@ pub struct PlayerKilled {
   pub missile: Entity,
   pub killer: Entity,
 }
+
+#[derive(Copy, Clone, Debug)]
+pub struct PlayerRespawn {
+  pub player: Entity
+}

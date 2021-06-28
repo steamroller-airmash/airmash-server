@@ -25,28 +25,43 @@ fn damage_player(event: &PlayerMissileCollision, game: &mut AirmashWorld) {
   };
 
   let mut events = SmallVec::<[_; 16]>::new();
-  let mut query = game
-    .world
-    .query::<(&mut Health, &PlaneType, &Powerup, &Upgrades)>()
-    .with::<IsPlayer>();
-  for (player, (health, &plane, powerup, upgrades)) in query.iter() {
-    let pinfo = &config.planes[plane];
+  for player in event.players.iter().copied() {
+    let query = game
+      .world
+      .query_one::<(&mut Health, &PlaneType, &Powerup, &Upgrades)>(player);
+    let mut query = match query {
+      Ok(query) => query.with::<IsPlayer>(),
+      Err(_) => continue,
+    };
 
-    // No damage can be done if the player is shielded
-    if powerup.shield() {
-      continue;
+    if let Some((health, &plane, powerup, upgrades)) = query.get() {
+      let pinfo = &config.planes[plane];
+
+      // No damage can be done if the player is shielded
+      if powerup.shield() {
+        continue;
+      }
+
+      health.0 -= minfo.damage * pinfo.damage_factor
+        / config.upgrades.defense.factor[upgrades.defense as usize];
+
+      if health.0 <= 0.0 {
+        events.push(PlayerKilled {
+          missile: event.missile,
+          player,
+          killer: owner.0,
+        });
+      }
     }
+  }
 
-    health.0 -= minfo.damage * pinfo.damage_factor
-      / config.upgrades.defense.factor[upgrades.defense as usize];
+  events.sort_unstable_by_key(|x| x.player);
+  events.dedup_by_key(|x| x.player);
 
-    if health.0 <= 0.0 {
-      events.push(PlayerKilled {
-        missile: event.missile,
-        player,
-        killer: owner.0,
-      });
-    }
+  drop(config);
+
+  for event in events {
+    game.dispatch(event);
   }
 }
 

@@ -996,7 +996,7 @@ dependencies = [
 [[package]]
 name = "serde-deserialize-over"
 version = "0.1.0"
-source = "git+https://github.com/steamroller-airmash/serde-deserialize-over#789ef99bed92a021b9a7b0153db6e22a49d912de"
+source = "git+https://github.com/steamroller-airmash/serde-deserialize-over#3b1a4bb6d12230b77672e45c6650f7e4073c0fb1"
 dependencies = [
  "serde",
  "serde-deserialize-over-derive",
@@ -1005,7 +1005,7 @@ dependencies = [
 [[package]]
 name = "serde-deserialize-over-derive"
 version = "0.1.0"
-source = "git+https://github.com/steamroller-airmash/serde-deserialize-over#789ef99bed92a021b9a7b0153db6e22a49d912de"
+source = "git+https://github.com/steamroller-airmash/serde-deserialize-over#3b1a4bb6d12230b77672e45c6650f7e4073c0fb1"
 dependencies = [
  "proc-macro-crate",
  "proc-macro2",
