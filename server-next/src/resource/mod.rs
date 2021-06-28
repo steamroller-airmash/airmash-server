@@ -5,12 +5,12 @@ use std::time::Instant;
 
 pub mod collision;
 mod config;
-mod tasks;
 mod game_config;
+mod tasks;
 
 pub use self::config::*;
-pub use self::tasks::{TaskScheduler, Task};
 pub use self::game_config::GameConfig;
+pub use self::tasks::{Task, TaskScheduler};
 
 def_wrappers! {
   pub type LastFrame = Instant;

@@ -131,7 +131,7 @@ fn send_player_killed_packets(event: &PlayerKilled, game: &mut AirmashWorld) {
   };
 
   game.send_to_visible(player_kill.pos, player_kill);
-  
+
   if (killer_pos - player_kill.pos).norm_squared() >= view_radius * view_radius {
     game.send_to(event.killer, player_kill);
   }

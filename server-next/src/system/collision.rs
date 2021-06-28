@@ -80,7 +80,7 @@ fn generate_player_collide_db(game: &mut AirmashWorld) {
     if !alive.0 {
       continue;
     }
-    
+
     for hc in hitcircles_for_plane(*plane) {
       let offset = crate::util::rotate(hc.0, rot.0);
 

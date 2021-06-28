@@ -17,7 +17,7 @@ pub struct GameConfig {
 impl Default for GameConfig {
   fn default() -> Self {
     Self {
-      default_respawn: true
+      default_respawn: true,
     }
   }
 }

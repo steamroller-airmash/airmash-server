@@ -26,5 +26,5 @@ pub struct PlayerKilled {
 
 #[derive(Copy, Clone, Debug)]
 pub struct PlayerRespawn {
-  pub player: Entity
+  pub player: Entity,
 }
