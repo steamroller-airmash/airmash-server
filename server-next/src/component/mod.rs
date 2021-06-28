@@ -37,8 +37,9 @@ def_wrappers! {
   /// The time at which a missile spawned.
   pub type SpawnTime = Instant;
 
-  pub type SpecialActive = bool;
   pub type IsAlive = bool;
+  pub type IsSpectating = bool;
+  pub type SpecialActive = bool;
   pub type RespawnAllowed = bool;
 
   pub type Session = Uuid;

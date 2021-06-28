@@ -43,6 +43,7 @@ pub(crate) fn build_default_player(
     .add(Name(login.name.clone()))
     .add(Team(0))
     .add(IsAlive(true))
+    .add(IsSpectating(false))
     .add(Session(Uuid::new_v4()))
     .add(KeyState::default())
     .add(LastFireTime(start_time))
