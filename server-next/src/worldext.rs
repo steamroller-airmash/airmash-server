@@ -104,12 +104,11 @@ impl AirmashWorld {
       let dir = vector![rot.sin(), -rot.cos()];
       let vel = dir * (missile.base_speed + speed * missile.speed_factor) * upg_factor;
 
-      let mut builder = EntityBuilder::new();
+      let mut builder = crate::defaults::build_default_missile();
       builder
         .add(Position(pos))
         .add(Velocity(vel))
         .add(info.ty)
-        .add(IsMissile)
         .add(Owner(player))
         .add(Team(team.0))
         .add(SpawnTime(this_frame))

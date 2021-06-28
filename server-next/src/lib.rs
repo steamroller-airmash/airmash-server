@@ -17,6 +17,7 @@ extern crate self as airmash_server;
 mod macros;
 
 mod consts;
+mod defaults;
 mod dispatch;
 mod mock;
 mod system;

@@ -1,19 +1,14 @@
 use std::net::Ipv4Addr;
 use std::net::SocketAddr;
 use std::net::SocketAddrV4;
-use std::str::FromStr;
 
-use airmash_protocol::client::{self as c, Login};
-use airmash_protocol::ClientPacket;
-use airmash_protocol::FlagCode;
-use airmash_protocol::PlaneType;
 use bstr::BString;
-use hecs::EntityBuilder;
-use uuid::Uuid;
 
 use crate::component::IsPlayer;
 use crate::event::*;
+use crate::protocol::client::{self as c, Login};
 use crate::protocol::v5::deserialize;
+use crate::protocol::ClientPacket;
 use crate::resource::Config;
 use crate::resource::TakenNames;
 use crate::{network::*, AirmashWorld};
@@ -171,14 +166,13 @@ fn make_unique_name(names: &mut TakenNames, name: &mut BString) {
 
 fn handle_login(game: &mut AirmashWorld, mut login: Login, conn: ConnectionId) {
   use crate::component::*;
-  use crate::protocol::{server as s, Vector2};
+  use crate::protocol::server as s;
   use crate::resource::{EntityMapping, StartTime};
 
   debug!("Handling login on {}", conn);
 
   let entity = {
     let config = game.resources.read::<Config>();
-    let info = &config.planes[PlaneType::Predator];
 
     let mut conn_mgr = game.resources.write::<ConnectionMgr>();
     let mut names = game.resources.write::<TakenNames>();
@@ -207,34 +201,7 @@ fn handle_login(game: &mut AirmashWorld, mut login: Login, conn: ConnectionId) {
 
     make_unique_name(&mut names, &mut login.name);
 
-    let mut builder = EntityBuilder::new();
-    builder
-      .add(IsPlayer)
-      .add(Position(Vector2::zeros()))
-      .add(Velocity(Vector2::zeros()))
-      .add(Rotation(0.0))
-      .add(Energy(1.0))
-      .add(Health(1.0))
-      .add(EnergyRegen(info.energy_regen))
-      .add(HealthRegen(info.health_regen))
-      .add(PlaneType::Predator)
-      .add(FlagCode::from_str(&login.flag.to_string()).unwrap_or(FlagCode::UnitedNations))
-      .add(Level(0))
-      .add(Score(0))
-      .add(Earnings(0))
-      .add(KillCount(0))
-      .add(DeathCount(0))
-      .add(Upgrades::default())
-      .add(Name(login.name.clone()))
-      .add(Team(0))
-      .add(IsAlive(true))
-      .add(Session(Uuid::new_v4()))
-      .add(KeyState::default())
-      .add(LastFireTime(start_time))
-      .add(SpecialActive(false))
-      .add(RespawnAllowed(true))
-      .add(Powerup::default());
-
+    let mut builder = crate::defaults::build_default_player(&login, &config, start_time);
     let entity = game.world.spawn(builder.build());
 
     if entity.id() > u16::MAX as _ {
