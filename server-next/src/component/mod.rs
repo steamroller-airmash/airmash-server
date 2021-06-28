@@ -67,6 +67,16 @@ pub struct Powerup {
 }
 
 impl Powerup {
+  pub fn none() -> Self {
+    Self::default()
+  }
+
+  pub fn new(ty: PowerupType, end_time: Instant) -> Self {
+    Self {
+      data: Some(PowerupData { ty, end_time }),
+    }
+  }
+
   pub fn inferno(&self) -> bool {
     self
       .data

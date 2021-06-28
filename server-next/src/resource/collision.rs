@@ -48,18 +48,21 @@ impl SpatialTree {
     self.tree.rebuild_from(entries, &Entry::kdtree_func);
   }
 
-  pub fn query(&self, pos: Vector2<f32>, rad: f32, layer: Option<u16>, out: &mut Vec<Entity>) {
+  pub fn query<V: Extend<Entity>>(
+    &self,
+    pos: Vector2<f32>,
+    rad: f32,
+    layer: Option<u16>,
+    out: &mut V,
+  ) {
     let mut output = Vec::new();
     self.tree.lookup(pos, rad, &mut output);
 
     if let Some(layer) = layer {
-      output.retain(|x| x.layer == layer);
+      output.retain(|x: &Entry| x.layer == layer);
     }
 
-    out.reserve(output.len());
-    for entry in output {
-      out.push(entry.entity);
-    }
+    out.extend(output.drain(..).map(|e| e.entity));
   }
 
   pub fn query_all_pairs<'a>(

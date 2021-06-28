@@ -1,3 +1,6 @@
+use std::time::Duration;
+
+use airmash_protocol::PowerupType;
 use hecs::Entity;
 use smallvec::SmallVec;
 
@@ -27,4 +30,11 @@ pub struct PlayerKilled {
 #[derive(Copy, Clone, Debug)]
 pub struct PlayerRespawn {
   pub player: Entity,
+}
+
+#[derive(Copy, Clone, Debug)]
+pub struct PlayerPowerup {
+  pub player: Entity,
+  pub ty: PowerupType,
+  pub duration: Duration,
 }

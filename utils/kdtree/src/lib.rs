@@ -1,4 +1,5 @@
 use nalgebra::Vector2;
+use std::iter::once;
 use std::mem::MaybeUninit;
 use std::ops::RangeInclusive;
 use std::panic;
@@ -57,11 +58,11 @@ impl<T> KdTree<T> {
     !result.is_empty()
   }
 
-  fn lookup_rough<'a>(
+  fn lookup_rough<'a, V: Extend<LookupResult<'a, T>>>(
     &'a self,
     point: Vector2<f32>,
     radius: f32,
-    out: &mut Vec<LookupResult<'a, T>>,
+    out: &mut V,
   ) {
     if self.is_empty() {
       return;
@@ -77,11 +78,10 @@ impl<T> KdTree<T> {
     self.lookup_impl(0, 0, &query, out);
   }
 
-  pub fn lookup<'a>(&'a self, point: Vector2<f32>, radius: f32, out: &mut Vec<&'a T>) {
+  pub fn lookup<'a, V: Extend<&'a T>>(&'a self, point: Vector2<f32>, radius: f32, out: &mut V) {
     let mut results = vec![];
     self.lookup_rough(point, radius, &mut results);
 
-    out.clear();
     out.extend(
       results
         .into_iter()
@@ -96,12 +96,12 @@ impl<T> KdTree<T> {
     );
   }
 
-  fn lookup_impl<'a>(
+  fn lookup_impl<'a, V: Extend<LookupResult<'a, T>>>(
     &'a self,
     index: usize,
     level: usize,
     query: &AABB,
-    out: &mut Vec<LookupResult<'a, T>>,
+    out: &mut V,
   ) {
     let ref node = self.nodes[index];
 
@@ -128,11 +128,11 @@ impl<T> KdTree<T> {
         radius,
         ref value,
       } if query.contains(point) => {
-        out.push(LookupResult {
+        out.extend(once(LookupResult {
           pos: point,
           rad: radius,
           val: value,
-        });
+        }));
       }
       &KdTreeNode::Data { .. } => (),
       &KdTreeNode::Invalid => unreachable!(),

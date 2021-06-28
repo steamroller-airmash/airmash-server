@@ -6,9 +6,12 @@ use hecs::{Entity, EntityBuilder, NoSuchEntity};
 use nalgebra::vector;
 use smallvec::SmallVec;
 
+use crate::component::IsPlayer;
 use crate::component::*;
 use crate::event::EntitySpawn;
 use crate::event::PlayerFire;
+use crate::network::{ConnectionId, ConnectionMgr};
+use crate::protocol::{v5, ServerPacket};
 use crate::{
   resource::{Config, LastFrame, ThisFrame},
   AirmashWorld,
@@ -166,5 +169,143 @@ impl AirmashWorld {
         (Expiry(Instant::now() + Duration::from_secs(60)), IsZombie),
       );
     });
+  }
+}
+
+impl AirmashWorld {
+  pub fn send_to_conn(&self, conn: ConnectionId, packet: impl Into<ServerPacket>) {
+    let mut connmgr = self.resources.write::<ConnectionMgr>();
+    let data = match v5::serialize(&packet.into()) {
+      Ok(data) => data,
+      Err(_) => return,
+    };
+
+    connmgr.send_to_conn(conn, data);
+  }
+
+  pub fn send_to_entities<I>(&self, entities: I, packet: impl Into<ServerPacket>)
+  where
+    I: IntoIterator<Item = Entity>,
+  {
+    self._send_to_entities(entities, &packet.into());
+  }
+  fn _send_to_entities<I>(&self, entities: I, packet: &ServerPacket)
+  where
+    I: IntoIterator<Item = Entity>,
+  {
+    let mut connmgr = self.resources.write::<ConnectionMgr>();
+    let data = match v5::serialize(packet) {
+      Ok(data) => data,
+      Err(_) => return,
+    };
+
+    for entity in entities {
+      connmgr.send_to(entity, data.clone());
+    }
+  }
+
+  pub fn send_to(&self, player: Entity, packet: impl Into<ServerPacket>) {
+    self._send_to(player, &packet.into());
+  }
+  fn _send_to(&self, player: Entity, packet: &ServerPacket) {
+    let mut connmgr = self.resources.write::<ConnectionMgr>();
+    let data = match v5::serialize(packet) {
+      Ok(data) => data,
+      Err(_) => return,
+    };
+
+    connmgr.send_to(player, data);
+  }
+
+  pub fn send_to_visible(&self, pos: Vector2<f32>, packet: impl Into<ServerPacket>) {
+    self.send_to_entities(EntitySetBuilder::visible(self, None, pos), packet);
+  }
+
+  pub fn send_to_team(&self, team: u16, packet: impl Into<ServerPacket>) {
+    self.send_to_entities(EntitySetBuilder::team(self, team), packet)
+  }
+
+  pub fn send_to_team_visible(
+    &self,
+    team: u16,
+    pos: Vector2<f32>,
+    packet: impl Into<ServerPacket>,
+  ) {
+    self.send_to_entities(EntitySetBuilder::visible(self, Some(team), pos), packet);
+  }
+
+  pub fn send_to_all(&self, packet: impl Into<ServerPacket>) {
+    self.send_to_entities(EntitySetBuilder::all(self), packet)
+  }
+
+  pub fn send_to_others(&self, player: Entity, packet: impl Into<ServerPacket>) {
+    self.send_to_entities(EntitySetBuilder::all(self).except(player), packet)
+  }
+}
+
+#[derive(Default)]
+pub struct EntitySetBuilder {
+  entries: SmallVec<[Entity; 64]>,
+}
+
+impl EntitySetBuilder {
+  pub fn visible(game: &AirmashWorld, team: Option<u16>, pos: Vector2<f32>) -> Self {
+    use crate::resource::collision::PlayerPosDb;
+
+    let db = game.resources.read::<PlayerPosDb>();
+    let config = game.resources.read::<Config>();
+
+    let mut me = Self::default();
+    db.query(pos, config.view_radius, team, &mut me.entries);
+    me
+  }
+
+  pub fn team(game: &AirmashWorld, req_team: u16) -> Self {
+    let mut query = game.world.query::<&Team>().with::<IsPlayer>();
+
+    Self {
+      entries: query
+        .iter()
+        .filter(|(_, team)| team.0 == req_team)
+        .map(|(ent, _)| ent)
+        .collect(),
+    }
+  }
+
+  pub fn all(game: &AirmashWorld) -> Self {
+    let mut query = game.world.query::<()>().with::<IsPlayer>();
+
+    Self {
+      entries: query.iter().map(|(ent, _)| ent).collect(),
+    }
+  }
+
+  pub fn except(mut self, player: Entity) -> Self {
+    let index = self
+      .entries
+      .iter()
+      .enumerate()
+      .find(|(_, x)| **x == player)
+      .map(|(i, _)| i);
+    if let Some(index) = index {
+      self.entries.swap_remove(index);
+    }
+
+    self
+  }
+
+  pub fn including(mut self, player: Entity) -> Self {
+    self = self.except(player);
+    self.entries.push(player);
+    self
+  }
+}
+
+impl IntoIterator for EntitySetBuilder {
+  type Item = Entity;
+  type IntoIter = <SmallVec<[Entity; 64]> as IntoIterator>::IntoIter;
+
+  fn into_iter(self) -> Self::IntoIter {
+    self.entries.into_iter()
   }
 }
