@@ -136,7 +136,13 @@ impl ConnectionMgr {
         }
         InternalEvent::Data(data) => ConnectionEvent::Data(data),
         InternalEvent::Closed => ConnectionEvent::Closed(match self.known.remove(&conn) {
-          Some(ent) if self.primary.get(&ent) == Some(&conn) => Some(ent),
+          Some(ent) => match self.primary.get(&ent) {
+            Some(&econn) if econn == conn => {
+              self.primary.remove(&ent);
+              Some(ent)
+            }
+            _ => None,
+          },
           _ => None,
         }),
       },

@@ -20,6 +20,5 @@
       "fire_delay": { "secs": 0, "nanos": 0 },
       "fire_energy": 0
     }
-  },
-  "view_radius": 500.0
+  }
 }

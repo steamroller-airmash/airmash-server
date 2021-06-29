@@ -49,7 +49,7 @@ pub fn process_packets(game: &mut AirmashWorld) {
           continue;
         }
 
-        if !game.world.get_mut::<&IsPlayer>(entity).is_ok() {
+        if !game.world.get_mut::<IsPlayer>(entity).is_ok() {
           warn!(
             "Connection {:?} was for a non player entity {:?}",
             conn, entity
@@ -58,6 +58,7 @@ pub fn process_packets(game: &mut AirmashWorld) {
         }
 
         game.dispatch(PlayerLeave { player: entity });
+        game.despawn(entity);
 
         continue;
       }
