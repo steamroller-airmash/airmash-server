@@ -3,6 +3,7 @@
 //! These will all be implicitly registered via the #[handler] proc macro.
 //! so the actual source of this module is just a list of other modules.
 
+mod chat;
 mod on_event_boost;
 mod on_event_bounce;
 mod on_event_horizon;
