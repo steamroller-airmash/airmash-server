@@ -18,6 +18,7 @@ pub(crate) fn build_default_player(
   login: &Login,
   config: &Config,
   start_time: Instant,
+  this_frame: Instant,
 ) -> EntityBuilder {
   let plane = PlaneType::Predator;
   let info = &config.planes[plane];
@@ -49,7 +50,8 @@ pub(crate) fn build_default_player(
     .add(LastFireTime(start_time))
     .add(SpecialActive(false))
     .add(RespawnAllowed(true))
-    .add(Powerup::default());
+    .add(Powerup::default())
+    .add(JoinTime(this_frame));
 
   builder
 }

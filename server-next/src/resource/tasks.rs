@@ -85,13 +85,13 @@ impl PartialEq for TaskDesc {
 
 impl PartialOrd for TaskDesc {
   fn partial_cmp(&self, other: &Self) -> Option<std::cmp::Ordering> {
-    self.time.partial_cmp(&other.time)
+    other.time.partial_cmp(&self.time)
   }
 }
 
 impl Ord for TaskDesc {
   fn cmp(&self, other: &Self) -> std::cmp::Ordering {
-    self.time.cmp(&other.time)
+    other.time.cmp(&self.time)
   }
 }
 

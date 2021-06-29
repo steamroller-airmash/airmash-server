@@ -168,7 +168,7 @@ fn make_unique_name(names: &mut TakenNames, name: &mut BString) {
 fn handle_login(game: &mut AirmashWorld, mut login: Login, conn: ConnectionId) {
   use crate::component::*;
   use crate::protocol::server as s;
-  use crate::resource::{EntityMapping, StartTime};
+  use crate::resource::{EntityMapping, StartTime, ThisFrame};
 
   debug!("Handling login on {}", conn);
 
@@ -179,6 +179,7 @@ fn handle_login(game: &mut AirmashWorld, mut login: Login, conn: ConnectionId) {
     let mut names = game.resources.write::<TakenNames>();
     let mut mapping = game.resources.write::<EntityMapping>();
     let start_time = game.resources.read::<StartTime>().0;
+    let this_frame = game.resources.read::<ThisFrame>().0;
 
     if login.protocol != 5 {
       game.send_to_conn(
@@ -202,7 +203,8 @@ fn handle_login(game: &mut AirmashWorld, mut login: Login, conn: ConnectionId) {
 
     make_unique_name(&mut names, &mut login.name);
 
-    let mut builder = crate::defaults::build_default_player(&login, &config, start_time);
+    let mut builder =
+      crate::defaults::build_default_player(&login, &config, start_time, this_frame);
     let entity = game.world.spawn(builder.build());
 
     if entity.id() > u16::MAX as _ {

@@ -36,6 +36,8 @@ def_wrappers! {
 
   /// The time at which a missile spawned.
   pub type SpawnTime = Instant;
+  /// The time at which a player joined.
+  pub type JoinTime = Instant;
 
   pub type IsAlive = bool;
   pub type IsSpectating = bool;
