@@ -28,14 +28,19 @@ fn damage_player(event: &PlayerMissileCollision, game: &mut AirmashWorld) {
   for player in event.players.iter().copied() {
     let query = game
       .world
-      .query_one::<(&mut Health, &PlaneType, &Powerup, &Upgrades)>(player);
+      .query_one::<(&mut Health, &PlaneType, &Powerup, &Upgrades, &IsAlive)>(player);
     let mut query = match query {
       Ok(query) => query.with::<IsPlayer>(),
       Err(_) => continue,
     };
 
-    if let Some((health, &plane, powerup, upgrades)) = query.get() {
+    if let Some((health, &plane, powerup, upgrades, alive)) = query.get() {
       let pinfo = &config.planes[plane];
+
+      // No damage can be done if the player is dead
+      if !alive.0 {
+        continue;
+      }
 
       // No damage can be done if the player is shielded
       if powerup.shield() {
@@ -54,9 +59,6 @@ fn damage_player(event: &PlayerMissileCollision, game: &mut AirmashWorld) {
       }
     }
   }
-
-  events.sort_unstable_by_key(|x| x.player);
-  events.dedup_by_key(|x| x.player);
 
   drop(config);
 
