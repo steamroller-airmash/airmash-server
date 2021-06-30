@@ -1,6 +1,6 @@
 use std::time::Duration;
 
-use airmash_protocol::PowerupType;
+use airmash_protocol::{PlaneType, PowerupType};
 use hecs::Entity;
 use smallvec::SmallVec;
 
@@ -30,6 +30,14 @@ pub struct PlayerKilled {
 #[derive(Copy, Clone, Debug)]
 pub struct PlayerRespawn {
   pub player: Entity,
+  /// Whether the player was alive when they respawned
+  pub alive: bool,
+}
+
+#[derive(Copy, Clone, Debug)]
+pub struct PlayerChangePlane {
+  pub player: Entity,
+  pub old_plane: PlaneType,
 }
 
 #[derive(Copy, Clone, Debug)]

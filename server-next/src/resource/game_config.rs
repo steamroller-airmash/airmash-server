@@ -10,14 +10,24 @@ pub struct GameConfig {
   /// If this is set to false then dead players will be unable to respawn until
   /// some external server logic allows them to.
   ///
-  /// By default this is set to `true`.
+  /// This is enabled by default
   pub default_respawn: bool,
+
+  /// Whether or not players are allowed to respawn explicitly.
+  ///
+  /// If this is set to true then a player can request a respawn whenever they
+  /// are inactive. This will also allow them to respawn with a new plane. If
+  /// false then respawn requests are ignored.
+  ///
+  /// This is enabled by default.
+  pub allow_respawn: bool,
 }
 
 impl Default for GameConfig {
   fn default() -> Self {
     Self {
       default_respawn: true,
+      allow_respawn: true,
     }
   }
 }

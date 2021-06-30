@@ -11,6 +11,8 @@ mod keystate;
 
 pub use self::keystate::KeyState;
 
+pub use crate::protocol::{FlagCode, MobType, PlaneType};
+
 def_wrappers! {
   pub type Position = crate::protocol::Position;
   pub type Velocity = crate::protocol::Velocity;

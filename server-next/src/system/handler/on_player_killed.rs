@@ -42,6 +42,7 @@ fn launch_respawn_task(event: &PlayerKilled, game: &mut AirmashWorld) {
       if !spectating.0 {
         game.dispatch(PlayerRespawn {
           player: event.player,
+          alive: false,
         });
       }
     },

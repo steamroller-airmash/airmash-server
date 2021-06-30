@@ -80,9 +80,11 @@ fn fire_missiles(game: &mut AirmashWorld) {
 /// Update the keystate component when a new key event comes in
 #[handler(priority = crate::priority::HIGH)]
 fn update_keystate(event: &KeyEvent, game: &mut AirmashWorld) {
-  let (keystate, ..) = match game
+  let this_frame = game.resources.read::<ThisFrame>().0;
+
+  let (keystate, last_action, ..) = match game
     .world
-    .query_one_mut::<(&mut KeyState, &IsPlayer)>(event.player)
+    .query_one_mut::<(&mut KeyState, &mut LastActionTime, &IsPlayer)>(event.player)
   {
     Ok(query) => query,
     Err(_) => return,
@@ -96,6 +98,8 @@ fn update_keystate(event: &KeyEvent, game: &mut AirmashWorld) {
     KeyCode::Fire => keystate.fire = event.state,
     KeyCode::Special => keystate.special = event.state,
   }
+
+  last_action.0 = this_frame;
 }
 
 /// If a key event would cause a plane to perform its special then emit the
