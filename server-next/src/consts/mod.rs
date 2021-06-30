@@ -1,6 +1,8 @@
 #![allow(dead_code)]
 
-use crate::protocol::*;
+use nalgebra::vector;
+
+use crate::{protocol::*, FireMissileInfo};
 use std::time::Duration;
 
 mod hitcircles;
@@ -24,6 +26,51 @@ pub const GOLIATH_SPECIAL_REFLECT_SPEED: Speed = 0.5;
 pub const GOLIATH_SPECIAL_INTERVAL: Duration = Duration::from_secs(1);
 
 // TODO: Tornado
+pub const TORNADO_SPECIAL_ENERGY: Energy = 0.9;
+pub const TORNADO_MISSILE_DETAILS: [FireMissileInfo; 3] = [
+  FireMissileInfo {
+    pos_offset: vector![0.0, 40.1],
+    rot_offset: 0.0,
+    ty: MobType::TornadoTripleMissile,
+  },
+  FireMissileInfo {
+    pos_offset: vector![15.0, 9.6],
+    rot_offset: -0.05,
+    ty: MobType::TornadoTripleMissile,
+  },
+  FireMissileInfo {
+    pos_offset: vector![-15.0, 9.6],
+    rot_offset: 0.05,
+    ty: MobType::TornadoTripleMissile,
+  },
+];
+pub const TORNADO_INFERNO_MISSILE_DETAILS: [FireMissileInfo; 5] = [
+  FireMissileInfo {
+    pos_offset: vector![0.0, 40.1],
+    rot_offset: 0.0,
+    ty: MobType::TornadoTripleMissile,
+  },
+  FireMissileInfo {
+    pos_offset: vector![30.0, 15.0],
+    rot_offset: -0.1,
+    ty: MobType::TornadoTripleMissile,
+  },
+  FireMissileInfo {
+    pos_offset: vector![20.0, 25.0],
+    rot_offset: -0.05,
+    ty: MobType::TornadoTripleMissile,
+  },
+  FireMissileInfo {
+    pos_offset: vector![-20.0, 25.0],
+    rot_offset: 0.05,
+    ty: MobType::TornadoTripleMissile,
+  },
+  FireMissileInfo {
+    pos_offset: vector![-30.0, 15.0],
+    rot_offset: 0.1,
+    ty: MobType::TornadoTripleMissile,
+  },
+];
 
 pub const PROWLER_SPECIAL_ENERGY: Energy = 0.6;
 pub const PROWLER_SPECIAL_DELAY: Duration = Duration::from_millis(1500);

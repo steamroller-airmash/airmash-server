@@ -17,6 +17,7 @@ use crate::{
   AirmashWorld,
 };
 
+#[derive(Clone, Copy, Debug)]
 pub struct FireMissileInfo {
   /// Starting offset of the missile, relative to the plane that is firing it.
   /// This will be rotated into the plane's frame of reference.

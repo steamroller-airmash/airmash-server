@@ -136,9 +136,9 @@ fn send_special_event(event: &KeyEvent, game: &mut AirmashWorld) {
   let time_since_last = this_frame.0 - last_special.0;
 
   match plane {
-    PlaneType::Mohawk => active.0 = event.state,
+    PlaneType::Predator | PlaneType::Tornado => (),
+    PlaneType::Goliath | PlaneType::Mohawk => active.0 = event.state,
     // Predator boost behaviour is somewhat complicated so it's handled in track_predator_boost
-    PlaneType::Predator => (),
     PlaneType::Prowler => {
       if !event.state {
         return;
@@ -165,10 +165,6 @@ fn send_special_event(event: &KeyEvent, game: &mut AirmashWorld) {
 
       drop(config);
       game.dispatch(evt);
-    }
-    PlaneType::Goliath => active.0 = event.state,
-    PlaneType::Tornado => {
-      todo!()
     }
   }
 }

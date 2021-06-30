@@ -1,14 +1,18 @@
-use airmash_protocol::{KeyCode, PlaneType};
+use hecs::Entity;
+use smallvec::SmallVec;
 
 use crate::{
   component::*,
+  consts::*,
   event::{EventBoost, KeyEvent},
+  protocol::KeyCode,
   resource::Config,
-  AirmashWorld,
+  AirmashWorld, FireMissileInfo,
 };
 
 pub fn update(game: &mut AirmashWorld) {
   kill_predator_boost_when_out_of_energy(game);
+  tornado_special_fire(game);
 }
 
 fn kill_predator_boost_when_out_of_energy(game: &mut AirmashWorld) {
@@ -42,6 +46,54 @@ fn kill_predator_boost_when_out_of_energy(game: &mut AirmashWorld) {
 
   for event in events {
     game.dispatch(event);
+  }
+}
+
+fn tornado_special_fire(game: &mut AirmashWorld) {
+  let config = game.resources.read::<Config>();
+  let this_frame = game.this_frame();
+
+  let mut query = game
+    .world
+    .query::<(&KeyState, &LastFireTime, &mut Energy, &PlaneType, &Powerup)>()
+    .with::<IsPlayer>();
+
+  let mut events: Vec<(Entity, SmallVec<[FireMissileInfo; 5]>)> = Vec::new();
+  for (ent, (keystate, last_fire, energy, &plane, powerup)) in query.iter() {
+    if plane != PlaneType::Tornado {
+      continue;
+    }
+
+    if !keystate.special {
+      continue;
+    }
+
+    let ref info = config.planes[plane];
+    if this_frame - last_fire.0 < info.fire_delay {
+      continue;
+    }
+
+    if energy.0 < TORNADO_SPECIAL_ENERGY {
+      continue;
+    }
+
+    energy.0 -= TORNADO_SPECIAL_ENERGY;
+
+    let mut missiles = SmallVec::new();
+    if powerup.inferno() {
+      missiles.extend_from_slice(&TORNADO_INFERNO_MISSILE_DETAILS[..]);
+    } else {
+      missiles.extend_from_slice(&TORNADO_MISSILE_DETAILS[..]);
+    }
+
+    events.push((ent, missiles));
+  }
+
+  drop(config);
+  drop(query);
+
+  for (ent, missiles) in events {
+    let _ = game.fire_missiles(ent, &missiles);
   }
 }
 
