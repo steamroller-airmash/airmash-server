@@ -112,6 +112,7 @@ impl AirmashWorld {
       builder
         .add(Position(pos))
         .add(Velocity(vel))
+        .add(Accel(dir * missile.accel))
         .add(info.ty)
         .add(Owner(player))
         .add(Team(team.0))

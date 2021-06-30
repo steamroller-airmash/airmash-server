@@ -59,7 +59,7 @@ impl SpatialTree {
     self.tree.lookup(pos, rad, &mut output);
 
     if let Some(layer) = layer {
-      output.retain(|x: &Entry| x.layer == layer);
+      output.retain(|x: &Entry| x.layer != layer);
     }
 
     out.extend(output.drain(..).map(|e| e.entity));

@@ -138,6 +138,17 @@ impl AirmashWorld {
     let dispatcher = self.dispatcher.clone();
     dispatcher.dispatch(event, self)
   }
+
+  pub fn dispatch_many<I, E>(&mut self, events: I)
+  where
+    I: IntoIterator<Item = E>,
+    E: Event
+  {
+    let dispatcher = self.dispatcher.clone();
+    for event in events {
+      dispatcher.dispatch(event, self);
+    }
+  }
 }
 
 pub struct Resources {

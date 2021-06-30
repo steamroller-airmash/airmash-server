@@ -137,16 +137,16 @@ fn update_missile_positions(game: &mut AirmashWorld) {
 
   let mut query = game
     .world
-    .query::<(&mut Position, &mut Velocity, &MobType)>()
+    .query::<(&mut Position, &mut Velocity, &Accel, &MobType)>()
     .with::<IsMissile>();
 
-  for (_, (pos, vel, mob)) in query.iter() {
+  for (_, (pos, vel, accel, mob)) in query.iter() {
     let info = config.mobs[*mob]
       .missile
       .expect("Missile had invalid mob type");
 
     let oldvel = vel.0;
-    vel.0 += vel.normalize() * info.accel * delta;
+    vel.0 += accel.0 * delta;
 
     let speed = vel.norm();
     if speed > info.max_speed {

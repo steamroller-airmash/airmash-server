@@ -31,7 +31,7 @@ dependencies = [
 [[package]]
 name = "airmash-protocol"
 version = "0.4.0"
-source = "git+https://github.com/steamroller-airmash/airmash-protocol-rs?branch=remove-dimensioned#6e111dd9ad8f12573bf4d02d6e88669599831722"
+source = "git+https://github.com/steamroller-airmash/airmash-protocol-rs?branch=remove-dimensioned#247e95128d2cfe32891d5c22d9ea965b7d29eb57"
 dependencies = [
  "bstr",
  "derivative",

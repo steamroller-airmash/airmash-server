@@ -47,7 +47,9 @@ pub struct PlayerPowerup {
   pub duration: Duration,
 }
 
-#[derive(Copy, Clone, Debug)]
+#[derive(Clone, Debug)]
 pub struct PlayerRepel {
-  pub player: Entity
+  pub player: Entity,
+  pub repelled_players: SmallVec<[Entity; 4]>,
+  pub repelled_missiles: SmallVec<[Entity; 4]>,
 }

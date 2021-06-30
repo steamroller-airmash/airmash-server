@@ -48,6 +48,7 @@ pub(crate) fn build_default_player(
     .add(Session(Uuid::new_v4()))
     .add(KeyState::default())
     .add(LastFireTime(start_time))
+    .add(LastSpecialTime(start_time))
     .add(LastActionTime(start_time))
     .add(SpecialActive(false))
     .add(RespawnAllowed(true))

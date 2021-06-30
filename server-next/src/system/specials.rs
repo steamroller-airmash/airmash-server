@@ -4,15 +4,19 @@ use smallvec::SmallVec;
 use crate::{
   component::*,
   consts::*,
-  event::{EventBoost, EventStealth, KeyEvent},
+  event::{EventBoost, EventStealth, KeyEvent, PlayerRepel},
   protocol::KeyCode,
-  resource::Config,
+  resource::{
+    collision::{MissileCollideDb, PlayerCollideDb},
+    Config,
+  },
   AirmashWorld, FireMissileInfo,
 };
 
 pub fn update(game: &mut AirmashWorld) {
   kill_predator_boost_when_out_of_energy(game);
   tornado_special_fire(game);
+  goliath_repel(game);
 }
 
 fn kill_predator_boost_when_out_of_energy(game: &mut AirmashWorld) {
@@ -98,51 +102,74 @@ fn tornado_special_fire(game: &mut AirmashWorld) {
 }
 
 fn goliath_repel(game: &mut AirmashWorld) {
-  let config = game.resources.read::<Config>();
   let this_frame = game.this_frame();
-
-  let mut query = game
+  let query = game
     .world
-    .query::<(&KeyState, &LastFireTime, &mut Energy, &PlaneType, &Powerup)>()
+    .query_mut::<(
+      &Position,
+      &Team,
+      &mut Energy,
+      &KeyState,
+      &mut LastSpecialTime,
+      &PlaneType,
+    )>()
     .with::<IsPlayer>();
 
-  let mut events: Vec<(Entity, SmallVec<[FireMissileInfo; 5]>)> = Vec::new();
-  for (ent, (keystate, last_fire, energy, &plane, powerup)) in query.iter() {
-    if plane != PlaneType::Goliath {
+  let mut players = SmallVec::<[_; 16]>::new();
+  for (ent, (pos, team, energy, keystate, last_special, &plane)) in query {
+    if plane != PlaneType::Goliath || !keystate.special {
       continue;
     }
 
-    if !keystate.special {
+    if this_frame - last_special.0 < GOLIATH_SPECIAL_INTERVAL {
       continue;
     }
 
-    let ref info = config.planes[plane];
-    if this_frame - last_fire.0 < info.fire_delay {
+    if energy.0 < GOLIATH_SPECIAL_ENERGY {
       continue;
     }
 
-    if energy.0 < TORNADO_SPECIAL_ENERGY {
-      continue;
-    }
-
-    energy.0 -= TORNADO_SPECIAL_ENERGY;
-
-    let mut missiles = SmallVec::new();
-    if powerup.inferno() {
-      missiles.extend_from_slice(&TORNADO_INFERNO_MISSILE_DETAILS[..]);
-    } else {
-      missiles.extend_from_slice(&TORNADO_MISSILE_DETAILS[..]);
-    }
-
-    events.push((ent, missiles));
+    last_special.0 = this_frame;
+    energy.0 -= GOLIATH_SPECIAL_ENERGY;
+    players.push((ent, pos.0, team.0));
   }
 
-  drop(config);
-  drop(query);
+  let mut events = SmallVec::<[_; 16]>::new();
+  let player_db = game.resources.read::<PlayerCollideDb>();
+  let missile_db = game.resources.read::<MissileCollideDb>();
+  for (player, pos, team) in players {
+    let mut event = PlayerRepel {
+      player,
+      repelled_players: SmallVec::new(),
+      repelled_missiles: SmallVec::new(),
+    };
 
-  for (ent, missiles) in events {
-    let _ = game.fire_missiles(ent, &missiles);
+    player_db.query(
+      pos,
+      GOLIATH_SPECIAL_RADIUS_PLAYER,
+      Some(team),
+      &mut event.repelled_players,
+    );
+    missile_db.query(
+      pos,
+      GOLIATH_SPECIAL_RADIUS_MISSILE,
+      Some(team),
+      &mut event.repelled_missiles,
+    );
+
+    event.repelled_players.sort_unstable();
+    event.repelled_players.dedup();
+
+    event.repelled_missiles.sort_unstable();
+    event.repelled_missiles.dedup();
+
+    events.push(event);
   }
+
+  drop(player_db);
+  drop(missile_db);
+
+  game.dispatch_many(events);
 }
 
 /// Special handling for tracking predator boosts.

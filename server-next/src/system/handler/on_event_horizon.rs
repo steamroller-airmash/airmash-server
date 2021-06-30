@@ -15,15 +15,16 @@ fn send_missile_update(event: &EventHorizon, game: &mut AirmashWorld) {
 
   let clock = crate::util::get_current_clock(game);
 
-  let (&pos, &vel, &mob, _) = match game
-    .world
-    .query_one_mut::<(&Position, &Velocity, &MobType, &IsMissile)>(event.entity)
-  {
-    Ok(query) => query,
-    Err(_) => return,
-  };
+  let (&pos, &vel, &accel, &mob, _) =
+    match game
+      .world
+      .query_one_mut::<(&Position, &Velocity, &Accel, &MobType, &IsMissile)>(event.entity)
+    {
+      Ok(query) => query,
+      Err(_) => return,
+    };
 
-  let (max_speed, accel) = {
+  let max_speed = {
     let config = game.resources.read::<Config>();
 
     let info = match config.mobs[mob].missile {
@@ -31,7 +32,7 @@ fn send_missile_update(event: &EventHorizon, game: &mut AirmashWorld) {
       None => return,
     };
 
-    (info.max_speed, vel.normalize() * info.accel)
+    info.max_speed
   };
 
   game.send_to(
@@ -42,7 +43,7 @@ fn send_missile_update(event: &EventHorizon, game: &mut AirmashWorld) {
       ty: mob,
       pos: pos.0,
       speed: vel.0,
-      accel,
+      accel: accel.0,
       max_speed,
     },
   );

@@ -16,6 +16,7 @@ pub use crate::protocol::{FlagCode, MobType, PlaneType};
 def_wrappers! {
   pub type Position = crate::protocol::Position;
   pub type Velocity = crate::protocol::Velocity;
+  pub type Accel = crate::protocol::Accel;
   pub type Rotation = crate::protocol::Rotation;
   pub type Energy = crate::protocol::Energy;
   pub type Health = crate::protocol::Health;
