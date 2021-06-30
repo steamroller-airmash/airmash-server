@@ -46,3 +46,8 @@ pub struct PlayerPowerup {
   pub ty: PowerupType,
   pub duration: Duration,
 }
+
+#[derive(Copy, Clone, Debug)]
+pub struct PlayerRepel {
+  pub player: Entity
+}
