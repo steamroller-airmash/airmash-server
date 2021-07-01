@@ -8,6 +8,7 @@ mod on_command;
 mod on_event_boost;
 mod on_event_bounce;
 mod on_event_horizon;
+mod on_event_stealth;
 mod on_key_packet;
 mod on_missile_despawn;
 mod on_missile_terrain_collision;

@@ -23,7 +23,7 @@ pub const GOLIATH_SPECIAL_RADIUS_PLAYER: Distance = 180.0;
 /// The speed at which players and mobs will be going when they are reflected.
 pub const GOLIATH_SPECIAL_REFLECT_SPEED: Speed = 0.5;
 /// Minimum time between reflects.
-pub const GOLIATH_SPECIAL_INTERVAL: Duration = Duration::from_secs(0);
+pub const GOLIATH_SPECIAL_INTERVAL: Duration = Duration::from_secs(1);
 
 // TODO: Tornado
 pub const TORNADO_SPECIAL_ENERGY: Energy = 0.9;

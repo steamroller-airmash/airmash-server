@@ -368,7 +368,7 @@ mod tests {
 
     let tree = KdTree::new(arr, &func);
 
-    let mut result = vec![];
+    let mut result: Vec<&(Vector2<f32>, f32)> = vec![];
     tree.lookup(Vector2::new(1.0, 1.0), 0.5, &mut result);
 
     assert!(result.len() == 2);

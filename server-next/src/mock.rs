@@ -1,6 +1,7 @@
 use crate::network::*;
-use crate::protocol::{ClientPacket, ServerPacket};
+use crate::protocol::{ClientPacket, ServerPacket, client as c};
 
+use airmash_protocol::KeyCode;
 use crossbeam_channel::Sender;
 use std::net::{IpAddr, SocketAddr};
 use tokio::sync::mpsc::{unbounded_channel, UnboundedReceiver};
@@ -10,6 +11,8 @@ pub struct MockReceiver {
   rx: UnboundedReceiver<Vec<u8>>,
   conn: ConnectionId,
   closed: bool,
+
+  seq: u32
 }
 
 impl MockReceiver {
@@ -23,6 +26,8 @@ impl MockReceiver {
       rx,
       conn,
       closed: false,
+      
+      seq: 0
     }
   }
 
@@ -73,6 +78,18 @@ impl MockReceiver {
     if std::mem::replace(&mut self.closed, false) {
       let _ = self.tx.send((self.conn, InternalEvent::Closed));
     }
+  }
+}
+
+impl MockReceiver {
+  pub fn send_key(&mut self, key: KeyCode, state: bool) {
+    self.send(c::Key {
+      key,
+      state,
+      seq: self.seq
+    });
+
+    self.seq += 1;
   }
 }
 

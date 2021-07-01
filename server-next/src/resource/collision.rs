@@ -28,6 +28,12 @@ impl Entry {
   }
 }
 
+pub enum LayerSpec {
+  Include(u16),
+  Exclude(u16),
+  None
+}
+
 #[derive(Clone, Debug)]
 pub struct SpatialTree {
   tree: KdTree<Entry>,
@@ -52,14 +58,16 @@ impl SpatialTree {
     &self,
     pos: Vector2<f32>,
     rad: f32,
-    layer: Option<u16>,
+    layer: LayerSpec,
     out: &mut V,
   ) {
-    let mut output = Vec::new();
+    let mut output: Vec<&Entry> = Vec::new();
     self.tree.lookup(pos, rad, &mut output);
 
-    if let Some(layer) = layer {
-      output.retain(|x: &Entry| x.layer != layer);
+    match layer {
+      LayerSpec::Exclude(layer) => output.retain(|x| x.layer != layer),
+      LayerSpec::Include(layer) => output.retain(|x| x.layer == layer),
+      LayerSpec::None => ()
     }
 
     out.extend(output.drain(..).map(|e| e.entity));

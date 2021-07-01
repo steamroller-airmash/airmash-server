@@ -1,17 +1,7 @@
 use hecs::Entity;
 use smallvec::SmallVec;
 
-use crate::{
-  component::*,
-  consts::*,
-  event::{EventBoost, EventStealth, KeyEvent, PlayerRepel},
-  protocol::KeyCode,
-  resource::{
-    collision::{MissileCollideDb, PlayerCollideDb},
-    Config,
-  },
-  AirmashWorld, FireMissileInfo,
-};
+use crate::{AirmashWorld, FireMissileInfo, component::*, consts::*, event::{EventBoost, EventStealth, KeyEvent, PlayerFire, PlayerMissileCollision, PlayerRepel}, protocol::KeyCode, resource::{Config, collision::{LayerSpec, MissileCollideDb, PlayerCollideDb}}};
 
 pub fn update(game: &mut AirmashWorld) {
   kill_predator_boost_when_out_of_energy(game);
@@ -147,13 +137,13 @@ fn goliath_repel(game: &mut AirmashWorld) {
     player_db.query(
       pos,
       GOLIATH_SPECIAL_RADIUS_PLAYER,
-      Some(team),
+      LayerSpec::Exclude(team),
       &mut event.repelled_players,
     );
     missile_db.query(
       pos,
       GOLIATH_SPECIAL_RADIUS_MISSILE,
-      Some(team),
+      LayerSpec::Exclude(team),
       &mut event.repelled_missiles,
     );
 
@@ -266,7 +256,7 @@ fn prowler_cloak(event: &KeyEvent, game: &mut AirmashWorld) {
     return;
   }
 
-  if active.0 {
+  if !active.0 {
     if this_frame - last_special.0 < PROWLER_SPECIAL_DELAY {
       return;
     }
@@ -279,11 +269,52 @@ fn prowler_cloak(event: &KeyEvent, game: &mut AirmashWorld) {
     energy.0 -= PROWLER_SPECIAL_ENERGY;
   }
 
-  active.0 = !active.0;
   let evt = EventStealth {
     player: event.player,
-    stealthed: active.0,
+    stealthed: !active.0,
   };
 
   game.dispatch(evt);
+}
+
+#[handler]
+fn prowler_decloak_on_fire(event: &PlayerFire, game: &mut AirmashWorld) {
+  let (&plane, &active, _) = match game
+    .world
+    .query_one_mut::<(&PlaneType, &SpecialActive, &IsPlayer)>(event.player)
+  {
+    Ok(query) => query,
+    Err(_) => return,
+  };
+
+  if plane != PlaneType::Prowler || !active.0 {
+    return;
+  }
+
+  game.dispatch(EventStealth {
+    player: event.player,
+    stealthed: false,
+  });
+}
+
+#[handler]
+fn prowler_decloak_on_hit(event: &PlayerMissileCollision, game: &mut AirmashWorld) {
+  for player in event.players.iter().copied() {
+    let (&plane, &active, _) = match game
+      .world
+      .query_one_mut::<(&PlaneType, &SpecialActive, &IsPlayer)>(player)
+    {
+      Ok(query) => query,
+      Err(_) => return,
+    };
+
+    if plane != PlaneType::Prowler || !active.0 {
+      return;
+    }
+
+    game.dispatch(EventStealth {
+      player,
+      stealthed: false,
+    });
+  }
 }

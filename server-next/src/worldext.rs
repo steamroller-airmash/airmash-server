@@ -12,6 +12,7 @@ use crate::event::EntitySpawn;
 use crate::event::PlayerFire;
 use crate::network::{ConnectionId, ConnectionMgr};
 use crate::protocol::{v5, ServerPacket};
+use crate::resource::collision::LayerSpec;
 use crate::{
   resource::{Config, LastFrame, ThisFrame},
   AirmashWorld,
@@ -220,7 +221,7 @@ impl AirmashWorld {
   }
 
   pub fn send_to_visible(&self, pos: Vector2<f32>, packet: impl Into<ServerPacket>) {
-    self.send_to_entities(EntitySetBuilder::visible(self, None, pos), packet);
+    self.send_to_entities(EntitySetBuilder::visible(self, pos), packet);
   }
 
   pub fn send_to_team(&self, team: u16, packet: impl Into<ServerPacket>) {
@@ -233,7 +234,7 @@ impl AirmashWorld {
     pos: Vector2<f32>,
     packet: impl Into<ServerPacket>,
   ) {
-    self.send_to_entities(EntitySetBuilder::visible(self, Some(team), pos), packet);
+    self.send_to_entities(EntitySetBuilder::team_visible(self, team, pos), packet);
   }
 
   pub fn send_to_all(&self, packet: impl Into<ServerPacket>) {
@@ -251,14 +252,30 @@ pub struct EntitySetBuilder {
 }
 
 impl EntitySetBuilder {
-  pub fn visible(game: &AirmashWorld, team: Option<u16>, pos: Vector2<f32>) -> Self {
+  pub fn team_visible(game: &AirmashWorld, team: u16, pos: Vector2<f32>) -> Self {
     use crate::resource::collision::PlayerPosDb;
 
     let db = game.resources.read::<PlayerPosDb>();
     let config = game.resources.read::<Config>();
 
     let mut me = Self::default();
-    db.query(pos, config.view_radius, team, &mut me.entries);
+    db.query(
+      pos,
+      config.view_radius,
+      LayerSpec::Include(team),
+      &mut me.entries,
+    );
+    me
+  }
+
+  pub fn visible(game: &AirmashWorld, pos: Vector2<f32>) -> Self {
+    use crate::resource::collision::PlayerPosDb;
+
+    let db = game.resources.read::<PlayerPosDb>();
+    let config = game.resources.read::<Config>();
+
+    let mut me = Self::default();
+    db.query(pos, config.view_radius, LayerSpec::None, &mut me.entries);
     me
   }
 

@@ -28,7 +28,7 @@ fn send_packet(event: &PlayerRespawn, game: &mut AirmashWorld) {
   };
 
   game.send_to_entities(
-    EntitySetBuilder::visible(game, None, pos.0).including(event.player),
+    EntitySetBuilder::visible(game, pos.0).including(event.player),
     packet,
   );
 }

@@ -3,6 +3,7 @@ use crate::event::EntitySpawn;
 use crate::event::EventHorizon;
 use crate::event::PlayerFire;
 use crate::resource::collision as c;
+use crate::resource::collision::LayerSpec;
 use crate::resource::Config;
 use crate::AirmashWorld;
 
@@ -45,8 +46,13 @@ pub fn generate_horizon_events(game: &mut AirmashWorld) {
       continue;
     }
 
-    missile_db.query(pos.0, config.view_radius, None, &mut vis_missiles);
-    player_db.query(pos.0, config.view_radius, None, &mut vis_players);
+    missile_db.query(
+      pos.0,
+      config.view_radius,
+      LayerSpec::None,
+      &mut vis_missiles,
+    );
+    player_db.query(pos.0, config.view_radius, LayerSpec::None, &mut vis_players);
 
     let new_vis = HashSet::from_iter(
       vis_missiles
