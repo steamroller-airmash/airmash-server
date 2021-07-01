@@ -1,6 +1,8 @@
 use std::convert::TryFrom;
+use std::str::FromStr;
 use std::time::{Duration, Instant};
 
+use airmash_protocol::server::PlayerFlag;
 use airmash_protocol::PlaneType;
 use bstr::BString;
 use bstr::ByteSlice;
@@ -129,4 +131,28 @@ fn on_respawn_command(event: &PacketEvent<Command>, game: &mut AirmashWorld) {
       old_plane: oldplane,
     });
   }
+}
+
+#[handler]
+fn on_flag_command(event: &PacketEvent<Command>, game: &mut AirmashWorld) {
+  if event.packet.com != "flag" {
+    return;
+  }
+
+  let (flag, _) = match game
+    .world
+    .query_one_mut::<(&mut FlagCode, &IsPlayer)>(event.entity)
+  {
+    Ok(query) => query,
+    Err(_) => return,
+  };
+
+  let newflag = FlagCode::from_str(&event.packet.data.to_str().unwrap_or("UN"))
+    .unwrap_or(FlagCode::UnitedNations);
+  *flag = newflag;
+
+  game.send_to_all(PlayerFlag {
+    id: event.entity.id() as _,
+    flag: newflag,
+  });
 }
