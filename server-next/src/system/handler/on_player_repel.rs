@@ -1,5 +1,4 @@
 use crate::component::*;
-use crate::consts::*;
 use crate::event::EventStealth;
 use crate::event::PlayerRepel;
 use crate::resource::Config;
@@ -183,7 +182,7 @@ fn repel_missiles(event: &PlayerRepel, game: &mut AirmashWorld) {
 
     let dir = (pos.0 - player_pos.0).normalize();
 
-    vel.0 = dir * GOLIATH_SPECIAL_REFLECT_SPEED;
+    vel.0 = dir * vel.0.norm();
     accel.0 = (-accel.normalize() + dir).normalize() * info.accel;
     team.0 = player_team.0;
     owner.0 = event.player;
@@ -197,23 +196,21 @@ fn decloak_prowlers(event: &PlayerRepel, game: &mut AirmashWorld) {
   }
 
   for player in event.repelled_players.iter().copied() {
-    let (&plane, active, _) = match game.world.query_one_mut::<(
-      &PlaneType,
-      &mut SpecialActive,
-      &IsPlayer,
-    )>(player)
+    let (&plane, active, _) = match game
+      .world
+      .query_one_mut::<(&PlaneType, &mut SpecialActive, &IsPlayer)>(player)
     {
       Ok(query) => query,
       Err(_) => continue,
     };
 
-    if !active.0 || plane != PlaneType::Prowler{
+    if !active.0 || plane != PlaneType::Prowler {
       continue;
     }
 
     game.dispatch(EventStealth {
       player,
-      stealthed: false
+      stealthed: false,
     });
   }
 }

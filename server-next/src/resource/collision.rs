@@ -31,7 +31,7 @@ impl Entry {
 pub enum LayerSpec {
   Include(u16),
   Exclude(u16),
-  None
+  None,
 }
 
 #[derive(Clone, Debug)]
@@ -67,7 +67,7 @@ impl SpatialTree {
     match layer {
       LayerSpec::Exclude(layer) => output.retain(|x| x.layer != layer),
       LayerSpec::Include(layer) => output.retain(|x| x.layer == layer),
-      LayerSpec::None => ()
+      LayerSpec::None => (),
     }
 
     out.extend(output.drain(..).map(|e| e.entity));

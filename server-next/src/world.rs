@@ -142,7 +142,7 @@ impl AirmashWorld {
   pub fn dispatch_many<I, E>(&mut self, events: I)
   where
     I: IntoIterator<Item = E>,
-    E: Event
+    E: Event,
   {
     let dispatcher = self.dispatcher.clone();
     for event in events {

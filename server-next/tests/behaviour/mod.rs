@@ -1,2 +1,2 @@
-mod visibility;
 mod prowler;
+mod visibility;

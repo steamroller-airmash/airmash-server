@@ -1,5 +1,5 @@
 use crate::network::*;
-use crate::protocol::{ClientPacket, ServerPacket, client as c};
+use crate::protocol::{client as c, ClientPacket, ServerPacket};
 
 use airmash_protocol::KeyCode;
 use crossbeam_channel::Sender;
@@ -12,7 +12,7 @@ pub struct MockReceiver {
   conn: ConnectionId,
   closed: bool,
 
-  seq: u32
+  seq: u32,
 }
 
 impl MockReceiver {
@@ -26,8 +26,8 @@ impl MockReceiver {
       rx,
       conn,
       closed: false,
-      
-      seq: 0
+
+      seq: 0,
     }
   }
 
@@ -86,7 +86,7 @@ impl MockReceiver {
     self.send(c::Key {
       key,
       state,
-      seq: self.seq
+      seq: self.seq,
     });
 
     self.seq += 1;

@@ -1,7 +1,17 @@
 use hecs::Entity;
 use smallvec::SmallVec;
 
-use crate::{AirmashWorld, FireMissileInfo, component::*, consts::*, event::{EventBoost, EventStealth, KeyEvent, PlayerFire, PlayerMissileCollision, PlayerRepel}, protocol::KeyCode, resource::{Config, collision::{LayerSpec, MissileCollideDb, PlayerCollideDb}}};
+use crate::{
+  component::*,
+  consts::*,
+  event::{EventBoost, EventStealth, KeyEvent, PlayerFire, PlayerMissileCollision, PlayerRepel},
+  protocol::KeyCode,
+  resource::{
+    collision::{LayerSpec, MissileCollideDb, PlayerCollideDb},
+    Config,
+  },
+  AirmashWorld, FireMissileInfo,
+};
 
 pub fn update(game: &mut AirmashWorld) {
   kill_predator_boost_when_out_of_energy(game);
