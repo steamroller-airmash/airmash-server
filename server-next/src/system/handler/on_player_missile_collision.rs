@@ -1,3 +1,5 @@
+use std::collections::HashSet;
+
 use airmash_protocol::MobType;
 use airmash_protocol::PlaneType;
 use smallvec::SmallVec;
@@ -25,10 +27,11 @@ fn damage_player(event: &PlayerMissileCollision, game: &mut AirmashWorld) {
   };
 
   let mut events = SmallVec::<[_; 16]>::new();
+  let mut killed = HashSet::new();
   for player in event.players.iter().copied() {
     let query = game
       .world
-      .query_one::<(&mut Health, &PlaneType, &Powerup, &Upgrades, &IsAlive)>(player);
+      .query_one::<(&mut Health, &PlaneType, &Powerup, &Upgrades, &mut IsAlive)>(player);
     let mut query = match query {
       Ok(query) => query.with::<IsPlayer>(),
       Err(_) => continue,
@@ -51,6 +54,11 @@ fn damage_player(event: &PlayerMissileCollision, game: &mut AirmashWorld) {
         / config.upgrades.defense.factor[upgrades.defense as usize];
 
       if health.0 <= 0.0 {
+        // Avoid double-kills if multiple missiles hit the player in the same frame.
+        if !killed.insert(player) {
+          continue;
+        }
+
         events.push(PlayerKilled {
           missile: event.missile,
           player,
