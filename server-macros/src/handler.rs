@@ -69,10 +69,12 @@ fn impl_handler(item: ItemFn, args: MacroArgs) -> Result<TokenStream> {
   Ok(quote! {
     #item
 
-    #[allow(non_upper_case_globals)]
-    #[linkme::distributed_slice(airmash_server::HANDLERS)]
-    static #const_name: fn(&airmash_server::EventDispatcher) = |dispatch| {
-      dispatch.register_with_priority(#priority, #name);
+    const _: () = {
+      #[allow(non_upper_case_globals)]
+      #[linkme::distributed_slice(airmash_server::HANDLERS)]
+      static #const_name: fn(&airmash_server::EventDispatcher) = |dispatch| {
+        dispatch.register_with_priority(#priority, #name);
+      };
     };
   })
 }
