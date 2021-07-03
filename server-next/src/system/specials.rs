@@ -22,15 +22,15 @@ pub fn update(game: &mut AirmashWorld) {
 fn kill_predator_boost_when_out_of_energy(game: &mut AirmashWorld) {
   let mut query = game
     .world
-    .query::<(&Energy, &PlaneType, &mut SpecialActive)>()
+    .query::<(&Energy, &PlaneType, &mut SpecialActive, &IsAlive)>()
     .with::<IsPlayer>();
 
   let config = game.resources.read::<Config>();
 
   let mut events = vec![];
 
-  for (ent, (energy, plane, active)) in query.iter() {
-    if *plane != PlaneType::Predator {
+  for (ent, (energy, plane, active, alive)) in query.iter() {
+    if *plane != PlaneType::Predator || !alive.0 {
       continue;
     }
 
@@ -59,16 +59,19 @@ fn tornado_special_fire(game: &mut AirmashWorld) {
 
   let mut query = game
     .world
-    .query::<(&KeyState, &LastFireTime, &mut Energy, &PlaneType, &Powerup)>()
+    .query::<(
+      &KeyState,
+      &LastFireTime,
+      &mut Energy,
+      &PlaneType,
+      &Powerup,
+      &IsAlive,
+    )>()
     .with::<IsPlayer>();
 
   let mut events: Vec<(Entity, SmallVec<[FireMissileInfo; 5]>)> = Vec::new();
-  for (ent, (keystate, last_fire, energy, &plane, powerup)) in query.iter() {
-    if plane != PlaneType::Tornado {
-      continue;
-    }
-
-    if !keystate.special {
+  for (ent, (keystate, last_fire, energy, &plane, powerup, alive)) in query.iter() {
+    if plane != PlaneType::Tornado || !keystate.special || !alive.0 {
       continue;
     }
 
@@ -112,12 +115,13 @@ fn goliath_repel(game: &mut AirmashWorld) {
       &KeyState,
       &mut LastSpecialTime,
       &PlaneType,
+      &IsAlive,
     )>()
     .with::<IsPlayer>();
 
   let mut players = SmallVec::<[_; 16]>::new();
-  for (ent, (pos, team, energy, keystate, last_special, &plane)) in query {
-    if plane != PlaneType::Goliath || !keystate.special {
+  for (ent, (pos, team, energy, keystate, last_special, &plane, alive)) in query {
+    if plane != PlaneType::Goliath || !keystate.special || !alive.0 {
       continue;
     }
 
@@ -243,17 +247,19 @@ fn track_predator_boost(event: &KeyEvent, game: &mut AirmashWorld) {
 
 #[handler]
 fn prowler_cloak(event: &KeyEvent, game: &mut AirmashWorld) {
+  // Prowlers only change stealth state when shift is pressed
   if event.key != KeyCode::Special {
     return;
   }
 
   let this_frame = game.this_frame();
 
-  let (&plane, energy, last_special, active, ..) = match game.world.query_one_mut::<(
+  let (&plane, energy, last_special, active, alive, _) = match game.world.query_one_mut::<(
     &PlaneType,
     &mut Energy,
     &mut LastSpecialTime,
     &mut SpecialActive,
+    &IsAlive,
     &IsPlayer,
   )>(event.player)
   {
@@ -261,8 +267,7 @@ fn prowler_cloak(event: &KeyEvent, game: &mut AirmashWorld) {
     Err(_) => return,
   };
 
-  // Prowlers only change stealth state when shift is pressed
-  if plane != PlaneType::Prowler || !event.state {
+  if plane != PlaneType::Prowler || !event.state || !alive.0 {
     return;
   }
 
