@@ -55,7 +55,6 @@ dependencies = [
  "hecs",
  "itertools",
  "kdtree",
- "kiddo",
  "linkme",
  "log",
  "nalgebra",
@@ -63,7 +62,6 @@ dependencies = [
  "serde",
  "serde-deserialize-over",
  "server-macros",
- "shrev",
  "simple-log",
  "smallvec",
  "tokio",
@@ -484,17 +482,8 @@ checksum = "dd25036021b0de88a0aff6b850051563c6516d0bf53f8638938edbb9de732736"
 name = "kdtree"
 version = "0.1.0"
 dependencies = [
- "nalgebra",
  "pdqselect",
-]
-
-[[package]]
-name = "kiddo"
-version = "0.1.4"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "73e70400c6435a3f5e4d7bfb406af50bc66950cc8f24f45488d66f47bf3f5e25"
-dependencies = [
- "num-traits",
+ "rand",
 ]
 
 [[package]]
@@ -1107,12 +1096,6 @@ dependencies = [
  "digest",
  "opaque-debug",
 ]
-
-[[package]]
-name = "shrev"
-version = "1.1.1"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "b5752e017e03af9d735b4b069f53b7a7fd90fefafa04d8bd0c25581b0bff437f"
 
 [[package]]
 name = "simba"

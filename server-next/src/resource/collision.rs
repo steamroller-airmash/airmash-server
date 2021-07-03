@@ -1,6 +1,6 @@
 use airmash_protocol::Vector2;
 use hecs::Entity;
-use kdtree::KdTree;
+use kdtree::{KdTree, Node};
 use nalgebra::vector;
 
 def_wrappers! {
@@ -22,9 +22,13 @@ pub struct Entry {
   pub layer: u16,
 }
 
-impl Entry {
-  fn kdtree_func(&self) -> (Vector2<f32>, f32) {
-    (self.pos, self.radius)
+impl Node for Entry {
+  fn position(&self) -> [f32; 2] {
+    [self.pos.x, self.pos.y]
+  }
+
+  fn radius(&self) -> f32 {
+    self.radius
   }
 }
 
@@ -34,24 +38,25 @@ pub enum LayerSpec {
   None,
 }
 
-#[derive(Clone, Debug)]
+#[derive(Clone, Debug, Default)]
 pub struct SpatialTree {
   tree: KdTree<Entry>,
 }
 
 impl SpatialTree {
   pub fn new() -> Self {
-    Self::with_entries(Vec::new())
+    Self::default()
   }
 
   pub fn with_entries(entries: Vec<Entry>) -> Self {
-    Self {
-      tree: KdTree::new(entries, &Entry::kdtree_func),
-    }
+    let mut me = Self::new();
+    me.recreate(entries);
+    me
   }
 
-  pub fn recreate(&mut self, entries: Vec<Entry>) {
-    self.tree.rebuild_from(entries, &Entry::kdtree_func);
+  pub fn recreate(&mut self, mut entries: Vec<Entry>) {
+    entries.retain(|e| !e.pos.x.is_nan() && !e.pos.y.is_nan() && !e.radius.is_nan());
+    self.tree.rebuild_from(&mut entries);
   }
 
   pub fn query<V: Extend<Entity>>(
@@ -61,16 +66,31 @@ impl SpatialTree {
     layer: LayerSpec,
     out: &mut V,
   ) {
-    let mut output: Vec<&Entry> = Vec::new();
-    self.tree.lookup(pos, rad, &mut output);
+    let pos = [pos.x, pos.y];
 
     match layer {
-      LayerSpec::Exclude(layer) => output.retain(|x| x.layer != layer),
-      LayerSpec::Include(layer) => output.retain(|x| x.layer == layer),
-      LayerSpec::None => (),
+      LayerSpec::Exclude(layer) => {
+        out.extend(
+          self
+            .tree
+            .within(pos, rad)
+            .filter(|x| x.layer != layer)
+            .map(|x| x.entity),
+        );
+      }
+      LayerSpec::Include(layer) => {
+        out.extend(
+          self
+            .tree
+            .within(pos, rad)
+            .filter(|x| x.layer == layer)
+            .map(|x| x.entity),
+        );
+      }
+      LayerSpec::None => {
+        out.extend(self.tree.within(pos, rad).map(|x| x.entity));
+      }
     }
-
-    out.extend(output.drain(..).map(|e| e.entity));
   }
 
   pub fn query_all_pairs<'a>(
@@ -78,7 +98,11 @@ impl SpatialTree {
     other: &'a SpatialTree,
     out: &mut Vec<(&'a Entry, &'a Entry)>,
   ) {
-    self.tree.lookup_all_pairs(&other.tree, out);
+    if self.tree.len() < other.tree.len() {
+      out.extend(self.tree.query_all(&other.tree));
+    } else {
+      out.extend(other.tree.query_all(&self.tree).map(|(x, y)| (y, x)));
+    }
   }
 }
 
