@@ -53,7 +53,8 @@ pub(crate) fn build_default_player(
     .add(SpecialActive(false))
     .add(RespawnAllowed(true))
     .add(Powerup::default())
-    .add(JoinTime(this_frame));
+    .add(JoinTime(this_frame))
+    .add(Spectating::default());
 
   builder
 }

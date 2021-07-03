@@ -21,22 +21,25 @@ fn fire_missiles(game: &mut AirmashWorld) {
 
   let mut query = game
     .world
-    .query::<(&KeyState, &LastFireTime, &mut Energy, &PlaneType, &Powerup)>()
+    .query::<(
+      &KeyState,
+      &LastFireTime,
+      &mut Energy,
+      &PlaneType,
+      &Powerup,
+      &IsAlive,
+    )>()
     .with::<IsPlayer>();
 
   let mut events: Vec<(Entity, SmallVec<[FireMissileInfo; 3]>)> = Vec::new();
-  for (ent, (keystate, last_fire, energy, plane, powerup)) in query.iter() {
+  for (ent, (keystate, last_fire, energy, plane, powerup, alive)) in query.iter() {
     let info = &config.planes[*plane];
 
-    if !keystate.fire {
-      continue;
-    }
-
-    if this_frame - last_fire.0 < info.fire_delay {
-      continue;
-    }
-
-    if energy.0 < info.fire_energy {
+    if !alive.0
+      || !keystate.fire
+      || this_frame - last_fire.0 < info.fire_delay
+      || energy.0 < info.fire_energy
+    {
       continue;
     }
 

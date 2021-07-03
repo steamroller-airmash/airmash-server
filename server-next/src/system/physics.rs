@@ -13,6 +13,7 @@ use std::time::Duration;
 
 pub fn update(game: &mut AirmashWorld) {
   update_player_positions(game);
+  update_spectator_positions(game);
   update_missile_positions(game);
   send_update_packets(game);
 }
@@ -164,6 +165,32 @@ fn update_missile_positions(game: &mut AirmashWorld) {
     if pos.y.abs() > bounds.y {
       pos.y -= pos.y.signum() * size.x;
     }
+  }
+}
+
+fn update_spectator_positions(game: &mut AirmashWorld) {
+  let mut query = game
+    .world
+    .query::<(&mut Position, &IsSpectating, &Spectating)>()
+    .with::<IsPlayer>();
+
+  for (player, (pos, spec, target)) in query.iter() {
+    if !spec.0 {
+      continue;
+    }
+
+    let target = match target.0 {
+      Some(target) if target != player => target,
+      _ => {
+        pos.0 = Vector2::zeros();
+        continue;
+      }
+    };
+
+    pos.0 = match unsafe { game.world.get_unchecked::<Position>(target) } {
+      Ok(&pos) => pos.0,
+      Err(_) => continue,
+    };
   }
 }
 

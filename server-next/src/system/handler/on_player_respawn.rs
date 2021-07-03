@@ -48,6 +48,7 @@ fn reset_player(event: &PlayerRespawn, game: &mut AirmashWorld) {
     &mut IsSpectating,
     &mut SpecialActive,
     &mut KeyState,
+    &mut Spectating,
     &PlaneType,
   )>(event.player)
   {
@@ -66,6 +67,7 @@ fn reset_player(event: &PlayerRespawn, game: &mut AirmashWorld) {
     spectating,
     active,
     keystate,
+    spectgt,
     &plane,
   ) = match query.get() {
     Some(query) => query,
@@ -84,6 +86,7 @@ fn reset_player(event: &PlayerRespawn, game: &mut AirmashWorld) {
   alive.0 = true;
   spectating.0 = false;
   active.0 = false;
+  spectgt.0 = None;
 
   let powerup = PlayerPowerup {
     player: event.player,

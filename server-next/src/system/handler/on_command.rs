@@ -8,10 +8,11 @@ use bstr::BString;
 use bstr::ByteSlice;
 
 use crate::component::*;
-use crate::event::{PacketEvent, PlayerChangePlane, PlayerRespawn};
+use crate::event::{PacketEvent, PlayerChangePlane, PlayerRespawn, PlayerSpectate};
 use crate::protocol::client::Command;
 use crate::protocol::{server as s, ErrorType};
 use crate::resource::{GameConfig, ThisFrame};
+use crate::util::spectate::*;
 use crate::AirmashWorld;
 
 #[handler]
@@ -154,5 +155,100 @@ fn on_flag_command(event: &PacketEvent<Command>, game: &mut AirmashWorld) {
   game.send_to_all(PlayerFlag {
     id: event.entity.id() as _,
     flag: newflag,
+  });
+}
+
+#[handler]
+fn on_spectate_command(event: &PacketEvent<Command>, game: &mut AirmashWorld) {
+  fn can_spectate(
+    is_spec: bool,
+    is_alive: bool,
+    health: f32,
+    last_action: Instant,
+    this_frame: Instant,
+  ) -> bool {
+    // If the player is spectating then they may change who they are spectating at
+    // any time. Similarly, if they are dead then they may spectate at any time.
+    if is_spec || !is_alive {
+      return true;
+    }
+
+    // Spectating requires full health.
+    if health < 1.0 {
+      return false;
+    }
+
+    // A player must have been idle for 2 seconds to spectate.
+    if this_frame - last_action < Duration::from_secs(2) {
+      return false;
+    }
+
+    true
+  }
+
+  fn parse_spectate_data(s: &str) -> Result<SpectateTarget, ()> {
+    let arg: i32 = s.parse().map_err(|_| ())?;
+
+    if arg < -3 || arg > u16::MAX as _ {
+      return Err(());
+    }
+
+    Ok(match arg {
+      -1 => SpectateTarget::Next,
+      -2 => SpectateTarget::Prev,
+      -3 => SpectateTarget::Force,
+      x => SpectateTarget::Target(x as u16),
+    })
+  }
+
+  if event.packet.com != "spectate" {
+    return;
+  }
+
+  let tgt = match parse_spectate_data(event.packet.data.to_str().unwrap_or("")) {
+    Ok(tgt) => tgt,
+    Err(_) => return,
+  };
+
+  let this_frame = game.this_frame();
+  let mut query = match game.world.query_one::<(
+    &mut IsSpectating,
+    &IsAlive,
+    &mut Spectating,
+    &Health,
+    &LastActionTime,
+  )>(event.entity)
+  {
+    Ok(query) => query.with::<IsPlayer>(),
+    Err(_) => return,
+  };
+  let (spec, alive, target, health, last_action) = match query.get() {
+    Some(query) => query,
+    None => return,
+  };
+
+  if !can_spectate(spec.0, alive.0, health.0, last_action.0, this_frame) {
+    game.send_to(
+      event.entity,
+      s::Error {
+        error: ErrorType::IdleRequiredBeforeSpectate,
+      },
+    );
+    return;
+  }
+
+  target.0 = spectate_target(event.entity, target.0, tgt, game);
+  spec.0 = true;
+
+  drop(query);
+
+  let was_alive = std::mem::replace(
+    &mut game.world.get_mut::<IsAlive>(event.entity).unwrap().0,
+    false,
+  );
+
+  game.dispatch(PlayerSpectate {
+    player: event.entity,
+    was_alive,
   });
 }

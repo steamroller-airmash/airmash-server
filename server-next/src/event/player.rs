@@ -53,3 +53,9 @@ pub struct PlayerRepel {
   pub repelled_players: SmallVec<[Entity; 4]>,
   pub repelled_missiles: SmallVec<[Entity; 4]>,
 }
+
+#[derive(Copy, Clone, Debug)]
+pub struct PlayerSpectate {
+  pub player: Entity,
+  pub was_alive: bool,
+}

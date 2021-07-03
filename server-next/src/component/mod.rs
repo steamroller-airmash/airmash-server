@@ -31,6 +31,10 @@ def_wrappers! {
   pub type KillCount = u32;
   pub type DeathCount = u32;
 
+  /// The player that another spectating player is watching.
+  #[derive(Default)]
+  pub type Spectating = Option<Entity>;
+
   pub type LastUpdateTime = Instant;
   pub type LastSpecialTime = Instant;
   pub type LastFireTime = Instant;

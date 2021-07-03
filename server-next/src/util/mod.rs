@@ -6,6 +6,8 @@ use crate::AirmashWorld;
 use nalgebra::vector;
 use std::time::Duration;
 
+pub mod spectate;
+
 pub fn convert_time(dur: Duration) -> Time {
   dur.as_secs_f32() * 60.0
 }
