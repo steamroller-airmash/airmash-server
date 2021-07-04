@@ -1,6 +1,7 @@
 use crate::component::SpecialActive;
 use crate::protocol::{PlaneType, ServerKeyState};
 
+/// Known key state of a player.
 #[derive(Default, Clone, Debug)]
 pub struct KeyState {
   pub up: bool,

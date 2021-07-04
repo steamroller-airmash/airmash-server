@@ -99,30 +99,65 @@ def_wrappers! {
   /// The time at which a player joined.
   pub type JoinTime = Instant;
 
+  /// Whether a player is currently alive.
   pub type IsAlive = bool;
+
+  /// Whether a player is currently spectating.
   pub type IsSpectating = bool;
+
+  /// Whether a player's special is currently active.
+  ///
+  /// Note that this component really only has meaning for prowlers and
+  /// mohawks.
   pub type SpecialActive = bool;
+
+  /// Whether a player is currently allowed to respawn.
   pub type RespawnAllowed = bool;
 
+  /// A unique ID corresponding to the current player connection ID.
   pub type Session = Uuid;
+
+  /// The player that currently owns a missile.
+  ///
+  /// Normally this corresponds to the player that fired the missile but if
+  /// the missile is reflected by a goliath then the owner will change to
+  /// the player that reflected it.
   pub type Owner = Entity;
 }
 
+/// Marker component indicating that an entity is a player.
 #[derive(Copy, Clone, Debug, Default, Eq, PartialEq, Hash)]
 pub struct IsPlayer;
+
+/// Marker component indicating that an entity is a missile.
 #[derive(Copy, Clone, Debug, Default, Eq, PartialEq, Hash)]
 pub struct IsMissile;
+
+/// Marker component indicating that an entity is a mob.
 #[derive(Copy, Clone, Debug, Default, Eq, PartialEq, Hash)]
 pub struct IsMob;
+
+/// Marker component indicating that an entity is a zombie.
+///
+/// There really should never be a reason for this to need to be used as zombie
+/// components are just meant to prevent entity IDs from being reused within a
+/// short period of time.
 #[derive(Copy, Clone, Debug, Default, Eq, PartialEq, Hash)]
 pub struct IsZombie;
 
+/// Data on the current powerup in use by a player.
+///
+/// This type is not used as a component, see [`Powerup`] instead.
 #[derive(Copy, Clone, Debug, Eq, PartialEq, Hash)]
 pub struct PowerupData {
   pub ty: PowerupType,
   pub end_time: Instant,
 }
 
+/// The current powerup that a player has, or none if the player has no powerup.
+///
+/// Utility methods are provided to simplify checking what powerups a player
+/// has.
 #[derive(Copy, Clone, Debug, Eq, PartialEq, Hash, Default)]
 pub struct Powerup {
   pub data: Option<PowerupData>,
@@ -133,12 +168,14 @@ impl Powerup {
     Self::default()
   }
 
+  /// Create a new powerup with the provided type and expiry time.
   pub fn new(ty: PowerupType, end_time: Instant) -> Self {
     Self {
       data: Some(PowerupData { ty, end_time }),
     }
   }
 
+  /// Whether the current powerup is an inferno.
   pub fn inferno(&self) -> bool {
     self
       .data
@@ -146,6 +183,7 @@ impl Powerup {
       .unwrap_or(false)
   }
 
+  /// Whether the current powerup is a shield.
   pub fn shield(&self) -> bool {
     self
       .data
@@ -153,11 +191,13 @@ impl Powerup {
       .unwrap_or(false)
   }
 
+  /// The time at which the current powerup expires, should there be one.
   pub fn expires(&self) -> Option<Instant> {
     self.data.map(|x| x.end_time)
   }
 }
 
+/// The current state of the upgrades that a player has.
 #[derive(Default, Clone, Copy, Debug, PartialEq, Eq, Hash)]
 pub struct Upgrades {
   pub speed: u8,
@@ -167,6 +207,10 @@ pub struct Upgrades {
   pub unused: u16,
 }
 
+/// Trajectory info for a missile.
+///
+/// This is used to delete missiles which have reached the end of their
+/// lifetime.
 #[derive(Copy, Clone, Debug)]
 pub struct MissileTrajectory {
   pub start: Vector2<f32>,
