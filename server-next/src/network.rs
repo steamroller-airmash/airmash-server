@@ -1,3 +1,11 @@
+//! Raw networking interfaces.
+//!
+//! This module has the raw types for interacting with the network endpoint of
+//! the server. Usually you'll want to use the helper methods on [`AirmashGame`]
+//! instead of interacting directly with these types.
+//!
+//! [`AirmashGame`]: crate::AirmashGame
+
 use std::{
   collections::HashMap,
   fmt,
@@ -20,8 +28,10 @@ use tokio_tungstenite::tungstenite::{
 
 use crate::mock::MockConnectionEndpoint;
 
+// TODO: This shouldn't be a global. It should instead be an Arc/Resource pair.
 pub(crate) static NUM_PLAYERS: AtomicUsize = AtomicUsize::new(0);
 
+/// Unique ID for a remote connection.
 #[derive(Copy, Clone, Debug, PartialEq, Eq, Hash)]
 pub struct ConnectionId(pub(crate) usize);
 
@@ -42,12 +52,22 @@ pub(crate) enum InternalEvent {
   Closed,
 }
 
-pub enum ConnectionEvent {
+pub(crate) enum ConnectionEvent {
   Opened,
   Data(Vec<u8>),
   Closed(Option<Entity>),
 }
 
+/// Interface for communicating with the networking side of the server.
+///
+/// The only way to initialize the server here is by calling
+/// [`AirmashGame::with_network`] so you usually won't need to interact with
+/// this struct directly. The one exception is for test cases in which case you
+/// want to call [`disconnected`] to get a mock connection endpoint that can be
+/// used to send messages without having to open up an actual server port.
+///
+/// [`AirmashGame::with_network`]: crate::AirmashGame::with_network
+/// [`disconnected`]: crate::network::ConnectionMgr::disconnected
 pub struct ConnectionMgr {
   conns: HashMap<ConnectionId, ConnectionData>,
   primary: HashMap<Entity, ConnectionId>,
@@ -124,7 +144,7 @@ impl ConnectionMgr {
     self.primary.insert(ent, conn);
   }
 
-  pub fn next_packet(&mut self) -> Option<(ConnectionId, ConnectionEvent)> {
+  pub(crate) fn next_packet(&mut self) -> Option<(ConnectionId, ConnectionEvent)> {
     let (conn, evt) = self.recv.try_recv().ok()?;
 
     Some((

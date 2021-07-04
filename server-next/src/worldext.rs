@@ -162,7 +162,7 @@ impl AirmashGame {
     }
 
     self.dispatch(EntityDespawn { entity });
-    let dispatch = self.dispatcher.clone();
+    let dispatch = self.dispatcher();
     dispatch.cleanup(self, move |game| {
       // The airmash client doesn't like it if you reuse ids soon after they get
       // destroyed. By reserving them for a minute we should prevent having dead

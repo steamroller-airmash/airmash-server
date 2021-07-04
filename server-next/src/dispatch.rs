@@ -142,18 +142,26 @@ impl BaseEventDispatcher {
   }
 }
 
+/// Raw handle to the event dispatcher.
+///
+/// Most uses of this type should instead go through the methods on
+/// [`AirmashGame`] instead of interacting directly with the event dispatcher.
+/// This type is reference counted so cloning it will give back another handle
+/// to the same underlying event dispatcher.
 #[derive(Clone)]
 pub struct EventDispatcher {
   dispatcher: Rc<BaseEventDispatcher>,
 }
 
 impl EventDispatcher {
+  /// Create a new event dispatcher with no registered event handlers.
   pub fn new() -> Self {
     Self {
       dispatcher: Rc::new(BaseEventDispatcher::new()),
     }
   }
 
+  /// Register a new event handler with the provided priority.
   pub fn register_with_priority<E, H>(&self, priority: i32, handler: H)
   where
     H: EventHandler<E>,
@@ -162,6 +170,8 @@ impl EventDispatcher {
     self.dispatcher.register_with_priority(priority, handler)
   }
 
+  /// Dispatch the provided event and execute all the resulting event handlers
+  /// in decreasing order of priority.
   pub fn dispatch<E>(&self, event: E, world: &mut AirmashGame)
   where
     E: Event,
@@ -169,7 +179,16 @@ impl EventDispatcher {
     self.dispatcher.dispatch(event, world);
   }
 
-  pub(crate) fn cleanup<F>(&self, world: &mut AirmashGame, func: F)
+  /// Schedule a cleanup task to be run after the current event and all events
+  /// triggered as part of running the current event have completed. If no event
+  /// is current then the function is executed immediately.
+  ///
+  /// There is no prioritization available here, cleanup functions are executed
+  /// in the order that they are registered at the end of the top-level
+  /// [`dispatch`] call that is currently executing.
+  ///
+  /// [`dispatch`]: crate::EventDispatcher::dispatch
+  pub fn cleanup<F>(&self, world: &mut AirmashGame, func: F)
   where
     F: FnOnce(&mut AirmashGame) + 'static,
   {

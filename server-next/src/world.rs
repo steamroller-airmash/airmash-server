@@ -1,6 +1,6 @@
 use crate::event::ServerStartup;
 use crate::network::ConnectionMgr;
-use crate::{Event, EventDispatcher, EventHandler};
+use crate::{dispatch::EventDispatcher, Event, EventHandler};
 use airmash_protocol::GameType;
 use anymap::AnyMap;
 use hecs::Entity;
@@ -13,7 +13,6 @@ use std::time::{Duration, Instant};
 pub struct AirmashGame {
   pub world: hecs::World,
   pub resources: Resources,
-  pub(crate) dispatcher: EventDispatcher,
 
   shutdown: Arc<AtomicBool>,
 }
@@ -59,12 +58,13 @@ impl AirmashGame {
 
 impl AirmashGame {
   pub fn uninit() -> Self {
-    AirmashGame {
+    let mut game = AirmashGame {
       world: hecs::World::new(),
       resources: Resources::new(),
-      dispatcher: EventDispatcher::new(),
       shutdown: Arc::new(AtomicBool::new(false)),
-    }
+    };
+    game.resources.insert(EventDispatcher::new());
+    game
   }
 
   /// An airmash server with the full networking backend enabled.
@@ -81,6 +81,51 @@ impl AirmashGame {
     let mut me = Self::uninit();
     me.init_defaults();
     me
+  }
+
+  pub fn shutdown(&self) {
+    self.shutdown.store(true, Ordering::Relaxed);
+  }
+
+  pub fn register<E, H>(&mut self, handler: H)
+  where
+    E: Event,
+    H: EventHandler<E>,
+  {
+    self.register_with_priority(crate::priority::DEFAULT, handler);
+  }
+
+  pub fn register_with_priority<E, H>(&mut self, priority: i32, handler: H)
+  where
+    E: Event,
+    H: EventHandler<E>,
+  {
+    self.dispatcher().register_with_priority(priority, handler);
+  }
+
+  pub fn dispatch<E>(&mut self, event: E)
+  where
+    E: Event,
+  {
+    let dispatcher = self.dispatcher();
+    dispatcher.dispatch(event, self)
+  }
+
+  pub fn dispatch_many<I, E>(&mut self, events: I)
+  where
+    I: IntoIterator<Item = E>,
+    E: Event,
+  {
+    let dispatcher = self.dispatcher();
+    for event in events {
+      dispatcher.dispatch(event, self);
+    }
+  }
+}
+
+impl AirmashGame {
+  pub(crate) fn dispatcher(&self) -> EventDispatcher {
+    self.resources.read::<EventDispatcher>().clone()
   }
 
   fn init_defaults(&mut self) {
@@ -106,47 +151,9 @@ impl AirmashGame {
     // Having entities with id 0 screws up some assumptions that airmash makes
     self.world.spawn_at(Entity::from_bits(0), ());
 
+    let dispatcher = self.dispatcher();
     for func in crate::dispatch::AIRMASH_EVENT_HANDLERS {
-      func(&self.dispatcher);
-    }
-  }
-
-  pub fn shutdown(&self) {
-    self.shutdown.store(true, Ordering::Relaxed);
-  }
-
-  pub fn register<E, H>(&mut self, handler: H)
-  where
-    E: Event,
-    H: EventHandler<E>,
-  {
-    self.register_with_priority(crate::priority::DEFAULT, handler);
-  }
-
-  pub fn register_with_priority<E, H>(&mut self, priority: i32, handler: H)
-  where
-    E: Event,
-    H: EventHandler<E>,
-  {
-    self.dispatcher.register_with_priority(priority, handler);
-  }
-
-  pub fn dispatch<E>(&mut self, event: E)
-  where
-    E: Event,
-  {
-    let dispatcher = self.dispatcher.clone();
-    dispatcher.dispatch(event, self)
-  }
-
-  pub fn dispatch_many<I, E>(&mut self, events: I)
-  where
-    I: IntoIterator<Item = E>,
-    E: Event,
-  {
-    let dispatcher = self.dispatcher.clone();
-    for event in events {
-      dispatcher.dispatch(event, self);
+      func(&dispatcher);
     }
   }
 }
