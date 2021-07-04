@@ -14,6 +14,7 @@ mod tasks;
 pub use self::config::Config;
 pub use self::game_config::GameConfig;
 pub use self::tasks::{Task, TaskScheduler};
+pub use crate::protocol::GameType;
 
 def_wrappers! {
   /// Time at which the last frame occurred.

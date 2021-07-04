@@ -1,7 +1,6 @@
 use crate::event::ServerStartup;
 use crate::network::ConnectionMgr;
 use crate::{dispatch::EventDispatcher, Event, EventHandler};
-use airmash_protocol::GameType;
 use anymap::AnyMap;
 use hecs::Entity;
 use std::cell::{Ref, RefCell, RefMut};
@@ -69,7 +68,7 @@ impl AirmashGame {
   ///
   /// Usually you want [`with_network`] or [`with_test_defaults`] instead of
   /// this method.
-  /// 
+  ///
   /// [`with_network`]: crate::AirmashGame::with_network
   /// [`with_test_defaults`]: crate::AirmashGame::with_test_defaults
   pub fn uninit() -> Self {
@@ -146,7 +145,7 @@ impl AirmashGame {
 
   /// Dispatch many events. This is functionally equivalent to calling
   /// [`dispatch`] in a loop and is provided for convenience.
-  /// 
+  ///
   /// [`dispatch`]: crate::AirmashGame::dispatch
   pub fn dispatch_many<I, E>(&mut self, events: I)
   where

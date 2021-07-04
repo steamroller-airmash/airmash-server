@@ -61,6 +61,32 @@ impl SpatialTree {
     self.tree.rebuild_from(&mut entries);
   }
 
+  pub fn contains(&self, pos: Vector2<f32>, rad: f32, layer: LayerSpec) -> bool {
+    let pos = [pos.x, pos.y];
+
+    match layer {
+      LayerSpec::Exclude(layer) => self
+        .tree
+        .within(pos, rad)
+        .filter(|x| x.layer != layer)
+        .next()
+        .is_some(),
+      LayerSpec::Include(layer) => self
+        .tree
+        .within(pos, rad)
+        .filter(|x| x.layer == layer)
+        .map(|x| x.entity)
+        .next()
+        .is_some(),
+      LayerSpec::None => self
+        .tree
+        .within(pos, rad)
+        .map(|x| x.entity)
+        .next()
+        .is_some(),
+    }
+  }
+
   pub fn query<V: Extend<Entity>>(
     &self,
     pos: Vector2<f32>,

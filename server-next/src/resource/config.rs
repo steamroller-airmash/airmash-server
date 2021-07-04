@@ -119,7 +119,7 @@ pub struct UpgradeInfos {
   pub defense: UpgradeInfo,
 }
 
-#[derive(Clone, Serialize, Deserialize, DeserializeOver)]
+#[derive(Clone, Debug, Serialize, Deserialize, DeserializeOver)]
 pub struct Config {
   #[deserialize_over]
   pub planes: PlaneInfos,

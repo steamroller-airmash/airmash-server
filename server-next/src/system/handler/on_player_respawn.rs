@@ -33,7 +33,9 @@ fn send_packet(event: &PlayerRespawn, game: &mut AirmashGame) {
   );
 }
 
-#[handler(priority = crate::priority::MEDIUM)]
+// Set priority to be higher than HIGH so that other handlers making changes
+// don't have theirs get stomped over.
+#[handler(priority = crate::priority::HIGH + 1)]
 fn reset_player(event: &PlayerRespawn, game: &mut AirmashGame) {
   let config = game.resources.read::<Config>();
 

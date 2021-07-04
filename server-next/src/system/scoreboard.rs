@@ -30,7 +30,6 @@ fn send_packets(game: &mut AirmashGame) {
   drop(last_sb);
 
   let mut data = Vec::new();
-  let mut rankings = Vec::new();
   let query = game
     .world
     .query_mut::<(&Position, &IsAlive, &Score, &Level, &JoinTime)>()
@@ -48,19 +47,18 @@ fn send_packets(game: &mut AirmashGame) {
         score: score.0,
         level: level.0,
       },
+      s::ScoreBoardRanking {
+        id: player.id() as _,
+        pos: low_res_pos,
+      },
     ));
-    rankings.push(s::ScoreBoardRanking {
-      id: player.id() as _,
-      pos: low_res_pos,
-    });
   }
 
   data.sort_unstable_by_key(|x| (Reverse(x.1.score), x.0));
-  data.truncate(10);
 
   let packet = s::ScoreBoard {
-    data: data.into_iter().map(|x| x.1).collect(),
-    rankings,
+    rankings: data.iter().map(|x| x.2).collect(),
+    data: data.into_iter().take(10).map(|x| x.1).collect(),
   };
 
   game.send_to_all(packet);

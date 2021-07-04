@@ -3,7 +3,7 @@ use std::time::{Duration, Instant};
 use airmash_protocol::ServerPacket;
 use server::event::ServerStartup;
 use server::protocol::client as c;
-use server::test::{MockConnectionEndpoint, MockConnection};
+use server::test::{MockConnection, MockConnectionEndpoint};
 use server::{network::ConnectionMgr, AirmashGame};
 
 pub fn create_login_packet(name: &str) -> c::Login {

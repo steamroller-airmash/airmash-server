@@ -186,7 +186,7 @@ fn server_thread(
 ) {
   use tokio::runtime::Builder;
 
-  let rt = Builder::new_multi_thread()
+  let rt = Builder::new_current_thread()
     .enable_all()
     .build()
     .expect("Failed to initialize tokio runtime");
