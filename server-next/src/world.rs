@@ -106,7 +106,7 @@ impl AirmashGame {
     // Having entities with id 0 screws up some assumptions that airmash makes
     self.world.spawn_at(Entity::from_bits(0), ());
 
-    for func in crate::AIRMASH_EVENT_HANDLERS {
+    for func in crate::dispatch::AIRMASH_EVENT_HANDLERS {
       func(&self.dispatcher);
     }
   }

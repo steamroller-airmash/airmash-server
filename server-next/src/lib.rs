@@ -32,16 +32,20 @@ pub mod resource;
 pub mod util;
 
 pub use crate::protocol::Vector2;
-pub use server_macros::handler;
 pub use hecs::Entity;
+pub use server_macros::handler;
 
 pub use self::dispatch::{Event, EventDispatcher, EventHandler};
 pub use self::network::ConnectionMgr;
 pub use self::world::AirmashGame;
 pub use self::worldext::{EntitySetBuilder, FireMissileInfo};
 
+/// Exports needed by the handler macro.
 #[doc(hidden)]
-pub use self::dispatch::AIRMASH_EVENT_HANDLERS;
+pub mod _exports {
+  pub use crate::dispatch::AIRMASH_EVENT_HANDLERS;
+  pub extern crate linkme;
+}
 
 /// Notable priorities for event handlers.
 ///

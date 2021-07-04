@@ -56,12 +56,7 @@ pub fn handler(
 }
 
 fn impl_handler(item: ItemFn, args: MacroArgs) -> Result<TokenStream> {
-  let const_name = Ident::new(
-    &format!("__handler_{}", item.sig.ident),
-    item.sig.ident.span(),
-  );
   let name = &item.sig.ident;
-
   let krate = match proc_macro_crate::crate_name("airmash-server").unwrap_or(FoundCrate::Itself) {
     FoundCrate::Itself => Ident::new("airmash_server", Span::call_site()),
     FoundCrate::Name(name) => Ident::new(&name, Span::call_site()),
@@ -76,10 +71,13 @@ fn impl_handler(item: ItemFn, args: MacroArgs) -> Result<TokenStream> {
     #item
 
     const _: () = {
+      const PRIORITY: i32 = #priority;
+
       #[allow(non_upper_case_globals)]
-      #[linkme::distributed_slice(#krate::AIRMASH_EVENT_HANDLERS)]
-      static #const_name: fn(&airmash_server::EventDispatcher) = |dispatch| {
-        dispatch.register_with_priority(#priority, #name);
+      #[linkme::distributed_slice(#krate::_exports::AIRMASH_EVENT_HANDLERS)]
+      #[linkme(crate = #krate::_exports::linkme)]
+      static __: fn(&airmash_server::EventDispatcher) = |dispatch| {
+        dispatch.register_with_priority(PRIORITY, #name);
       };
     };
   })
