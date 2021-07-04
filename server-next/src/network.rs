@@ -20,7 +20,7 @@ use tokio_tungstenite::tungstenite::{
 
 use crate::mock::MockConnectionEndpoint;
 
-pub static NUM_PLAYERS: AtomicUsize = AtomicUsize::new(0);
+pub(crate) static NUM_PLAYERS: AtomicUsize = AtomicUsize::new(0);
 
 #[derive(Copy, Clone, Debug, PartialEq, Eq, Hash)]
 pub struct ConnectionId(pub(crate) usize);

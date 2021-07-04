@@ -55,3 +55,10 @@ fn retarget_spectators(event: &PlayerLeave, game: &mut AirmashGame) {
 
   game.dispatch_many(events);
 }
+
+#[handler]
+fn update_server_stats(_: &PlayerLeave, _: &mut AirmashGame) {
+  use crate::network::NUM_PLAYERS;
+
+  NUM_PLAYERS.fetch_sub(1, std::sync::atomic::Ordering::Relaxed);
+}

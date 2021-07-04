@@ -130,3 +130,10 @@ fn send_player_new(event: &PlayerJoin, game: &mut AirmashGame) {
     game.send_to_others(event.player, packet);
   }
 }
+
+#[handler]
+fn update_server_stats(_: &PlayerJoin, _: &mut AirmashGame) {
+  use crate::network::NUM_PLAYERS;
+
+  NUM_PLAYERS.fetch_add(1, std::sync::atomic::Ordering::Relaxed);
+}

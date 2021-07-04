@@ -1,4 +1,4 @@
-//! Components used within airmash
+//! Components used within airmash.
 
 use crate::protocol::PowerupType;
 use airmash_protocol::Vector2;
