@@ -10,7 +10,7 @@ use std::sync::atomic::{AtomicBool, Ordering};
 use std::sync::Arc;
 use std::time::{Duration, Instant};
 
-pub struct AirmashWorld {
+pub struct AirmashGame {
   pub world: hecs::World,
   pub resources: Resources,
   pub(crate) dispatcher: EventDispatcher,
@@ -18,7 +18,7 @@ pub struct AirmashWorld {
   shutdown: Arc<AtomicBool>,
 }
 
-impl AirmashWorld {
+impl AirmashGame {
   pub fn run_once(&mut self, now: Instant) {
     use crate::resource::*;
 
@@ -57,9 +57,9 @@ impl AirmashWorld {
   }
 }
 
-impl AirmashWorld {
+impl AirmashGame {
   pub fn uninit() -> Self {
-    AirmashWorld {
+    AirmashGame {
       world: hecs::World::new(),
       resources: Resources::new(),
       dispatcher: EventDispatcher::new(),

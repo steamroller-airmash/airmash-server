@@ -8,10 +8,10 @@ use crate::component::*;
 use crate::event::PlayerKilled;
 use crate::event::PlayerMissileCollision;
 use crate::resource::Config;
-use crate::AirmashWorld;
+use crate::AirmashGame;
 
 #[handler(priority = crate::priority::MEDIUM)]
-fn damage_player(event: &PlayerMissileCollision, game: &mut AirmashWorld) {
+fn damage_player(event: &PlayerMissileCollision, game: &mut AirmashGame) {
   let query = game
     .world
     .query_one_mut::<(&MobType, &Owner, &IsMissile)>(event.missile);
@@ -76,7 +76,7 @@ fn damage_player(event: &PlayerMissileCollision, game: &mut AirmashWorld) {
 }
 
 #[handler]
-fn send_player_hit(event: &PlayerMissileCollision, game: &mut AirmashWorld) {
+fn send_player_hit(event: &PlayerMissileCollision, game: &mut AirmashGame) {
   use crate::protocol::server::{PlayerHit, PlayerHitPlayer};
 
   let query = game

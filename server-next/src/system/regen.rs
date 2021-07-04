@@ -1,13 +1,13 @@
 use crate::component::*;
 use crate::resource::{LastFrame, ThisFrame};
-use crate::AirmashWorld;
+use crate::AirmashGame;
 
-pub fn update(game: &mut AirmashWorld) {
+pub fn update(game: &mut AirmashGame) {
   run_energy_regen(game);
   run_health_regen(game);
 }
 
-fn run_energy_regen(game: &mut AirmashWorld) {
+fn run_energy_regen(game: &mut AirmashGame) {
   let last_frame = game.resources.read::<LastFrame>().0;
   let this_frame = game.resources.read::<ThisFrame>().0;
 
@@ -24,7 +24,7 @@ fn run_energy_regen(game: &mut AirmashWorld) {
   }
 }
 
-fn run_health_regen(game: &mut AirmashWorld) {
+fn run_health_regen(game: &mut AirmashGame) {
   let last_frame = game.resources.read::<LastFrame>().0;
   let this_frame = game.resources.read::<ThisFrame>().0;
 

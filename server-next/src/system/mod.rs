@@ -1,6 +1,6 @@
 //! All systems and event handlers
 
-use crate::AirmashWorld;
+use crate::AirmashGame;
 
 mod collision;
 mod despawn;
@@ -14,8 +14,8 @@ mod scoreboard;
 mod specials;
 mod visibility;
 
-pub fn update(game: &mut AirmashWorld) {
-  use crate::event::{FrameStart, FrameEnd, Frame};
+pub fn update(game: &mut AirmashGame) {
+  use crate::event::{Frame, FrameEnd, FrameStart};
 
   game.dispatch(FrameStart);
 
@@ -49,7 +49,7 @@ pub fn update(game: &mut AirmashWorld) {
 /// amount of time has passed.
 ///
 /// Since nothing should be interacting with these entities it emits no events.
-fn cull_zombies(game: &mut AirmashWorld) {
+fn cull_zombies(game: &mut AirmashGame) {
   use crate::component::{Expiry, IsZombie};
   use smallvec::SmallVec;
 
@@ -71,7 +71,7 @@ fn cull_zombies(game: &mut AirmashWorld) {
 
 /// This system is responsible for running delayed tasks that have been
 /// scheduled by other code.
-fn update_tasks(game: &mut AirmashWorld) {
+fn update_tasks(game: &mut AirmashGame) {
   use crate::resource::{TaskScheduler, ThisFrame};
 
   let task_sched = game.resources.read::<TaskScheduler>().clone();

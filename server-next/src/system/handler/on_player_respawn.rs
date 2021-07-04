@@ -5,10 +5,10 @@ use crate::protocol::PlaneType;
 use crate::protocol::PowerupType;
 use crate::resource::Config;
 use crate::Vector2;
-use crate::{AirmashWorld, EntitySetBuilder};
+use crate::{AirmashGame, EntitySetBuilder};
 
 #[handler]
-fn send_packet(event: &PlayerRespawn, game: &mut AirmashWorld) {
+fn send_packet(event: &PlayerRespawn, game: &mut AirmashGame) {
   use crate::protocol::server::PlayerRespawn;
 
   let (&pos, &rot, upgrades, powerup, _) =
@@ -34,7 +34,7 @@ fn send_packet(event: &PlayerRespawn, game: &mut AirmashWorld) {
 }
 
 #[handler(priority = crate::priority::MEDIUM)]
-fn reset_player(event: &PlayerRespawn, game: &mut AirmashWorld) {
+fn reset_player(event: &PlayerRespawn, game: &mut AirmashGame) {
   let config = game.resources.read::<Config>();
 
   let mut query = match game.world.query_one::<(

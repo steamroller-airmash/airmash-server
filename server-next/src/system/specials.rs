@@ -10,16 +10,16 @@ use crate::{
     collision::{LayerSpec, MissileCollideDb, PlayerCollideDb},
     Config,
   },
-  AirmashWorld, FireMissileInfo,
+  AirmashGame, FireMissileInfo,
 };
 
-pub fn update(game: &mut AirmashWorld) {
+pub fn update(game: &mut AirmashGame) {
   kill_predator_boost_when_out_of_energy(game);
   tornado_special_fire(game);
   goliath_repel(game);
 }
 
-fn kill_predator_boost_when_out_of_energy(game: &mut AirmashWorld) {
+fn kill_predator_boost_when_out_of_energy(game: &mut AirmashGame) {
   let mut query = game
     .world
     .query::<(&Energy, &PlaneType, &mut SpecialActive, &IsAlive)>()
@@ -53,7 +53,7 @@ fn kill_predator_boost_when_out_of_energy(game: &mut AirmashWorld) {
   }
 }
 
-fn tornado_special_fire(game: &mut AirmashWorld) {
+fn tornado_special_fire(game: &mut AirmashGame) {
   let config = game.resources.read::<Config>();
   let this_frame = game.this_frame();
 
@@ -104,7 +104,7 @@ fn tornado_special_fire(game: &mut AirmashWorld) {
   }
 }
 
-fn goliath_repel(game: &mut AirmashWorld) {
+fn goliath_repel(game: &mut AirmashGame) {
   let this_frame = game.this_frame();
   let query = game
     .world
@@ -178,7 +178,7 @@ fn goliath_repel(game: &mut AirmashWorld) {
 
 /// Special handling for tracking predator boosts.
 #[handler]
-fn track_predator_boost(event: &KeyEvent, game: &mut AirmashWorld) {
+fn track_predator_boost(event: &KeyEvent, game: &mut AirmashGame) {
   match event.key {
     KeyCode::Up | KeyCode::Down | KeyCode::Special => (),
     _ => return,
@@ -246,7 +246,7 @@ fn track_predator_boost(event: &KeyEvent, game: &mut AirmashWorld) {
 }
 
 #[handler]
-fn prowler_cloak(event: &KeyEvent, game: &mut AirmashWorld) {
+fn prowler_cloak(event: &KeyEvent, game: &mut AirmashGame) {
   // Prowlers only change stealth state when shift is pressed
   if event.key != KeyCode::Special {
     return;
@@ -293,7 +293,7 @@ fn prowler_cloak(event: &KeyEvent, game: &mut AirmashWorld) {
 }
 
 #[handler]
-fn prowler_decloak_on_fire(event: &PlayerFire, game: &mut AirmashWorld) {
+fn prowler_decloak_on_fire(event: &PlayerFire, game: &mut AirmashGame) {
   let (&plane, &active, _) = match game
     .world
     .query_one_mut::<(&PlaneType, &SpecialActive, &IsPlayer)>(event.player)
@@ -313,7 +313,7 @@ fn prowler_decloak_on_fire(event: &PlayerFire, game: &mut AirmashWorld) {
 }
 
 #[handler]
-fn prowler_decloak_on_hit(event: &PlayerMissileCollision, game: &mut AirmashWorld) {
+fn prowler_decloak_on_hit(event: &PlayerMissileCollision, game: &mut AirmashGame) {
   for player in event.players.iter().copied() {
     let (&plane, &active, _) = match game
       .world

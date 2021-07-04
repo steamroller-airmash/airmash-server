@@ -4,7 +4,7 @@ use airmash_protocol::ServerPacket;
 use server::event::ServerStartup;
 use server::protocol::client as c;
 use server::test::{MockConnectionEndpoint, MockReceiver};
-use server::{AirmashWorld, ConnectionMgr};
+use server::{AirmashGame, ConnectionMgr};
 
 pub fn create_login_packet(name: &str) -> c::Login {
   c::Login {
@@ -29,7 +29,7 @@ pub fn get_login_id(mock: &mut MockReceiver) -> u16 {
 pub fn create_mock_server() -> (GameWrapper, MockConnectionEndpoint) {
   // let _ = simple_log::console("debug");
 
-  let mut game = AirmashWorld::with_test_defaults();
+  let mut game = AirmashGame::with_test_defaults();
   let (connmgr, mock) = ConnectionMgr::disconnected();
   game.resources.insert(connmgr);
 
@@ -40,13 +40,13 @@ pub fn create_mock_server() -> (GameWrapper, MockConnectionEndpoint) {
 }
 
 pub struct GameWrapper {
-  game: AirmashWorld,
+  game: AirmashGame,
   now: Instant,
   started: bool,
 }
 
 impl GameWrapper {
-  fn new(game: AirmashWorld) -> Self {
+  fn new(game: AirmashGame) -> Self {
     Self {
       game,
       now: Instant::now(),
@@ -78,7 +78,7 @@ impl GameWrapper {
 }
 
 impl std::ops::Deref for GameWrapper {
-  type Target = AirmashWorld;
+  type Target = AirmashGame;
 
   fn deref(&self) -> &Self::Target {
     &self.game

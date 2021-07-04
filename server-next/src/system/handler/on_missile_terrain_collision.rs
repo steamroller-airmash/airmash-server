@@ -2,10 +2,10 @@ use airmash_protocol::MobType;
 
 use crate::component::*;
 use crate::event::MissileTerrainCollision;
-use crate::AirmashWorld;
+use crate::AirmashGame;
 
 #[handler]
-fn send_despawn_packet(event: &MissileTerrainCollision, game: &mut AirmashWorld) {
+fn send_despawn_packet(event: &MissileTerrainCollision, game: &mut AirmashGame) {
   use crate::protocol::server::MobDespawnCoords;
 
   let query = game

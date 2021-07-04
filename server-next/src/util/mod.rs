@@ -2,7 +2,7 @@ use crate::component::Powerup;
 use crate::component::Upgrades;
 use crate::protocol::{Time, Vector2};
 use crate::resource::*;
-use crate::AirmashWorld;
+use crate::AirmashGame;
 use nalgebra::vector;
 use std::time::Duration;
 
@@ -12,7 +12,7 @@ pub fn convert_time(dur: Duration) -> Time {
   dur.as_secs_f32() * 60.0
 }
 
-pub fn get_current_clock(game: &AirmashWorld) -> u32 {
+pub fn get_current_clock(game: &AirmashGame) -> u32 {
   let start_time = game
     .resources
     .get::<StartTime>()

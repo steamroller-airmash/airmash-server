@@ -15,7 +15,7 @@ use crate::protocol::{v5, ServerPacket};
 use crate::resource::collision::LayerSpec;
 use crate::{
   resource::{Config, LastFrame, ThisFrame},
-  AirmashWorld,
+  AirmashGame,
 };
 
 #[derive(Clone, Copy, Debug)]
@@ -30,7 +30,7 @@ pub struct FireMissileInfo {
   pub ty: MobType,
 }
 
-impl AirmashWorld {
+impl AirmashGame {
   /// Get the time at which the current frame occurred. This should be preferred
   /// over using `Instant::now`.
   pub fn this_frame(&self) -> Instant {
@@ -175,7 +175,7 @@ impl AirmashWorld {
   }
 }
 
-impl AirmashWorld {
+impl AirmashGame {
   pub fn send_to_conn(&self, conn: ConnectionId, packet: impl Into<ServerPacket>) {
     let mut connmgr = self.resources.write::<ConnectionMgr>();
     let data = match v5::serialize(&packet.into()) {
@@ -252,7 +252,7 @@ pub struct EntitySetBuilder {
 }
 
 impl EntitySetBuilder {
-  pub fn team_visible(game: &AirmashWorld, team: u16, pos: Vector2<f32>) -> Self {
+  pub fn team_visible(game: &AirmashGame, team: u16, pos: Vector2<f32>) -> Self {
     use crate::resource::collision::PlayerPosDb;
 
     let db = game.resources.read::<PlayerPosDb>();
@@ -268,7 +268,7 @@ impl EntitySetBuilder {
     me
   }
 
-  pub fn visible(game: &AirmashWorld, pos: Vector2<f32>) -> Self {
+  pub fn visible(game: &AirmashGame, pos: Vector2<f32>) -> Self {
     use crate::resource::collision::PlayerPosDb;
 
     let db = game.resources.read::<PlayerPosDb>();
@@ -279,7 +279,7 @@ impl EntitySetBuilder {
     me
   }
 
-  pub fn team(game: &AirmashWorld, req_team: u16) -> Self {
+  pub fn team(game: &AirmashGame, req_team: u16) -> Self {
     let mut query = game.world.query::<&Team>().with::<IsPlayer>();
 
     Self {
@@ -291,7 +291,7 @@ impl EntitySetBuilder {
     }
   }
 
-  pub fn all(game: &AirmashWorld) -> Self {
+  pub fn all(game: &AirmashGame) -> Self {
     let mut query = game.world.query::<()>().with::<IsPlayer>();
 
     Self {

@@ -19,33 +19,33 @@
 //! Creating an event handler via the [`handler`] macro will look something like
 //! this:
 //! ```
-//! # use airmash_server::{handler, AirmashWorld};
+//! # use airmash_server::{handler, AirmashGame};
 //! # struct InsertEventHere;
 //! #[handler]
-//! fn my_custom_handler(event: &InsertEventHere, game: &mut AirmashWorld) {
+//! fn my_custom_handler(event: &InsertEventHere, game: &mut AirmashGame) {
 //!   // Do things here...
 //! }
 //! ```
 //!
-//! The other way to register a handler is to call [`AirmashWorld::register`]
+//! The other way to register a handler is to call [`AirmashGame::register`]
 //! with the handler of your choice. This is needed if you want to implement a
 //! handler that is not a function or you don't want to register the event
 //! handler unconditionally.
 //!
 //! To do this we must first define a handler and then later on register an
-//! instance of it with whatever [`AirmashWorld`] instance we choose.
+//! instance of it with whatever [`AirmashGame`] instance we choose.
 //! ```
-//! # use airmash_server::{EventHandler, AirmashWorld, event::Frame};
+//! # use airmash_server::{EventHandler, AirmashGame, event::Frame};
 //! #[derive(Default)]
 //! pub struct CountFrames(usize);
 //!
 //! impl EventHandler<Frame> for CountFrames {
-//!   fn on_event(&mut self, event: &Frame, game: &mut AirmashWorld) {
+//!   fn on_event(&mut self, event: &Frame, game: &mut AirmashGame) {
 //!     self.0 += 1;
 //!   }
 //! }
 //!
-//! let mut game = AirmashWorld::with_test_defaults();
+//! let mut game = AirmashGame::with_test_defaults();
 //! game.register(CountFrames::default());
 //!
 //! // ... run server
@@ -89,7 +89,7 @@
 //! [`PRE_LOGIN`] priority is provided for such initialization event handlers.
 //!
 //! # Event Handler Execution
-//! Event handlers are executed by calling [`AirmashWorld::dispatch`]. This will
+//! Event handlers are executed by calling [`AirmashGame::dispatch`]. This will
 //! execute the registered event handlers for this event in decreasing order of
 //! priority. Event handlers can also dispatch dependent events. However, only
 //! one event can be active at a time. In the case where there is a nested event
@@ -99,9 +99,9 @@
 //! [`EventHandler`]: crate::EventHandler
 //! [`handler`]: crate::handler
 //! [`priority`]: crate::priority
-//! [`AirmashWorld`]: crate::AirmashWorld
-//! [`AirmashWorld::register`]: crate::AirmashWorld::register
-//! [`AirmashWorld::dispatch`]: crate::AirmashWorld::dispatch
+//! [`AirmashGame`]: crate::AirmashGame
+//! [`AirmashGame::register`]: crate::AirmashGame::register
+//! [`AirmashGame::dispatch`]: crate::AirmashGame::dispatch
 //! [`DEFAULT`]: crate::priority::DEFAULT
 //! [`MEDIUM`]: crate::priority::MEDIUM
 //! [`HIGH`]: crate::priority::HIGH

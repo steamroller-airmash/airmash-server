@@ -5,10 +5,10 @@ use bstr::BString;
 use crate::component::*;
 use crate::event::PlayerJoin;
 use crate::resource::GameRoom;
-use crate::world::AirmashWorld;
+use crate::world::AirmashGame;
 
 #[handler(priority = crate::priority::LOGIN)]
-fn send_login_packet(event: &PlayerJoin, game: &mut AirmashWorld) {
+fn send_login_packet(event: &PlayerJoin, game: &mut AirmashGame) {
   use crate::protocol::server::{Login, LoginPlayer};
 
   let mut query = game
@@ -74,7 +74,7 @@ fn send_login_packet(event: &PlayerJoin, game: &mut AirmashWorld) {
 }
 
 #[handler]
-fn send_level_packet(event: &PlayerJoin, game: &mut AirmashWorld) {
+fn send_level_packet(event: &PlayerJoin, game: &mut AirmashGame) {
   use crate::protocol::server::PlayerLevel;
 
   let mut query = match game.world.query_one::<&Level>(event.player) {
@@ -95,7 +95,7 @@ fn send_level_packet(event: &PlayerJoin, game: &mut AirmashWorld) {
 }
 
 #[handler]
-fn send_player_new(event: &PlayerJoin, game: &mut AirmashWorld) {
+fn send_player_new(event: &PlayerJoin, game: &mut AirmashGame) {
   use crate::protocol::server::PlayerNew;
 
   let mut query = match game.world.query_one::<(

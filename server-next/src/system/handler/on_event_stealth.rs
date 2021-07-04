@@ -1,10 +1,10 @@
 use crate::component::*;
 use crate::event::EventStealth;
 use crate::resource::StartTime;
-use crate::AirmashWorld;
+use crate::AirmashGame;
 
 #[handler(priority = crate::priority::MEDIUM)]
-fn update_player_state(event: &EventStealth, game: &mut AirmashWorld) {
+fn update_player_state(event: &EventStealth, game: &mut AirmashGame) {
   let this_frame = game.this_frame();
   let start_time = game.resources.read::<StartTime>().0;
 
@@ -27,7 +27,7 @@ fn update_player_state(event: &EventStealth, game: &mut AirmashWorld) {
 }
 
 #[handler]
-fn send_packet(event: &EventStealth, game: &mut AirmashWorld) {
+fn send_packet(event: &EventStealth, game: &mut AirmashGame) {
   use crate::protocol::server as s;
 
   let (&pos, energy, regen, _) = match game

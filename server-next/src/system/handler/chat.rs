@@ -2,10 +2,10 @@ use crate::component::{IsPlayer, Position, SpecialActive, Team};
 use crate::event::PacketEvent;
 use crate::protocol::client::{Chat, Say, TeamChat, Whisper};
 use crate::protocol::{server as s, PlaneType};
-use crate::AirmashWorld;
+use crate::AirmashGame;
 
 #[handler]
-fn on_chat(event: &PacketEvent<Chat>, game: &mut AirmashWorld) {
+fn on_chat(event: &PacketEvent<Chat>, game: &mut AirmashGame) {
   if let Err(_) = game.world.get::<IsPlayer>(event.entity) {
     return;
   }
@@ -17,7 +17,7 @@ fn on_chat(event: &PacketEvent<Chat>, game: &mut AirmashWorld) {
 }
 
 #[handler]
-fn on_team_chat(event: &PacketEvent<TeamChat>, game: &mut AirmashWorld) {
+fn on_team_chat(event: &PacketEvent<TeamChat>, game: &mut AirmashGame) {
   if let Err(_) = game.world.get::<IsPlayer>(event.entity) {
     return;
   }
@@ -34,7 +34,7 @@ fn on_team_chat(event: &PacketEvent<TeamChat>, game: &mut AirmashWorld) {
 }
 
 #[handler]
-fn on_whisper(event: &PacketEvent<Whisper>, game: &mut AirmashWorld) {
+fn on_whisper(event: &PacketEvent<Whisper>, game: &mut AirmashGame) {
   if let Err(_) = game.world.get::<IsPlayer>(event.entity) {
     return;
   }
@@ -61,7 +61,7 @@ fn on_whisper(event: &PacketEvent<Whisper>, game: &mut AirmashWorld) {
 }
 
 #[handler]
-fn on_say(event: &PacketEvent<Say>, game: &mut AirmashWorld) {
+fn on_say(event: &PacketEvent<Say>, game: &mut AirmashGame) {
   let (&pos, &plane, &special, &team, _) =
     match game
       .world

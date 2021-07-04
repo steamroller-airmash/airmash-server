@@ -11,9 +11,9 @@ use crate::protocol::v5::deserialize;
 use crate::protocol::ClientPacket;
 use crate::resource::Config;
 use crate::resource::TakenNames;
-use crate::{network::*, AirmashWorld};
+use crate::{network::*, AirmashGame};
 
-pub fn process_packets(game: &mut AirmashWorld) {
+pub fn process_packets(game: &mut AirmashGame) {
   loop {
     let mut conn_mgr = game.resources.write::<ConnectionMgr>();
     let (conn, evt) = match conn_mgr.next_packet() {
@@ -165,7 +165,7 @@ fn make_unique_name(names: &mut TakenNames, name: &mut BString) {
   names.insert(name.clone());
 }
 
-fn handle_login(game: &mut AirmashWorld, mut login: Login, conn: ConnectionId) {
+fn handle_login(game: &mut AirmashGame, mut login: Login, conn: ConnectionId) {
   use crate::component::*;
   use crate::protocol::server as s;
   use crate::resource::{EntityMapping, StartTime, ThisFrame};

@@ -5,7 +5,7 @@ use crate::event::PlayerFire;
 use crate::resource::collision as c;
 use crate::resource::collision::LayerSpec;
 use crate::resource::Config;
-use crate::AirmashWorld;
+use crate::AirmashGame;
 
 use hecs::Entity;
 use std::collections::HashSet;
@@ -20,7 +20,7 @@ def_wrappers! {
   type VisibleEntities = HashSet<Entity>;
 }
 
-pub fn generate_horizon_events(game: &mut AirmashWorld) {
+pub fn generate_horizon_events(game: &mut AirmashGame) {
   let frame = {
     let frame = game.resources.entry::<FrameId>().or_insert(FrameId(0));
     frame.0 += 1;
@@ -90,7 +90,7 @@ pub fn generate_horizon_events(game: &mut AirmashWorld) {
 }
 
 #[handler]
-fn record_entity_spawn_frame(event: &EntitySpawn, game: &mut AirmashWorld) {
+fn record_entity_spawn_frame(event: &EntitySpawn, game: &mut AirmashGame) {
   let frame = game.resources.get::<FrameId>().map(|x| x.0).unwrap_or(0);
   let _ = game.world.insert(
     event.entity,
@@ -104,7 +104,7 @@ fn record_entity_spawn_frame(event: &EntitySpawn, game: &mut AirmashWorld) {
 /// That way we can properly send horizon updates if they travel outside of a
 /// player's horizon within a single frame.
 #[handler]
-fn record_new_missiles(event: &PlayerFire, game: &mut AirmashWorld) {
+fn record_new_missiles(event: &PlayerFire, game: &mut AirmashGame) {
   let ppos = match game
     .world
     .query_one_mut::<(&Position, &IsPlayer)>(event.player)

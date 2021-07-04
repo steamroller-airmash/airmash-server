@@ -2,10 +2,10 @@ use crate::component::*;
 use crate::event::EventStealth;
 use crate::event::PlayerRepel;
 use crate::resource::Config;
-use crate::AirmashWorld;
+use crate::AirmashGame;
 
 #[handler]
-fn send_packet(event: &PlayerRepel, game: &mut AirmashWorld) {
+fn send_packet(event: &PlayerRepel, game: &mut AirmashGame) {
   use crate::protocol::server as s;
 
   let clock = crate::util::get_current_clock(game);
@@ -116,7 +116,7 @@ fn send_packet(event: &PlayerRepel, game: &mut AirmashWorld) {
 }
 
 #[handler(priority = crate::priority::MEDIUM)]
-fn repel_players(event: &PlayerRepel, game: &mut AirmashWorld) {
+fn repel_players(event: &PlayerRepel, game: &mut AirmashGame) {
   let (&player_pos, _) = match game
     .world
     .query_one_mut::<(&Position, &IsPlayer)>(event.player)
@@ -142,7 +142,7 @@ fn repel_players(event: &PlayerRepel, game: &mut AirmashWorld) {
 }
 
 #[handler(priority = crate::priority::MEDIUM)]
-fn repel_missiles(event: &PlayerRepel, game: &mut AirmashWorld) {
+fn repel_missiles(event: &PlayerRepel, game: &mut AirmashGame) {
   let (&player_pos, &player_team, _) = match game
     .world
     .query_one_mut::<(&Position, &Team, &IsPlayer)>(event.player)
@@ -190,7 +190,7 @@ fn repel_missiles(event: &PlayerRepel, game: &mut AirmashWorld) {
 }
 
 #[handler]
-fn decloak_prowlers(event: &PlayerRepel, game: &mut AirmashWorld) {
+fn decloak_prowlers(event: &PlayerRepel, game: &mut AirmashGame) {
   if let Err(_) = game.world.get::<IsPlayer>(event.player) {
     return;
   }

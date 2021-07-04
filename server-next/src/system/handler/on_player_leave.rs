@@ -3,10 +3,10 @@ use smallvec::SmallVec;
 use crate::component::*;
 use crate::event::PlayerLeave;
 use crate::event::PlayerSpectate;
-use crate::AirmashWorld;
+use crate::AirmashGame;
 
 #[handler]
-fn send_packet(event: &PlayerLeave, game: &mut AirmashWorld) {
+fn send_packet(event: &PlayerLeave, game: &mut AirmashGame) {
   use crate::protocol::server as s;
 
   if let Err(_) = game.world.get::<IsPlayer>(event.player) {
@@ -19,7 +19,7 @@ fn send_packet(event: &PlayerLeave, game: &mut AirmashWorld) {
 }
 
 #[handler]
-fn remove_name(event: &PlayerLeave, game: &mut AirmashWorld) {
+fn remove_name(event: &PlayerLeave, game: &mut AirmashGame) {
   use crate::resource::TakenNames;
 
   let mut taken_names = game.resources.write::<TakenNames>();
@@ -32,7 +32,7 @@ fn remove_name(event: &PlayerLeave, game: &mut AirmashWorld) {
 }
 
 #[handler]
-fn retarget_spectators(event: &PlayerLeave, game: &mut AirmashWorld) {
+fn retarget_spectators(event: &PlayerLeave, game: &mut AirmashGame) {
   use crate::util::spectate::*;
 
   let mut query = game.world.query::<&mut Spectating>().with::<IsPlayer>();

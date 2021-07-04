@@ -1,9 +1,9 @@
 use crate::component::*;
 use crate::event::PlayerChangePlane;
-use crate::AirmashWorld;
+use crate::AirmashGame;
 
 #[handler]
-fn send_packet(event: &PlayerChangePlane, game: &mut AirmashWorld) {
+fn send_packet(event: &PlayerChangePlane, game: &mut AirmashGame) {
   use crate::protocol::server as s;
 
   let (&plane, _) = match game

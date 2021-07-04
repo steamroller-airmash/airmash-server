@@ -4,7 +4,7 @@ use hecs::Entity;
 use itertools::Itertools;
 
 use crate::component::*;
-use crate::AirmashWorld;
+use crate::AirmashGame;
 
 pub enum SpectateTarget {
   Next,
@@ -26,7 +26,7 @@ pub fn spectate_target(
   player: Entity,
   target: Option<Entity>,
   spec: SpectateTarget,
-  game: &AirmashWorld,
+  game: &AirmashGame,
 ) -> Option<Entity> {
   let minmax = game
     .world

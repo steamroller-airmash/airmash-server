@@ -2,10 +2,10 @@ use crate::component::IsPlayer;
 use crate::component::*;
 use crate::event::PlayerPowerup;
 use crate::resource::{StartTime, ThisFrame};
-use crate::AirmashWorld;
+use crate::AirmashGame;
 
 #[handler]
-fn send_packet(event: &PlayerPowerup, game: &mut AirmashWorld) {
+fn send_packet(event: &PlayerPowerup, game: &mut AirmashGame) {
   use crate::protocol::server as s;
 
   if let Err(_) = game.world.query_one_mut::<&IsPlayer>(event.player) {
@@ -24,7 +24,7 @@ fn send_packet(event: &PlayerPowerup, game: &mut AirmashWorld) {
 }
 
 #[handler]
-fn update_fields(event: &PlayerPowerup, game: &mut AirmashWorld) {
+fn update_fields(event: &PlayerPowerup, game: &mut AirmashGame) {
   let start_time = game.resources.read::<StartTime>().0;
   let this_frame = game.resources.read::<ThisFrame>().0;
 

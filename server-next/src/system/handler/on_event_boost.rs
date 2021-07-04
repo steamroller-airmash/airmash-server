@@ -1,12 +1,12 @@
 use crate::component::*;
 use crate::event::EventBoost;
 use crate::resource::Config;
-use crate::AirmashWorld;
+use crate::AirmashGame;
 
 /// When an internal EventBoost occurs we also need to forward it on so that
 /// clients know that it has happened as well.
 #[handler]
-fn send_boost_packet(event: &EventBoost, game: &mut AirmashWorld) {
+fn send_boost_packet(event: &EventBoost, game: &mut AirmashGame) {
   use crate::protocol::server as s;
 
   let clock = crate::util::get_current_clock(game);
@@ -37,7 +37,7 @@ fn send_boost_packet(event: &EventBoost, game: &mut AirmashWorld) {
 
 /// When boosting the player has negative regen. We need to set that.
 #[handler]
-fn set_player_energy_regen(event: &EventBoost, game: &mut AirmashWorld) {
+fn set_player_energy_regen(event: &EventBoost, game: &mut AirmashGame) {
   let regen = match game.world.query_one_mut::<&mut EnergyRegen>(event.player) {
     Ok(query) => query,
     Err(_) => return,

@@ -23,7 +23,7 @@ fn main() {
 
 	env_logger::init();
 
-	let mut game = AirmashWorld::with_network("0.0.0.0:3501".parse().unwrap());
+	let mut game = AirmashGame::with_network("0.0.0.0:3501".parse().unwrap());
 	game.resources.insert(GameRoom("matrix".to_owned()));
 	game.resources.insert(GameType::FFA);
 

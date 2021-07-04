@@ -3,10 +3,10 @@ use airmash_protocol::MobType;
 use crate::component::*;
 use crate::event::MissileDespawn;
 use crate::event::MissileDespawnType;
-use crate::AirmashWorld;
+use crate::AirmashGame;
 
 #[handler]
-fn send_despawn_packet(event: &MissileDespawn, game: &mut AirmashWorld) {
+fn send_despawn_packet(event: &MissileDespawn, game: &mut AirmashGame) {
   use crate::protocol::{server as s, DespawnType};
 
   let (&pos, &mob, ..) = match game

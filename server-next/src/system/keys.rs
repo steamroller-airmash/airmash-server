@@ -8,14 +8,14 @@ use crate::{
   component::*,
   event::KeyEvent,
   resource::{Config, StartTime, ThisFrame},
-  AirmashWorld, FireMissileInfo,
+  AirmashGame, FireMissileInfo,
 };
 
-pub fn update(game: &mut AirmashWorld) {
+pub fn update(game: &mut AirmashGame) {
   fire_missiles(game);
 }
 
-fn fire_missiles(game: &mut AirmashWorld) {
+fn fire_missiles(game: &mut AirmashGame) {
   let config = game.resources.read::<Config>();
   let this_frame = game.this_frame();
 
@@ -81,7 +81,7 @@ fn fire_missiles(game: &mut AirmashWorld) {
 
 /// Update the keystate component when a new key event comes in
 #[handler(priority = crate::priority::HIGH)]
-fn update_keystate(event: &KeyEvent, game: &mut AirmashWorld) {
+fn update_keystate(event: &KeyEvent, game: &mut AirmashGame) {
   let this_frame = game.resources.read::<ThisFrame>().0;
 
   let (keystate, last_action, ..) = match game
@@ -107,7 +107,7 @@ fn update_keystate(event: &KeyEvent, game: &mut AirmashWorld) {
 /// Force the physics system to emit a PlayerUpdate packet ASAP when the player
 /// presses a key that changes the plane's direction or speed.
 #[handler]
-fn force_update_packet(event: &KeyEvent, game: &mut AirmashWorld) {
+fn force_update_packet(event: &KeyEvent, game: &mut AirmashGame) {
   // Other keys don't force updates
   match event.key {
     KeyCode::Up | KeyCode::Down | KeyCode::Left | KeyCode::Right => (),

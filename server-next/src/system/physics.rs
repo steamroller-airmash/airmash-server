@@ -7,18 +7,18 @@ use crate::event::PlayerJoin;
 use crate::protocol::{PlaneType, Upgrades as ServerUpgrades, Vector2};
 use crate::resource::*;
 use crate::util::get_current_clock;
-use crate::AirmashWorld;
+use crate::AirmashGame;
 use std::f32::consts::{FRAC_PI_2, PI, TAU};
 use std::time::Duration;
 
-pub fn update(game: &mut AirmashWorld) {
+pub fn update(game: &mut AirmashGame) {
   update_player_positions(game);
   update_spectator_positions(game);
   update_missile_positions(game);
   send_update_packets(game);
 }
 
-fn update_player_positions(game: &mut AirmashWorld) {
+fn update_player_positions(game: &mut AirmashGame) {
   let config = game.resources.read::<Config>();
   let delta = game.frame_delta();
 
@@ -132,7 +132,7 @@ fn update_player_positions(game: &mut AirmashWorld) {
   }
 }
 
-fn update_missile_positions(game: &mut AirmashWorld) {
+fn update_missile_positions(game: &mut AirmashGame) {
   let config = game.resources.read::<Config>();
   let delta = game.frame_delta();
 
@@ -168,7 +168,7 @@ fn update_missile_positions(game: &mut AirmashWorld) {
   }
 }
 
-fn update_spectator_positions(game: &mut AirmashWorld) {
+fn update_spectator_positions(game: &mut AirmashGame) {
   let mut query = game
     .world
     .query::<(&mut Position, &IsSpectating, &Spectating)>()
@@ -194,7 +194,7 @@ fn update_spectator_positions(game: &mut AirmashWorld) {
   }
 }
 
-fn send_update_packets(game: &mut AirmashWorld) {
+fn send_update_packets(game: &mut AirmashGame) {
   let clock = get_current_clock(game);
 
   let mut query = game
@@ -256,7 +256,7 @@ fn send_update_packets(game: &mut AirmashWorld) {
 }
 
 #[handler]
-fn add_required_components(event: &PlayerJoin, game: &mut AirmashWorld) {
+fn add_required_components(event: &PlayerJoin, game: &mut AirmashGame) {
   let start_time = game.resources.read::<StartTime>().0;
   let _ = game
     .world

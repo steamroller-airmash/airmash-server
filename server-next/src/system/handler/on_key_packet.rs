@@ -1,14 +1,17 @@
+use crate::component::*;
 use crate::event::KeyEvent;
 use crate::event::PacketEvent;
 use crate::protocol::client::Key;
-use crate::AirmashWorld;
-use crate::component::*;
+use crate::AirmashGame;
 
 #[handler]
-fn transform_key_event(event: &PacketEvent<Key>, game: &mut AirmashWorld) {
-  let (alive, _) = match game.world.query_one_mut::<(&IsAlive, &IsPlayer)>(event.entity) {
+fn transform_key_event(event: &PacketEvent<Key>, game: &mut AirmashGame) {
+  let (alive, _) = match game
+    .world
+    .query_one_mut::<(&IsAlive, &IsPlayer)>(event.entity)
+  {
     Ok(query) => query,
-    Err(_) => return
+    Err(_) => return,
   };
 
   if !alive.0 {

@@ -3,10 +3,10 @@ use airmash_protocol::MobType;
 use crate::component::*;
 use crate::event::PlayerFire;
 use crate::resource::Config;
-use crate::AirmashWorld;
+use crate::AirmashGame;
 
 #[handler]
-pub fn send_player_fire(event: &PlayerFire, game: &mut AirmashWorld) {
+pub fn send_player_fire(event: &PlayerFire, game: &mut AirmashGame) {
   use crate::protocol::server as s;
 
   let config = game.resources.read::<Config>();

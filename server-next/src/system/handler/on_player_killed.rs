@@ -2,10 +2,10 @@ use crate::component::*;
 use crate::event::PlayerKilled;
 use crate::event::PlayerRespawn;
 use crate::resource::{Config, GameConfig, TaskScheduler, ThisFrame};
-use crate::AirmashWorld;
+use crate::AirmashGame;
 
 #[handler]
-fn launch_respawn_task(event: &PlayerKilled, game: &mut AirmashWorld) {
+fn launch_respawn_task(event: &PlayerKilled, game: &mut AirmashGame) {
   let tasks = game.resources.read::<TaskScheduler>();
   let config = game.resources.read::<Config>();
   let game_config = game.resources.read::<GameConfig>();
@@ -28,7 +28,7 @@ fn launch_respawn_task(event: &PlayerKilled, game: &mut AirmashWorld) {
   let event = *event;
   tasks.schedule(
     this_frame.0 + config.respawn_delay,
-    move |game: &mut AirmashWorld| {
+    move |game: &mut AirmashGame| {
       let query = game
         .world
         .query_one_mut::<(&mut RespawnAllowed, &IsSpectating, &IsPlayer)>(event.player);
@@ -50,7 +50,7 @@ fn launch_respawn_task(event: &PlayerKilled, game: &mut AirmashWorld) {
 }
 
 #[handler]
-fn set_dead_flag(event: &PlayerKilled, game: &mut AirmashWorld) {
+fn set_dead_flag(event: &PlayerKilled, game: &mut AirmashGame) {
   let query = game
     .world
     .query_one_mut::<(&mut IsAlive, &IsPlayer)>(event.player);
@@ -63,7 +63,7 @@ fn set_dead_flag(event: &PlayerKilled, game: &mut AirmashWorld) {
 }
 
 #[handler]
-fn send_player_killed_packets(event: &PlayerKilled, game: &mut AirmashWorld) {
+fn send_player_killed_packets(event: &PlayerKilled, game: &mut AirmashGame) {
   use crate::protocol::server::{PlayerKill, ScoreUpdate};
 
   if event.player == event.killer {
@@ -144,7 +144,7 @@ fn send_player_killed_packets(event: &PlayerKilled, game: &mut AirmashWorld) {
 }
 
 #[handler(priority = crate::priority::MEDIUM)]
-fn update_scores(event: &PlayerKilled, game: &mut AirmashWorld) {
+fn update_scores(event: &PlayerKilled, game: &mut AirmashGame) {
   if event.player == event.killer {
     return;
   }

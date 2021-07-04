@@ -1,4 +1,4 @@
-use crate::AirmashWorld;
+use crate::AirmashGame;
 use anymap::AnyMap;
 use linkme::distributed_slice;
 use std::cell::RefCell;
@@ -19,15 +19,15 @@ impl<T: Send + Sync + 'static> Event for T {}
 
 /// Trait for an event handler.
 pub trait EventHandler<E: Event>: 'static {
-  fn on_event(&mut self, event: &E, world: &mut AirmashWorld);
+  fn on_event(&mut self, event: &E, game: &mut AirmashGame);
 }
 
 impl<F, E> EventHandler<E> for F
 where
-  F: FnMut(&E, &mut AirmashWorld) + 'static,
+  F: FnMut(&E, &mut AirmashGame) + 'static,
   E: Event,
 {
-  fn on_event(&mut self, event: &E, world: &mut AirmashWorld) {
+  fn on_event(&mut self, event: &E, world: &mut AirmashGame) {
     self(event, world);
   }
 }
@@ -36,13 +36,13 @@ struct HandlerWithPriority<E>(i32, Box<dyn EventHandler<E>>);
 type HandlerList<E> = Vec<HandlerWithPriority<E>>;
 
 trait DelayedEvent {
-  fn dispatch(&mut self, world: &mut AirmashWorld, map: &mut AnyMap);
+  fn dispatch(&mut self, world: &mut AirmashGame, map: &mut AnyMap);
 }
 
 struct ConcreteDelayedEvent<E>(Option<E>);
 
 impl<E: Event> DelayedEvent for ConcreteDelayedEvent<E> {
-  fn dispatch(&mut self, world: &mut AirmashWorld, map: &mut AnyMap) {
+  fn dispatch(&mut self, world: &mut AirmashGame, map: &mut AnyMap) {
     BaseEventDispatcher::dispatch_raw(self.0.take().unwrap(), world, map);
   }
 }
@@ -58,7 +58,7 @@ struct BaseEventDispatcher {
   /// been executed.
   ///
   /// This is not exposed outside of this crate.
-  cleanup: RefCell<VecDeque<Box<dyn FnMut(&mut AirmashWorld)>>>,
+  cleanup: RefCell<VecDeque<Box<dyn FnMut(&mut AirmashGame)>>>,
 }
 
 impl BaseEventDispatcher {
@@ -82,7 +82,7 @@ impl BaseEventDispatcher {
     list.sort();
   }
 
-  fn dispatch_raw<E>(event: E, world: &mut AirmashWorld, lists: &mut AnyMap)
+  fn dispatch_raw<E>(event: E, world: &mut AirmashGame, lists: &mut AnyMap)
   where
     E: Event,
   {
@@ -93,7 +93,7 @@ impl BaseEventDispatcher {
     }
   }
 
-  fn dispatch<E>(&self, event: E, world: &mut AirmashWorld)
+  fn dispatch<E>(&self, event: E, world: &mut AirmashGame)
   where
     E: Event,
   {
@@ -121,9 +121,9 @@ impl BaseEventDispatcher {
 
   /// Add a function to the cleanup queue. If no event is currently executing
   /// then it will be executed immediately.
-  fn add_cleanup<F>(&self, world: &mut AirmashWorld, func: F)
+  fn add_cleanup<F>(&self, world: &mut AirmashGame, func: F)
   where
-    F: FnOnce(&mut AirmashWorld) + 'static,
+    F: FnOnce(&mut AirmashGame) + 'static,
   {
     if self.lists.try_borrow_mut().is_ok() {
       func(world);
@@ -162,16 +162,16 @@ impl EventDispatcher {
     self.dispatcher.register_with_priority(priority, handler)
   }
 
-  pub fn dispatch<E>(&self, event: E, world: &mut AirmashWorld)
+  pub fn dispatch<E>(&self, event: E, world: &mut AirmashGame)
   where
     E: Event,
   {
     self.dispatcher.dispatch(event, world);
   }
 
-  pub(crate) fn cleanup<F>(&self, world: &mut AirmashWorld, func: F)
+  pub(crate) fn cleanup<F>(&self, world: &mut AirmashGame, func: F)
   where
-    F: FnOnce(&mut AirmashWorld) + 'static,
+    F: FnOnce(&mut AirmashGame) + 'static,
   {
     self.dispatcher.add_cleanup(world, func);
   }

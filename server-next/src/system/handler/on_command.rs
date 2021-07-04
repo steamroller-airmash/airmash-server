@@ -13,10 +13,10 @@ use crate::protocol::client::Command;
 use crate::protocol::{server as s, ErrorType};
 use crate::resource::{GameConfig, ThisFrame};
 use crate::util::spectate::*;
-use crate::AirmashWorld;
+use crate::AirmashGame;
 
 #[handler]
-fn on_respawn_command(event: &PacketEvent<Command>, game: &mut AirmashWorld) {
+fn on_respawn_command(event: &PacketEvent<Command>, game: &mut AirmashGame) {
   fn respawn_allowed(
     alive: bool,
     respawn_allowed: bool,
@@ -135,7 +135,7 @@ fn on_respawn_command(event: &PacketEvent<Command>, game: &mut AirmashWorld) {
 }
 
 #[handler]
-fn on_flag_command(event: &PacketEvent<Command>, game: &mut AirmashWorld) {
+fn on_flag_command(event: &PacketEvent<Command>, game: &mut AirmashGame) {
   if event.packet.com != "flag" {
     return;
   }
@@ -159,7 +159,7 @@ fn on_flag_command(event: &PacketEvent<Command>, game: &mut AirmashWorld) {
 }
 
 #[handler]
-fn on_spectate_command(event: &PacketEvent<Command>, game: &mut AirmashWorld) {
+fn on_spectate_command(event: &PacketEvent<Command>, game: &mut AirmashGame) {
   fn can_spectate(
     is_spec: bool,
     is_alive: bool,

@@ -2,10 +2,10 @@ use airmash_protocol::PlaneType;
 
 use crate::component::*;
 use crate::event::EventBounce;
-use crate::world::AirmashWorld;
+use crate::world::AirmashGame;
 
 #[handler]
-fn send_bounce_packet(event: &EventBounce, game: &mut AirmashWorld) {
+fn send_bounce_packet(event: &EventBounce, game: &mut AirmashGame) {
   let clock = crate::util::get_current_clock(game);
 
   let query = game.world.query_one_mut::<(

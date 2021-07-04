@@ -1,10 +1,10 @@
-use crate::AirmashWorld;
+use crate::AirmashGame;
 use std::cell::UnsafeCell;
 use std::rc::Rc;
 use std::{collections::BinaryHeap, time::Instant};
 
 pub trait Task {
-  fn invoke(self, game: &mut AirmashWorld);
+  fn invoke(self, game: &mut AirmashGame);
 }
 
 #[derive(Clone, Default)]
@@ -24,14 +24,14 @@ impl TaskScheduler {
     self.detail.schedule(time, task);
   }
 
-  pub(crate) fn update(&self, now: Instant, game: &mut AirmashWorld) {
+  pub(crate) fn update(&self, now: Instant, game: &mut AirmashGame) {
     self.detail.update(now, game);
   }
 }
 
 struct TaskDesc {
   time: Instant,
-  task: Box<dyn FnMut(&mut AirmashWorld)>,
+  task: Box<dyn FnMut(&mut AirmashGame)>,
 }
 
 #[derive(Default)]
@@ -51,14 +51,14 @@ impl TaskSchedulerDetail {
     let mut task = Some(task);
     tasks.push(TaskDesc {
       time,
-      task: Box::new(move |game: &mut AirmashWorld| {
+      task: Box::new(move |game: &mut AirmashGame| {
         let task = task.take().unwrap();
         task.invoke(game);
       }),
     });
   }
 
-  fn update(&self, now: Instant, game: &mut AirmashWorld) {
+  fn update(&self, now: Instant, game: &mut AirmashGame) {
     let ptr = self.tasks.get();
 
     // SAFETY: This safe since this method will never be called from multiple
@@ -99,9 +99,9 @@ impl Eq for TaskDesc {}
 
 impl<F> Task for F
 where
-  F: FnOnce(&mut AirmashWorld),
+  F: FnOnce(&mut AirmashGame),
 {
-  fn invoke(self, game: &mut AirmashWorld) {
+  fn invoke(self, game: &mut AirmashGame) {
     self(game);
   }
 }

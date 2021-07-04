@@ -1,6 +1,6 @@
 use crate::component::*;
 use crate::resource::ThisFrame;
-use crate::AirmashWorld;
+use crate::AirmashGame;
 use std::cmp::Reverse;
 use std::time::Duration;
 use std::time::Instant;
@@ -9,11 +9,11 @@ def_wrappers! {
   type LastScoreBoardTime = Instant;
 }
 
-pub fn update(game: &mut AirmashWorld) {
+pub fn update(game: &mut AirmashGame) {
   send_packets(game);
 }
 
-fn send_packets(game: &mut AirmashWorld) {
+fn send_packets(game: &mut AirmashGame) {
   use crate::protocol::server as s;
 
   let this_frame = game.resources.read::<ThisFrame>().0;

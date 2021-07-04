@@ -2,10 +2,10 @@ use smallvec::SmallVec;
 
 use crate::component::*;
 use crate::event::PlayerSpectate;
-use crate::{AirmashWorld, Vector2};
+use crate::{AirmashGame, Vector2};
 
 #[handler(priority = crate::priority::MEDIUM)]
-fn update_player(event: &PlayerSpectate, game: &mut AirmashWorld) {
+fn update_player(event: &PlayerSpectate, game: &mut AirmashGame) {
   let (spec, alive, _) = match game
     .world
     .query_one_mut::<(&mut IsSpectating, &mut IsAlive, &IsPlayer)>(event.player)
@@ -19,7 +19,7 @@ fn update_player(event: &PlayerSpectate, game: &mut AirmashWorld) {
 }
 
 #[handler]
-fn send_packets(event: &PlayerSpectate, game: &mut AirmashWorld) {
+fn send_packets(event: &PlayerSpectate, game: &mut AirmashGame) {
   use crate::protocol::server::{GameSpectate, PlayerKill};
 
   let (&pos, &target, _) = match game
@@ -51,7 +51,7 @@ fn send_packets(event: &PlayerSpectate, game: &mut AirmashWorld) {
 }
 
 #[handler]
-fn retarget_spectators(event: &PlayerSpectate, game: &mut AirmashWorld) {
+fn retarget_spectators(event: &PlayerSpectate, game: &mut AirmashGame) {
   use crate::util::spectate::*;
 
   let mut query = game.world.query::<&mut Spectating>().with::<IsPlayer>();

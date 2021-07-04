@@ -3,13 +3,13 @@ use smallvec::SmallVec;
 use crate::component::*;
 use crate::event::PowerupExpire;
 use crate::resource::ThisFrame;
-use crate::AirmashWorld;
+use crate::AirmashGame;
 
-pub fn update(game: &mut AirmashWorld) {
+pub fn update(game: &mut AirmashGame) {
   expire_powerups(game);
 }
 
-fn expire_powerups(game: &mut AirmashWorld) {
+fn expire_powerups(game: &mut AirmashGame) {
   let this_frame = game.resources.read::<ThisFrame>().0;
   let query = game.world.query_mut::<&Powerup>().with::<IsPlayer>();
 

@@ -85,7 +85,7 @@ macro_rules! def_wrapper_resources {
         #[crate::handler]
         fn register_resource(
           _: &airmash_server::event::ServerStartup,
-          world: &mut airmash_server::AirmashWorld
+          world: &mut airmash_server::AirmashGame
         ) {
           if world.resources.get::<$nty>().is_none() {
             world.resources.insert(<$nty>::default());

@@ -3,10 +3,10 @@ use airmash_protocol::MobType;
 use crate::component::*;
 use crate::event::EventHorizon;
 use crate::resource::Config;
-use crate::AirmashWorld;
+use crate::AirmashGame;
 
 #[handler]
-fn send_missile_update(event: &EventHorizon, game: &mut AirmashWorld) {
+fn send_missile_update(event: &EventHorizon, game: &mut AirmashGame) {
   use crate::protocol::server::MobUpdate;
 
   if !event.in_horizon {
@@ -50,7 +50,7 @@ fn send_missile_update(event: &EventHorizon, game: &mut AirmashWorld) {
 }
 
 #[handler]
-fn send_mob_update(event: &EventHorizon, game: &mut AirmashWorld) {
+fn send_mob_update(event: &EventHorizon, game: &mut AirmashGame) {
   use crate::protocol::server::MobUpdateStationary;
 
   if !event.in_horizon {
@@ -76,7 +76,7 @@ fn send_mob_update(event: &EventHorizon, game: &mut AirmashWorld) {
 }
 
 #[handler]
-fn send_horizon_packet(event: &EventHorizon, game: &mut AirmashWorld) {
+fn send_horizon_packet(event: &EventHorizon, game: &mut AirmashGame) {
   use crate::protocol::server as s;
   use crate::protocol::LeaveHorizonType;
 

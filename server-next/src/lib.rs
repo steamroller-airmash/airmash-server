@@ -35,7 +35,7 @@ pub use server_macros::handler;
 
 pub use self::dispatch::{Event, EventDispatcher, EventHandler};
 pub use self::network::ConnectionMgr;
-pub use self::world::AirmashWorld;
+pub use self::world::AirmashGame;
 pub use self::worldext::{EntitySetBuilder, FireMissileInfo};
 
 #[doc(hidden)]

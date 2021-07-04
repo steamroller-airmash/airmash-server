@@ -10,17 +10,17 @@ use crate::event::EventBounce;
 use crate::event::MissileTerrainCollision;
 use crate::event::PlayerMissileCollision;
 use crate::resource::{collision::*, LastFrame, ThisFrame};
-use crate::AirmashWorld;
+use crate::AirmashGame;
 
 struct FrameId(usize);
 
-pub fn generate_collision_lookups(game: &mut AirmashWorld) {
+pub fn generate_collision_lookups(game: &mut AirmashGame) {
   generate_player_pos_db(game);
   generate_player_collide_db(game);
   generate_missile_collide_db(game);
 }
 
-pub fn check_collisions(game: &mut AirmashWorld) {
+pub fn check_collisions(game: &mut AirmashGame) {
   let frame_id = {
     let frame = game.resources.entry().or_insert(FrameId(0));
     let frame_id = frame.0;
@@ -46,7 +46,7 @@ pub fn check_collisions(game: &mut AirmashWorld) {
   collide_missile_terrain(game);
 }
 
-fn generate_player_pos_db(game: &mut AirmashWorld) {
+fn generate_player_pos_db(game: &mut AirmashGame) {
   let mut db = game.resources.write::<PlayerPosDb>();
 
   let query = game
@@ -67,7 +67,7 @@ fn generate_player_pos_db(game: &mut AirmashWorld) {
   db.recreate(entries);
 }
 
-fn generate_player_collide_db(game: &mut AirmashWorld) {
+fn generate_player_collide_db(game: &mut AirmashGame) {
   let mut db = game.resources.write::<PlayerCollideDb>();
 
   let query = game
@@ -96,7 +96,7 @@ fn generate_player_collide_db(game: &mut AirmashWorld) {
   db.recreate(entries);
 }
 
-fn generate_missile_collide_db(game: &mut AirmashWorld) {
+fn generate_missile_collide_db(game: &mut AirmashGame) {
   let mut db = game.resources.write::<MissileCollideDb>();
 
   let query = game
@@ -117,7 +117,7 @@ fn generate_missile_collide_db(game: &mut AirmashWorld) {
   db.recreate(entries);
 }
 
-fn collide_player_terrain(game: &mut AirmashWorld) {
+fn collide_player_terrain(game: &mut AirmashGame) {
   use std::cmp::Ordering;
 
   let players = game.resources.read::<PlayerCollideDb>();
@@ -172,7 +172,7 @@ fn collide_player_terrain(game: &mut AirmashWorld) {
   }
 }
 
-fn collide_missile_terrain(game: &mut AirmashWorld) {
+fn collide_missile_terrain(game: &mut AirmashGame) {
   use std::cmp::Ordering;
 
   let missiles = game.resources.read::<MissileCollideDb>();
@@ -216,7 +216,7 @@ fn collide_missile_terrain(game: &mut AirmashWorld) {
   }
 }
 
-fn collide_player_missile(game: &mut AirmashWorld) {
+fn collide_player_missile(game: &mut AirmashGame) {
   let missiles = game.resources.read::<MissileCollideDb>();
   let players = game.resources.read::<PlayerCollideDb>();
 
