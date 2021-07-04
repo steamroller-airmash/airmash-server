@@ -1,47 +1,15 @@
-#[macro_use]
-extern crate lazy_static;
-#[macro_use]
-extern crate specs_derive;
-#[macro_use]
-extern crate shred_derive;
-
-mod components;
-mod gamemode;
-mod systems;
-
-#[cfg(test)]
-mod tests;
-
 use std::env;
 use std::fs::File;
 
 use serde_deserialize_over::DeserializeOver;
 
-use gamemode::EmptyGameMode;
+use server::*;
+use server::{
+  protocol::GameType,
+  resource::{Config, RegionName},
+};
 
-use airmash_server::*;
-
-#[cfg(features = "sentry")]
-/// NOTE: Also initializes env_logger
-fn init_sentry() -> Option<sentry::internals::ClientInitGuard> {
-  if let Ok(dsn) = env::var("SENTRY_DSN") {
-    let guard = sentry::init(&*dsn);
-
-    sentry::integrations::env_logger::init(None, Default::default());
-    sentry::integrations::panic::register_panic_handler();
-
-    Some(guard)
-  } else {
-    env_logger::init();
-
-    None
-  }
-}
-
-#[cfg(not(features = "sentry"))]
-fn init_sentry() {
-  env_logger::init();
-}
+mod systems;
 
 fn set_default_var(name: &str, value: &str) {
   if None == env::var_os(name) {
@@ -54,26 +22,29 @@ fn main() {
     .version(env!("CARGO_PKG_VERSION"))
     .author("STEAMROLLER")
     .about("Airmash FFA server")
-    .args_from_usage("-c, --config=[FILE] 'Provides an alternate config file'")
+    .arg_from_usage("-c, --config=[FILE] 'Provides an alternate config file'")
+    .arg_from_usage("--port=[PORT]       'Port that the server will listen on'")
+    .arg_from_usage("--region=[REGION]   'The region that this server belongs to'")
     .get_matches();
 
   set_default_var("RUST_BACKTRACE", "1");
   set_default_var("RUST_LOG", "info");
-  set_default_var("RAYON_NUM_THREADS", "1");
-  set_default_var("FFA_LISTEN_ADDR", "0.0.0.0");
-  set_default_var("FFA_LISTEN_PORT", "3501");
+  env_logger::init();
 
-  let bind_addr = format!(
-    "{}:{}",
-    env::var("FFA_LISTEN_ADDR").unwrap(),
-    env::var("FFA_LISTEN_PORT").unwrap()
+  let bind_addr = format!("0.0.0.0:{}", matches.value_of("port").unwrap_or("3501"));
+
+  let mut game = AirmashGame::with_network(
+    bind_addr
+      .parse()
+      .expect("Unable to parse provided network port address"),
   );
+  game.resources.insert(RegionName(
+    matches.value_of("region").unwrap_or("default").to_string(),
+  ));
+  game.resources.insert(GameType::FFA);
 
-  let _guard = init_sentry();
-
-  let mut config = AirmashServerConfig::new(bind_addr, EmptyGameMode).with_engine();
-
-  config.builder = systems::register(&mut config.world, config.builder);
+  // Use the provided FFA scoreboard systems.
+  server::system::ffa::register_all(&mut game);
 
   if let Some(path) = matches.value_of("config") {
     let file = match File::open(path) {
@@ -86,14 +57,14 @@ fn main() {
 
     let mut de = serde_json::Deserializer::new(serde_json::de::IoRead::new(file));
 
-    let mut serverconfig = Config {
+    let mut config = Config {
       allow_spectate_while_moving: false,
       ..Config::default()
     };
-    serverconfig.deserialize_over(&mut de).unwrap();
+    config.deserialize_over(&mut de).unwrap();
 
-    config.world.add_resource(serverconfig);
+    game.resources.insert(config);
   }
 
-  AirmashServer::new(config).run().unwrap();
+  game.run_until_shutdown();
 }

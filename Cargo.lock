@@ -75,6 +75,20 @@ dependencies = [
 ]
 
 [[package]]
+name = "airmash-server-ffa"
+version = "0.0.1"
+dependencies = [
+ "airmash-server",
+ "clap",
+ "env_logger",
+ "log",
+ "rand",
+ "serde",
+ "serde-deserialize-over",
+ "serde_json",
+]
+
+[[package]]
 name = "ansi_term"
 version = "0.11.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
