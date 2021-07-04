@@ -27,6 +27,9 @@ fn main() {
 	game.resources.insert(GameRoom("matrix".to_owned()));
 	game.resources.insert(GameType::FFA);
 
+	// Use the FFA scoreboard.
+	airmash_server::system::ffa::register_all(&mut game);
+
 	if let Some(path) = matches.value_of("config") {
 		let file = match File::open(path) {
 			Ok(x) => x,

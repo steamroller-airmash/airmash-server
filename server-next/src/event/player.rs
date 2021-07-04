@@ -73,3 +73,11 @@ pub struct PlayerSpectate {
   pub player: Entity,
   pub was_alive: bool,
 }
+
+#[derive(Copy, Clone, Debug)]
+pub struct PlayerHit {
+  pub player: Entity,
+  pub missile: Entity,
+  pub damage: f32,
+  pub attacker: Option<Entity>,
+}

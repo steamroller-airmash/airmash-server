@@ -30,6 +30,7 @@ def_wrappers! {
   pub type Earnings = u32;
   pub type KillCount = u32;
   pub type DeathCount = u32;
+  pub type PlayerPing = u16;
 
   /// The player that another spectating player is watching.
   #[derive(Default)]

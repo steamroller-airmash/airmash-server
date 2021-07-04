@@ -5,8 +5,7 @@ use airmash_protocol::PlaneType;
 use smallvec::SmallVec;
 
 use crate::component::*;
-use crate::event::PlayerKilled;
-use crate::event::PlayerMissileCollision;
+use crate::event::{PlayerHit, PlayerKilled, PlayerMissileCollision};
 use crate::resource::Config;
 use crate::AirmashGame;
 
@@ -25,8 +24,10 @@ fn damage_player(event: &PlayerMissileCollision, game: &mut AirmashGame) {
     Some(info) => info,
     None => return,
   };
+  let attacker = game.world.get::<IsPlayer>(owner.0).ok().map(|_| owner.0);
 
   let mut events = SmallVec::<[_; 16]>::new();
+  let mut hits = SmallVec::<[_; 16]>::new();
   let mut killed = HashSet::new();
   for player in event.players.iter().copied() {
     let query = game
@@ -47,11 +48,26 @@ fn damage_player(event: &PlayerMissileCollision, game: &mut AirmashGame) {
 
       // No damage can be done if the player is shielded
       if powerup.shield() {
+        hits.push(PlayerHit {
+          player,
+          missile: event.missile,
+          damage: 0.0,
+          attacker,
+        });
+
         continue;
       }
 
-      health.0 -= minfo.damage * pinfo.damage_factor
+      let damage = minfo.damage * pinfo.damage_factor
         / config.upgrades.defense.factor[upgrades.defense as usize];
+      health.0 -= damage;
+
+      hits.push(PlayerHit {
+        player,
+        missile: event.missile,
+        damage,
+        attacker,
+      });
 
       if health.0 <= 0.0 {
         // Avoid double-kills if multiple missiles hit the player in the same frame.
@@ -72,9 +88,8 @@ fn damage_player(event: &PlayerMissileCollision, game: &mut AirmashGame) {
 
   drop(config);
 
-  for event in events {
-    game.dispatch(event);
-  }
+  game.dispatch_many(hits);
+  game.dispatch_many(events);
 }
 
 #[handler]
