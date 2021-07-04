@@ -1,3 +1,5 @@
+//! Various utility functions that perform common functions.
+
 use crate::component::Powerup;
 use crate::component::Upgrades;
 use crate::protocol::{Time, Vector2};
