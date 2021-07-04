@@ -2,6 +2,10 @@ use crate::component::SpecialActive;
 use crate::protocol::{PlaneType, ServerKeyState};
 
 /// Known key state of a player.
+///
+/// This is kept updated based on packets from the client. However, if the
+/// client is dead or recently respawned it may be innaccurate. This ends up
+/// being corrected the first time the player presses a key.
 #[derive(Default, Clone, Debug)]
 pub struct KeyState {
   pub up: bool,
