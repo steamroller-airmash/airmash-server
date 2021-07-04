@@ -15,6 +15,10 @@ mod specials;
 mod visibility;
 
 pub fn update(game: &mut AirmashWorld) {
+  use crate::event::{FrameStart, FrameEnd, Frame};
+
+  game.dispatch(FrameStart);
+
   self::physics::update(game);
   self::regen::update(game);
   self::specials::update(game);
@@ -31,8 +35,12 @@ pub fn update(game: &mut AirmashWorld) {
   self::powerups::update(game);
   self::scoreboard::update(game);
 
+  game.dispatch(Frame);
+
   update_tasks(game);
   cull_zombies(game);
+
+  game.dispatch(FrameEnd);
 }
 
 /// Reusing an id soon after it was created causes problems with the airmash web
