@@ -36,4 +36,4 @@ branch = "remove-dimensioned"
 features = [ "serde" ]
 
 [dev-dependencies]
-simple-log = "1.0"
+# simple-log = "1.0"

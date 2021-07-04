@@ -1,3 +1,5 @@
+//! Resources related to collisions and spatial queries.
+
 use airmash_protocol::Vector2;
 use hecs::Entity;
 use kdtree::{KdTree, Node};

@@ -7,7 +7,7 @@ use std::fs::File;
 
 use airmash_server::protocol::GameType;
 use airmash_server::resource::Config;
-use airmash_server::resource::GameRoom;
+use airmash_server::resource::RegionName;
 use airmash_server::*;
 
 fn main() {
@@ -24,7 +24,7 @@ fn main() {
 	env_logger::init();
 
 	let mut game = AirmashGame::with_network("0.0.0.0:3501".parse().unwrap());
-	game.resources.insert(GameRoom("matrix".to_owned()));
+	game.resources.insert(RegionName("matrix".to_owned()));
 	game.resources.insert(GameType::FFA);
 
 	// Use the FFA scoreboard.

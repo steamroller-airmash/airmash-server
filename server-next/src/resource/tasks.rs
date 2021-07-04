@@ -3,20 +3,38 @@ use std::cell::UnsafeCell;
 use std::rc::Rc;
 use std::{collections::BinaryHeap, time::Instant};
 
+/// Marker trait for a task.
+///
+/// This is implemented for any type which implements [`FnOnce`] with the
+/// correct signature so it usually will not need to be implemented manually
+/// unless you want to use a custom task type.
 pub trait Task {
   fn invoke(self, game: &mut AirmashGame);
 }
 
+/// Handler to the task scheduler.
+///
+/// This can be used to schedule a function to run at some time in the future.
+/// As soon as that time has passed the requested function will be executed.
+/// This is useful for scheduling events that happen every so often. However, if
+/// you need to perform timed tasks for a whole class of entities then you are
+/// probably better off running some work every frame by adding a handler for
+/// the [`Frame`](crate::event::Frame) event.
+///
+/// Note that this type is just a handle to the underlying task scheduler so
+/// cloning it will still refer to the same underlying instance.
 #[derive(Clone, Default)]
 pub struct TaskScheduler {
   detail: Rc<TaskSchedulerDetail>,
 }
 
 impl TaskScheduler {
+  /// Create a new `TaskScheduler` with no tasks.
   pub fn new() -> Self {
     Self::default()
   }
 
+  /// Schedule a task to run at `time`.
   pub fn schedule<T>(&self, time: Instant, task: T)
   where
     T: Task + 'static,

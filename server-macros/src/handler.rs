@@ -76,7 +76,7 @@ fn impl_handler(item: ItemFn, args: MacroArgs) -> Result<TokenStream> {
       #[allow(non_upper_case_globals)]
       #[linkme::distributed_slice(#krate::_exports::AIRMASH_EVENT_HANDLERS)]
       #[linkme(crate = #krate::_exports::linkme)]
-      static __: fn(&airmash_server::EventDispatcher) = |dispatch| {
+      static __: fn(&#krate::_exports::EventDispatcher) = |dispatch| {
         dispatch.register_with_priority(PRIORITY, #name);
       };
     };

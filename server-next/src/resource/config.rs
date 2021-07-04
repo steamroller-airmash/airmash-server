@@ -1,3 +1,5 @@
+//! Configuration info controlling how planes and missiles behave.
+
 use serde_deserialize_over::DeserializeOver;
 use std::ops::Index;
 use std::time::Duration;

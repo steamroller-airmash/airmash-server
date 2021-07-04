@@ -4,7 +4,7 @@ use bstr::BString;
 
 use crate::component::*;
 use crate::event::PlayerJoin;
-use crate::resource::GameRoom;
+use crate::resource::RegionName;
 use crate::world::AirmashGame;
 
 #[handler(priority = crate::priority::LOGIN)]
@@ -46,7 +46,7 @@ fn send_login_packet(event: &PlayerJoin, game: &mut AirmashGame) {
 
   let clock = crate::util::get_current_clock(game);
   let game_ty = *game.resources.read::<GameType>();
-  let room = game.resources.read::<GameRoom>().clone();
+  let room = game.resources.read::<RegionName>().clone();
 
   let mut query = match game.world.query_one::<(&Team, &Session)>(event.player) {
     Ok(query) => query.with::<IsPlayer>(),

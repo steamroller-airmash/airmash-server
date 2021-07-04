@@ -145,7 +145,7 @@ impl AirmashGame {
     self.resources.insert(TaskScheduler::new());
     self.resources.insert(GameConfig::default());
 
-    self.resources.insert(GameRoom("default-uninit".to_owned()));
+    self.resources.insert(RegionName("default".to_owned()));
     self.resources.insert(GameType::FFA);
 
     // Having entities with id 0 screws up some assumptions that airmash makes
