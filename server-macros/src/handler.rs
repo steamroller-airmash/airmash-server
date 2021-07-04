@@ -74,7 +74,7 @@ fn impl_handler(item: ItemFn, args: MacroArgs) -> Result<TokenStream> {
       const PRIORITY: i32 = #priority;
 
       #[allow(non_upper_case_globals)]
-      #[linkme::distributed_slice(#krate::_exports::AIRMASH_EVENT_HANDLERS)]
+      #[#krate::_exports::linkme::distributed_slice(#krate::_exports::AIRMASH_EVENT_HANDLERS)]
       #[linkme(crate = #krate::_exports::linkme)]
       static __: fn(&#krate::_exports::EventDispatcher) = |dispatch| {
         dispatch.register_with_priority(PRIORITY, #name);
