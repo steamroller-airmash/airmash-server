@@ -5,6 +5,9 @@ pub mod protocol {
   pub use airmash_protocol::*;
 }
 
+pub extern crate hecs;
+pub extern crate nalgebra;
+
 #[macro_use]
 extern crate serde;
 #[macro_use]

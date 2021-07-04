@@ -3,7 +3,7 @@ use std::time::{Duration, Instant};
 use airmash_protocol::ServerPacket;
 use server::event::ServerStartup;
 use server::protocol::client as c;
-use server::test::{MockConnectionEndpoint, MockReceiver};
+use server::test::{MockConnectionEndpoint, MockConnection};
 use server::{network::ConnectionMgr, AirmashGame};
 
 pub fn create_login_packet(name: &str) -> c::Login {
@@ -17,7 +17,7 @@ pub fn create_login_packet(name: &str) -> c::Login {
   }
 }
 
-pub fn get_login_id(mock: &mut MockReceiver) -> u16 {
+pub fn get_login_id(mock: &mut MockConnection) -> u16 {
   let packet = mock.next_packet().expect("No packets available");
 
   match packet {

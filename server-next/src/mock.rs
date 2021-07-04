@@ -6,7 +6,12 @@ use crossbeam_channel::Sender;
 use std::net::{IpAddr, SocketAddr};
 use tokio::sync::mpsc::{unbounded_channel, UnboundedReceiver};
 
-pub struct MockReceiver {
+/// Mock connection for testing purposes.
+///
+/// This allows for sending packets to the server without having to go through a
+/// network connection. This is essential for ensuring that tests don't
+/// interfere with each other.
+pub struct MockConnection {
   tx: Sender<(ConnectionId, InternalEvent)>,
   rx: UnboundedReceiver<Vec<u8>>,
   conn: ConnectionId,
@@ -15,7 +20,7 @@ pub struct MockReceiver {
   seq: u32,
 }
 
-impl MockReceiver {
+impl MockConnection {
   fn new(
     tx: Sender<(ConnectionId, InternalEvent)>,
     rx: UnboundedReceiver<Vec<u8>>,
@@ -81,7 +86,7 @@ impl MockReceiver {
   }
 }
 
-impl MockReceiver {
+impl MockConnection {
   pub fn send_key(&mut self, key: KeyCode, state: bool) {
     self.send(c::Key {
       key,
@@ -93,12 +98,16 @@ impl MockReceiver {
   }
 }
 
-impl Drop for MockReceiver {
+impl Drop for MockConnection {
   fn drop(&mut self) {
     self.close();
   }
 }
 
+/// Mock connection endpoint for testing purposes.
+///
+/// This allows for creating new connections without needing open an actual
+/// server on a socket.
 pub struct MockConnectionEndpoint {
   sender: Sender<(ConnectionId, InternalEvent)>,
   nextid: usize,
@@ -109,7 +118,7 @@ impl MockConnectionEndpoint {
     Self { sender, nextid: 0 }
   }
 
-  pub fn open(&mut self) -> MockReceiver {
+  pub fn open(&mut self) -> MockConnection {
     let conn = ConnectionId(self.nextid);
     self.nextid += 1;
 
@@ -126,6 +135,6 @@ impl MockConnectionEndpoint {
       ))
       .expect("Network event channel is closed");
 
-    MockReceiver::new(self.sender.clone(), rx, conn)
+    MockConnection::new(self.sender.clone(), rx, conn)
   }
 }
