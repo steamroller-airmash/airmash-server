@@ -14,12 +14,11 @@ pub struct BoundedQueue<T> {
 impl<T> BoundedQueue<T> {
   /// Return the current length of the queue.
   ///
-  /// The length of the queue can never increase
-  /// beyond the [`capacity()`] of the queue.
+  /// The length of the queue can never increase beyond the `capacity()` of the
+  /// queue.
   ///
   /// # Example
-  /// Inserting elements when the queue is full
-  /// does not change the length.
+  /// Inserting elements when the queue is full does not change the length.
   /// ```
   /// # extern crate bounded_queue;
   /// # use bounded_queue::*;
@@ -45,16 +44,13 @@ impl<T> BoundedQueue<T> {
   pub fn is_empty(&self) -> bool {
     self.front == self.back
   }
-  /// Check to see if there is any
-  /// room left in the queue.
+  /// Check to see if there is any room left in the queue.
   ///
-  /// This being true implies that inserting any
-  /// more elements into the queue will cause elements
-  /// to be dropped out of the queue.
+  /// This being true implies that inserting any more elements into the queue
+  /// will cause elements to be dropped out of the queue.
   ///
   /// # Example
-  /// Here an element is inserted into a full
-  /// queue and the queue remains full.
+  /// Here an element is inserted into a full queue and the queue remains full.
   /// ```
   /// # extern crate bounded_queue;
   /// # use bounded_queue::*;
@@ -76,8 +72,7 @@ impl<T> BoundedQueue<T> {
   pub fn is_full(&self) -> bool {
     self.len() == self.capacity()
   }
-  /// The capacity of the underlying buffer used
-  /// by the queue.
+  /// The capacity of the underlying buffer used by the queue.
   ///
   /// This value is fixed at queue construction time.
   pub fn capacity(&self) -> usize {
@@ -91,14 +86,12 @@ impl<T> BoundedQueue<T> {
     self.front % self.capacity()
   }
 
-  /// Insert a new element into the back of the queue. If the
-  /// queue is full, then it returns the element
-  /// that was removed.
+  /// Insert a new element into the back of the queue. If the queue is full,
+  /// then it returns the element that was removed.
   ///
   /// # Example
-  /// When the queue is empty push returns none, but
-  /// when the queue is full push returns the element
-  /// that was bumped out.
+  /// When the queue is empty push returns none, but when the queue is full push
+  /// returns the element that was bumped out.
   /// ```
   /// # extern crate bounded_queue;
   /// # use bounded_queue::*;
@@ -120,8 +113,7 @@ impl<T> BoundedQueue<T> {
     val
   }
 
-  /// Remove an element from the front of the queue.
-  /// Returns `None` when empty.
+  /// Remove an element from the front of the queue. Returns `None` when empty.
   pub fn pop(&mut self) -> Option<T> {
     if self.is_empty() {
       return None;
@@ -132,9 +124,8 @@ impl<T> BoundedQueue<T> {
 
     mem::replace(&mut self.vals[last], None)
   }
-  /// Get a reference to the first element of the queue,
-  /// without modifying the queue. Returns `None` if
-  /// empty.
+  /// Get a reference to the first element of the queue, without modifying the
+  /// queue. Returns `None` if empty.
   pub fn peek(&self) -> Option<&T> {
     if self.is_empty() {
       return None;
