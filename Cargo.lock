@@ -868,6 +868,16 @@ dependencies = [
 ]
 
 [[package]]
+name = "proc-macro-crate"
+version = "1.0.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "41fdbd1df62156fbc5945f4762632564d7d038153091c3fcf1067f6aef7cff92"
+dependencies = [
+ "thiserror",
+ "toml",
+]
+
+[[package]]
 name = "proc-macro-hack"
 version = "0.5.19"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -1016,7 +1026,7 @@ name = "serde-deserialize-over-derive"
 version = "0.1.0"
 source = "git+https://github.com/steamroller-airmash/serde-deserialize-over#3b1a4bb6d12230b77672e45c6650f7e4073c0fb1"
 dependencies = [
- "proc-macro-crate",
+ "proc-macro-crate 0.1.5",
  "proc-macro2",
  "quote",
  "syn",
@@ -1079,6 +1089,7 @@ dependencies = [
 name = "server-macros"
 version = "0.1.0"
 dependencies = [
+ "proc-macro-crate 1.0.0",
  "proc-macro2",
  "quote",
  "syn",

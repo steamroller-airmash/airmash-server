@@ -6,7 +6,7 @@ use std::collections::VecDeque;
 use std::rc::Rc;
 
 #[distributed_slice]
-pub static HANDLERS: [fn(&EventDispatcher)] = [..];
+pub static AIRMASH_EVENT_HANDLERS: [fn(&EventDispatcher)] = [..];
 
 pub const DEFAULT_PRIORITY: i32 = 0;
 

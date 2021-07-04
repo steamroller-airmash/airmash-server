@@ -1,5 +1,6 @@
 //! AIRMASH Server
 
+/// A re-export of the entirety of the `airmash_protocol` crate.
 pub mod protocol {
   pub use airmash_protocol::*;
 }
@@ -32,6 +33,7 @@ pub mod util;
 
 pub use crate::protocol::Vector2;
 pub use server_macros::handler;
+pub use hecs::Entity;
 
 pub use self::dispatch::{Event, EventDispatcher, EventHandler};
 pub use self::network::ConnectionMgr;
@@ -39,7 +41,7 @@ pub use self::world::AirmashGame;
 pub use self::worldext::{EntitySetBuilder, FireMissileInfo};
 
 #[doc(hidden)]
-pub use self::dispatch::HANDLERS;
+pub use self::dispatch::AIRMASH_EVENT_HANDLERS;
 
 /// Notable priorities for event handlers.
 ///

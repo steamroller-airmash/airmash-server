@@ -1,5 +1,6 @@
-use proc_macro2::TokenStream;
+use proc_macro2::{Span, TokenStream};
 
+use proc_macro_crate::FoundCrate;
 use quote::quote;
 use syn::parse::Parse;
 use syn::{parse_macro_input, parse_quote, Expr, Ident};
@@ -61,6 +62,11 @@ fn impl_handler(item: ItemFn, args: MacroArgs) -> Result<TokenStream> {
   );
   let name = &item.sig.ident;
 
+  let krate = match proc_macro_crate::crate_name("airmash-server").unwrap_or(FoundCrate::Itself) {
+    FoundCrate::Itself => Ident::new("airmash_server", Span::call_site()),
+    FoundCrate::Name(name) => Ident::new(&name, Span::call_site()),
+  };
+
   let priority = args
     .priority
     .map(|x| x.value.clone())
@@ -71,7 +77,7 @@ fn impl_handler(item: ItemFn, args: MacroArgs) -> Result<TokenStream> {
 
     const _: () = {
       #[allow(non_upper_case_globals)]
-      #[linkme::distributed_slice(airmash_server::HANDLERS)]
+      #[linkme::distributed_slice(#krate::AIRMASH_EVENT_HANDLERS)]
       static #const_name: fn(&airmash_server::EventDispatcher) = |dispatch| {
         dispatch.register_with_priority(#priority, #name);
       };

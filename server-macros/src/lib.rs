@@ -1,6 +1,7 @@
 mod args;
 mod handler;
 
+/// Automatically register a static function as an event handler.
 #[proc_macro_attribute]
 pub fn handler(
   attr: proc_macro::TokenStream,
