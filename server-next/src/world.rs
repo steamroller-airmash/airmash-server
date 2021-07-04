@@ -10,14 +10,21 @@ use std::sync::atomic::{AtomicBool, Ordering};
 use std::sync::Arc;
 use std::time::{Duration, Instant};
 
+/// Main airmash game, containing all game data and resources.
 pub struct AirmashGame {
+  /// The world instance. Contains all the entities and their components.
   pub world: hecs::World,
+
+  /// Resources. Essential a map based on type, contains anything that is not
+  /// attached to an entity.
   pub resources: Resources,
 
   shutdown: Arc<AtomicBool>,
 }
 
 impl AirmashGame {
+  /// Run a single iteration of the main game loop with the provided current
+  /// time.
   pub fn run_once(&mut self, now: Instant) {
     use crate::resource::*;
 
@@ -32,6 +39,7 @@ impl AirmashGame {
     crate::system::update(self);
   }
 
+  /// Run the main game loop until the server is supposed to shut down.
   pub fn run_until_shutdown(&mut self) {
     self.dispatch(ServerStartup);
 
@@ -57,6 +65,13 @@ impl AirmashGame {
 }
 
 impl AirmashGame {
+  /// Create a new game with no default resources or event handlers.
+  ///
+  /// Usually you want [`with_network`] or [`with_test_defaults`] instead of
+  /// this method.
+  /// 
+  /// [`with_network`]: crate::AirmashGame::with_network
+  /// [`with_test_defaults`]: crate::AirmashGame::with_test_defaults
   pub fn uninit() -> Self {
     let mut game = AirmashGame {
       world: hecs::World::new(),
@@ -83,10 +98,15 @@ impl AirmashGame {
     me
   }
 
+  /// Indicate that the server should shut down after the current frame.
   pub fn shutdown(&self) {
     self.shutdown.store(true, Ordering::Relaxed);
   }
 
+  /// Register an event handler with the default priority.
+  ///
+  /// See the [`event`](crate::event) module docs for a description of how event
+  /// handling works.
   pub fn register<E, H>(&mut self, handler: H)
   where
     E: Event,
@@ -95,6 +115,10 @@ impl AirmashGame {
     self.register_with_priority(crate::priority::DEFAULT, handler);
   }
 
+  /// Register an event handler with a custom priority.
+  ///
+  /// See the [`event`](crate::event) module docs for a description of how event
+  /// handling works.
   pub fn register_with_priority<E, H>(&mut self, priority: i32, handler: H)
   where
     E: Event,
@@ -103,6 +127,15 @@ impl AirmashGame {
     self.dispatcher().register_with_priority(priority, handler);
   }
 
+  /// Dispatch an event and execute all the corresponding event handlers.
+  ///
+  /// If there is no event currently executing then the event will be dispatched
+  /// immediately. However, if this is called while an event is currently being
+  /// dispatched then the event will be queued up and dispatched once the
+  /// current event has completed.
+  ///
+  /// See the [`event`](crate::event) module docs for a description of how event
+  /// handling works.
   pub fn dispatch<E>(&mut self, event: E)
   where
     E: Event,
@@ -111,6 +144,10 @@ impl AirmashGame {
     dispatcher.dispatch(event, self)
   }
 
+  /// Dispatch many events. This is functionally equivalent to calling
+  /// [`dispatch`] in a loop and is provided for convenience.
+  /// 
+  /// [`dispatch`]: crate::AirmashGame::dispatch
   pub fn dispatch_many<I, E>(&mut self, events: I)
   where
     I: IntoIterator<Item = E>,
@@ -158,6 +195,10 @@ impl AirmashGame {
   }
 }
 
+/// Container for all resources used within the game.
+///
+/// Functionally, this is a map based on type. It also wraps all elements within
+/// [`RefCell`]s so that multiple resources can be accessed at the same time.
 pub struct Resources {
   map: AnyMap,
 }
@@ -167,6 +208,11 @@ impl Resources {
     Self { map: AnyMap::new() }
   }
 
+  /// Attempt to access a resource `T` immutably.
+  ///
+  /// # Panics
+  /// Panics if there is no resource with type `T` or if the resource is already
+  /// borrowed mutably.
   pub fn read<T: 'static>(&self) -> Ref<T> {
     match self.get::<T>() {
       Some(val) => val,
@@ -177,6 +223,11 @@ impl Resources {
     }
   }
 
+  /// Attempt to access a resource `T` mutably.
+  ///
+  /// # Panics
+  /// Panics if there is no resource with type `T` or if the resource is already
+  /// borrowed mutably.
   pub fn write<T: 'static>(&self) -> RefMut<T> {
     match self.get_mut::<T>() {
       Some(val) => val,
@@ -187,22 +238,67 @@ impl Resources {
     }
   }
 
+  /// Attempt to access a resource `T` immutably.
+  ///
+  /// # Panics
+  /// Panics if the resource is alread borrowed mutably.
   pub fn get<T: 'static>(&self) -> Option<Ref<T>> {
     self.map.get::<RefCell<T>>().map(|x| x.borrow())
   }
+
+  /// Attempt to access a resource `T` mutably.
+  ///
+  /// # Panics
+  /// Panics if the resource is alread borrowed mutably.
   pub fn get_mut<T: 'static>(&self) -> Option<RefMut<T>> {
     self.map.get::<RefCell<T>>().map(|x| x.borrow_mut())
   }
 
+  /// Insert a new resource. Returns the old resource if one was already
+  /// present.
   pub fn insert<T: 'static>(&mut self, value: T) -> Option<T> {
     self.map.insert(RefCell::new(value)).map(|x| x.into_inner())
   }
+
+  /// Remove a resource. Returns the removed resource if it was removed.
   pub fn remove<T: 'static>(&mut self) -> Option<T> {
     self.map.remove::<RefCell<T>>().map(|x| x.into_inner())
   }
 
-  pub fn entry<T: 'static>(&mut self) -> anymap::Entry<dyn anymap::any::Any, T> {
-    self.map.entry::<T>()
+  /// Returns true if theis container has a resource of type `T`.
+  pub fn contains<T: 'static>(&self) -> bool {
+    self.map.contains::<RefCell<T>>()
+  }
+
+  /// Gets the entry for the given resource in the collection for in-place
+  /// manipulation.
+  pub fn entry<'a, T: 'static>(&'a mut self) -> ResourceEntry<'a, T> {
+    ResourceEntry {
+      entry: self.map.entry::<RefCell<T>>(),
+    }
+  }
+}
+
+/// A view into a single location in the [`Resources`] map.
+pub struct ResourceEntry<'a, T> {
+  entry: anymap::Entry<'a, dyn anymap::any::Any, RefCell<T>>,
+}
+
+impl<'a, T: 'static> ResourceEntry<'a, T> {
+  /// Ensures that a value is in the entry by inserting the default if empty,
+  /// and returns a mutable reference to the value in the entry.
+  pub fn or_insert(self, default: T) -> &'a mut T {
+    self.entry.or_insert(RefCell::new(default)).get_mut()
+  }
+
+  /// Ensures that a value is in the entry by inserting the result of the
+  /// default function if empty, and returns a mutable reference to the value in
+  /// the entry.
+  pub fn or_insert_with<F: FnOnce() -> T>(self, default: F) -> &'a mut T {
+    self
+      .entry
+      .or_insert_with(move || RefCell::new(default()))
+      .get_mut()
   }
 }
 

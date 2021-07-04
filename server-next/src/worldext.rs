@@ -1,5 +1,5 @@
-use std::time::Duration;
 use std::time::Instant;
+use std::{collections::HashSet, time::Duration};
 
 use airmash_protocol::{MobType, Vector2};
 use hecs::{Entity, EntityBuilder, NoSuchEntity};
@@ -18,15 +18,16 @@ use crate::{
   AirmashGame,
 };
 
+/// Info required to spawn a new missile.
 #[derive(Clone, Copy, Debug)]
 pub struct FireMissileInfo {
   /// Starting offset of the missile, relative to the plane that is firing it.
   /// This will be rotated into the plane's frame of reference.
   pub pos_offset: Vector2<f32>,
   /// Direction that the missile will accelerate in, relative to the direction
-  /// the plane is facing when it fires
+  /// the plane is facing when it fires.
   pub rot_offset: f32,
-  /// Type of the missile
+  /// Type of the missile.
   pub ty: MobType,
 }
 
@@ -154,6 +155,12 @@ impl AirmashGame {
     Ok(entities)
   }
 
+  /// Despawn an entity. This function takes care of dispatching the required
+  /// events, deleting the entity, and creating a placeholder entity to prevent
+  /// the entity id from being reused right away.
+  ///
+  /// Note that the placeholder entity is required to work around bugs in the
+  /// airmash client.
   pub fn despawn(&mut self, entity: Entity) {
     use crate::event::EntityDespawn;
 
@@ -185,6 +192,10 @@ impl AirmashGame {
 }
 
 impl AirmashGame {
+  /// Send a packet directly to a connection.
+  ///
+  /// This method is rather low-level. Generally you should be using one of the
+  /// other methods for sending packets as they are more convenient.
   pub fn send_to_conn(&self, conn: ConnectionId, packet: impl Into<ServerPacket>) {
     let mut connmgr = self.resources.write::<ConnectionMgr>();
     let data = match v5::serialize(&packet.into()) {
@@ -195,6 +206,13 @@ impl AirmashGame {
     connmgr.send_to_conn(conn, data);
   }
 
+  /// Given an iterator of entities send the provided packet to all of them. If
+  /// there are duplicate entities within the iterator then the packet will be
+  /// sent multiple times to the corresponding connection.
+  ///
+  /// [`EntitySetBuilder`] is provided to help with building sets of entities.
+  /// Alternatively, you can use the other `send_to_*` methods on this struct
+  /// for common use-cases.
   pub fn send_to_entities<I>(&self, entities: I, packet: impl Into<ServerPacket>)
   where
     I: IntoIterator<Item = Entity>,
@@ -216,6 +234,7 @@ impl AirmashGame {
     }
   }
 
+  /// Send a packet to the connection corresponding to the player.
   pub fn send_to(&self, player: Entity, packet: impl Into<ServerPacket>) {
     self._send_to(player, &packet.into());
   }
@@ -229,14 +248,19 @@ impl AirmashGame {
     connmgr.send_to(player, data);
   }
 
+  /// Send a packet to all players that are within the visible range of the
+  /// provided position.
   pub fn send_to_visible(&self, pos: Vector2<f32>, packet: impl Into<ServerPacket>) {
     self.send_to_entities(EntitySetBuilder::visible(self, pos), packet);
   }
 
+  /// Send a packet to all players on the provided team.
   pub fn send_to_team(&self, team: u16, packet: impl Into<ServerPacket>) {
     self.send_to_entities(EntitySetBuilder::team(self, team), packet)
   }
 
+  /// Send a packet to all players on the provided team that are also within
+  /// visible range of the provided position.
   pub fn send_to_team_visible(
     &self,
     team: u16,
@@ -246,21 +270,33 @@ impl AirmashGame {
     self.send_to_entities(EntitySetBuilder::team_visible(self, team, pos), packet);
   }
 
+  /// Send a packet to all players.
   pub fn send_to_all(&self, packet: impl Into<ServerPacket>) {
     self.send_to_entities(EntitySetBuilder::all(self), packet)
   }
 
+  /// Send a packet to all players except the provided one.
   pub fn send_to_others(&self, player: Entity, packet: impl Into<ServerPacket>) {
     self.send_to_entities(EntitySetBuilder::all(self).except(player), packet)
   }
 }
 
+/// Utility for building a set of players.
+///
+/// This is mainly intended for use with [`AirmashGame::send_to_entities`].
 #[derive(Default)]
 pub struct EntitySetBuilder {
-  entries: SmallVec<[Entity; 64]>,
+  entries: HashSet<Entity>,
 }
 
 impl EntitySetBuilder {
+  /// Create an empty entity set.
+  pub fn empty() -> Self {
+    Self::default()
+  }
+
+  /// Create an entity set with all players on `team` within the view radius of
+  /// `pos`.
   pub fn team_visible(game: &AirmashGame, team: u16, pos: Vector2<f32>) -> Self {
     use crate::resource::collision::PlayerPosDb;
 
@@ -277,6 +313,7 @@ impl EntitySetBuilder {
     me
   }
 
+  /// Create an entity set with all players within the view radius of `pos`.
   pub fn visible(game: &AirmashGame, pos: Vector2<f32>) -> Self {
     use crate::resource::collision::PlayerPosDb;
 
@@ -288,6 +325,7 @@ impl EntitySetBuilder {
     me
   }
 
+  /// Create an entity set with all players on `req_team`.
   pub fn team(game: &AirmashGame, req_team: u16) -> Self {
     let mut query = game.world.query::<&Team>().with::<IsPlayer>();
 
@@ -300,6 +338,7 @@ impl EntitySetBuilder {
     }
   }
 
+  /// Create an entity set with all players in the game.
   pub fn all(game: &AirmashGame) -> Self {
     let mut query = game.world.query::<()>().with::<IsPlayer>();
 
@@ -308,30 +347,22 @@ impl EntitySetBuilder {
     }
   }
 
+  /// If `player` is contained within the entity set, then remove them.
   pub fn except(mut self, player: Entity) -> Self {
-    let index = self
-      .entries
-      .iter()
-      .enumerate()
-      .find(|(_, x)| **x == player)
-      .map(|(i, _)| i);
-    if let Some(index) = index {
-      self.entries.swap_remove(index);
-    }
-
+    self.entries.remove(&player);
     self
   }
 
+  /// If `player` is not contained within the entity set then add them.
   pub fn including(mut self, player: Entity) -> Self {
-    self = self.except(player);
-    self.entries.push(player);
+    self.entries.insert(player);
     self
   }
 }
 
 impl IntoIterator for EntitySetBuilder {
   type Item = Entity;
-  type IntoIter = <SmallVec<[Entity; 64]> as IntoIterator>::IntoIter;
+  type IntoIter = <HashSet<Entity> as IntoIterator>::IntoIter;
 
   fn into_iter(self) -> Self::IntoIter {
     self.entries.into_iter()
