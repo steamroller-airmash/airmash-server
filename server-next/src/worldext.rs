@@ -164,6 +164,15 @@ impl AirmashGame {
     self.dispatch(EntityDespawn { entity });
     let dispatch = self.dispatcher();
     dispatch.cleanup(self, move |game| {
+      // HACK: By default spawn_at will reuse the same generation counter. However, we
+      //       want to allocate a new entity that just has the same id. Hecs doesn't
+      //       provide a way to do this so we take advantage of some internal
+      //       implementation details in order to increment the generation ourselves.
+      //
+      //       There is a test at the end of this file that verifies that this works
+      //       as expected.
+      let entity = Entity::from_bits(entity.to_bits() + (1 << 32));
+
       // The airmash client doesn't like it if you reuse ids soon after they get
       // destroyed. By reserving them for a minute we should prevent having dead
       // missiles just lying around.
@@ -327,4 +336,12 @@ impl IntoIterator for EntitySetBuilder {
   fn into_iter(self) -> Self::IntoIter {
     self.entries.into_iter()
   }
+}
+
+#[test]
+fn hecs_entity_has_id_in_lower_32_bits() {
+  let ent1 = Entity::from_bits((77 << 32) + 22);
+  let ent2 = Entity::from_bits(ent1.to_bits() + (1 << 32));
+
+  assert_eq!(ent1.id(), ent2.id());
 }

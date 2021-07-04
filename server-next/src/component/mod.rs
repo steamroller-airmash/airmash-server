@@ -14,32 +14,84 @@ pub use self::keystate::KeyState;
 pub use crate::protocol::{FlagCode, MobType, PlaneType};
 
 def_wrappers! {
+  /// The position of an entity.
   pub type Position = crate::protocol::Position;
+
+  /// The velocity of an entity.
   pub type Velocity = crate::protocol::Velocity;
+
+  /// The acceleration of an entity.
   pub type Accel = crate::protocol::Accel;
+
+  /// The rotation of an entity.
   pub type Rotation = crate::protocol::Rotation;
+
+  /// The amount of energy that a player has.
+  ///
+  /// Ranges from 0 to 1.
   pub type Energy = crate::protocol::Energy;
+
+  /// The amount of health that a player has.
+  ///
+  /// Ranges from 0 to 1.
   pub type Health = crate::protocol::Health;
+
+  /// The rate at which a player's energy regenerates.
   pub type EnergyRegen = crate::protocol::EnergyRegen;
+
+  /// The rate at which a player's health regenerates.
   pub type HealthRegen = crate::protocol::HealthRegen;
+
+  /// The team that a player and/or missile belongs to.
   pub type Team = crate::protocol::Team;
+
+  /// The level of a player.
   pub type Level = crate::protocol::Level;
+
+  /// The name of a player.
   ##[nocopy]
   pub type Name = BString;
+
+  /// The current score of a player.
   pub type Score = u32;
+
+  /// The sum of all the score that the player has ever earned.
   pub type Earnings = u32;
+
+  /// The number of times a player has killed another player.
   pub type KillCount = u32;
+
+  /// The number of times that a player has been killed by another player.
   pub type DeathCount = u32;
+
+  /// The current ping of a player.
   pub type PlayerPing = u16;
 
   /// The player that another spectating player is watching.
   #[derive(Default)]
   pub type Spectating = Option<Entity>;
 
+  /// The time at which the last [`PlayerUpdate`] packet was sent.
+  ///
+  /// This can also be used to force a [`PlayerUpdate`] packet to be sent when
+  /// that is needed.
+  ///
+  /// [`PlayerUpdate`]: crate::protocol::server::PlayerUpdate
   pub type LastUpdateTime = Instant;
+
+  /// The time at which the player last used their special.
+  ///
+  /// Note that this only really applies for specials that have a time
+  /// restriction such as the goliath repel.
   pub type LastSpecialTime = Instant;
+
+  /// The time at which a player last fired.
   pub type LastFireTime = Instant;
+
+  /// The time at which a player last performed any action.
   pub type LastActionTime = Instant;
+
+  /// The time at which a zombie entity will be deleted.
   pub type Expiry = Instant;
 
   /// The time at which a missile spawned.
