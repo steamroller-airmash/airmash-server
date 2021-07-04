@@ -33,10 +33,13 @@ pub mod util;
 pub use crate::protocol::Vector2;
 pub use server_macros::handler;
 
-pub use self::dispatch::{Event, EventDispatcher, EventHandler, HANDLERS};
+pub use self::dispatch::{Event, EventDispatcher, EventHandler};
 pub use self::network::ConnectionMgr;
 pub use self::world::AirmashWorld;
 pub use self::worldext::{EntitySetBuilder, FireMissileInfo};
+
+#[doc(hidden)]
+pub use self::dispatch::HANDLERS;
 
 /// Notable priorities for event handlers.
 ///
@@ -50,8 +53,10 @@ pub use self::worldext::{EntitySetBuilder, FireMissileInfo};
 /// > executed in an unspecified order so if you need a handler to execute
 /// > before another then it must have a higher priority.
 pub mod priority {
-  pub const HIGH: isize = 500;
-  pub const MEDIUM: isize = 250;
+  pub const HIGH: i32 = 500;
+  pub const MEDIUM: i32 = 250;
+
+  pub const CLEANUP: i32 = -500;
 
   pub use crate::dispatch::DEFAULT_PRIORITY as DEFAULT;
 
@@ -61,7 +66,8 @@ pub mod priority {
   /// If you want to modify the state of the player before they get the login
   /// response then your event handler will need to have a greater priority than
   /// this.
-  pub const LOGIN: isize = 1000;
+  pub const LOGIN: i32 = 1000;
+  pub const PRE_LOGIN: i32 = 1500;
 }
 
 /// Utilities to help with writing tests for server functionality.

@@ -123,7 +123,7 @@ impl AirmashWorld {
     self.register_with_priority(crate::priority::DEFAULT, handler);
   }
 
-  pub fn register_with_priority<E, H>(&mut self, priority: isize, handler: H)
+  pub fn register_with_priority<E, H>(&mut self, priority: i32, handler: H)
   where
     E: Event,
     H: EventHandler<E>,

@@ -8,7 +8,7 @@ use std::rc::Rc;
 #[distributed_slice]
 pub static HANDLERS: [fn(&EventDispatcher)] = [..];
 
-pub const DEFAULT_PRIORITY: isize = 0;
+pub const DEFAULT_PRIORITY: i32 = 0;
 
 /// Marker trait for events.
 ///
@@ -32,7 +32,7 @@ where
   }
 }
 
-struct HandlerWithPriority<E>(isize, Box<dyn EventHandler<E>>);
+struct HandlerWithPriority<E>(i32, Box<dyn EventHandler<E>>);
 type HandlerList<E> = Vec<HandlerWithPriority<E>>;
 
 trait DelayedEvent {
@@ -70,7 +70,7 @@ impl BaseEventDispatcher {
     }
   }
 
-  fn register_with_priority<E, H>(&self, priority: isize, handler: H)
+  fn register_with_priority<E, H>(&self, priority: i32, handler: H)
   where
     H: EventHandler<E>,
     E: Event,
@@ -154,7 +154,7 @@ impl EventDispatcher {
     }
   }
 
-  pub fn register_with_priority<E, H>(&self, priority: isize, handler: H)
+  pub fn register_with_priority<E, H>(&self, priority: i32, handler: H)
   where
     H: EventHandler<E>,
     E: Event,
