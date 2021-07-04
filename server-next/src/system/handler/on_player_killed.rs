@@ -66,7 +66,7 @@ fn set_dead_flag(event: &PlayerKilled, game: &mut AirmashGame) {
 fn send_player_killed_packets(event: &PlayerKilled, game: &mut AirmashGame) {
   use crate::protocol::server::{PlayerKill, ScoreUpdate};
 
-  if event.player == event.killer {
+  if Some(event.player) == event.killer {
     warn!("Player {:?} killed themselves?", event.player);
   }
 
@@ -100,14 +100,18 @@ fn send_player_killed_packets(event: &PlayerKilled, game: &mut AirmashGame) {
 
     let kill = PlayerKill {
       id: event.player.id() as _,
-      killer: Some(event.killer.id() as _),
+      killer: event.killer.map(|x| x.id() as _),
       pos: pos.0,
     };
 
     (su, kill)
   };
 
-  let (killer_su, killer_pos) = {
+  game.send_to_visible(player_kill.pos, player_kill);
+  game.send_to(event.player, player_su);
+
+  // The killer may have left the game
+  if let Some(killer) = event.killer {
     let query = game.world.query_one_mut::<(
       &Position,
       &Score,
@@ -116,13 +120,14 @@ fn send_player_killed_packets(event: &PlayerKilled, game: &mut AirmashGame) {
       &Earnings,
       &Upgrades,
       &IsPlayer,
-    )>(event.killer);
+    )>(killer);
     let (&pos, &score, &kills, &deaths, &earnings, &upgrades, ..) = match query {
       Ok(query) => query,
       Err(_) => return,
     };
+
     let su = ScoreUpdate {
-      id: event.killer.id() as _,
+      id: killer.id() as _,
       score: score.0,
       earnings: earnings.0,
       upgrades: upgrades.unused,
@@ -130,22 +135,17 @@ fn send_player_killed_packets(event: &PlayerKilled, game: &mut AirmashGame) {
       total_kills: kills.0,
     };
 
-    (su, pos.0)
+    if (pos.0 - player_kill.pos).norm_squared() >= view_radius * view_radius {
+      game.send_to(killer, player_kill);
+    }
+
+    game.send_to(killer, su);
   };
-
-  game.send_to_visible(player_kill.pos, player_kill);
-
-  if (killer_pos - player_kill.pos).norm_squared() >= view_radius * view_radius {
-    game.send_to(event.killer, player_kill);
-  }
-
-  game.send_to(event.player, player_su);
-  game.send_to(event.killer, killer_su);
 }
 
 #[handler(priority = crate::priority::MEDIUM)]
 fn update_scores(event: &PlayerKilled, game: &mut AirmashGame) {
-  if event.player == event.killer {
+  if Some(event.player) == event.killer {
     return;
   }
 
@@ -170,9 +170,14 @@ fn update_scores(event: &PlayerKilled, game: &mut AirmashGame) {
   };
   drop(pquery);
 
+  let killer = match event.killer {
+    Some(killer) => killer,
+    None => return,
+  };
+
   let mut kquery = match game
     .world
-    .query_one::<(&mut KillCount, &mut Score, &mut Earnings)>(event.killer)
+    .query_one::<(&mut KillCount, &mut Score, &mut Earnings)>(killer)
   {
     Ok(query) => query.with::<IsPlayer>(),
     Err(_) => return,

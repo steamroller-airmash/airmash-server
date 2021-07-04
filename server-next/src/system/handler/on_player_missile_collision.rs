@@ -59,10 +59,12 @@ fn damage_player(event: &PlayerMissileCollision, game: &mut AirmashGame) {
           continue;
         }
 
+        let owner = game.world.get::<IsPlayer>(owner.0).ok().map(|_| owner.0);
+
         events.push(PlayerKilled {
           missile: event.missile,
           player,
-          killer: owner.0,
+          killer: owner,
         });
       }
     }
