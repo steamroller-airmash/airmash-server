@@ -21,7 +21,6 @@ mod consts;
 mod defaults;
 mod dispatch;
 mod mock;
-mod system;
 mod world;
 mod worldext;
 
@@ -30,6 +29,7 @@ pub mod event;
 pub mod network;
 pub mod resource;
 pub mod util;
+pub mod system;
 
 pub use crate::protocol::Vector2;
 pub use hecs::Entity;

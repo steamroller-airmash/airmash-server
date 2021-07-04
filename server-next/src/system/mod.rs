@@ -1,4 +1,8 @@
-//! All systems and event handlers
+//! All systems and event handlers.
+//!
+//! Most of this module is bundled up within the [`update`] function. However,
+//! it also exposes some optional systems that are not registered by default but
+//! may be useful for certain game modes.
 
 use crate::AirmashGame;
 
@@ -14,6 +18,15 @@ mod scoreboard;
 mod specials;
 mod visibility;
 
+/// Main airmash update loop.
+///
+/// This is the main method that contains all the work done within a single
+/// frame of the airmash engine. Generally it is not something you should have
+/// to call as it will be called as a part of [`AirmashGame::run_once`] or
+/// [`AirmashGame::run_until_shutdown`].
+///
+/// [`AirmashGame::run_once`]: crate::AirmashGame::run_once
+/// [`AirmashGame::run_until_shutdown`]: crate::AirmashGame::run_until_shutdown
 pub fn update(game: &mut AirmashGame) {
   use crate::event::{Frame, FrameEnd, FrameStart};
 
