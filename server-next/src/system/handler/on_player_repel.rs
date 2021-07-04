@@ -162,6 +162,7 @@ fn repel_missiles(event: &PlayerRepel, game: &mut AirmashGame) {
         &mut Accel,
         &mut Team,
         &mut Owner,
+        &mut MissileTrajectory,
         &MobType,
       )>(missile)
       .map(|q| q.with::<IsMissile>())
@@ -170,7 +171,7 @@ fn repel_missiles(event: &PlayerRepel, game: &mut AirmashGame) {
       Err(_) => continue,
     };
 
-    let (pos, vel, accel, team, owner, &mob, ..) = match query.get() {
+    let (pos, vel, accel, team, owner, traj, &mob, ..) = match query.get() {
       Some(value) => value,
       None => continue,
     };
@@ -179,6 +180,10 @@ fn repel_missiles(event: &PlayerRepel, game: &mut AirmashGame) {
       Some(info) => info,
       None => continue,
     };
+
+    let total_dist = (traj.start - pos.0).norm();
+    traj.start = pos.0;
+    traj.maxdist -= total_dist;
 
     let dir = (pos.0 - player_pos.0).normalize();
 
