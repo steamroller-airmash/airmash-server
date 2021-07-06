@@ -14,6 +14,7 @@ mod handler;
 mod keys;
 mod network;
 mod physics;
+mod ping;
 mod powerups;
 mod regen;
 mod scoreboard;
@@ -49,6 +50,7 @@ pub fn update(game: &mut AirmashGame) {
   self::despawn::update(game);
   self::powerups::update(game);
   self::scoreboard::update(game);
+  self::ping::update(game);
 
   game.dispatch(Frame);
 
