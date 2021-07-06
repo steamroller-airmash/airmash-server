@@ -136,10 +136,10 @@ impl<T: Node> KdTree<T> {
   }
 
   /// Efficiently find all overlapping circles between the two trees.
-  pub fn query_all<'a, 'b, U: Node>(
+  pub fn query_all<'c, 'a: 'c, 'b: 'c, U: Node>(
     &'a self,
     other: &'b KdTree<U>,
-  ) -> impl Iterator<Item = (&'a T, &'b U)> {
+  ) -> impl Iterator<Item = (&'a T, &'b U)> + 'c {
     self.entries.iter().flat_map(move |e| {
       other
         .within(e.value.position(), e.value.radius())
