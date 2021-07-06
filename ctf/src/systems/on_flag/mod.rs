@@ -18,22 +18,22 @@ pub use self::update_score::UpdateScore;
 
 #[allow(dead_code)]
 pub type AllFlagSystems = (
-	CheckWin,
-	PickupMessage,
-	SendFlagMessage,
-	UpdateCaptures,
-	UpdateLastDrop,
-	UpdateScore,
+  CheckWin,
+  PickupMessage,
+  SendFlagMessage,
+  UpdateCaptures,
+  UpdateLastDrop,
+  UpdateScore,
 );
 
 use crate::systems;
 
 pub type KnownEventSources = (
-	systems::flag_event::ReturnFlag,
-	systems::flag_event::CaptureFlag,
-	systems::PickupFlag,
-	systems::DropOnDespawn,
-	systems::DropOnStealth,
-	systems::DropSystem,
-	systems::on_respawn::DropFlag,
+  systems::flag_event::ReturnFlag,
+  systems::flag_event::CaptureFlag,
+  systems::PickupFlag,
+  systems::DropOnDespawn,
+  systems::DropOnStealth,
+  systems::DropSystem,
+  systems::on_respawn::DropFlag,
 );

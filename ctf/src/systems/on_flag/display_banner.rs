@@ -16,56 +16,56 @@ pub struct PickupMessageSystem;
 
 #[derive(SystemData)]
 pub struct PickupMessageSystemData<'a> {
-	conns: SendToAll<'a>,
+  conns: SendToAll<'a>,
 
-	names: ReadStorage<'a, Name>,
-	teams: ReadStorage<'a, Team>,
+  names: ReadStorage<'a, Name>,
+  teams: ReadStorage<'a, Team>,
 }
 
 impl EventHandlerTypeProvider for PickupMessageSystem {
-	type Event = FlagEvent;
+  type Event = FlagEvent;
 }
 
 impl<'a> EventHandler<'a> for PickupMessageSystem {
-	type SystemData = PickupMessageSystemData<'a>;
+  type SystemData = PickupMessageSystemData<'a>;
 
-	fn on_event(&mut self, evt: &FlagEvent, data: &mut Self::SystemData) {
-		let verb = match evt.ty {
-			FlagEventType::Return => "Returned",
-			FlagEventType::PickUp => "Taken",
-			FlagEventType::Capture => "Captured",
-			FlagEventType::Drop => return,
-		};
+  fn on_event(&mut self, evt: &FlagEvent, data: &mut Self::SystemData) {
+    let verb = match evt.ty {
+      FlagEventType::Return => "Returned",
+      FlagEventType::PickUp => "Taken",
+      FlagEventType::Capture => "Captured",
+      FlagEventType::Drop => return,
+    };
 
-		// If this event happens on it's own
-		// (end of game or system event) then
-		// don't display a message
-		if evt.player.is_none() {
-			return;
-		}
+    // If this event happens on it's own
+    // (end of game or system event) then
+    // don't display a message
+    if evt.player.is_none() {
+      return;
+    }
 
-		let flag_team = try_get!(evt.flag, data.teams);
-		let name = try_get!(evt.player.unwrap(), data.names);
+    let flag_team = try_get!(evt.flag, data.teams);
+    let name = try_get!(evt.player.unwrap(), data.names);
 
-		let msg = format!(
-			"<span class=\"info inline\"><span class=\"{}\"></span></span>{} by {}",
-			ctfconfig::FLAG_MESSAGE_TEAM[&flag_team],
-			verb,
-			htmlescape::encode_minimal(&name.0)
-		);
+    let msg = format!(
+      "<span class=\"info inline\"><span class=\"{}\"></span></span>{} by {}",
+      ctfconfig::FLAG_MESSAGE_TEAM[&flag_team],
+      verb,
+      htmlescape::encode_minimal(&name.0)
+    );
 
-		let packet = ServerMessage {
-			ty: ServerMessageType::Flag,
-			duration: 3000,
-			text: msg,
-		};
+    let packet = ServerMessage {
+      ty: ServerMessageType::Flag,
+      duration: 3000,
+      text: msg,
+    };
 
-		data.conns.send_to_all(packet);
-	}
+    data.conns.send_to_all(packet);
+  }
 }
 
 system_info! {
-	impl SystemInfo for PickupMessageSystem {
-		type Dependencies = crate::systems::PickupFlag;
-	}
+  impl SystemInfo for PickupMessageSystem {
+    type Dependencies = crate::systems::PickupFlag;
+  }
 }

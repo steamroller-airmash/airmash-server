@@ -4,7 +4,7 @@ use super::*;
 pub struct NoShuffle;
 
 impl ShuffleProvider for NoShuffle {
-	fn shuffle(&self, _: Vec<PlayerShuffleInfo>) -> Vec<TeamChangeEntry> {
-		vec![]
-	}
+  fn shuffle(&self, _: Vec<PlayerShuffleInfo>) -> Vec<TeamChangeEntry> {
+    vec![]
+  }
 }

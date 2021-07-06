@@ -11,36 +11,36 @@ pub struct InitCaptures;
 
 #[derive(SystemData)]
 pub struct InitCapturesData<'a> {
-	entities: Entities<'a>,
-	captures: WriteStorage<'a, Captures>,
+  entities: Entities<'a>,
+  captures: WriteStorage<'a, Captures>,
 }
 
 impl EventHandlerTypeProvider for InitCaptures {
-	type Event = PlayerJoin;
+  type Event = PlayerJoin;
 }
 
 impl<'a> EventHandler<'a> for InitCaptures {
-	type SystemData = InitCapturesData<'a>;
+  type SystemData = InitCapturesData<'a>;
 
-	fn on_event(&mut self, evt: &PlayerJoin, data: &mut Self::SystemData) {
-		if !data.entities.is_alive(evt.id) {
-			return;
-		}
+  fn on_event(&mut self, evt: &PlayerJoin, data: &mut Self::SystemData) {
+    if !data.entities.is_alive(evt.id) {
+      return;
+    }
 
-		data.captures.insert(evt.id, Captures(0)).unwrap();
-	}
+    data.captures.insert(evt.id, Captures(0)).unwrap();
+  }
 }
 
 impl SystemInfo for InitCaptures {
-	// It doesn't matter too much when we handle this
-	// it can happen the next frame
-	type Dependencies = ();
+  // It doesn't matter too much when we handle this
+  // it can happen the next frame
+  type Dependencies = ();
 
-	fn name() -> &'static str {
-		concat!(module_path!(), "::", line!())
-	}
+  fn name() -> &'static str {
+    concat!(module_path!(), "::", line!())
+  }
 
-	fn new() -> Self {
-		Self::default()
-	}
+  fn new() -> Self {
+    Self::default()
+  }
 }
