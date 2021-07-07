@@ -15,7 +15,7 @@ pub use self::terrain::TERRAIN;
 /// which it causes energy to decrease.
 pub const PREDATOR_SPECIAL_REGEN: EnergyRegen = -0.01;
 
-pub const GOLIATH_SPECIAL_ENERGY: Energy = 0.0;
+pub const GOLIATH_SPECIAL_ENERGY: Energy = 0.5;
 // TODO: Replace this with real value (see issue #2)
 /// The distance out to which a goliath repel has an effect
 pub const GOLIATH_SPECIAL_RADIUS_MISSILE: Distance = 225.0;

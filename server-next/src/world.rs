@@ -301,6 +301,12 @@ impl<'a, T: 'static> ResourceEntry<'a, T> {
   }
 }
 
+impl<'a, T: Default + 'static> ResourceEntry<'a, T> {
+  pub fn or_default(self) -> &'a mut T {
+    self.or_insert_with(Default::default)
+  }
+}
+
 impl Default for Resources {
   fn default() -> Self {
     Self::new()

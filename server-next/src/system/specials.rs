@@ -333,3 +333,26 @@ fn prowler_decloak_on_hit(event: &PlayerMissileCollision, game: &mut AirmashGame
     });
   }
 }
+
+#[handler]
+fn update_mohawk_on_strafe(event: &KeyEvent, game: &mut AirmashGame) {
+  if event.key != KeyCode::Special {
+    return;
+  }
+
+  let start_time = game.resources.read::<crate::resource::StartTime>().0;
+
+  let (&plane, last_update, _) = match game
+    .world
+    .query_one_mut::<(&PlaneType, &mut LastUpdateTime, &IsPlayer)>(event.player)
+  {
+    Ok(query) => query,
+    Err(_) => return,
+  };
+
+  if plane != PlaneType::Mohawk {
+    return;
+  }
+
+  last_update.0 = start_time;
+}
