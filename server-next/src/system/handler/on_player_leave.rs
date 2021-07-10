@@ -1,6 +1,6 @@
 use smallvec::SmallVec;
 
-use crate::component::*;
+use crate::{component::*, resource::ServerStats};
 use crate::event::PlayerLeave;
 use crate::event::PlayerSpectate;
 use crate::AirmashGame;
@@ -57,8 +57,11 @@ fn retarget_spectators(event: &PlayerLeave, game: &mut AirmashGame) {
 }
 
 #[handler]
-fn update_server_stats(_: &PlayerLeave, _: &mut AirmashGame) {
+fn update_server_stats(_: &PlayerLeave, game: &mut AirmashGame) {
   use crate::network::NUM_PLAYERS;
 
+  let mut stats = game.resources.write::<ServerStats>();
+
+  stats.num_players -= 1;
   NUM_PLAYERS.fetch_sub(1, std::sync::atomic::Ordering::Relaxed);
 }

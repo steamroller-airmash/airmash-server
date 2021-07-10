@@ -9,10 +9,12 @@ pub mod collision;
 pub mod config;
 
 mod game_config;
+mod stats;
 mod tasks;
 
 pub use self::config::Config;
 pub use self::game_config::GameConfig;
+pub use self::stats::ServerStats;
 pub use self::tasks::{Task, TaskScheduler};
 pub use crate::protocol::GameType;
 

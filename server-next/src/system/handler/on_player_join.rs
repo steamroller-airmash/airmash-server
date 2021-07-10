@@ -4,7 +4,7 @@ use bstr::BString;
 
 use crate::component::*;
 use crate::event::PlayerJoin;
-use crate::resource::RegionName;
+use crate::resource::{RegionName, ServerStats};
 use crate::world::AirmashGame;
 
 #[handler(priority = crate::priority::LOGIN)]
@@ -132,8 +132,11 @@ fn send_player_new(event: &PlayerJoin, game: &mut AirmashGame) {
 }
 
 #[handler]
-fn update_server_stats(_: &PlayerJoin, _: &mut AirmashGame) {
+fn update_server_stats(_: &PlayerJoin, game: &mut AirmashGame) {
   use crate::network::NUM_PLAYERS;
 
+  let mut stats = game.resources.write::<ServerStats>();
+
+  stats.num_players += 1;
   NUM_PLAYERS.fetch_add(1, std::sync::atomic::Ordering::Relaxed);
 }
