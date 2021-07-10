@@ -81,3 +81,10 @@ pub struct PlayerHit {
   pub damage: f32,
   pub attacker: Option<Entity>,
 }
+
+/// A player's score has been updated
+#[derive(Copy, Clone, Debug)]
+pub struct PlayerScoreUpdate {
+  pub player: Entity,
+  pub old_score: u32,
+}

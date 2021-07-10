@@ -22,3 +22,4 @@ mod on_player_powerup;
 mod on_player_repel;
 mod on_player_respawn;
 mod on_player_spectate;
+mod on_player_score_update;

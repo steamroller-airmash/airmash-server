@@ -155,6 +155,35 @@ impl AirmashGame {
     Ok(entities)
   }
 
+  /// Update the score of `player` by `delta`. This method takes care of
+  /// updating all the dependent data and emitting the required event.
+  ///
+  /// # Errors
+  /// Returns an error if the entity pointed to by `player` is not a player
+  /// or if it doesn't have the right set of components.
+  pub fn update_score(&mut self, player: Entity, delta: i32) -> Result<(), hecs::NoSuchEntity> {
+    use crate::event::PlayerScoreUpdate;
+
+    let (score, earnings, _) = self
+      .world
+      .query_one_mut::<(&mut Score, &mut Earnings, &IsPlayer)>(player)
+      .map_err(|_| hecs::NoSuchEntity)?;
+
+    if delta == 0 {
+      return Ok(());
+    }
+
+    let new_score = score.wrapping_add(delta as u32);
+    let old_score = std::mem::replace(&mut score.0, new_score);
+    if delta >= 0 {
+      earnings.0 += delta as u32;
+    }
+
+    self.dispatch(PlayerScoreUpdate { player, old_score });
+
+    Ok(())
+  }
+
   /// Despawn an entity. This function takes care of dispatching the required
   /// events, deleting the entity, and creating a placeholder entity to prevent
   /// the entity id from being reused right away.
