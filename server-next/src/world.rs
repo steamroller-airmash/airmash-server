@@ -180,6 +180,7 @@ impl AirmashGame {
     self.resources.insert(MissileCollideDb(SpatialTree::new()));
     self.resources.insert(TaskScheduler::new());
     self.resources.insert(GameConfig::default());
+    self.resources.insert(ServerStats::default());
 
     self.resources.insert(RegionName("default".to_owned()));
     self.resources.insert(GameType::FFA);

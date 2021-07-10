@@ -89,10 +89,8 @@ fn cull_zombies(game: &mut AirmashGame) {
 /// This system is responsible for running delayed tasks that have been
 /// scheduled by other code.
 fn update_tasks(game: &mut AirmashGame) {
-  use crate::resource::{TaskScheduler, ThisFrame};
+  use crate::resource::TaskScheduler;
 
   let task_sched = game.resources.read::<TaskScheduler>().clone();
-  let this_frame = game.resources.read::<ThisFrame>().0;
-
-  task_sched.update(this_frame, game);
+  task_sched.update(game);
 }
