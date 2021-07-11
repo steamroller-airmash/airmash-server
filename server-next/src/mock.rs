@@ -199,6 +199,10 @@ pub struct TestGame {
 }
 
 impl TestGame {
+  fn frame_time() -> Duration {
+    Duration::from_secs_f64(1.0 / 60.0)
+  }
+
   /// Create a new server instance and corresponding connection endpoint.
   pub fn new() -> (Self, MockConnectionEndpoint) {
     use crate::event::ServerStartup;
@@ -222,7 +226,7 @@ impl TestGame {
   /// Run the game for one main loop iteration.
   pub fn run_once(&mut self) {
     self.game.run_once(self.now);
-    self.now += Duration::from_secs_f64(1.0 / 60.0);
+    self.now += Self::frame_time();
   }
 
   /// Run `count` iterations of the main loop.
@@ -241,6 +245,15 @@ impl TestGame {
 
     while self.now < target {
       self.run_once();
+    }
+  }
+
+  /// Skip some amount of time without running any time steps.
+  pub fn skip(&mut self, duration: Duration) {
+    let target = self.now + duration;
+
+    while self.now < target {
+      self.now += Self::frame_time();
     }
   }
 }
