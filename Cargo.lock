@@ -82,6 +82,7 @@ name = "airmash-server-ctf"
 version = "0.0.1"
 dependencies = [
  "airmash-server",
+ "bstr",
  "clap",
  "env_logger",
  "htmlescape",
