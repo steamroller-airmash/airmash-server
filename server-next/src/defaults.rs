@@ -55,7 +55,9 @@ pub(crate) fn build_default_player(
     .add(Powerup::default())
     .add(JoinTime(this_frame))
     .add(Spectating::default())
-    .add(PlayerPing(0));
+    .add(PlayerPing(0))
+    .add(TotalDamage(0.0))
+    .add(Captures(0));
 
   builder
 }

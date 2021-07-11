@@ -1,23 +1,22 @@
-//! Event handlers for the FFA scoreboard.
-
 use std::convert::TryInto;
 
 use crate::component::*;
-use crate::protocol::client::ScoreDetailed;
-use crate::{event::PacketEvent, AirmashGame};
+use crate::AirmashGame;
+use crate::{event::PacketEvent, protocol::client::ScoreDetailed};
 
 pub fn register_all(game: &mut AirmashGame) {
   game.register(respond_to_packet);
 }
 
 fn respond_to_packet(event: &PacketEvent<ScoreDetailed>, game: &mut AirmashGame) {
-  use crate::protocol::server::{ScoreDetailedFFA, ScoreDetailedFFAEntry};
+  use crate::protocol::server::{ScoreDetailedCTF, ScoreDetailedCTFEntry};
 
   let mut scores = Vec::new();
   let query = game
     .world
     .query_mut::<(
       &Level,
+      &Captures,
       &Score,
       &KillCount,
       &DeathCount,
@@ -25,10 +24,11 @@ fn respond_to_packet(event: &PacketEvent<ScoreDetailed>, game: &mut AirmashGame)
       &PlayerPing,
     )>()
     .with::<IsPlayer>();
-  for (ent, (level, score, kills, deaths, damage, ping)) in query {
-    scores.push(ScoreDetailedFFAEntry {
-      id: ent.id() as _,
+  for (player, (level, captures, score, kills, deaths, damage, ping)) in query {
+    scores.push(ScoreDetailedCTFEntry {
+      id: player.id() as _,
       level: level.0,
+      captures: captures.0.try_into().unwrap_or(u16::MAX),
       score: score.0,
       kills: kills.0.try_into().unwrap_or(u16::MAX),
       deaths: deaths.0.try_into().unwrap_or(u16::MAX),
@@ -37,5 +37,6 @@ fn respond_to_packet(event: &PacketEvent<ScoreDetailed>, game: &mut AirmashGame)
     });
   }
 
-  game.send_to(event.entity, ScoreDetailedFFA { scores });
+  let packet = ScoreDetailedCTF { scores };
+  game.send_to(event.entity, packet);
 }

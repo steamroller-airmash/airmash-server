@@ -58,11 +58,19 @@ def_wrappers! {
   /// The sum of all the score that the player has ever earned.
   pub type Earnings = u32;
 
+  /// The total number of times that a player has captured a flag.
+  /// 
+  /// Mainly for use within CTF.
+  pub type Captures = u32;
+
   /// The number of times a player has killed another player.
   pub type KillCount = u32;
 
   /// The number of times that a player has been killed by another player.
   pub type DeathCount = u32;
+
+  /// The total amount of damage that a player has dealt.
+  pub type TotalDamage = f32;
 
   /// The current ping of a player.
   pub type PlayerPing = u16;
