@@ -186,7 +186,12 @@ fn server_thread(
 ) {
   use tokio::runtime::Builder;
 
-  let rt = Builder::new_current_thread()
+  #[cfg(feature = "mt-network")]
+  let mut builder = Builder::new_multi_thread();
+  #[cfg(not(feature = "mt-network"))]
+  let mut builder = Builder::new_current_thread();
+
+  let rt = builder
     .enable_all()
     .build()
     .expect("Failed to initialize tokio runtime");

@@ -3,6 +3,9 @@ name = "airmash-server"
 version = "0.1.0"
 edition = "2018"
 
+[features]
+mt-network = []
+
 [dependencies]
 hecs = "0.5"
 nalgebra = "0.27.1"
