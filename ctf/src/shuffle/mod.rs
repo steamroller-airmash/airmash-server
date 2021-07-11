@@ -2,11 +2,14 @@ use crate::config::{BLUE_TEAM, RED_TEAM};
 use airmash::{component::*, AirmashGame, Entity};
 use rand::prelude::SliceRandom;
 
+#[derive(Copy, Clone, Debug, PartialEq, Eq)]
 pub struct TeamChangeEntry {
   pub player: Entity,
   pub team: u16,
 }
 
+#[derive(Copy, Clone, Debug, PartialEq, Eq, PartialOrd, Hash)]
+#[allow(dead_code)]
 pub enum ShuffleType {
   AlternatingScore,
   AlternatingEarnings,
@@ -77,6 +80,7 @@ pub fn alternating_earnings_shuffle(game: &mut AirmashGame) -> Vec<TeamChangeEnt
     .collect()
 }
 
+/// A random shuffle where each team ends up with the same number of players
 pub fn even_random_shuffle(game: &mut AirmashGame) -> Vec<TeamChangeEntry> {
   let mut players = game
     .world
