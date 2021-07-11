@@ -23,9 +23,9 @@ pub struct GameConfig {
   pub allow_respawn: bool,
 
   /// Whether or not players can damage each other.
-  /// 
+  ///
   /// This is set to true by default.
-  pub allow_damage: bool
+  pub allow_damage: bool,
 }
 
 impl Default for GameConfig {
@@ -33,7 +33,7 @@ impl Default for GameConfig {
     Self {
       default_respawn: true,
       allow_respawn: true,
-      allow_damage: true
+      allow_damage: true,
     }
   }
 }

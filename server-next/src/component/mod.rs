@@ -59,7 +59,7 @@ def_wrappers! {
   pub type Earnings = u32;
 
   /// The total number of times that a player has captured a flag.
-  /// 
+  ///
   /// Mainly for use within CTF.
   pub type Captures = u32;
 

@@ -26,8 +26,8 @@ fn teleport(event: &PacketEvent<Command>, game: &mut AirmashGame) {
       // The exact origin of how this name was
       // determined is shrouded in mystery.
       b"mt-detect" => (3550.0, -850.0),
-      b"red-spawn" => (8600.0, -960.0),
-      b"blue-spawn" => (-9670.0, -1470.0),
+      b"red-spawn" => (7818.0, -2930.0),
+      b"blue-spawn" => (-8878.0, -2971.0),
       _ => return None,
     };
 

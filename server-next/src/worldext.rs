@@ -193,7 +193,7 @@ impl AirmashGame {
 
   /// Force an update packet for the player to be sent out within the next
   /// frame.
-  /// 
+  ///
   /// Does nothing if the player doesn't exist.
   pub fn force_update(&self, player: Entity) {
     if let Ok(mut last_update) = self.world.get_mut::<LastUpdateTime>(player) {

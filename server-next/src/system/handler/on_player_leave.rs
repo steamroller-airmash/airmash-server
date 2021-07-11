@@ -1,9 +1,9 @@
 use smallvec::SmallVec;
 
-use crate::{component::*, resource::ServerStats};
 use crate::event::PlayerLeave;
 use crate::event::PlayerSpectate;
 use crate::AirmashGame;
+use crate::{component::*, resource::ServerStats};
 
 #[handler]
 fn send_packet(event: &PlayerLeave, game: &mut AirmashGame) {

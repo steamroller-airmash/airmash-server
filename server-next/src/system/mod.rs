@@ -6,8 +6,8 @@
 
 use crate::AirmashGame;
 
-pub mod ffa;
 pub mod ctf;
+pub mod ffa;
 
 mod admin;
 mod collision;

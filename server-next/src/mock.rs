@@ -96,7 +96,7 @@ impl MockConnection {
       name: name.into(),
       horizon_x: 4000,
       horizon_y: 4000,
-      flag: "UN".into()
+      flag: "UN".into(),
     });
   }
 
