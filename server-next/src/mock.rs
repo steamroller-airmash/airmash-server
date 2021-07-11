@@ -87,6 +87,19 @@ impl MockConnection {
 }
 
 impl MockConnection {
+  /// Send a default login packet. This should be good enough for most test use
+  /// cases.
+  pub fn send_login(&mut self, name: &str) {
+    self.send(c::Login {
+      protocol: 5,
+      session: Default::default(),
+      name: name.into(),
+      horizon_x: 4000,
+      horizon_y: 4000,
+      flag: "UN".into()
+    });
+  }
+
   pub fn send_key(&mut self, key: KeyCode, state: bool) {
     self.send(c::Key {
       key,
