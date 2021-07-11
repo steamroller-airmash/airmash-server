@@ -48,6 +48,13 @@ impl AirmashGame {
     crate::util::convert_time(self.this_frame() - self.last_frame())
   }
 
+  /// Get the time at which the server started.
+  pub fn start_time(&self) -> Instant {
+    use crate::resource::StartTime;
+
+    self.resources.read::<StartTime>().0
+  }
+
   /// Get the entity corresponding to the provided id.
   ///
   /// TODO: Currently this performs a linear scan on all entities. It should be
@@ -182,6 +189,16 @@ impl AirmashGame {
     self.dispatch(PlayerScoreUpdate { player, old_score });
 
     Ok(())
+  }
+
+  /// Force an update packet for the player to be sent out within the next
+  /// frame.
+  /// 
+  /// Does nothing if the player doesn't exist.
+  pub fn force_update(&self, player: Entity) {
+    if let Ok(mut last_update) = self.world.get_mut::<LastUpdateTime>(player) {
+      last_update.0 = self.start_time();
+    }
   }
 
   /// Despawn an entity. This function takes care of dispatching the required

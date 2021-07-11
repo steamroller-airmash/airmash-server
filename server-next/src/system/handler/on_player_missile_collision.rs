@@ -4,10 +4,10 @@ use airmash_protocol::MobType;
 use airmash_protocol::PlaneType;
 use smallvec::SmallVec;
 
-use crate::component::*;
 use crate::event::{PlayerHit, PlayerKilled, PlayerMissileCollision};
 use crate::resource::Config;
 use crate::AirmashGame;
+use crate::{component::*, resource::GameConfig};
 
 #[handler(priority = crate::priority::MEDIUM)]
 fn damage_player(event: &PlayerMissileCollision, game: &mut AirmashGame) {
@@ -19,6 +19,7 @@ fn damage_player(event: &PlayerMissileCollision, game: &mut AirmashGame) {
     Err(_) => return,
   };
 
+  let game_config = game.resources.read::<GameConfig>();
   let config = game.resources.read::<Config>();
   let minfo = match &config.mobs[mob].missile {
     Some(info) => info,
@@ -58,8 +59,13 @@ fn damage_player(event: &PlayerMissileCollision, game: &mut AirmashGame) {
         continue;
       }
 
-      let damage = minfo.damage * pinfo.damage_factor
-        / config.upgrades.defense.factor[upgrades.defense as usize];
+      let damage = match game_config.allow_damage {
+        true => {
+          minfo.damage * pinfo.damage_factor
+            / config.upgrades.defense.factor[upgrades.defense as usize]
+        }
+        false => 0.0,
+      };
       health.0 -= damage;
 
       hits.push(PlayerHit {
@@ -87,6 +93,7 @@ fn damage_player(event: &PlayerMissileCollision, game: &mut AirmashGame) {
   }
 
   drop(config);
+  drop(game_config);
 
   game.dispatch_many(hits);
   game.dispatch_many(events);

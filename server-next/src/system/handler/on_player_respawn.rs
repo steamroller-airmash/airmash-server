@@ -41,6 +41,7 @@ fn reset_player(event: &PlayerRespawn, game: &mut AirmashGame) {
 
   let mut query = match game.world.query_one::<(
     &mut Position,
+    &mut Velocity,
     &mut Rotation,
     &mut Health,
     &mut Energy,
@@ -60,6 +61,7 @@ fn reset_player(event: &PlayerRespawn, game: &mut AirmashGame) {
 
   let (
     pos,
+    vel,
     rot,
     health,
     energy,
@@ -79,6 +81,7 @@ fn reset_player(event: &PlayerRespawn, game: &mut AirmashGame) {
   let info = &config.planes[plane];
 
   pos.0 = Vector2::zeros();
+  vel.0 = Vector2::zeros();
   rot.0 = 0.0;
   health.0 = 1.0;
   energy.0 = 1.0;
