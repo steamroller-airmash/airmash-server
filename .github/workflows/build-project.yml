@@ -36,5 +36,5 @@ jobs:
           components: rustfmt
       - uses: actions-rs/cargo@v1
         with:
-            command: build
+            command: fmt
             args: --all -- --check
