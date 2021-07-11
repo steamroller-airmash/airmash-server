@@ -16,8 +16,8 @@ fn prowler_decloak_on_hit() {
   let id1 = crate::utils::get_login_id(&mut client1);
   let id2 = crate::utils::get_login_id(&mut client2);
 
-  let ent1 = game.get_entity_by_id(id1).unwrap();
-  let ent2 = game.get_entity_by_id(id2).unwrap();
+  let ent1 = game.find_entity_by_id(id1).unwrap();
+  let ent2 = game.find_entity_by_id(id2).unwrap();
 
   game
     .world

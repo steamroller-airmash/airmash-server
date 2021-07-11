@@ -39,7 +39,7 @@ fn on_whisper(event: &PacketEvent<Whisper>, game: &mut AirmashGame) {
     return;
   }
 
-  let target = match game.get_entity_by_id(event.packet.id) {
+  let target = match game.find_entity_by_id(event.packet.id) {
     Some(entity) => entity,
     None => return,
   };

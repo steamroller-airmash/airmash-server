@@ -27,7 +27,7 @@ fn out_of_visibility_missiles_properly_deleted() {
   let id1 = crate::utils::get_login_id(&mut client1);
   let id2 = crate::utils::get_login_id(&mut client2);
 
-  let ent2 = game.get_entity_by_id(id2).unwrap();
+  let ent2 = game.find_entity_by_id(id2).unwrap();
 
   let view_radius = {
     let config = game.resources.read::<Config>();
@@ -89,8 +89,8 @@ fn out_of_visibility_collision() {
   let id1 = crate::utils::get_login_id(&mut client1);
   let id2 = crate::utils::get_login_id(&mut client2);
 
-  let ent1 = game.get_entity_by_id(id1).unwrap();
-  let ent2 = game.get_entity_by_id(id2).unwrap();
+  let ent1 = game.find_entity_by_id(id1).unwrap();
+  let ent2 = game.find_entity_by_id(id2).unwrap();
 
   // There is a mountain at (x: -252, y: -1504) with r = 60
   let object = vector![-252.0, -1504.0];

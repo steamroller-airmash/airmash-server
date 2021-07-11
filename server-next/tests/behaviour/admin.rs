@@ -11,7 +11,7 @@ fn admin_teleport() {
   game.run_once();
 
   let id = crate::utils::get_login_id(&mut client);
-  let ent = game.get_entity_by_id(id).unwrap();
+  let ent = game.find_entity_by_id(id).unwrap();
 
   game.resources.write::<Config>().admin_enabled = true;
 

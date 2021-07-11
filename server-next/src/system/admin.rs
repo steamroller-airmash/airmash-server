@@ -101,7 +101,7 @@ fn teleport(event: &PacketEvent<Command>, game: &mut AirmashGame) {
   };
 
   let target = match command.id {
-    Some(id) => match game.get_entity_by_id(id) {
+    Some(id) => match game.find_entity_by_id(id) {
       Some(ent) => ent,
       None => {
         game.send_to(

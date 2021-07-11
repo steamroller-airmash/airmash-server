@@ -47,7 +47,7 @@ pub fn spectate_target(
         SpectateTarget::Force => min,
         SpectateTarget::Next => min,
         SpectateTarget::Prev => max,
-        SpectateTarget::Target(id) => match game.get_entity_by_id(id) {
+        SpectateTarget::Target(id) => match game.find_entity_by_id(id) {
           Some(entity) => match game.world.query_one::<&IsAlive>(entity) {
             Ok(query) => match query.with::<IsPlayer>().get() {
               Some(alive) if alive.0 => entity,

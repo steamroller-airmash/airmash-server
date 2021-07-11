@@ -59,7 +59,7 @@ impl AirmashGame {
   ///
   /// TODO: Currently this performs a linear scan on all entities. It should be
   /// accelerated with a hashmap.
-  pub fn get_entity_by_id(&self, id: u16) -> Option<Entity> {
+  pub fn find_entity_by_id(&self, id: u16) -> Option<Entity> {
     let mut query = self
       .world
       .query::<(Option<&IsPlayer>, Option<&IsMissile>, Option<&IsMob>)>();

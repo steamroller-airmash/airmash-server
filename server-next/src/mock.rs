@@ -3,6 +3,7 @@ use crate::{network::*, AirmashGame};
 
 use airmash_protocol::KeyCode;
 use crossbeam_channel::Sender;
+use hecs::Entity;
 use std::{
   net::{IpAddr, SocketAddr},
   time::{Duration, Instant},
@@ -68,6 +69,10 @@ impl MockConnection {
     Some(packet)
   }
 
+  pub fn packets<'a>(&'a mut self) -> impl Iterator<Item = ServerPacket> + 'a {
+    std::iter::from_fn(move || self.next_packet())
+  }
+
   pub fn send_raw(&mut self, data: Vec<u8>) {
     assert!(!self.closed, "Tried to send to a closed client");
 
@@ -90,6 +95,12 @@ impl MockConnection {
 }
 
 impl MockConnection {
+  pub fn login(&mut self, name: &str, game: &mut TestGame) -> Entity {
+    self.send_login(name);
+    game.run_once();
+    self.wait_for_login(game)
+  }
+
   /// Send a default login packet. This should be good enough for most test use
   /// cases.
   pub fn send_login(&mut self, name: &str) {
@@ -111,6 +122,27 @@ impl MockConnection {
     });
 
     self.seq += 1;
+  }
+
+  pub fn send_command(&mut self, command: &str, data: &str) {
+    self.send(c::Command {
+      com: command.into(),
+      data: data.into(),
+    });
+  }
+
+  /// Wait for the login packet and return the associated entity.
+  pub fn wait_for_login(&mut self, game: &mut TestGame) -> Entity {
+    let packet = self.next_packet().expect("No packets available.");
+
+    let id = match packet {
+      ServerPacket::Login(login) => login.id,
+      _ => panic!("Expected Login packet, got: {:#?}", packet),
+    };
+
+    game
+      .find_entity_by_id(id)
+      .unwrap_or_else(|| panic!("Found no entity with id {}", id))
   }
 }
 
@@ -175,13 +207,14 @@ impl TestGame {
     let (connmgr, mock) = ConnectionMgr::disconnected();
     game.resources.insert(connmgr);
 
+    let start = game.start_time();
+
     let mut tg = TestGame {
       game,
-      now: Instant::now(),
+      now: start + Duration::from_secs(60),
     };
 
     tg.dispatch(ServerStartup);
-    tg.run_once();
 
     (tg, mock)
   }
