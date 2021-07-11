@@ -9,7 +9,7 @@ jobs:
     continue-on-error: ${{ matrix.experimental }}
     strategy:
       matrix:
-        toolchain: [stable, beta]
+        toolchain: [stable]
         experimental: [false]
     steps:
       - uses: actions/checkout@v2
