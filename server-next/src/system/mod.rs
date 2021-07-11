@@ -8,6 +8,7 @@ use crate::AirmashGame;
 
 pub mod ffa;
 
+mod admin;
 mod collision;
 mod despawn;
 mod handler;
