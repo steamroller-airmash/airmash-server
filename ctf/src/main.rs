@@ -1,27 +1,3 @@
-//! Airmash CTF server.
-
-#[macro_use]
-extern crate log;
-#[macro_use]
-extern crate airmash;
-
-// mod component;
-// mod config;
-// mod consts;
-// mod gamemode;
-// mod shuffle;
-// mod systems;
-// mod tasks;
-
-mod component;
-mod config;
-mod event;
-mod resource;
-mod shuffle;
-mod systems;
-
-use std::time::Instant;
-
 use airmash::AirmashGame;
 use serde_deserialize_over::DeserializeOver;
 
@@ -33,42 +9,8 @@ fn set_default_var(name: &str, value: &str) {
   }
 }
 
-fn setup_flag_entities(game: &mut AirmashGame) {
-  use crate::component::*;
-  use crate::config::{BLUE_TEAM, RED_TEAM};
-
-  use airmash::component::*;
-
-  game.world.spawn((
-    Position(config::flag_home_pos(RED_TEAM)),
-    Team(RED_TEAM),
-    FlagCarrier(None),
-    LastDrop {
-      player: None,
-      time: Instant::now(),
-    },
-    LastReturnTime(Instant::now()),
-    IsFlag,
-  ));
-
-  game.world.spawn((
-    Position(config::flag_home_pos(BLUE_TEAM)),
-    Team(BLUE_TEAM),
-    FlagCarrier(None),
-    LastDrop {
-      player: None,
-      time: Instant::now(),
-    },
-    LastReturnTime(Instant::now()),
-    IsFlag,
-  ));
-
-  info!(" red flag: {:?}", config::flag_home_pos(RED_TEAM));
-  info!("blue flag: {:?}", config::flag_home_pos(BLUE_TEAM));
-}
-
 fn main() {
-  use airmash::resource::{Config, GameType, RegionName};
+  use airmash::resource::{Config, RegionName};
   use std::env;
   use std::fs::File;
 
@@ -95,7 +37,6 @@ fn main() {
   game.resources.insert(RegionName(
     matches.value_of("region").unwrap_or("default").to_string(),
   ));
-  game.resources.insert(GameType::CTF);
 
   if let Some(path) = matches.value_of("config") {
     let file = match File::open(path) {
@@ -117,9 +58,7 @@ fn main() {
     game.resources.insert(config);
   }
 
-  setup_flag_entities(&mut game);
-  resource::register_all(&mut game);
-  crate::airmash::system::ctf::register_all(&mut game);
+  airmash_server_ctf::setup_ctf_server(&mut game);
 
   game.run_until_shutdown();
 }

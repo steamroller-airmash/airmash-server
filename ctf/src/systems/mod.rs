@@ -2,6 +2,7 @@ use airmash::event::{EventStealth, PacketEvent, PlayerKilled, PlayerLeave, Playe
 use airmash::protocol::client::Command;
 use airmash::{AirmashGame, Entity};
 
+mod command;
 mod on_flag_event;
 mod on_frame;
 mod on_game_end;

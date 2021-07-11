@@ -75,11 +75,12 @@ fn display_banner(event: &FlagEvent, game: &mut AirmashGame) {
 #[handler]
 fn update_flag(event: &FlagEvent, game: &mut AirmashGame) {
   let this_frame = game.this_frame();
-  let (pos, team, carrier, last_drop, _) = match game.world.query_one_mut::<(
+  let (pos, team, carrier, last_drop, last_return, _) = match game.world.query_one_mut::<(
     &mut Position,
     &Team,
     &mut FlagCarrier,
     &mut LastDrop,
+    &mut LastReturnTime,
     &IsFlag,
   )>(event.flag)
   {
@@ -91,6 +92,7 @@ fn update_flag(event: &FlagEvent, game: &mut AirmashGame) {
     FlagEventType::Capture | FlagEventType::Return => {
       pos.0 = config::flag_home_pos(team.0);
       carrier.0 = None;
+      last_return.0 = this_frame;
     }
     FlagEventType::Drop => {
       carrier.0 = None;
@@ -153,7 +155,8 @@ fn update_game_scores(event: &FlagEvent, game: &mut AirmashGame) {
     Err(_) => return,
   };
 
-  if team.0 == config::BLUE_TEAM {
+  // Increment score for the opposite team
+  if team.0 == config::RED_TEAM {
     scores.blueteam += 1;
   } else {
     scores.redteam += 1;

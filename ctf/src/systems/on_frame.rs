@@ -33,13 +33,14 @@ fn update_flag_positions(game: &mut AirmashGame) {
 
 fn capture_flags(game: &mut AirmashGame) {
   let scores = game.resources.read::<GameScores>();
+  let this_frame = game.this_frame();
   let mut query = game
     .world
-    .query::<(&Position, &Team, &mut FlagCarrier)>()
+    .query::<(&Position, &Team, &mut FlagCarrier, &mut LastReturnTime)>()
     .with::<IsFlag>();
 
   let mut events = SmallVec::<[_; 1]>::new();
-  for (flag, (pos, team, carrier)) in query.iter() {
+  for (flag, (pos, team, carrier, last_return)) in query.iter() {
     if carrier.0.is_none() {
       continue;
     }
@@ -48,6 +49,8 @@ fn capture_flags(game: &mut AirmashGame) {
     if (return_pos - pos.0).norm() > config::FLAG_RADIUS {
       continue;
     }
+
+    last_return.0 = this_frame;
 
     events.push(FlagEvent {
       ty: FlagEventType::Capture,
@@ -79,7 +82,7 @@ fn return_and_pickup_flags(game: &mut AirmashGame) {
       &mut Position,
       &Team,
       &LastDrop,
-      &LastReturnTime,
+      &mut LastReturnTime,
       &mut FlagCarrier,
     )>()
     .with::<IsFlag>();
@@ -133,12 +136,14 @@ fn return_and_pickup_flags(game: &mut AirmashGame) {
 
     if let Some(&(ent, player_team, _)) = positions.first() {
       if team.0 == player_team {
+        last_return.0 = this_frame;
         events.push(FlagEvent {
           ty: FlagEventType::Return,
           player: Some(ent),
           flag,
         });
       } else {
+        carrier.0 = Some(ent);
         events.push(FlagEvent {
           ty: FlagEventType::PickUp,
           player: Some(ent),
