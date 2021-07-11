@@ -11,15 +11,13 @@ jobs:
       matrix:
         toolchain: [stable, beta]
         experimental: [false]
-        include:
-          - toolchain: nightly
-            experimental: true
     steps:
       - uses: actions/checkout@v2
       - uses: actions-rs/toolchain@v1
         with:
           toolchain: ${{ matrix.toolchain }}
           profile: minimal
+      - uses: Swatinem/rust-cache@v1
       - uses: actions-rs/cargo@v1
         with:
           command: test
