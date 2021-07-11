@@ -8,7 +8,7 @@ debug = true
 members = [
 	# "server",
 	"base",
-	# "ctf",
+	"ctf",
 	"ffa",
 	"server-next",
 	"server-macros",

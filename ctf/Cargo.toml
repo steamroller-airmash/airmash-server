@@ -10,28 +10,40 @@ edition = "2018"
 [features]
 
 [dependencies]
-# When specs updates to shred 0.8.0 this will need to be updated as well
-shred = "0.7"
-shred-derive = "0.5"
-specs = { version = "0.14.3", features = ["nightly"] }
-shrev = "*"
-fnv = "*"
-log = "*"
-rand = "0.4"
-specs-derive = "*"
-lazy_static = "*"
-htmlescape = "*"
-env_logger = "*"
-serde = { version = "*", features = [ "derive" ]}
+airmash = { path="../server-next", package = "airmash-server" }
+log = "0.4"
+env_logger = "0.8"
+clap = "2.33"
+serde_json = "1.0"
 serde-deserialize-over = { git="https://github.com/steamroller-airmash/serde-deserialize-over" }
-serde_json = "*"
-clap = "*"
+htmlescape = "0.3"
+rand = "0.8"
 
-[dependencies.sentry]
-optional = true
-version = "*"
+lazy_static = "1.4"
+smallvec = "1.6"
+phf = { version="0.9", features=["macros"] }
 
-[dependencies.airmash-server]
-path = '../server'
-# Enable looking for X-Forwarded-For within the request
-features = [ "proxied" ]
+# When specs updates to shred 0.8.0 this will need to be updated as well
+# shred = "0.7"
+# shred-derive = "0.5"
+# specs = { version = "0.14.3", features = ["nightly"] }
+# shrev = "*"
+# fnv = "*"
+# log = "*"
+# rand = "0.4"
+# specs-derive = "*"
+# lazy_static = "*"
+# env_logger = "*"
+# serde = { version = "*", features = [ "derive" ]}
+# serde-deserialize-over = { git="https://github.com/steamroller-airmash/serde-deserialize-over" }
+# serde_json = "*"
+# clap = "*"
+
+# [dependencies.sentry]
+# optional = true
+# version = "*"
+
+# [dependencies.airmash-server]
+# path = '../server'
+# # Enable looking for X-Forwarded-For within the request
+# features = [ "proxied" ]

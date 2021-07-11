@@ -1,20 +1,48 @@
-mod alternating_shuffle;
-mod even_shuffle;
-mod no_shuffle;
-mod random_shuffle;
-mod structs;
+use crate::config::{BLUE_TEAM, RED_TEAM};
+use airmash::{component::*, AirmashGame, Entity};
 
-pub use self::alternating_shuffle::AlternatingShuffle;
-pub use self::even_shuffle::EvenShuffle;
-pub use self::no_shuffle::NoShuffle;
-pub use self::random_shuffle::RandomShuffle;
-
-pub use self::structs::{PlayerShuffleInfo, TeamChangeEntry};
-
-pub trait ShuffleProvider {
-  fn shuffle(&self, infos: Vec<PlayerShuffleInfo>) -> Vec<TeamChangeEntry>;
+pub struct TeamChangeEntry {
+  pub player: Entity,
+  pub team: u16,
 }
 
-pub fn get_shuffle() -> Box<dyn ShuffleProvider + Sync + Send> {
-  Box::new(AlternatingShuffle)
+pub enum ShuffleType {
+  AlternatingScore,
+}
+
+pub fn alternating_score_shuffle(game: &mut AirmashGame) -> Vec<TeamChangeEntry> {
+  let mut players = game
+    .world
+    .query_mut::<&Score>()
+    .with::<IsPlayer>()
+    .into_iter()
+    .map(|(player, score)| (player, score.0))
+    .collect::<Vec<_>>();
+
+  let start = if rand::random() { 0 } else { 1 };
+  let teams = [BLUE_TEAM, RED_TEAM];
+  players.sort_unstable_by_key(|p| p.1);
+
+  players
+    .into_iter()
+    .enumerate()
+    .filter_map(|(index, (player, _))| {
+      let old_team = game.world.get::<Team>(player).ok()?.0;
+      let new_team = teams[(index + start) % 2];
+
+      match old_team == new_team {
+        true => None,
+        false => Some(TeamChangeEntry {
+          player,
+          team: new_team,
+        }),
+      }
+    })
+    .collect()
+}
+
+pub fn shuffle(game: &mut AirmashGame, ty: ShuffleType) -> Vec<TeamChangeEntry> {
+  match ty {
+    ShuffleType::AlternatingScore => alternating_score_shuffle(game),
+  }
 }

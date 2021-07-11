@@ -1,25 +1,68 @@
-mod drop;
-mod drop_on_despawn;
-mod drop_on_stealth;
-mod flagspeed;
-mod pickupflag;
-mod pos_update;
-mod register;
-mod score_detailed;
+use airmash::event::{EventStealth, PacketEvent, PlayerKilled, PlayerLeave, PlayerRespawn};
+use airmash::protocol::client::Command;
+use airmash::{AirmashGame, Entity};
 
-pub mod flag_event;
-pub mod on_flag;
-pub mod on_game_win;
-pub mod on_join;
-pub mod on_leave;
-pub mod on_respawn;
+mod on_flag_event;
+mod on_frame;
+mod on_game_end;
+mod on_game_start;
+mod on_player_join;
+mod on_player_leave;
+mod on_player_respawn;
 
-pub use self::register::register;
+pub fn drop_carried_flags(player: Entity, game: &mut AirmashGame) {
+  use crate::{
+    component::{FlagCarrier, IsFlag},
+    event::FlagEvent,
+  };
+  use airmash::component::IsPlayer;
+  use smallvec::SmallVec;
 
-pub use self::drop::DropSystem;
-pub use self::drop_on_despawn::DropOnDespawn;
-pub use self::drop_on_stealth::DropOnStealth;
-pub use self::flagspeed::FlagSpeed;
-pub use self::pickupflag::PickupFlag;
-pub use self::pos_update::PosUpdate;
-pub use self::score_detailed::ScoreDetailed;
+  if !game.world.get::<IsPlayer>(player).is_ok() {
+    return;
+  }
+
+  let query = game.world.query_mut::<&FlagCarrier>().with::<IsFlag>();
+
+  let mut events = SmallVec::<[_; 2]>::new();
+  for (flag, carrier) in query {
+    if carrier.0 != Some(player) {
+      continue;
+    }
+
+    events.push(FlagEvent {
+      ty: crate::event::FlagEventType::Drop,
+      player: Some(player),
+      flag,
+    })
+  }
+
+  game.dispatch_many(events);
+}
+
+#[handler]
+fn drop_on_leave(event: &PlayerLeave, game: &mut AirmashGame) {
+  drop_carried_flags(event.player, game);
+}
+
+#[handler]
+fn drop_on_death(event: &PlayerKilled, game: &mut AirmashGame) {
+  drop_carried_flags(event.player, game);
+}
+
+#[handler]
+fn drop_on_stealth(event: &EventStealth, game: &mut AirmashGame) {
+  drop_carried_flags(event.player, game);
+}
+
+#[handler]
+fn drop_on_respawn(event: &PlayerRespawn, game: &mut AirmashGame) {
+  drop_carried_flags(event.player, game);
+}
+
+#[handler]
+fn drop_on_command(event: &PacketEvent<Command>, game: &mut AirmashGame) {
+  if event.packet.com == "drop" {
+    drop_carried_flags(event.entity, game);
+  }
+}
