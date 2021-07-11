@@ -1,10 +1,6 @@
-use std::time::{Duration, Instant};
-
 use airmash_protocol::ServerPacket;
-use server::event::ServerStartup;
 use server::protocol::client as c;
-use server::test::{MockConnection, MockConnectionEndpoint};
-use server::{network::ConnectionMgr, AirmashGame};
+use server::test::{MockConnection, MockConnectionEndpoint, TestGame};
 
 pub fn create_login_packet(name: &str) -> c::Login {
   c::Login {
@@ -26,67 +22,6 @@ pub fn get_login_id(mock: &mut MockConnection) -> u16 {
   }
 }
 
-pub fn create_mock_server() -> (GameWrapper, MockConnectionEndpoint) {
-  // let _ = simple_log::console("debug");
-
-  let mut game = AirmashGame::with_test_defaults();
-  let (connmgr, mock) = ConnectionMgr::disconnected();
-  game.resources.insert(connmgr);
-
-  let mut wrapper = GameWrapper::new(game);
-  wrapper.run_count(60);
-
-  (wrapper, mock)
-}
-
-pub struct GameWrapper {
-  game: AirmashGame,
-  now: Instant,
-  started: bool,
-}
-
-impl GameWrapper {
-  fn new(game: AirmashGame) -> Self {
-    Self {
-      game,
-      now: Instant::now(),
-      started: false,
-    }
-  }
-
-  pub fn run_once(&mut self) {
-    if !self.started {
-      self.game.dispatch(ServerStartup);
-      self.started = true;
-    }
-
-    self.game.run_once(self.now);
-    self.now += Duration::from_secs_f64(1.0 / 60.0);
-  }
-
-  pub fn run_count(&mut self, count: usize) {
-    if !self.started {
-      self.game.dispatch(ServerStartup);
-      self.started = true;
-    }
-
-    for _ in 0..count {
-      self.game.run_once(self.now);
-      self.now += Duration::from_secs_f64(1.0 / 60.0);
-    }
-  }
-}
-
-impl std::ops::Deref for GameWrapper {
-  type Target = AirmashGame;
-
-  fn deref(&self) -> &Self::Target {
-    &self.game
-  }
-}
-
-impl std::ops::DerefMut for GameWrapper {
-  fn deref_mut(&mut self) -> &mut Self::Target {
-    &mut self.game
-  }
+pub fn create_mock_server() -> (TestGame, MockConnectionEndpoint) {
+  TestGame::new()
 }

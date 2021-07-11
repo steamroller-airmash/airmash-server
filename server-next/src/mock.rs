@@ -1,9 +1,12 @@
-use crate::network::*;
 use crate::protocol::{client as c, ClientPacket, ServerPacket};
+use crate::{network::*, AirmashGame};
 
 use airmash_protocol::KeyCode;
 use crossbeam_channel::Sender;
-use std::net::{IpAddr, SocketAddr};
+use std::{
+  net::{IpAddr, SocketAddr},
+  time::{Duration, Instant},
+};
 use tokio::sync::mpsc::{unbounded_channel, UnboundedReceiver};
 
 /// Mock connection for testing purposes.
@@ -149,5 +152,76 @@ impl MockConnectionEndpoint {
       .expect("Network event channel is closed");
 
     MockConnection::new(self.sender.clone(), rx, conn)
+  }
+}
+
+/// Game wrapper for common tasks that need to be done as part of a test.
+///
+/// This covers things like ensuring that the server startup event is properly
+/// dispatched and properly incrementing the frame time as we go. It also
+/// handles setting the current time for the game as the game does not run in
+/// real-time within tests.
+pub struct TestGame {
+  game: AirmashGame,
+  now: Instant,
+}
+
+impl TestGame {
+  /// Create a new server instance and corresponding connection endpoint.
+  pub fn new() -> (Self, MockConnectionEndpoint) {
+    use crate::event::ServerStartup;
+
+    let mut game = AirmashGame::with_test_defaults();
+    let (connmgr, mock) = ConnectionMgr::disconnected();
+    game.resources.insert(connmgr);
+
+    let mut tg = TestGame {
+      game,
+      now: Instant::now(),
+    };
+
+    tg.dispatch(ServerStartup);
+    tg.run_once();
+
+    (tg, mock)
+  }
+
+  /// Run the game for one main loop iteration.
+  pub fn run_once(&mut self) {
+    self.game.run_once(self.now);
+    self.now += Duration::from_secs_f64(1.0 / 60.0);
+  }
+
+  /// Run `count` iterations of the main loop.
+  pub fn run_count(&mut self, count: usize) {
+    for _ in 0..count {
+      self.run_once();
+    }
+  }
+
+  /// Run the main loop for `duration` simulated time.
+  ///
+  /// Note that the main loop runs at 60 FPS so that will be used to determine
+  /// how many iterations are run.
+  pub fn run_for(&mut self, duration: Duration) {
+    let target = self.now + duration;
+
+    while self.now < target {
+      self.run_once();
+    }
+  }
+}
+
+impl std::ops::Deref for TestGame {
+  type Target = AirmashGame;
+
+  fn deref(&self) -> &Self::Target {
+    &self.game
+  }
+}
+
+impl std::ops::DerefMut for TestGame {
+  fn deref_mut(&mut self) -> &mut Self::Target {
+    &mut self.game
   }
 }
