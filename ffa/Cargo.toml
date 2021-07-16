@@ -11,7 +11,7 @@ edition = "2018"
 [dependencies]
 server = { path="../server-next", package="airmash-server" }
 log = "0.4"
-env_logger = "0.8"
+env_logger = "0.9"
 rand = "0.8"
 clap = "2.33"
 serde = "1.0"

@@ -11,7 +11,7 @@ edition = "2018"
 [dependencies]
 airmash-server = { path='../server-next' }
 log = "0.4"
-env_logger = "0.8"
+env_logger = "0.9"
 clap = "2.33"
 serde_json = "1.0" 
 serde-deserialize-over = { git="https://github.com/steamroller-airmash/serde-deserialize-over" }
