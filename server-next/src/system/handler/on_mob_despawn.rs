@@ -16,8 +16,11 @@ fn send_packet(event: &MobDespawn, game: &mut AirmashGame) {
     MobDespawnType::PickUp => DespawnType::Collided,
   };
 
-  game.send_to_visible(pos.0, MobDespawn {
-    id: event.mob.id() as _,
-    ty,
-  });
+  game.send_to_visible(
+    pos.0,
+    MobDespawn {
+      id: event.mob.id() as _,
+      ty,
+    },
+  );
 }

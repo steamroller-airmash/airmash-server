@@ -68,7 +68,7 @@ fn send_player_upgrade(event: &PlayerMobCollision, game: &mut AirmashGame) {
     score: score.0,
     earnings: earnings.0,
     total_kills: kills.0,
-    total_deaths: deaths.0
+    total_deaths: deaths.0,
   };
   game.send_to(event.player, packet);
 }

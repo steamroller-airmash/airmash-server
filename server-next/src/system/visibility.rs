@@ -1,4 +1,3 @@
-use crate::component::*;
 use crate::event::EntitySpawn;
 use crate::event::EventHorizon;
 use crate::event::PlayerFire;
@@ -6,6 +5,7 @@ use crate::resource::collision as c;
 use crate::resource::collision::LayerSpec;
 use crate::resource::Config;
 use crate::AirmashGame;
+use crate::{component::*, event::MobSpawn};
 
 use hecs::Entity;
 use std::collections::HashSet;
@@ -129,6 +129,28 @@ fn record_new_missiles(event: &PlayerFire, game: &mut AirmashGame) {
   for (_, (pos, visible)) in query {
     if (pos.0 - ppos).norm_squared() <= view2 {
       visible.extend(event.missiles.iter().copied());
+    }
+  }
+}
+
+#[handler]
+fn record_new_mobs(event: &MobSpawn, game: &mut AirmashGame) {
+  let mpos = match game.world.query_one_mut::<(&Position, &IsMob)>(event.mob) {
+    Ok((pos, _)) => pos.0,
+    Err(_) => return,
+  };
+
+  let config = game.resources.read::<Config>();
+  let view2 = config.view_radius * config.view_radius;
+
+  let query = game
+    .world
+    .query_mut::<(&Position, &mut VisibleEntities)>()
+    .with::<IsPlayer>();
+
+  for (_, (pos, visible)) in query {
+    if (pos.0 - mpos).norm_squared() <= view2 {
+      visible.insert(event.mob);
     }
   }
 }

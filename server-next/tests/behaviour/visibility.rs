@@ -1,8 +1,8 @@
 use std::time::Duration;
 
-use airmash_protocol::{ServerPacket, KeyCode};
-use airmash_server::{Vector2, component::Position};
+use airmash_protocol::{KeyCode, MobType, ServerPacket};
 use airmash_server::resource::Config;
+use airmash_server::{component::Position, Vector2};
 use nalgebra::vector;
 use server::test::TestGame;
 
@@ -140,9 +140,52 @@ fn out_of_visibility_mob() {
       Some(ServerPacket::MobUpdateStationary(evt)) => {
         assert_eq!(evt.id as u32, mob.id());
         break;
-      },
+      }
       Some(_) => (),
-      None => panic!("Never received MobUpdateStationary packet")
+      None => panic!("Never received MobUpdateStationary packet"),
     }
   }
+}
+
+#[test]
+fn edge_of_visibility_mob() {
+  let (mut game, mut mock) = TestGame::new();
+
+  let mut client = mock.open();
+  let player = client.login("test", &mut game);
+
+  game.resources.write::<Config>().view_radius = 500.0;
+  game.world.get_mut::<Position>(player).unwrap().0 = Vector2::zeros();
+
+  game.run_count(5);
+
+  let mob = game.spawn_mob(
+    MobType::Upgrade,
+    Vector2::new(500.0, 0.0),
+    Duration::from_secs(5),
+  );
+
+  game.world.get_mut::<Position>(player).unwrap().x = 5000.0;
+
+  game.run_count(5);
+
+  let evt = client
+    .packets()
+    .find_map(|p| match p {
+      ServerPacket::MobUpdateStationary(p) => Some(p),
+      _ => None,
+    })
+    .unwrap_or_else(|| panic!("Never recieved ModUpdateStationary packet"));
+
+  assert_eq!(evt.id as u32, mob.id());
+
+  let evt = client
+    .packets()
+    .find_map(|p| match p {
+      ServerPacket::EventLeaveHorizon(p) => Some(p),
+      _ => None,
+    })
+    .unwrap_or_else(|| panic!("Never recieved EventLeaveHorizon packet"));
+
+  assert_eq!(evt.id as u32, mob.id());
 }
