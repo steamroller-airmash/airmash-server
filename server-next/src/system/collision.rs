@@ -4,13 +4,13 @@ use airmash_protocol::PlaneType;
 use itertools::Itertools;
 use smallvec::SmallVec;
 
-use crate::component::*;
-use crate::consts::hitcircles_for_plane;
+use crate::consts::{self, hitcircles_for_plane};
 use crate::event::EventBounce;
 use crate::event::MissileTerrainCollision;
 use crate::event::PlayerMissileCollision;
-use crate::resource::{collision::*, LastFrame, ThisFrame};
+use crate::resource::collision::*;
 use crate::AirmashGame;
+use crate::{component::*, event::PlayerMobCollision};
 
 struct FrameId(usize);
 
@@ -18,6 +18,7 @@ pub fn generate_collision_lookups(game: &mut AirmashGame) {
   generate_player_pos_db(game);
   generate_player_collide_db(game);
   generate_missile_collide_db(game);
+  generate_mob_collide_db(game);
 }
 
 pub fn check_collisions(game: &mut AirmashGame) {
@@ -27,11 +28,7 @@ pub fn check_collisions(game: &mut AirmashGame) {
     frame.0 += 1;
     frame_id
   };
-  let elapsed_time = {
-    let this_frame = game.resources.read::<ThisFrame>().0;
-    let last_frame = game.resources.read::<LastFrame>().0;
-    this_frame - last_frame
-  };
+  let elapsed_time = game.this_frame() - game.last_frame();
 
   // To more accurately emulate the original server we only do player-terrain
   // collisions every other frame.
@@ -42,6 +39,7 @@ pub fn check_collisions(game: &mut AirmashGame) {
     collide_player_terrain(game);
   }
 
+  collide_player_mob(game);
   collide_player_missile(game);
   collide_missile_terrain(game);
 }
@@ -111,6 +109,24 @@ fn generate_missile_collide_db(game: &mut AirmashGame) {
       pos: pos.0,
       radius: 0.0,
       layer: team.0,
+    });
+  }
+
+  db.recreate(entries);
+}
+
+fn generate_mob_collide_db(game: &mut AirmashGame) {
+  let mut db = game.resources.write::<MobCollideDb>();
+
+  let query = game.world.query_mut::<&Position>().with::<IsMob>();
+  let mut entries = Vec::new();
+
+  for (entity, pos) in query {
+    entries.push(Entry {
+      entity,
+      pos: pos.0,
+      radius: consts::MOB_COLLIDE_RADIUS,
+      layer: 0,
     });
   }
 
@@ -258,5 +274,53 @@ fn collide_player_missile(game: &mut AirmashGame) {
     let entity = event.missile;
     game.dispatch(event);
     game.despawn(entity);
+  }
+}
+
+fn collide_player_mob(game: &mut AirmashGame) {
+  let mobs = game.resources.read::<MobCollideDb>();
+  let players = game.resources.read::<PlayerCollideDb>();
+
+  let mut collisions = Vec::new();
+  mobs.query_all_pairs(&players.0, &mut collisions);
+
+  collisions.retain(|(a, b)| a.layer != b.layer);
+
+  // Only count the collision with the smallest distance so the missile can only
+  // hit one player.
+  //
+  // Airmash itself doesn't allow missiles to hit multiple players so we replicate
+  // this here.
+  collisions.sort_unstable_by(|a, b| match a.0.entity.id().cmp(&b.0.entity.id()) {
+    Ordering::Equal => {
+      let da: f32 = (a.0.pos - a.1.pos).norm_squared();
+      let db: f32 = (a.0.pos - b.1.pos).norm_squared();
+
+      da.partial_cmp(&db)
+        .unwrap_or_else(|| match (da.is_nan(), db.is_nan()) {
+          (true, true) => Ordering::Equal,
+          (true, false) => Ordering::Greater,
+          (false, true) => Ordering::Less,
+          (false, false) => unreachable!(),
+        })
+    }
+    x => x,
+  });
+  collisions.dedup_by_key(|c| c.0.entity);
+
+  let mut events = SmallVec::<[_; 32]>::new();
+  for (mob, player) in collisions {
+    events.push(PlayerMobCollision {
+      mob: mob.entity,
+      player: player.entity,
+    });
+  }
+
+  drop(mobs);
+  drop(players);
+
+  for event in events {
+    game.dispatch(event);
+    game.despawn(event.mob);
   }
 }

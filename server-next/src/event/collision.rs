@@ -8,6 +8,13 @@ pub struct PlayerMissileCollision {
   pub players: SmallVec<[Entity; 1]>,
 }
 
+/// A collision occurred between a mob and a player.
+#[derive(Copy, Clone, Debug)]
+pub struct PlayerMobCollision {
+  pub mob: Entity,
+  pub player: Entity,
+}
+
 /// A collision occurred between a missile and the terrain.
 #[derive(Copy, Clone, Debug)]
 pub struct MissileTerrainCollision {

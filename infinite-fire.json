@@ -21,5 +21,6 @@
       "fire_energy": 0
     }
   },
-  "admin_enabled": true
+  "admin_enabled": true,
+  "view_radius": 500
 }

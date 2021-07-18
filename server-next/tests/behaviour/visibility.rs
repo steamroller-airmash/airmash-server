@@ -1,8 +1,10 @@
-use airmash_protocol::ServerPacket;
-use airmash_server::component::Position;
+use std::time::Duration;
+
+use airmash_protocol::{ServerPacket, KeyCode};
+use airmash_server::{Vector2, component::Position};
 use airmash_server::resource::Config;
 use nalgebra::vector;
-use server::protocol::client as c;
+use server::test::TestGame;
 
 /// If a player is at the very edge of another player's horizon then
 /// LeaveHorizon packets may not be sent correctly because the missile might be
@@ -14,42 +16,28 @@ use server::protocol::client as c;
 /// get zombie missiles.
 #[test]
 fn out_of_visibility_missiles_properly_deleted() {
-  let (mut game, mut mock) = crate::utils::create_mock_server();
+  let (mut game, mut mock) = TestGame::new();
 
   let mut client1 = mock.open();
   let mut client2 = mock.open();
 
-  client1.send(crate::utils::create_login_packet("test-1"));
-  client2.send(crate::utils::create_login_packet("test-2"));
+  let ent1 = client1.login("test-1", &mut game);
+  let ent2 = client2.login("test-2", &mut game);
 
-  game.run_once();
-
-  let id1 = crate::utils::get_login_id(&mut client1);
-  let id2 = crate::utils::get_login_id(&mut client2);
-
-  let ent2 = game.find_entity_by_id(id2).unwrap();
-
-  let view_radius = {
-    let config = game.resources.read::<Config>();
-    config.view_radius
-  };
+  let view_radius = game.resources.read::<Config>().view_radius;
 
   game.world.get_mut::<Position>(ent2).unwrap().0 = vector![0.0, -view_radius + 1.0];
   game.run_count(60);
 
-  client2.send(c::Key {
-    key: airmash_protocol::KeyCode::Fire,
-    seq: 0,
-    state: true,
-  });
+  client2.send_key(KeyCode::Fire, true);
 
   game.run_count(5);
 
   while let Some(packet) = client1.next_packet() {
     match packet {
       ServerPacket::EventLeaveHorizon(evt) => {
-        assert_ne!(evt.id, id1);
-        assert_ne!(evt.id, id2);
+        assert_ne!(evt.id as u32, ent1.id());
+        assert_ne!(evt.id as u32, ent2.id());
 
         return;
       }
@@ -68,7 +56,7 @@ fn out_of_visibility_missiles_properly_deleted() {
 /// MobDespawnCoords packet or a EventLeaveHorizon packet.
 #[test]
 fn out_of_visibility_collision() {
-  let (mut game, mut mock) = crate::utils::create_mock_server();
+  let (mut game, mut mock) = TestGame::new();
 
   let offset = {
     let mut config = game.resources.write::<Config>();
@@ -81,16 +69,11 @@ fn out_of_visibility_collision() {
   let mut client1 = mock.open();
   let mut client2 = mock.open();
 
-  client1.send(crate::utils::create_login_packet("test-1"));
-  client2.send(crate::utils::create_login_packet("test-2"));
+  let ent1 = client1.login("test-1", &mut game);
+  let ent2 = client2.login("test-2", &mut game);
 
-  game.run_once();
-
-  let id1 = crate::utils::get_login_id(&mut client1);
-  let id2 = crate::utils::get_login_id(&mut client2);
-
-  let ent1 = game.find_entity_by_id(id1).unwrap();
-  let ent2 = game.find_entity_by_id(id2).unwrap();
+  let id1 = ent1.id() as u16;
+  let id2 = ent2.id() as u16;
 
   // There is a mountain at (x: -252, y: -1504) with r = 60
   let object = vector![-252.0, -1504.0];
@@ -100,11 +83,7 @@ fn out_of_visibility_collision() {
   game.world.get_mut::<Position>(ent1).unwrap().0 = pos;
   game.world.get_mut::<Position>(ent2).unwrap().0 = pos;
 
-  client1.send(c::Key {
-    key: airmash_protocol::KeyCode::Fire,
-    seq: 0,
-    state: true,
-  });
+  client1.send_key(KeyCode::Fire, true);
   game.run_count(5);
 
   loop {
@@ -132,6 +111,38 @@ fn out_of_visibility_collision() {
       }
       Some(_) => (),
       None => panic!("Never recieved MobDespawnCoords or EventLeaveHorizon packet"),
+    }
+  }
+}
+
+#[test]
+fn out_of_visibility_mob() {
+  let (mut game, mut mock) = TestGame::new();
+
+  game.resources.write::<Config>().view_radius = 500.0;
+
+  let mut client = mock.open();
+  client.login("test1", &mut game);
+
+  let mob = game.spawn_mob(
+    airmash_protocol::MobType::Upgrade,
+    Vector2::new(200.0, -550.0),
+    Duration::from_secs(1000),
+  );
+
+  game.run_once();
+
+  client.send_key(KeyCode::Up, true);
+  game.run_for(Duration::from_secs(2));
+
+  loop {
+    match client.next_packet() {
+      Some(ServerPacket::MobUpdateStationary(evt)) => {
+        assert_eq!(evt.id as u32, mob.id());
+        break;
+      },
+      Some(_) => (),
+      None => panic!("Never received MobUpdateStationary packet")
     }
   }
 }

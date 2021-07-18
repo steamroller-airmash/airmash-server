@@ -95,6 +95,8 @@ impl MockConnection {
 }
 
 impl MockConnection {
+  /// Log in to the game and read the assigned entity from the game state. Note
+  /// that this method will run one iteration of the game loop.
   pub fn login(&mut self, name: &str, game: &mut TestGame) -> Entity {
     self.send_login(name);
     game.run_once();

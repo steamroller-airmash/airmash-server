@@ -13,7 +13,9 @@ pub use self::terrain::TERRAIN;
 
 /// The probability that, when an unupgraded player dies, they will drop an
 /// upgrade.
-pub const UPGRADE_DROP_PROBABILITY: f32 = 0.5;
+pub const UPGRADE_DROP_PROBABILITY: f32 = 1.0; // 0.5;
+/// The collision radius of a mob.
+pub const MOB_COLLIDE_RADIUS: f32 = 10.0;
 
 /// The pred special causes negative energy regen this value is the rate at
 /// which it causes energy to decrease.

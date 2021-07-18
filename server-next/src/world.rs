@@ -175,9 +175,10 @@ impl AirmashGame {
     self.resources.insert(ThisFrame(now));
     self.resources.insert(Config::default());
     self.resources.insert(Terrain::default());
-    self.resources.insert(PlayerPosDb(SpatialTree::new()));
-    self.resources.insert(PlayerCollideDb(SpatialTree::new()));
-    self.resources.insert(MissileCollideDb(SpatialTree::new()));
+    self.resources.insert(PlayerPosDb::default());
+    self.resources.insert(PlayerCollideDb::default());
+    self.resources.insert(MissileCollideDb::default());
+    self.resources.insert(MobCollideDb::default());
     self.resources.insert(TaskScheduler::new());
     self.resources.insert(GameConfig::default());
     self.resources.insert(ServerStats::default());

@@ -29,6 +29,7 @@ pub fn generate_horizon_events(game: &mut AirmashGame) {
 
   let missile_db = game.resources.read::<c::MissileCollideDb>();
   let player_db = game.resources.read::<c::PlayerPosDb>();
+  let mob_db = game.resources.read::<c::MobCollideDb>();
   let config = game.resources.read::<Config>();
 
   let query = game
@@ -38,6 +39,7 @@ pub fn generate_horizon_events(game: &mut AirmashGame) {
 
   let mut vis_missiles = Vec::new();
   let mut vis_players = Vec::new();
+  let mut vis_mobs = Vec::new();
   let mut actions = Vec::<EventHorizon>::new();
 
   for (ent, (pos, spawn_frame, visible)) in query {
@@ -46,19 +48,21 @@ pub fn generate_horizon_events(game: &mut AirmashGame) {
       continue;
     }
 
-    missile_db.query(
+    missile_db.query_pos(
       pos.0,
       config.view_radius,
       LayerSpec::None,
       &mut vis_missiles,
     );
-    player_db.query(pos.0, config.view_radius, LayerSpec::None, &mut vis_players);
+    player_db.query_pos(pos.0, config.view_radius, LayerSpec::None, &mut vis_players);
+    mob_db.query_pos(pos.0, config.view_radius, LayerSpec::None, &mut vis_mobs);
 
     let new_vis = HashSet::from_iter(
-      vis_missiles
+      vis_players
         .drain(..)
-        .chain(vis_players.drain(..))
-        .filter(|&x| x != ent),
+        .filter(|&x| x != ent)
+        .chain(vis_missiles.drain(..))
+        .chain(vis_mobs.drain(..)),
     );
 
     let old_vis = std::mem::replace(&mut visible.0, new_vis);
@@ -83,6 +87,7 @@ pub fn generate_horizon_events(game: &mut AirmashGame) {
   drop(config);
   drop(missile_db);
   drop(player_db);
+  drop(mob_db);
 
   for action in actions {
     game.dispatch(action);
