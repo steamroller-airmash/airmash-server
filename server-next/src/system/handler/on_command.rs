@@ -2,8 +2,8 @@ use std::convert::TryFrom;
 use std::str::FromStr;
 use std::time::{Duration, Instant};
 
-use airmash_protocol::server::PlayerFlag;
 use airmash_protocol::PlaneType;
+use airmash_protocol::{server::PlayerFlag, UpgradeType};
 use bstr::BString;
 use bstr::ByteSlice;
 
@@ -251,4 +251,57 @@ fn on_spectate_command(event: &PacketEvent<Command>, game: &mut AirmashGame) {
     player: event.entity,
     was_alive,
   });
+}
+
+#[handler]
+fn on_upgrade_command(event: &PacketEvent<Command>, game: &mut AirmashGame) {
+  use crate::protocol::server::PlayerUpgrade;
+
+  if event.packet.com != "upgrade" {
+    return;
+  }
+
+  let (upgrades, _) = match game
+    .world
+    .query_one_mut::<(&mut Upgrades, &IsPlayer)>(event.entity)
+  {
+    Ok(query) => query,
+    Err(_) => return,
+  };
+
+  let upgrade_num: u8 = match event.packet.data.to_str_lossy().parse() {
+    Ok(upgrade_num) => upgrade_num,
+    Err(_) => return,
+  };
+
+  if upgrades.unused == 0 {
+    return;
+  }
+
+  let (count, ty) = match upgrade_num {
+    1 => (&mut upgrades.speed, UpgradeType::Speed),
+    2 => (&mut upgrades.defense, UpgradeType::Defense),
+    3 => (&mut upgrades.energy, UpgradeType::Energy),
+    4 => (&mut upgrades.missile, UpgradeType::Missile),
+    _ => return,
+  };
+
+  if *count == 5 {
+    return;
+  }
+
+  *count += 1;
+  upgrades.unused -= 1;
+
+  let packet = PlayerUpgrade {
+    upgrades: upgrades.unused,
+    ty,
+    speed: upgrades.speed,
+    defense: upgrades.defense,
+    energy: upgrades.energy,
+    missile: upgrades.missile,
+  };
+
+  game.force_update(event.entity);
+  game.send_to(event.entity, packet);
 }
