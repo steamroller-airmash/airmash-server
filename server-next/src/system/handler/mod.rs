@@ -12,6 +12,7 @@ mod on_event_stealth;
 mod on_key_packet;
 mod on_missile_despawn;
 mod on_missile_terrain_collision;
+mod on_mob_spawn;
 mod on_player_change_plane;
 mod on_player_fire;
 mod on_player_hit;

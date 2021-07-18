@@ -11,6 +11,10 @@ mod terrain;
 pub use self::hitcircles::hitcircles_for_plane;
 pub use self::terrain::TERRAIN;
 
+/// The probability that, when an unupgraded player dies, they will drop an
+/// upgrade.
+pub const UPGRADE_DROP_PROBABILITY: f32 = 0.5;
+
 /// The pred special causes negative energy regen this value is the rate at
 /// which it causes energy to decrease.
 pub const PREDATOR_SPECIAL_REGEN: EnergyRegen = -0.01;

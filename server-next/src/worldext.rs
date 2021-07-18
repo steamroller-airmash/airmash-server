@@ -6,10 +6,8 @@ use hecs::{Entity, EntityBuilder, NoSuchEntity};
 use nalgebra::vector;
 use smallvec::SmallVec;
 
-use crate::component::IsPlayer;
 use crate::component::*;
-use crate::event::EntitySpawn;
-use crate::event::PlayerFire;
+use crate::event::{EntitySpawn, MobSpawn, PlayerFire};
 use crate::network::{ConnectionId, ConnectionMgr};
 use crate::protocol::{v5, ServerPacket};
 use crate::resource::collision::LayerSpec;
@@ -160,6 +158,31 @@ impl AirmashGame {
     }
 
     Ok(entities)
+  }
+
+  /// Spawn a mob (upgrade or powerup).
+  ///
+  /// # Panics
+  /// Panics if `mob` is not one of `Inferno`, `Shield`, or `Upgrade`. You need
+  /// to use [`fire_missiles`] instead if you want to create a missile-type
+  /// entity.
+  ///
+  /// [`fire_missiles`]: crate::AirmashGame::fire_missiles
+  pub fn spawn_mob(&mut self, mob: MobType, pos: Vector2<f32>, lifetime: Duration) -> Entity {
+    assert!(
+      matches!(mob, MobType::Inferno | MobType::Shield | MobType::Upgrade),
+      "Can only spawn stationary mobs"
+    );
+
+    let this_frame = self.this_frame();
+    let entity = self
+      .world
+      .spawn((mob, Position(pos), Expiry(this_frame + lifetime), IsMob));
+
+    self.dispatch(EntitySpawn { entity });
+    self.dispatch(MobSpawn { mob: entity });
+
+    entity
   }
 
   /// Update the score of `player` by `delta`. This method takes care of

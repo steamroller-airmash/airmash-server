@@ -116,11 +116,13 @@ use hecs::Entity;
 
 mod collision;
 mod missile;
+mod mob;
 mod packet;
 mod player;
 
 pub use self::collision::*;
 pub use self::missile::*;
+pub use self::mob::*;
 pub use self::packet::*;
 pub use self::player::*;
 

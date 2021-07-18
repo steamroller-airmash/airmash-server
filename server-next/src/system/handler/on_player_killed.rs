@@ -1,8 +1,12 @@
-use crate::component::*;
+use std::time::Duration;
+
+use airmash_protocol::Vector2;
+
 use crate::event::PlayerKilled;
 use crate::event::PlayerRespawn;
 use crate::resource::{Config, GameConfig, TaskScheduler, ThisFrame};
 use crate::AirmashGame;
+use crate::{component::*, consts};
 
 #[handler]
 fn launch_respawn_task(event: &PlayerKilled, game: &mut AirmashGame) {
@@ -147,4 +151,59 @@ fn update_scores(event: &PlayerKilled, game: &mut AirmashGame) {
 
   drop(kquery);
   let _ = game.update_score(killer, transfer + 25);
+}
+
+#[handler(priority = crate::priority::MEDIUM)]
+fn update_upgrades(event: &PlayerKilled, game: &mut AirmashGame) {
+  let (upgrades, _) = match game
+    .world
+    .query_one_mut::<(&mut Upgrades, &IsPlayer)>(event.player)
+  {
+    Ok(query) => query,
+    Err(_) => return,
+  };
+
+  let offsets = rand::random::<u8>() & 0xF;
+
+  upgrades.speed += (offsets >> 0) & 1;
+  upgrades.defense += (offsets >> 1) & 1;
+  upgrades.energy += (offsets >> 2) & 1;
+  upgrades.missile += (offsets >> 3) & 1;
+
+  upgrades.speed /= 2;
+  upgrades.defense /= 2;
+  upgrades.energy /= 2;
+  upgrades.missile /= 2;
+}
+
+#[handler(priority = crate::priority::HIGH)]
+fn drop_upgrade(event: &PlayerKilled, game: &mut AirmashGame) {
+  let this_frame = game.this_frame();
+  let config = game.resources.read::<Config>();
+  let (upgrades, &pos, &vel, last_action, _) =
+    match game
+      .world
+      .query_one_mut::<(&Upgrades, &Position, &Velocity, &LastActionTime, &IsPlayer)>(event.player)
+    {
+      Ok(query) => query,
+      Err(_) => return,
+    };
+
+  let total_upgrades = upgrades.speed + upgrades.energy + upgrades.defense + upgrades.missile;
+  if vel.0 == Vector2::zeros() && this_frame - last_action.0 > Duration::from_secs(10) {
+    return;
+  }
+
+  let lifetime = config
+    .mobs
+    .upgrade
+    .lifetime
+    .unwrap_or(Duration::from_secs(60));
+  let prob = rand::random::<f32>();
+
+  drop(config);
+
+  if total_upgrades > 0 || prob < consts::UPGRADE_DROP_PROBABILITY {
+    game.spawn_mob(MobType::Upgrade, pos.0, lifetime);
+  }
 }
