@@ -6,12 +6,18 @@ use kdtree::{KdTree, Node};
 use nalgebra::vector;
 
 def_wrappers! {
+  #[derive(Default)]
   ##[nocopy]
   pub type PlayerPosDb = SpatialTree;
+  #[derive(Default)]
   ##[nocopy]
   pub type PlayerCollideDb = SpatialTree;
+  #[derive(Default)]
   ##[nocopy]
   pub type MissileCollideDb = SpatialTree;
+  #[derive(Default)]
+  ##[nocopy]
+  pub type MobCollideDb = SpatialTree;
   ##[nocopy]
   pub type Terrain = SpatialTree;
 }
@@ -87,6 +93,38 @@ impl SpatialTree {
     }
   }
 
+  /// Query all circles within this `SpatialTree` whose centre overlaps the
+  /// circle defined by `pos` and `rad`. Generally you will probably want
+  /// [`query`] instead.
+  ///
+  /// This result is then filtered by the `LayerSpec` given in `layer`.
+  ///
+  /// [`query`]: self::SpatialTree::query
+  pub fn query_pos<V: Extend<Entity>>(
+    &self,
+    pos: Vector2<f32>,
+    rad: f32,
+    layer: LayerSpec,
+    out: &mut V,
+  ) {
+    let r2 = rad * rad;
+
+    let base = self
+      .tree
+      .within([pos.x, pos.y], rad)
+      .filter(|x| (pos - x.pos).norm_squared() <= r2);
+
+    match layer {
+      LayerSpec::Exclude(layer) => out.extend(base.filter(|x| x.layer != layer).map(|x| x.entity)),
+      LayerSpec::Include(layer) => out.extend(base.filter(|x| x.layer == layer).map(|x| x.entity)),
+      LayerSpec::None => out.extend(base.map(|x| x.entity)),
+    }
+  }
+
+  /// Query all circles within this `SpatialTree` that overlap with the circle
+  /// defined by `pos` and `rad`.
+  ///
+  /// This result is then filtered by the `LayerSpec` given in `layer`.
   pub fn query<V: Extend<Entity>>(
     &self,
     pos: Vector2<f32>,
@@ -94,30 +132,12 @@ impl SpatialTree {
     layer: LayerSpec,
     out: &mut V,
   ) {
-    let pos = [pos.x, pos.y];
+    let base = self.tree.within([pos.x, pos.y], rad);
 
     match layer {
-      LayerSpec::Exclude(layer) => {
-        out.extend(
-          self
-            .tree
-            .within(pos, rad)
-            .filter(|x| x.layer != layer)
-            .map(|x| x.entity),
-        );
-      }
-      LayerSpec::Include(layer) => {
-        out.extend(
-          self
-            .tree
-            .within(pos, rad)
-            .filter(|x| x.layer == layer)
-            .map(|x| x.entity),
-        );
-      }
-      LayerSpec::None => {
-        out.extend(self.tree.within(pos, rad).map(|x| x.entity));
-      }
+      LayerSpec::Exclude(layer) => out.extend(base.filter(|x| x.layer != layer).map(|x| x.entity)),
+      LayerSpec::Include(layer) => out.extend(base.filter(|x| x.layer == layer).map(|x| x.entity)),
+      LayerSpec::None => out.extend(base.map(|x| x.entity)),
     }
   }
 
