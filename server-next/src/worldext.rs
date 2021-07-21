@@ -2,10 +2,10 @@ use std::time::Duration;
 use std::{sync::Arc, time::Instant};
 
 use airmash_protocol::{MobType, Vector2};
+use fxhash::FxHashSet as HashSet;
 use hecs::{Entity, EntityBuilder, NoSuchEntity};
 use nalgebra::vector;
 use smallvec::SmallVec;
-use fxhash::FxHashSet as HashSet;
 
 use crate::component::*;
 use crate::event::{EntitySpawn, MobSpawn, PlayerFire};

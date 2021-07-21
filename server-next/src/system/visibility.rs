@@ -7,8 +7,8 @@ use crate::resource::Config;
 use crate::AirmashGame;
 use crate::{component::*, event::MobSpawn};
 
-use hecs::Entity;
 use fxhash::FxHashSet as HashSet;
+use hecs::Entity;
 
 def_wrappers! {
   type FrameId = u64;
