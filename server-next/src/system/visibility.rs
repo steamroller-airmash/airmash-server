@@ -8,7 +8,7 @@ use crate::AirmashGame;
 use crate::{component::*, event::MobSpawn};
 
 use hecs::Entity;
-use std::collections::HashSet;
+use fxhash::FxHashSet as HashSet;
 
 def_wrappers! {
   type FrameId = u64;
@@ -40,7 +40,7 @@ pub fn generate_horizon_events(game: &mut AirmashGame) {
   let mut vis_players = Vec::new();
   let mut vis_mobs = Vec::new();
   let mut actions = Vec::<EventHorizon>::new();
-  let mut new_vis = HashSet::new();
+  let mut new_vis = HashSet::default();
 
   for (ent, (pos, spawn_frame, visible)) in query {
     // Don't send any updates for players who just joined this frame
