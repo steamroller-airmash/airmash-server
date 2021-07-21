@@ -1,15 +1,7 @@
 
-cargo-features = ["named-profiles"]
-
 [profile.release]
 # Turn on nice backtraces even when in release mode
 debug = true
-
-[profile.publish]
-inherits = "release"
-debug = true
-lto = "thin"
-codegen-units = 1
 
 [workspace]
 members = [
@@ -21,5 +13,6 @@ members = [
 	"server-macros",
 	"utils/bounded-queue",
 	"utils/special-map",
-	"utils/kdtree"
+	"utils/kdtree",
+	"utils/async-channel"
 ]
