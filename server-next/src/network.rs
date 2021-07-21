@@ -42,7 +42,7 @@ impl ConnectionId {
 }
 
 pub(crate) struct ConnectionData {
-  pub(crate) send: AsyncSender<Vec<u8>>,
+  pub(crate) send: AsyncSender<Arc<Vec<u8>>>,
   pub(crate) addr: SocketAddr,
 }
 
@@ -115,13 +115,13 @@ impl ConnectionMgr {
     (me, mock)
   }
 
-  pub fn send_to_conn(&mut self, conn: ConnectionId, message: Vec<u8>) {
+  pub fn send_to_conn(&mut self, conn: ConnectionId, message: Arc<Vec<u8>>) {
     if let Some(data) = self.conns.get_mut(&conn) {
       let _ = data.send.send(message);
     }
   }
 
-  pub fn send_to(&mut self, ent: Entity, message: Vec<u8>) {
+  pub fn send_to(&mut self, ent: Entity, message: Arc<Vec<u8>>) {
     if let Some(&conn) = self.primary.get(&ent) {
       self.send_to_conn(conn, message);
     }
@@ -303,7 +303,12 @@ async fn run_connection(
           None => return Ok(())
         };
 
-        if let Err(_) = ws_stream.send(Message::Binary(write)).await {
+        let data = match Arc::try_unwrap(write) {
+          Ok(data) => data,
+          Err(e) => (*e).clone()
+        };
+
+        if let Err(_) = ws_stream.send(Message::binary(data)).await {
           return Ok(())
         }
       }

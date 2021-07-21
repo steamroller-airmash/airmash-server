@@ -6,6 +6,7 @@ use crossbeam_channel::Sender;
 use hecs::Entity;
 use std::{
   net::{IpAddr, SocketAddr},
+  sync::Arc,
   time::{Duration, Instant},
 };
 use tokio::sync::mpsc::{unbounded_channel, UnboundedReceiver};
@@ -17,7 +18,7 @@ use tokio::sync::mpsc::{unbounded_channel, UnboundedReceiver};
 /// interfere with each other.
 pub struct MockConnection {
   tx: Sender<(ConnectionId, InternalEvent)>,
-  rx: UnboundedReceiver<Vec<u8>>,
+  rx: UnboundedReceiver<Arc<Vec<u8>>>,
   conn: ConnectionId,
   closed: bool,
 
@@ -27,7 +28,7 @@ pub struct MockConnection {
 impl MockConnection {
   fn new(
     tx: Sender<(ConnectionId, InternalEvent)>,
-    rx: UnboundedReceiver<Vec<u8>>,
+    rx: UnboundedReceiver<Arc<Vec<u8>>>,
     conn: ConnectionId,
   ) -> Self {
     Self {
@@ -51,7 +52,11 @@ impl MockConnection {
     let mut ctx = Context::from_waker(waker);
     match self.rx.poll_recv(&mut ctx) {
       Poll::Pending => None,
-      Poll::Ready(x) => x,
+      Poll::Ready(Some(x)) => Some(match Arc::try_unwrap(x) {
+        Ok(x) => x,
+        Err(arc) => (*arc).clone(),
+      }),
+      Poll::Ready(None) => None,
     }
   }
 

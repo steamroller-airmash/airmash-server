@@ -9,7 +9,6 @@ use crate::{component::*, event::MobSpawn};
 
 use hecs::Entity;
 use std::collections::HashSet;
-use std::iter::FromIterator;
 
 def_wrappers! {
   type FrameId = u64;
@@ -41,6 +40,7 @@ pub fn generate_horizon_events(game: &mut AirmashGame) {
   let mut vis_players = Vec::new();
   let mut vis_mobs = Vec::new();
   let mut actions = Vec::<EventHorizon>::new();
+  let mut new_vis = HashSet::new();
 
   for (ent, (pos, spawn_frame, visible)) in query {
     // Don't send any updates for players who just joined this frame
@@ -57,7 +57,8 @@ pub fn generate_horizon_events(game: &mut AirmashGame) {
     player_db.query_pos(pos.0, config.view_radius, LayerSpec::None, &mut vis_players);
     mob_db.query_pos(pos.0, config.view_radius, LayerSpec::None, &mut vis_mobs);
 
-    let new_vis = HashSet::from_iter(
+    new_vis.clear();
+    new_vis.extend(
       vis_players
         .drain(..)
         .filter(|&x| x != ent)
@@ -65,7 +66,8 @@ pub fn generate_horizon_events(game: &mut AirmashGame) {
         .chain(vis_mobs.drain(..)),
     );
 
-    let old_vis = std::mem::replace(&mut visible.0, new_vis);
+    std::mem::swap(&mut visible.0, &mut new_vis);
+    let old_vis = &new_vis;
 
     for lost in old_vis.difference(&visible.0).copied() {
       actions.push(EventHorizon {
@@ -75,7 +77,7 @@ pub fn generate_horizon_events(game: &mut AirmashGame) {
       });
     }
 
-    for found in visible.difference(&old_vis).copied() {
+    for found in visible.difference(old_vis).copied() {
       actions.push(EventHorizon {
         player: ent,
         entity: found,

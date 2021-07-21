@@ -1,5 +1,5 @@
-use std::time::Instant;
 use std::{collections::HashSet, time::Duration};
+use std::{sync::Arc, time::Instant};
 
 use airmash_protocol::{MobType, Vector2};
 use hecs::{Entity, EntityBuilder, NoSuchEntity};
@@ -272,7 +272,7 @@ impl AirmashGame {
       Err(_) => return,
     };
 
-    connmgr.send_to_conn(conn, data);
+    connmgr.send_to_conn(conn, Arc::new(data));
   }
 
   /// Given an iterator of entities send the provided packet to all of them. If
@@ -294,12 +294,12 @@ impl AirmashGame {
   {
     let mut connmgr = self.resources.write::<ConnectionMgr>();
     let data = match v5::serialize(packet) {
-      Ok(data) => data,
+      Ok(data) => Arc::new(data),
       Err(_) => return,
     };
 
     for entity in entities {
-      connmgr.send_to(entity, data.clone());
+      connmgr.send_to(entity, Arc::clone(&data));
     }
   }
 
@@ -314,7 +314,7 @@ impl AirmashGame {
       Err(_) => return,
     };
 
-    connmgr.send_to(player, data);
+    connmgr.send_to(player, Arc::new(data));
   }
 
   /// Send a packet to all players that are within the visible range of the
