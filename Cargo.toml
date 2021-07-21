@@ -13,6 +13,5 @@ members = [
 	"server-macros",
 	"utils/bounded-queue",
 	"utils/special-map",
-	"utils/kdtree",
-	"utils/async-channel"
+	"utils/kdtree"
 ]
