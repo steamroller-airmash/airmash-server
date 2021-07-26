@@ -27,9 +27,10 @@ fn main() {
     .arg_from_usage("--region=[REGION]   'The region that this server belongs to'")
     .get_matches();
 
-  set_default_var("RUST_BACKTRACE", "1");
+  set_default_var("RUST_BACKTRACE", "full");
   set_default_var("RUST_LOG", "info");
   env_logger::init();
+  color_backtrace::install();
 
   let bind_addr = format!("0.0.0.0:{}", matches.value_of("port").unwrap_or("3501"));
 

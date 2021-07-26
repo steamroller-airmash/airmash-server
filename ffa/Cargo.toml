@@ -17,6 +17,7 @@ clap = "2.33"
 serde = "1.0"
 serde-deserialize-over = { git="https://github.com/steamroller-airmash/serde-deserialize-over" }
 serde_json = "1.0"
+color-backtrace = "0.5"
 
 # When specs updates to shred 0.8.0 this will need to be updated as well
 # shred = "0.7"
