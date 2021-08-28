@@ -1,0 +1,13 @@
+[package]
+name = "airmash-config"
+version = "0.1.0"
+edition = "2018"
+publish = false
+
+[dependencies]
+fxhash = "0.2"
+
+[dependencies.protocol]
+git = "https://github.com/steamroller-airmash/airmash-protocol-rs"
+branch = "remove-dimensioned"
+package = "airmash-protocol"

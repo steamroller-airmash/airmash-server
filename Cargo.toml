@@ -9,6 +9,7 @@ members = [
 	"base",
 	"ctf",
 	"ffa",
+	"config",
 	"server-next",
 	"server-macros",
 	"utils/bounded-queue",

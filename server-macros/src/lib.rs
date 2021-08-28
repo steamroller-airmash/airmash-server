@@ -1,4 +1,5 @@
 mod args;
+mod autocfg;
 mod handler;
 
 /// Automatically register a static function as an event handler.
