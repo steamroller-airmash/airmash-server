@@ -261,9 +261,9 @@ fn on_upgrade_command(event: &PacketEvent<Command>, game: &mut AirmashGame) {
     return;
   }
 
-  let (upgrades, _) = match game
+  let (upgrades, prev, _) = match game
     .world
-    .query_one_mut::<(&mut Upgrades, &IsPlayer)>(event.entity)
+    .query_one_mut::<(&mut Upgrades, &mut PrevUpgrades, &IsPlayer)>(event.entity)
   {
     Ok(query) => query,
     Err(_) => return,
@@ -292,6 +292,7 @@ fn on_upgrade_command(event: &PacketEvent<Command>, game: &mut AirmashGame) {
 
   *count += 1;
   upgrades.unused -= 1;
+  prev.0 = *upgrades;
 
   let packet = PlayerUpgrade {
     upgrades: upgrades.unused,

@@ -215,6 +215,13 @@ pub struct Upgrades {
   pub unused: u16,
 }
 
+/// The previous state of the upgrades that a player has.
+///
+/// If this differs from the current state then the server will automatically
+/// send an update packet to the client.
+#[derive(Default, Clone, Copy, Debug, PartialEq, Eq, Hash)]
+pub struct PrevUpgrades(pub Upgrades);
+
 /// Trajectory info for a missile.
 ///
 /// This is used to delete missiles which have reached the end of their

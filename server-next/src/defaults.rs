@@ -41,6 +41,7 @@ pub(crate) fn build_default_player(
     .add(KillCount(0))
     .add(DeathCount(0))
     .add(Upgrades::default())
+    .add(PrevUpgrades::default())
     .add(Name(login.name.clone()))
     .add(Team(0))
     .add(IsAlive(true))

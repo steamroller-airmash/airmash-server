@@ -10,7 +10,7 @@ pub struct GameConfig {
   /// If this is set to false then dead players will be unable to respawn until
   /// some external server logic allows them to.
   ///
-  /// This is enabled by default
+  /// This is enabled by default.
   pub default_respawn: bool,
 
   /// Whether or not players are allowed to respawn explicitly.
@@ -26,6 +26,18 @@ pub struct GameConfig {
   ///
   /// This is set to true by default.
   pub allow_damage: bool,
+
+  /// Whether players will occasionally drop upgrades on death. If this is set
+  /// to false then no upgrades will ever drop.
+  ///
+  /// This is set to true by default.
+  pub spawn_upgrades: bool,
+
+  /// Whether to default players to always being fully upgraded. If set to true
+  /// then players will always have 5555 upgrades.
+  ///
+  /// This is set to false by default.
+  pub always_upgraded: bool,
 }
 
 impl Default for GameConfig {
@@ -34,6 +46,8 @@ impl Default for GameConfig {
       default_respawn: true,
       allow_respawn: true,
       allow_damage: true,
+      spawn_upgrades: true,
+      always_upgraded: false,
     }
   }
 }

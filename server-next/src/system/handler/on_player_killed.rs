@@ -180,6 +180,13 @@ fn update_upgrades(event: &PlayerKilled, game: &mut AirmashGame) {
 fn drop_upgrade(event: &PlayerKilled, game: &mut AirmashGame) {
   let this_frame = game.this_frame();
   let config = game.resources.read::<Config>();
+  let game_config = game.resources.read::<GameConfig>();
+
+  // Do nothing if we aren't supposed to be spawning upgrades.
+  if !game_config.spawn_upgrades {
+    return;
+  }
+
   let (upgrades, &pos, &vel, last_action, _) =
     match game
       .world
@@ -202,6 +209,7 @@ fn drop_upgrade(event: &PlayerKilled, game: &mut AirmashGame) {
   let prob = rand::random::<f32>();
 
   drop(config);
+  drop(game_config);
 
   if total_upgrades > 0 || prob < consts::UPGRADE_DROP_PROBABILITY {
     game.spawn_mob(MobType::Upgrade, pos.0, lifetime);

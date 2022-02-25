@@ -25,15 +25,16 @@ fn update_player_upgrades(event: &PlayerMobCollision, game: &mut AirmashGame) {
     return;
   }
 
-  let (upgrades, _) = match game
+  let (upgrades, prev, _) = match game
     .world
-    .query_one_mut::<(&mut Upgrades, &IsPlayer)>(event.player)
+    .query_one_mut::<(&mut Upgrades, &mut PrevUpgrades, &IsPlayer)>(event.player)
   {
     Ok(query) => query,
     Err(_) => return,
   };
 
   upgrades.unused += 1;
+  prev.0 = *upgrades;
 }
 
 #[handler]
