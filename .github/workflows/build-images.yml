@@ -22,7 +22,6 @@ jobs:
         with:
           context: .
           tags: ghcr.io/steamroller-airmash/server:${{ matrix.target }}
-          file: .github/assets/dockerfile
           secrets: |
             TARGET=${{ matrix.target }}
           push: false
