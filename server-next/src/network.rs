@@ -260,7 +260,10 @@ async fn run_connection(
 
   let mut ws_stream = match res {
     Ok(stream) => stream,
-    Err(_) => return Ok(()),
+    Err(e) => {
+      info!("Failed to open websocket connection from {}: {}", addr, e);
+      return Ok(());
+    }
   };
 
   info!("New client connected from {}", addr);
@@ -318,7 +321,7 @@ async fn run_connection(
 
 fn generate_status_response() -> ErrorResponse {
   Response::builder()
-    .status(200)
+    .status(400)
     .header("Content-Type", "application/json; charset=utf-8")
     .body(Some(format!(
       "{{\"players\":{}}}",
