@@ -21,24 +21,3 @@ fn override_player_upgrades(evt: &PlayerSpawn, game: &mut AirmashGame) {
   upgrades.energy = 5;
   upgrades.missile = 5;
 }
-
-#[handler]
-fn send_upgrade_packet(event: &PlayerSpawn, game: &mut AirmashGame) {
-  use crate::protocol::{UpgradeType, server::PlayerUpgrade};
-
-  let upgrades = match game.world.query_one_mut::<&Upgrades>(event.player) {
-    Ok(upgrades) => upgrades,
-    Err(_) => return,
-  };
-
-  let packet = PlayerUpgrade {
-    upgrades: upgrades.unused,
-    ty: UpgradeType::None,
-    speed: upgrades.speed,
-    defense: upgrades.defense,
-    energy: upgrades.energy,
-    missile: upgrades.missile,
-  };
-
-  game.send_to(event.player, packet);
-}

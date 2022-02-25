@@ -21,6 +21,7 @@ mod powerups;
 mod regen;
 mod scoreboard;
 mod specials;
+mod upgrades;
 mod visibility;
 
 /// Main airmash update loop.
@@ -53,6 +54,7 @@ pub fn update(game: &mut AirmashGame) {
   self::powerups::update(game);
   self::scoreboard::update(game);
   self::ping::update(game);
+  self::upgrades::update(game);
 
   game.dispatch(Frame);
 
