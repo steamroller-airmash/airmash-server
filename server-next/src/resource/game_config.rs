@@ -47,7 +47,7 @@ impl Default for GameConfig {
       allow_respawn: true,
       allow_damage: true,
       spawn_upgrades: true,
-      always_upgraded: true, //false,
+      always_upgraded: false,
     }
   }
 }
