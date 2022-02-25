@@ -161,7 +161,7 @@ impl Default for Terrain {
     let mut entries = Vec::with_capacity(TERRAIN.len());
     for [x, y, r] in TERRAIN {
       entries.push(Entry {
-        entity: Entity::from_bits(0),
+        entity: Entity::from_bits(1 << 32).unwrap(),
         pos: vector![x as f32, y as f32],
         radius: r as f32,
         layer: 0,

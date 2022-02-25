@@ -187,7 +187,7 @@ impl AirmashGame {
     self.resources.insert(GameType::FFA);
 
     // Having entities with id 0 screws up some assumptions that airmash makes
-    self.world.spawn_at(Entity::from_bits(0), ());
+    self.world.spawn_at(Entity::from_bits(1 << 32).unwrap(), ());
 
     let dispatcher = self.dispatcher();
     for func in crate::dispatch::AIRMASH_EVENT_HANDLERS {

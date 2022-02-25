@@ -248,7 +248,7 @@ impl AirmashGame {
       //
       //       There is a test at the end of this file that verifies that this works
       //       as expected.
-      let entity = Entity::from_bits(entity.to_bits() + (1 << 32));
+      let entity = Entity::from_bits(entity.to_bits().get() + (1 << 32)).unwrap_or(entity);
 
       // The airmash client doesn't like it if you reuse ids soon after they get
       // destroyed. By reserving them for a minute we should prevent having dead

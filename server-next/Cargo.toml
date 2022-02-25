@@ -7,7 +7,7 @@ edition = "2018"
 mt-network = []
 
 [dependencies]
-hecs = "0.5"
+hecs = "0.7.6"
 nalgebra = "0.28"
 anymap = "0.12"
 linkme = "0.2.6"
