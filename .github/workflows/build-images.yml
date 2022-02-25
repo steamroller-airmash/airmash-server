@@ -1,5 +1,11 @@
 
-on: [push]
+on:
+  - workflow_dispatch:
+      inputs:
+        is_release:
+          default: 'true'
+          type: boolean
+  - push:
 
 name: docker
 
@@ -25,5 +31,5 @@ jobs:
           tags: ghcr.io/steamroller-airmash/server:${{ matrix.target }}
           build-args: |
             TARGET=${{ matrix.target }}
-          push: true
+          push: ${{ github.event.is_release == 'true' }}
 
