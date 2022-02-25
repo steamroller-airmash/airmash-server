@@ -292,5 +292,9 @@
     "secs": 10,
     "nanos": 0
   },
-  "view_radius": 2250.0
+  "view_radius": 2250.0,
+  "respawn_delay": {
+    "secs": 2,
+    "nanos": 0
+  }
 }

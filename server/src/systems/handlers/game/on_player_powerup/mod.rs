@@ -13,7 +13,7 @@ pub use self::register::register;
 pub type AllPlayerPowerupSystems = (TriggerUpdate);
 
 pub type KnownEventSources = (
-	crate::systems::admin::GivePowerup,
-	crate::systems::handlers::game::on_player_respawn::GiveShield,
-	crate::systems::powerups::Pickup,
+  crate::systems::admin::GivePowerup,
+  crate::systems::handlers::game::on_player_respawn::GiveShield,
+  crate::systems::powerups::Pickup,
 );

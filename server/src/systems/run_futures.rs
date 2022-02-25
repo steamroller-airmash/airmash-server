@@ -8,21 +8,21 @@ use crate::types::FutureDispatcher;
 pub struct RunTimedFutures;
 
 impl<'a> System<'a> for RunTimedFutures {
-	type SystemData = (WriteExpect<'a, FutureDispatcher>, Read<'a, ThisFrame>);
+  type SystemData = (WriteExpect<'a, FutureDispatcher>, Read<'a, ThisFrame>);
 
-	fn run(&mut self, (mut data, now): Self::SystemData) {
-		data.exec_tasks(now.0);
-	}
+  fn run(&mut self, (mut data, now): Self::SystemData) {
+    data.exec_tasks(now.0);
+  }
 }
 
 impl SystemInfo for RunTimedFutures {
-	type Dependencies = ();
+  type Dependencies = ();
 
-	fn name() -> &'static str {
-		concat!(module_path!(), "::", line!())
-	}
+  fn name() -> &'static str {
+    concat!(module_path!(), "::", line!())
+  }
 
-	fn new() -> Self {
-		Self {}
-	}
+  fn new() -> Self {
+    Self {}
+  }
 }

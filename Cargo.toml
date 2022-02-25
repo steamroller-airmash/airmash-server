@@ -2,18 +2,16 @@
 [profile.release]
 # Turn on nice backtraces even when in release mode
 debug = true
-#lto = true
-
-[patch.crates-io]
-airmash-protocol = { git = "https://github.com/steamroller-airmash/airmash-protocol-rs" }
-airmash-protocol-v5 = { git = "https://github.com/steamroller-airmash/airmash-protocol-v5" }
 
 [workspace]
 members = [
-	"server",
+	# "server",
 	"base",
 	"ctf",
 	"ffa",
-	"bounded-queue",
-	"special-map"
+	"server-next",
+	"server-macros",
+	"utils/bounded-queue",
+	"utils/special-map",
+	"utils/kdtree"
 ]

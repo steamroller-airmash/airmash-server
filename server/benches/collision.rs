@@ -19,53 +19,53 @@ const ZEROS: (u32, u32) = (0, 0);
 const ONES: (u32, u32) = (!0, !0);
 
 fn generate_circles() -> Vec<HitCircle> {
-	let mut circles = vec![];
+  let mut circles = vec![];
 
-	for _ in 0..10000 {
-		let x: f32 = rand::random::<f32>() * 32768.0;
-		let y: f32 = rand::random::<f32>() * 16384.0;
-		let r: f32 = rand::random::<f32>() * 35.0;
+  for _ in 0..10000 {
+    let x: f32 = rand::random::<f32>() * 32768.0;
+    let y: f32 = rand::random::<f32>() * 16384.0;
+    let r: f32 = rand::random::<f32>() * 35.0;
 
-		circles.push(HitCircle {
-			pos: Position::new(x, y),
-			rad: r.into(),
-			layer: 1,
-			// Ent is POD, and there's no way to
-			// construct it without setting up all
-			// of specs, this should be ok
-			ent: unsafe { mem::transmute(ONES) },
-		})
-	}
+    circles.push(HitCircle {
+      pos: Position::new(x, y),
+      rad: r.into(),
+      layer: 1,
+      // Ent is POD, and there's no way to
+      // construct it without setting up all
+      // of specs, this should be ok
+      ent: unsafe { mem::transmute(ONES) },
+    })
+  }
 
-	circles
+  circles
 }
 
 #[bench]
 fn terrain_collision(b: &mut Bencher) {
-	let ent: Entity = unsafe { mem::transmute(ZEROS) };
-	let circles = generate_circles();
-	let terrain = Terrain::with_entity(TERRAIN.iter(), ent);
+  let ent: Entity = unsafe { mem::transmute(ZEROS) };
+  let circles = generate_circles();
+  let terrain = Terrain::with_entity(TERRAIN.iter(), ent);
 
-	b.iter(move || terrain.collide(circles.iter().cloned()))
+  b.iter(move || terrain.collide(circles.iter().cloned()))
 }
 
 #[bench]
 fn create_grid(b: &mut Bencher) {
-	let circles = generate_circles();
+  let circles = generate_circles();
 
-	b.iter(move || Grid::new(circles.clone()));
+  b.iter(move || Grid::new(circles.clone()));
 }
 
 #[bench]
 fn copy_vector(b: &mut Bencher) {
-	let circles = generate_circles();
+  let circles = generate_circles();
 
-	b.iter(move || circles.clone());
+  b.iter(move || circles.clone());
 }
 
 #[bench]
 fn create_empty_grid(b: &mut Bencher) {
-	let circles = vec![];
+  let circles = vec![];
 
-	b.iter(move || Grid::new(circles.clone()));
+  b.iter(move || Grid::new(circles.clone()));
 }

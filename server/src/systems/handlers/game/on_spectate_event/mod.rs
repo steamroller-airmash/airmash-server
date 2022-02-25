@@ -15,13 +15,13 @@ pub use self::set_spectate_flag::SetSpectateFlag;
 pub use self::set_target::SetSpectateTarget;
 
 pub type AllSpectateEventHandlers = (
-	SendKillPacket,
-	SendSpectatePacket,
-	SendTimerEvent,
-	SetDeadFlag,
-	SetSpectateFlag,
-	SetSpectateTarget,
-	CreateDespawnEvent,
+  SendKillPacket,
+  SendSpectatePacket,
+  SendTimerEvent,
+  SetDeadFlag,
+  SetSpectateFlag,
+  SetSpectateTarget,
+  CreateDespawnEvent,
 );
 
 pub type KnownEventSources = (crate::systems::handlers::command::Spectate);

@@ -23,12 +23,12 @@ pub use self::send_player_powerup::SendPlayerPowerup;
 pub use self::send_score::SendScoreUpdate;
 
 pub type AllJoinHandlers = (
-	InitConnection,
-	SendPlayerLevel,
-	SendLogin,
-	SendPlayerNew,
-	SendScoreUpdate,
-	SendPlayerPowerup,
+  InitConnection,
+  SendPlayerLevel,
+  SendLogin,
+  SendPlayerNew,
+  SendScoreUpdate,
+  SendPlayerPowerup,
 );
 
 pub type KnownEventSources = ();

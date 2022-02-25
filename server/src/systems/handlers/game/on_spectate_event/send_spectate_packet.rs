@@ -10,39 +10,39 @@ pub struct SendSpectatePacket;
 
 #[derive(SystemData)]
 pub struct SendSpectatePacketData<'a> {
-	conns: SendToPlayer<'a>,
+  conns: SendToPlayer<'a>,
 }
 
 impl EventHandlerTypeProvider for SendSpectatePacket {
-	type Event = PlayerSpectate;
+  type Event = PlayerSpectate;
 }
 
 impl<'a> EventHandler<'a> for SendSpectatePacket {
-	type SystemData = SendSpectatePacketData<'a>;
+  type SystemData = SendSpectatePacketData<'a>;
 
-	fn on_event(&mut self, evt: &PlayerSpectate, data: &mut Self::SystemData) {
-		// GameSpectate only gets sent if there
-		// is someone to spectate
-		if evt.target.is_none() {
-			return;
-		}
+  fn on_event(&mut self, evt: &PlayerSpectate, data: &mut Self::SystemData) {
+    // GameSpectate only gets sent if there
+    // is someone to spectate
+    if evt.target.is_none() {
+      return;
+    }
 
-		let packet = GameSpectate {
-			id: evt.target.unwrap().into(),
-		};
+    let packet = GameSpectate {
+      id: evt.target.unwrap().into(),
+    };
 
-		data.conns.send_to_player(evt.player, packet);
-	}
+    data.conns.send_to_player(evt.player, packet);
+  }
 }
 
 impl SystemInfo for SendSpectatePacket {
-	type Dependencies = super::KnownEventSources;
+  type Dependencies = super::KnownEventSources;
 
-	fn name() -> &'static str {
-		concat!(module_path!(), "::", line!())
-	}
+  fn name() -> &'static str {
+    concat!(module_path!(), "::", line!())
+  }
 
-	fn new() -> Self {
-		Self::default()
-	}
+  fn new() -> Self {
+    Self::default()
+  }
 }

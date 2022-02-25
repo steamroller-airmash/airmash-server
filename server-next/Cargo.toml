@@ -1,0 +1,48 @@
+[package]
+name = "airmash-server"
+version = "0.1.0"
+edition = "2018"
+
+[features]
+mt-network = []
+
+[dependencies]
+hecs = "0.7.6"
+nalgebra = "0.28"
+anymap = "0.12"
+linkme = "0.2.6"
+log = "0.4"
+crossbeam-channel = "0.5"
+bstr = "0.2"
+rand = "0.8"
+uuid = { version = "0.8", features = ["v4"] }
+smallvec = "1.6"
+itertools = "0.10"
+slab = "0.4"
+fxhash = "0.2"
+
+tokio = { version="1.0", features=["rt", "sync", "io-util", "macros", "time", "rt-multi-thread"] }
+tokio-tungstenite = "0.17.1"
+
+serde = { version = "1.0", features = ["derive"] }
+serde-deserialize-over = { git="https://github.com/steamroller-airmash/serde-deserialize-over" }
+
+server-macros = { path="../server-macros" }
+kdtree = { path="../utils/kdtree" }
+
+[dependencies.futures-util]
+version = "0.3"
+default-features = false
+features = [ "sink" ] 
+
+[dependencies.futures-task]
+version = "0.3"
+default-features = false
+
+[dependencies.airmash-protocol]
+git = "https://github.com/steamroller-airmash/airmash-protocol-rs"
+branch = "remove-dimensioned"
+features = [ "serde" ]
+
+[dev-dependencies]
+approx = "0.5"

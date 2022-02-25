@@ -1,0 +1,47 @@
+on: [push, pull_request]
+
+name: ci-linux
+
+jobs:
+  build_and_test:
+    name: airmash
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        toolchain: [stable, beta]
+        config: [debug, release]
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions-rs/toolchain@v1
+        with:
+          toolchain: ${{ matrix.toolchain }}
+          profile: minimal
+          override: true
+      - uses: Swatinem/rust-cache@v1
+        with:
+          key: ${{ matrix.toolchain }}-${{ matrix.config }}
+      - name: Setup cargo flags
+        if: matrix.config == 'release'
+        run: |
+          echo CARGO_FLAGS=--release >> "$GITHUB_ENV"
+      - uses: actions-rs/cargo@v1
+        with:
+          command: test
+          args: --color always $CARGO_FLAGS
+  
+  check-fmt:
+    name: check-fmt
+    runs-on: ubuntu-latest
+    continue-on-error: true
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions-rs/toolchain@v1
+        with:
+          toolchain: stable
+          profile: minimal
+          override: true
+          components: rustfmt
+      - uses: actions-rs/cargo@v1
+        with:
+            command: fmt
+            args: --all -- --check --config unstable_features=true

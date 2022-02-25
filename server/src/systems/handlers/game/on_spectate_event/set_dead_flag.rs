@@ -11,37 +11,38 @@ pub struct SetDeadFlag;
 
 #[derive(SystemData)]
 pub struct SetDeadFlagData<'a> {
-	is_dead: WriteStorage<'a, IsDead>,
-	tasks: WriteExpect<'a, TaskSpawner>,
+  is_dead: WriteStorage<'a, IsDead>,
+  tasks: WriteExpect<'a, TaskSpawner>,
 }
 
 impl EventHandlerTypeProvider for SetDeadFlag {
-	type Event = PlayerSpectate;
+  type Event = PlayerSpectate;
 }
 
 impl<'a> EventHandler<'a> for SetDeadFlag {
-	type SystemData = SetDeadFlagData<'a>;
+  type SystemData = SetDeadFlagData<'a>;
 
-	fn on_event(&mut self, evt: &PlayerSpectate, data: &mut Self::SystemData) {
-		if !evt.is_dead && !evt.is_spec {
-			data.is_dead.insert(evt.player, IsDead).unwrap();
+  fn on_event(&mut self, evt: &PlayerSpectate, data: &mut Self::SystemData) {
+    if !evt.is_dead && !evt.is_spec {
+      data.is_dead.insert(evt.player, IsDead).unwrap();
 
-			let player = evt.player;
-			let tdata = data.tasks.task_data();
-			data.tasks
-				.launch(crate::task::death_cooldown(tdata, player));
-		}
-	}
+      let player = evt.player;
+      let tdata = data.tasks.task_data();
+      data
+        .tasks
+        .launch(crate::task::death_cooldown(tdata, player));
+    }
+  }
 }
 
 impl SystemInfo for SetDeadFlag {
-	type Dependencies = super::KnownEventSources;
+  type Dependencies = super::KnownEventSources;
 
-	fn name() -> &'static str {
-		concat!(module_path!(), "::", line!())
-	}
+  fn name() -> &'static str {
+    concat!(module_path!(), "::", line!())
+  }
 
-	fn new() -> Self {
-		Self::default()
-	}
+  fn new() -> Self {
+    Self::default()
+  }
 }

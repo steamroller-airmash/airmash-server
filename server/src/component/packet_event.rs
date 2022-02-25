@@ -9,17 +9,17 @@ use std::time::Instant;
 
 #[derive(Copy, Clone, Debug)]
 pub struct PacketEvent<T> {
-	pub data: T,
-	pub received: Instant,
-	pub conn: ConnectionId,
+  pub data: T,
+  pub received: Instant,
+  pub conn: ConnectionId,
 }
 
 impl<T> PacketEvent<T> {
-	pub fn new(conn: ConnectionId, data: T, received: Instant) -> Self {
-		Self {
-			conn,
-			data,
-			received,
-		}
-	}
+  pub fn new(conn: ConnectionId, data: T, received: Instant) -> Self {
+    Self {
+      conn,
+      data,
+      received,
+    }
+  }
 }

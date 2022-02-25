@@ -14,42 +14,42 @@ pub struct SendPlayerLevel;
 
 #[derive(SystemData)]
 pub struct SendPlayerLevelData<'a> {
-	conns: SendToAll<'a>,
+  conns: SendToAll<'a>,
 
-	level: ReadStorage<'a, Level>,
+  level: ReadStorage<'a, Level>,
 }
 
 impl EventHandlerTypeProvider for SendPlayerLevel {
-	type Event = PlayerJoin;
+  type Event = PlayerJoin;
 }
 
 impl<'a> EventHandler<'a> for SendPlayerLevel {
-	type SystemData = SendPlayerLevelData<'a>;
+  type SystemData = SendPlayerLevelData<'a>;
 
-	fn on_event(&mut self, evt: &PlayerJoin, data: &mut Self::SystemData) {
-		let packet = PlayerLevel {
-			id: evt.id.into(),
-			ty: PlayerLevelType::Login,
-			level: *try_get!(evt.id, data.level),
-		};
+  fn on_event(&mut self, evt: &PlayerJoin, data: &mut Self::SystemData) {
+    let packet = PlayerLevel {
+      id: evt.id.into(),
+      ty: PlayerLevelType::Login,
+      level: *try_get!(evt.id, data.level),
+    };
 
-		data.conns.send_to_others(evt.id, packet);
-	}
+    data.conns.send_to_others(evt.id, packet);
+  }
 }
 
 impl SystemInfo for SendPlayerLevel {
-	type Dependencies = (
-		// super::InitTraits,
-		super::SendLogin,
-		super::InitConnection,
-		super::SendPlayerNew,
-	);
+  type Dependencies = (
+    // super::InitTraits,
+    super::SendLogin,
+    super::InitConnection,
+    super::SendPlayerNew,
+  );
 
-	fn name() -> &'static str {
-		concat!(module_path!(), "::", line!())
-	}
+  fn name() -> &'static str {
+    concat!(module_path!(), "::", line!())
+  }
 
-	fn new() -> Self {
-		Self::default()
-	}
+  fn new() -> Self {
+    Self::default()
+  }
 }

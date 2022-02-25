@@ -32,7 +32,7 @@ pub use self::units::*;
 pub use self::upgrades::*;
 
 pub mod event {
-	pub use crate::types::connection_events::*;
+  pub use crate::types::connection_events::*;
 }
 
 pub use self::connection::{ConnectionType, Connections};

@@ -20,12 +20,12 @@ block-bots = []
 kd-tree = []
 
 [dependencies]
+
 log = "0.4"
 # When specs updates to shred 0.8.0 this will need to be updated as well
 shred = "0.7"
 shred-derive = "0.5"
-specs = { version = "0.14.3", features = ["nightly"] }
-specs-derive = "0.4"
+specs = { version = "0.17", features = ["derive"] }
 dimensioned = "0.7"
 lazy_static = "1.0"
 rand = "0.4"
@@ -33,9 +33,9 @@ shrev = "1.1"
 rayon = "1.0"
 htmlescape = "0.3"
 hibitset = "0.5"
-bounded-queue = { path = "../bounded-queue" }
-special-map = { path = "../special-map" }
-airmash-protocol-v5 = { git="https://github.com/steamroller-airmash/airmash-protocol-v5"}
+bounded-queue = { path = "../utils/bounded-queue" }
+special-map = { path = "../utils/special-map" }
+# airmash-protocol-v5 = { git="https://github.com/steamroller-airmash/airmash-protocol-v5"}
 serde = { version = "1.0", features = ["derive"] }
 serde_json = "1.0"
 serde-deserialize-over = { git="https://github.com/steamroller-airmash/serde-deserialize-over" }
@@ -49,9 +49,10 @@ optional = true
 version = "*"
 
 [dependencies.airmash-protocol]
-version = "0.3"
-features = ["specs"]
+version = "0.4"
+features = ["specs", "serde"]
 git = "https://github.com/steamroller-airmash/airmash-protocol-rs"
+branch = "remove-dimensioned"
 
 [dependencies.uuid]
 version = "0.7"

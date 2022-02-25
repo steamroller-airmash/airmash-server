@@ -9,21 +9,31 @@ repository = 'https://github.com/steamroller-airmash/airmash-server'
 edition = "2018"
 
 [dependencies]
-# When specs updates to shred 0.8.0 this will need to be updated as well
-shred = "0.7"
-shred-derive = "0.5"
-specs = { version = "0.14.3", features = ["nightly"] }
-specs-derive = "*"
-airmash-server = { path='../server' }
-log = "*"
-env_logger = "*"
-rand = "0.4"
-lazy_static = "*"
-clap = "*"
+server = { path="../server-next", package="airmash-server" }
+log = "0.4"
+env_logger = "0.9"
+rand = "0.8"
+clap = "2.33"
 serde = "1.0"
 serde-deserialize-over = { git="https://github.com/steamroller-airmash/serde-deserialize-over" }
-serde_json = "*"
+serde_json = "1.0"
+color-backtrace = "0.5"
 
-[dependencies.sentry]
-optional = true
-version = "*"
+# When specs updates to shred 0.8.0 this will need to be updated as well
+# shred = "0.7"
+# shred-derive = "0.5"
+# specs = { version = "0.14.3", features = ["nightly"] }
+# specs-derive = "*"
+# airmash-server = { path='../server' }
+# log = "*"
+# env_logger = "*"
+# rand = "0.4"
+# lazy_static = "*"
+# clap = "*"
+# serde = "1.0"
+# serde-deserialize-over = { git="https://github.com/steamroller-airmash/serde-deserialize-over" }
+# serde_json = "*"
+
+# [dependencies.sentry]
+# optional = true
+# version = "*"

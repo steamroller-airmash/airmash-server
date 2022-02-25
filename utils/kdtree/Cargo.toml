@@ -1,0 +1,10 @@
+[package]
+name = "kdtree"
+version = "0.1.0"
+edition = "2018"
+
+[dependencies]
+pdqselect = "0.1"
+
+[dev-dependencies]
+rand = "0.8"

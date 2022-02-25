@@ -40,5 +40,5 @@ pub struct ForcePlayerUpdate;
 pub struct IsBoosting;
 
 impl Component for IsBoosting {
-	type Storage = FlaggedStorage<Self, NullStorage<Self>>;
+  type Storage = FlaggedStorage<Self, NullStorage<Self>>;
 }

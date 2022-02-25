@@ -1,67 +1,51 @@
-extern crate airmash_server;
-extern crate clap;
-extern crate env_logger;
-extern crate serde_json;
-extern crate specs;
 #[macro_use]
 extern crate log;
 
+use serde_deserialize_over::DeserializeOver;
 use std::env;
 use std::fs::File;
 
 use airmash_server::protocol::GameType;
+use airmash_server::resource::Config;
+use airmash_server::resource::RegionName;
 use airmash_server::*;
-use specs::Entity;
-
-struct EmptyGameMode;
-
-impl GameMode for EmptyGameMode {
-	fn assign_team(&mut self, player: Entity) -> Team {
-		Team(player.id() as u16)
-	}
-	fn spawn_pos(&mut self, _: Entity, _: Team) -> Position {
-		Position::default()
-	}
-	fn gametype(&self) -> GameType {
-		GameType::FFA
-	}
-	fn room(&self) -> String {
-		"matrix".to_owned()
-	}
-}
 
 fn main() {
-	let matches = clap::App::new("airmash-server-ffa")
-		.version(env!("CARGO_PKG_VERSION"))
-		.author("STEAMROLLER")
-		.about("Airmash FFA server")
-		.args_from_usage("-c, --config=[FILE] 'Provides an alternate config file'")
-		.get_matches();
+  let matches = clap::App::new("airmash-server-ffa")
+    .version(env!("CARGO_PKG_VERSION"))
+    .author("STEAMROLLER")
+    .about("Airmash FFA server")
+    .args_from_usage("-c, --config=[FILE] 'Provides an alternate config file'")
+    .get_matches();
 
-	env::set_var("RUST_BACKTRACE", "1");
-	env::set_var("RUST_LOG", "info");
+  env::set_var("RUST_BACKTRACE", "1");
+  env::set_var("RUST_LOG", "debug");
 
-	env_logger::init();
+  env_logger::init();
 
-	let mut config = AirmashServerConfig::new("0.0.0.0:3501", EmptyGameMode).with_engine();
+  let mut game = AirmashGame::with_network("0.0.0.0:3501".parse().unwrap());
+  game.resources.insert(RegionName("matrix".to_owned()));
+  game.resources.insert(GameType::FFA);
 
-	if let Some(path) = matches.value_of("config") {
-		let file = match File::open(path) {
-			Ok(x) => x,
-			Err(e) => {
-				eprintln!("Unable to open config file. Error was {}", e);
-				return;
-			}
-		};
+  // Use the FFA scoreboard.
+  airmash_server::system::ffa::register_all(&mut game);
 
-		let serverconfig: Config = serde_json::from_reader(file).unwrap_or_else(|e| {
-			error!("Unable to parse config file! Using default config.");
-			error!("Config file error was: {}", e);
-			Default::default()
-		});
+  if let Some(path) = matches.value_of("config") {
+    let file = match File::open(path) {
+      Ok(x) => x,
+      Err(e) => {
+        eprintln!("Unable to open config file. Error was {}", e);
+        return;
+      }
+    };
 
-		config.world.add_resource(serverconfig);
-	}
+    let mut config = game.resources.write::<Config>();
+    let mut de = serde_json::Deserializer::new(serde_json::de::IoRead::new(file));
+    if let Err(e) = config.deserialize_over(&mut de) {
+      error!("Unable to parse config file: {}", e);
+      return;
+    }
+  }
 
-	AirmashServer::new(config).run().unwrap();
+  game.run_until_shutdown();
 }
