@@ -18,8 +18,6 @@ jobs:
           profile: minimal
           override: true
       - uses: Swatinem/rust-cache@v1
-        with:
-          key: ${{ matrix.toolchain }}-${{ matrix.config }}
       - name: Setup cargo flags
         if: matrix.config == 'release'
         run: |
