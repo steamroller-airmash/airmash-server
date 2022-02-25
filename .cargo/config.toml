@@ -1,0 +1,6 @@
+
+[profile.prod]
+inherits = "release"
+debug = true
+lto = "thin"
+codegen-units = 1

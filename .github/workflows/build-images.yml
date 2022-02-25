@@ -1,0 +1,19 @@
+
+on: [push]
+
+name: docker
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        target: [ctf, ffa, base]
+    steps:
+      - uses: actions/checkout@v2
+      - name: Setup target env var
+        run: |
+          echo TARGET=${{ matrix.target }} >> $GITHUB_ENV
+      - name: Build docker image
+        run: |
+          docker build . -f .github/assets/dockerfile
