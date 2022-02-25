@@ -1,11 +1,11 @@
 
 on:
-  - workflow_dispatch:
-      inputs:
-        is_release:
-          default: 'true'
-          type: boolean
-  - push:
+  workflow_dispatch:
+    inputs:
+      is_release:
+        default: 'true'
+        type: boolean
+  push:
 
 name: docker
 
