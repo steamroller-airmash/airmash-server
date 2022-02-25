@@ -441,8 +441,8 @@ impl IntoIterator for EntitySetBuilder {
 
 #[test]
 fn hecs_entity_has_id_in_lower_32_bits() {
-  let ent1 = Entity::from_bits((77 << 32) + 22);
-  let ent2 = Entity::from_bits(ent1.to_bits() + (1 << 32));
+  let ent1 = Entity::from_bits((77 << 32) + 22).unwrap();
+  let ent2 = Entity::from_bits(ent1.to_bits().get() + (1 << 32)).unwrap();
 
   assert_eq!(ent1.id(), ent2.id());
 }
