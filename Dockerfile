@@ -1,13 +1,13 @@
 FROM rust:1.59-slim-bullseye as build-env
 
-ARG TARGET
+RUN apt-get update \
+  && apt-get install -y dwz \
+  && apt-get clean
 
 WORKDIR /build
 COPY . /build
 
-RUN apt-get update \
-  && apt-get install -y dwz \
-  && apt-get clean
+ARG TARGET
 
 RUN cargo build --profile prod --bin airmash-server-${TARGET}
 RUN mv target/prod/airmash-server-${TARGET} target/airmash-server
