@@ -1,6 +1,6 @@
 use crate::component::*;
-use crate::event::PlayerPowerup;
 use crate::event::PlayerRespawn;
+use crate::event::{PlayerPowerup, PlayerSpawn};
 use crate::protocol::PlaneType;
 use crate::protocol::PowerupType;
 use crate::resource::Config;
@@ -103,4 +103,11 @@ fn reset_player(event: &PlayerRespawn, game: &mut AirmashGame) {
   drop(query);
 
   game.dispatch(powerup);
+}
+
+#[handler]
+fn dispatch_player_spawn(event: &PlayerRespawn, game: &mut AirmashGame) {
+  game.dispatch(PlayerSpawn {
+    player: event.player,
+  });
 }

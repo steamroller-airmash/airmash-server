@@ -176,6 +176,28 @@ fn update_upgrades(event: &PlayerKilled, game: &mut AirmashGame) {
   upgrades.missile /= 2;
 }
 
+
+#[handler]
+fn send_upgrade_packet(event: &PlayerKilled, game: &mut AirmashGame) {
+  use crate::protocol::{UpgradeType, server::PlayerUpgrade};
+
+  let upgrades = match game.world.query_one_mut::<&Upgrades>(event.player) {
+    Ok(upgrades) => upgrades,
+    Err(_) => return,
+  };
+
+  let packet = PlayerUpgrade {
+    upgrades: upgrades.unused,
+    ty: UpgradeType::None,
+    speed: upgrades.speed,
+    defense: upgrades.defense,
+    energy: upgrades.energy,
+    missile: upgrades.missile,
+  };
+
+  game.send_to(event.player, packet);
+}
+
 #[handler(priority = crate::priority::HIGH)]
 fn drop_upgrade(event: &PlayerKilled, game: &mut AirmashGame) {
   let this_frame = game.this_frame();

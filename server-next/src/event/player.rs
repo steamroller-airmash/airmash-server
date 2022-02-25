@@ -44,6 +44,15 @@ pub struct PlayerRespawn {
   pub alive: bool,
 }
 
+/// A player has spawned.
+///
+/// This event is fired when a player respawns and when a player joins but only
+/// if they spawn immediately upon joining.
+#[derive(Copy, Clone, Debug)]
+pub struct PlayerSpawn {
+  pub player: Entity,
+}
+
 /// A player has switched their current plane.
 #[derive(Copy, Clone, Debug)]
 pub struct PlayerChangePlane {

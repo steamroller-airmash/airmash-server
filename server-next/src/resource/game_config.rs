@@ -32,6 +32,12 @@ pub struct GameConfig {
   ///
   /// This is set to true by default.
   pub spawn_upgrades: bool,
+
+  /// Whether to default players to always being fully upgraded. If set to true
+  /// then players will always have 5555 upgrades.
+  ///
+  /// This is set to false by default.
+  pub always_upgraded: bool,
 }
 
 impl Default for GameConfig {
@@ -41,6 +47,7 @@ impl Default for GameConfig {
       allow_respawn: true,
       allow_damage: true,
       spawn_upgrades: true,
+      always_upgraded: false,
     }
   }
 }

@@ -140,3 +140,19 @@ fn update_server_stats(_: &PlayerJoin, game: &mut AirmashGame) {
   stats.num_players += 1;
   NUM_PLAYERS.fetch_add(1, std::sync::atomic::Ordering::Relaxed);
 }
+
+#[handler(priority = crate::priority::CLEANUP)]
+fn dispatch_player_spawn(event: &PlayerJoin, game: &mut AirmashGame) {
+  use crate::event::PlayerSpawn;
+
+  let alive = match game.world.query_one_mut::<&IsAlive>(event.player) {
+    Ok(alive) => alive.0,
+    Err(_) => return,
+  };
+
+  if alive {
+    game.dispatch(PlayerSpawn {
+      player: event.player,
+    });
+  }
+}
