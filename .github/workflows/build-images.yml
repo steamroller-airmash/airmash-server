@@ -11,9 +11,8 @@ jobs:
         target: [ctf, ffa, base]
     steps:
       - uses: actions/checkout@v2
-      - name: Setup target env var
-        run: |
-          echo TARGET=${{ matrix.target }} >> $GITHUB_ENV
       - name: Build docker image
         run: |
-          docker build . -f .github/assets/dockerfile
+          docker build . \
+            -f .github/assets/dockerfile \
+            --build-arg TARGET=${{ matrix.target }}

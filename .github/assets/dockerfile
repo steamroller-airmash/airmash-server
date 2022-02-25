@@ -16,6 +16,8 @@ RUN dwz -L none -l none --odr target/airmash-server
 FROM debian:bullseye-slim
 
 COPY --from=build-env /build/target/airmash-server /
+
 EXPOSE 3501/tcp
+ENV RUST_LOG=info
 
 ENTRYPOINT [ "/airmash-server" ]
