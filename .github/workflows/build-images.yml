@@ -25,5 +25,5 @@ jobs:
           tags: ghcr.io/steamroller-airmash/server:${{ matrix.target }}
           build-args: |
             TARGET=${{ matrix.target }}
-          push: false
+          push: true
 
