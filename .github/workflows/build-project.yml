@@ -3,7 +3,7 @@ on: [push, pull_request]
 name: ci-linux
 
 jobs:
-  build_and_test:
+  test:
     name: airmash
     runs-on: ubuntu-latest
     strategy:
@@ -29,7 +29,7 @@ jobs:
           command: test
           args: --color always $CARGO_FLAGS
   
-  check-fmt:
+  format:
     name: check-fmt
     runs-on: ubuntu-latest
     continue-on-error: true
@@ -45,3 +45,13 @@ jobs:
         with:
             command: fmt
             args: --all -- --check --config unstable_features=true
+
+  verify-pass:
+    name: verify-tests-pass
+    needs: [test, format]
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: no-op
+        run: |
+          echo "All checks passed!"
