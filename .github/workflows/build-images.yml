@@ -23,7 +23,7 @@ jobs:
         with:
           context: .
           tags: ghcr.io/steamroller-airmash/server:${{ matrix.target }}
-          secrets: |
+          build-args: |
             TARGET=${{ matrix.target }}
           push: false
 
