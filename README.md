@@ -33,12 +33,7 @@ within the `base` folder.
 
 ### Compiler Version
 
-Note that rust nightly is required. Current `master` builds using:
-
-```
-rustc 1.37.0-nightly (400b409ef 2019-06-09)
-```
-
+CI verifies that each commit compiles with the latest stable version of rust.
 
 ## Logging in to the server
 
