@@ -1,5 +1,6 @@
 use crate::{network::ConnectionId, protocol::client as c};
 use hecs::Entity;
+use std::time::Instant;
 
 /// A packet has been recieved from a connection that has been associated with
 /// an entity.
@@ -13,6 +14,8 @@ use hecs::Entity;
 pub struct PacketEvent<P> {
   pub conn: ConnectionId,
   pub entity: Entity,
+  // The time at which the packet was received
+  pub time: Instant,
   pub packet: P,
 }
 

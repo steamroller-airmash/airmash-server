@@ -83,7 +83,13 @@ impl MockConnection {
 
     self
       .tx
-      .send((self.conn, InternalEvent::Data(data)))
+      .send((
+        self.conn,
+        InternalEvent::Data {
+          data,
+          time: Instant::now(),
+        },
+      ))
       .expect("Network event channel is closed");
   }
 

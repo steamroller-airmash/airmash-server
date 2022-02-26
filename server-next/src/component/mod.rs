@@ -4,7 +4,7 @@ use crate::protocol::PowerupType;
 use airmash_protocol::Vector2;
 use bstr::BString;
 use hecs::Entity;
-use std::time::Instant;
+use std::time::{Duration, Instant};
 use uuid::Uuid;
 
 mod keystate;
@@ -73,7 +73,7 @@ def_wrappers! {
   pub type TotalDamage = f32;
 
   /// The current ping of a player.
-  pub type PlayerPing = u16;
+  pub type PlayerPing = Duration;
 
   /// The player that another spectating player is watching.
   #[derive(Default)]
