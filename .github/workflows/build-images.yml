@@ -1,10 +1,6 @@
 
 on:
   workflow_dispatch:
-    inputs:
-      is_release:
-        default: 'true'
-        type: boolean
   push:
 
 name: docker
@@ -28,8 +24,8 @@ jobs:
       - uses: docker/build-push-action@v2
         with:
           context: .
-          tags: ghcr.io/steamroller-airmash/server:${{ matrix.target }}
+          tags: ghcr.io/${{ github.repository_owner }}/server:${{ matrix.target }}
           build-args: |
             TARGET=${{ matrix.target }}
-          push: ${{ github.event.is_release == 'true' }}
+          push: ${{ github.event_name == 'workflow_dispatch' }}
 
