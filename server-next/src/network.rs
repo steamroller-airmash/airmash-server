@@ -360,7 +360,6 @@ async fn websocket_handshake(
 
   const BAD_REQUEST: &[u8] = b"HTTP/1.0 400 Bad Request\r\n\r\n";
   const BAD_PROTOCOL: &[u8] = b"HTTP/1.0 405 Method Not Allowed\r\n\r\n";
-  const NOT_FOUND: &[u8] = b"HTTP/1.0 404 Not Found\r\n\r\n";
 
   let response = format!(
     "HTTP/1.0 200 OK\r\nContent-Type: application/json; charset=utf=8\r\n\r\n\
@@ -391,12 +390,6 @@ async fn websocket_handshake(
       log_request(addr, 405, &request);
       stream.write_all(BAD_PROTOCOL).await?;
       return Err(Error::new(ErrorKind::Other, ProtocolError::WrongHttpMethod));
-    }
-
-    if request.path != Some("/") {
-      log_request(addr, 404, &request);
-      stream.write_all(NOT_FOUND).await?;
-      return Err(Error::new(ErrorKind::NotFound, "Invalid request path"));
     }
 
     let has_connection_upgrade = request
