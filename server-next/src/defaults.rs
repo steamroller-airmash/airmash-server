@@ -2,8 +2,8 @@
 //! meant to make it easier add new ones for use within the main server.
 //! (External code can add them in EntitySpawn events if it needs to.)
 
-use std::str::FromStr;
 use std::time::Instant;
+use std::{str::FromStr, time::Duration};
 
 use hecs::EntityBuilder;
 use uuid::Uuid;
@@ -56,7 +56,7 @@ pub(crate) fn build_default_player(
     .add(Powerup::default())
     .add(JoinTime(this_frame))
     .add(Spectating::default())
-    .add(PlayerPing(0))
+    .add(PlayerPing(Duration::ZERO))
     .add(TotalDamage(0.0))
     .add(Captures(0));
 

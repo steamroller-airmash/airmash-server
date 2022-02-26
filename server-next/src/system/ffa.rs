@@ -33,7 +33,7 @@ fn respond_to_packet(event: &PacketEvent<ScoreDetailed>, game: &mut AirmashGame)
       kills: kills.0.try_into().unwrap_or(u16::MAX),
       deaths: deaths.0.try_into().unwrap_or(u16::MAX),
       damage: damage.0,
-      ping: ping.0,
+      ping: ping.as_millis().try_into().unwrap_or(u16::MAX),
     });
   }
 

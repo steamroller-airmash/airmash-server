@@ -78,11 +78,8 @@ fn handle_ping_response(event: &PacketEvent<Pong>, game: &mut AirmashGame) {
     None => return,
   };
 
-  let ping: u16 = match data.seq_time(event.packet.num) {
-    Some(time) => (event.time.saturating_duration_since(time))
-      .as_millis()
-      .try_into()
-      .unwrap_or(u16::MAX),
+  let ping = match data.seq_time(event.packet.num) {
+    Some(time) => event.time.saturating_duration_since(time),
     None => return,
   };
 
@@ -96,7 +93,7 @@ fn handle_ping_response(event: &PacketEvent<Pong>, game: &mut AirmashGame) {
   game.send_to(
     event.entity,
     PingResult {
-      ping,
+      ping: ping.as_millis().try_into().unwrap_or(u16::MAX),
       players_game: num_players,
       // TODO: Somehow get the total number of players from a server.
       players_total: num_players,
