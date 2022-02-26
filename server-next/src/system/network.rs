@@ -38,11 +38,9 @@ pub fn process_packets(game: &mut AirmashGame) {
 
     drop(conn_mgr);
 
-    let data = match evt {
-      ConnectionEvent::Opened => {
-        continue;
-      }
-      ConnectionEvent::Data(data) => data,
+    let (data, time) = match evt {
+      ConnectionEvent::Opened => continue,
+      ConnectionEvent::Data { data, time } => (data, time),
       ConnectionEvent::Closed(None) => continue,
       ConnectionEvent::Closed(Some(entity)) => {
         if !game.world.contains(entity) {
@@ -83,61 +81,73 @@ pub fn process_packets(game: &mut AirmashGame) {
       ClientPacket::Horizon(packet) => game.dispatch(PacketEvent {
         entity: assoc.unwrap(),
         conn,
+        time,
         packet,
       }),
       ClientPacket::Ack => game.dispatch(PacketEvent {
         entity: assoc.unwrap(),
         conn,
+        time,
         packet: c::Ack,
       }),
       ClientPacket::Pong(packet) => game.dispatch(PacketEvent {
         entity: assoc.unwrap(),
         conn,
+        time,
         packet,
       }),
       ClientPacket::Key(packet) => game.dispatch(PacketEvent {
         entity: assoc.unwrap(),
         conn,
+        time,
         packet,
       }),
       ClientPacket::Command(packet) => game.dispatch(PacketEvent {
         entity: assoc.unwrap(),
         conn,
+        time,
         packet,
       }),
       ClientPacket::ScoreDetailed => game.dispatch(PacketEvent {
         entity: assoc.unwrap(),
         conn,
+        time,
         packet: c::ScoreDetailed,
       }),
       ClientPacket::Chat(packet) => game.dispatch(PacketEvent {
         entity: assoc.unwrap(),
         conn,
+        time,
         packet,
       }),
       ClientPacket::TeamChat(packet) => game.dispatch(PacketEvent {
         entity: assoc.unwrap(),
         conn,
+        time,
         packet,
       }),
       ClientPacket::Whisper(packet) => game.dispatch(PacketEvent {
         entity: assoc.unwrap(),
         conn,
+        time,
         packet,
       }),
       ClientPacket::Say(packet) => game.dispatch(PacketEvent {
         entity: assoc.unwrap(),
         conn,
+        time,
         packet,
       }),
       ClientPacket::VoteMute(packet) => game.dispatch(PacketEvent {
         entity: assoc.unwrap(),
         conn,
+        time,
         packet,
       }),
       ClientPacket::LocalPing(packet) => game.dispatch(PacketEvent {
         entity: assoc.unwrap(),
         conn,
+        time,
         packet,
       }),
     }

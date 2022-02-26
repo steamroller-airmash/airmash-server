@@ -14,6 +14,7 @@ use std::{
   sync::atomic::{AtomicBool, AtomicUsize, Ordering},
   sync::Arc,
   thread::JoinHandle,
+  time::Instant,
 };
 
 use crossbeam_channel::{unbounded, Receiver, Sender};
@@ -55,13 +56,13 @@ pub(crate) struct ConnectionData {
 
 pub(crate) enum InternalEvent {
   Opened(ConnectionData),
-  Data(Vec<u8>),
+  Data { data: Vec<u8>, time: Instant },
   Closed,
 }
 
 pub(crate) enum ConnectionEvent {
   Opened,
-  Data(Vec<u8>),
+  Data { data: Vec<u8>, time: Instant },
   Closed(Option<Entity>),
 }
 
@@ -161,7 +162,7 @@ impl ConnectionMgr {
           self.conns.insert(conn, data);
           ConnectionEvent::Opened
         }
-        InternalEvent::Data(data) => ConnectionEvent::Data(data),
+        InternalEvent::Data { data, time } => ConnectionEvent::Data { data, time },
         InternalEvent::Closed => ConnectionEvent::Closed(match self.known.remove(&conn) {
           Some(ent) => match self.primary.get(&ent) {
             Some(&econn) if econn == conn => {
@@ -272,7 +273,12 @@ async fn run_connection(
         };
 
         if msg.is_binary() || msg.is_text() {
-          if let Err(_) = events.send((conn, InternalEvent::Data(msg.into_data()))) {
+          let evt = InternalEvent::Data {
+            data: msg.into_data(),
+            time: Instant::now()
+          };
+
+          if let Err(_) = events.send((conn, evt)) {
             return Ok(())
           }
         } else {
