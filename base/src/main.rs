@@ -10,16 +10,22 @@ use airmash_server::resource::Config;
 use airmash_server::resource::RegionName;
 use airmash_server::*;
 
+fn set_default_var(name: &str, value: &str) {
+  if None == env::var_os(name) {
+    env::set_var(name, value);
+  }
+}
+
 fn main() {
-  let matches = clap::App::new("airmash-server-ffa")
+  let matches = clap::App::new("airmash-server-base")
     .version(env!("CARGO_PKG_VERSION"))
     .author("STEAMROLLER")
-    .about("Airmash FFA server")
+    .about("Airmash Test Server")
     .args_from_usage("-c, --config=[FILE] 'Provides an alternate config file'")
     .get_matches();
 
-  env::set_var("RUST_BACKTRACE", "1");
-  env::set_var("RUST_LOG", "debug");
+  set_default_var("RUST_BACKTRACE", "full");
+  set_default_var("RUST_LOG", "info");
 
   env_logger::init();
 
