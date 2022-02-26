@@ -8,6 +8,7 @@ use crate::AirmashGame;
 use nalgebra::vector;
 use std::time::Duration;
 
+pub(crate) mod escapes;
 pub mod spectate;
 
 pub fn convert_time(dur: Duration) -> Time {
