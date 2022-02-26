@@ -6,7 +6,7 @@ use std::{
 
 use airmash_protocol::client::Pong;
 
-use crate::{component::*, event::PacketEvent, AirmashGame};
+use crate::{component::*, event::PacketEvent, AirmashGame, resource::ServerStats};
 
 struct PingData {
   seqs: VecDeque<(u32, Instant)>,
@@ -73,6 +73,7 @@ fn handle_ping_response(event: &PacketEvent<Pong>, game: &mut AirmashGame) {
   use crate::protocol::server::PingResult;
 
   let this_frame = game.this_frame();
+  let num_players = game.resources.read::<ServerStats>().num_players;
   let data = match game.resources.get::<PingData>() {
     Some(data) => data,
     None => return,
@@ -97,9 +98,9 @@ fn handle_ping_response(event: &PacketEvent<Pong>, game: &mut AirmashGame) {
     event.entity,
     PingResult {
       ping,
-      // TODO
-      players_game: 0,
-      players_total: 0,
+      players_game: num_players,
+      // TODO: Somehow get the total number of players from a server.
+      players_total: num_players,
     },
   )
 }
