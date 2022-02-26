@@ -65,6 +65,7 @@ dependencies = [
  "futures-util",
  "fxhash",
  "hecs",
+ "httparse",
  "itertools",
  "kdtree",
  "linkme",

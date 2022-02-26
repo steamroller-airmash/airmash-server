@@ -9,6 +9,7 @@
 use std::{
   collections::HashMap,
   fmt,
+  io::ErrorKind,
   net::SocketAddr,
   sync::atomic::{AtomicBool, AtomicUsize, Ordering},
   sync::Arc,
@@ -18,12 +19,18 @@ use std::{
 use crossbeam_channel::{unbounded, Receiver, Sender};
 use futures_util::{sink::SinkExt, stream::StreamExt};
 use hecs::Entity;
-use tokio::net::{TcpListener, TcpStream};
-use tokio::sync::mpsc::{unbounded_channel, UnboundedSender as AsyncSender};
-use tokio_tungstenite::tungstenite::{
-  handshake::server::{ErrorResponse, Response},
-  http::Request,
-  Message,
+use httparse::{Status, EMPTY_HEADER};
+use tokio::{
+  io::AsyncReadExt,
+  net::{TcpListener, TcpStream},
+};
+use tokio::{
+  io::AsyncWriteExt,
+  sync::mpsc::{unbounded_channel, UnboundedSender as AsyncSender},
+};
+use tokio_tungstenite::{
+  tungstenite::{self, Message},
+  WebSocketStream,
 };
 
 use crate::mock::MockConnectionEndpoint;
@@ -242,31 +249,14 @@ async fn run_connection(
 ) -> std::io::Result<()> {
   let addr = stream.peer_addr().unwrap_or(addr);
 
-  let res = tokio_tungstenite::accept_hdr_async(stream, |request: &Request<_>, response| {
-    let headers = request.headers();
-
-    let upgrade = match headers.get("Upgrade") {
-      Some(upgrade) => upgrade,
-      None => return Err(generate_status_response()),
-    };
-
-    if upgrade != "websocket" {
-      return Err(generate_status_response());
-    }
-
-    Ok(response)
-  })
-  .await;
-
-  let mut ws_stream = match res {
-    Ok(stream) => stream,
+  let mut ws_stream = match websocket_handshake(stream, &addr).await {
+    Ok(Some(stream)) => stream,
+    Ok(None) => return Ok(()),
     Err(e) => {
-      info!("Failed to open websocket connection from {}: {}", addr, e);
+      warn!("{}", e);
       return Ok(());
     }
   };
-
-  info!("New client connected from {}", addr);
 
   let (tx, mut rx) = unbounded_channel();
 
@@ -319,19 +309,152 @@ async fn run_connection(
   }
 }
 
-fn generate_status_response() -> ErrorResponse {
-  Response::builder()
-    .status(400)
-    .header("Content-Type", "application/json; charset=utf-8")
-    .body(Some(format!(
-      "{{\"players\":{}}}",
-      NUM_PLAYERS.load(Ordering::Relaxed)
-    )))
-    .expect("Failed to generate status response")
-}
-
 impl fmt::Display for ConnectionId {
   fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
     write!(f, "{}", self.0)
   }
+}
+
+fn log_request(addr: &SocketAddr, code: u16, request: &httparse::Request) {
+  use crate::util::escapes::StringEscape;
+
+  info!(
+    "{} - \"{} {} HTTP/1.{}\" {} \"{}\"",
+    addr.ip(),
+    request.method.unwrap_or("\"\""),
+    request.path.unwrap_or("\"\""),
+    request.version.unwrap_or(0),
+    code,
+    get_header(request, "User-Agent")
+      .unwrap_or_default()
+      .escaped(),
+  );
+}
+
+fn get_header<'h, 'b>(request: &httparse::Request<'h, 'b>, name: &str) -> Option<&'b [u8]> {
+  request
+    .headers
+    .iter()
+    .filter(|h| h.name.eq_ignore_ascii_case(name))
+    .map(|h| h.value)
+    .next()
+}
+
+fn has_header(request: &httparse::Request, name: &str, value: &str) -> bool {
+  request
+    .headers
+    .iter()
+    .filter(|h| h.name.eq_ignore_ascii_case(name) && h.value.eq_ignore_ascii_case(value.as_bytes()))
+    .next()
+    .is_some()
+}
+
+async fn websocket_handshake(
+  mut stream: TcpStream,
+  addr: &SocketAddr,
+) -> std::io::Result<Option<WebSocketStream<TcpStream>>> {
+  use httparse::Request;
+  use std::io::Error;
+  use tungstenite::error::ProtocolError;
+  use tungstenite::protocol::Role;
+
+  const BAD_REQUEST: &[u8] = b"HTTP/1.0 400 Bad Request\r\n\r\n";
+  const BAD_PROTOCOL: &[u8] = b"HTTP/1.0 405 Method Not Allowed\r\n\r\n";
+  const NOT_FOUND: &[u8] = b"HTTP/1.0 404 Not Found\r\n\r\n";
+
+  let response = format!(
+    "HTTP/1.0 200 OK\r\nContent-Type: application/json; charset=utf=8\r\n\r\n\
+    {{\"players\":{}}}\n",
+    NUM_PLAYERS.load(Ordering::Relaxed)
+  )
+  .into_bytes();
+
+  let mut buf = Vec::new();
+
+  loop {
+    stream.read_buf(&mut buf).await?;
+
+    let mut headers = [EMPTY_HEADER; 32];
+    let mut request = Request::new(&mut headers);
+
+    let bytes = match request.parse(&buf) {
+      Ok(Status::Complete(bytes)) => bytes,
+      Ok(Status::Partial) => continue,
+      Err(e) => {
+        log_request(addr, 400, &request);
+        stream.write_all(BAD_REQUEST).await?;
+        return Err(Error::new(ErrorKind::Other, e));
+      }
+    };
+
+    if request.method != Some("GET") {
+      log_request(addr, 405, &request);
+      stream.write_all(BAD_PROTOCOL).await?;
+      return Err(Error::new(ErrorKind::Other, ProtocolError::WrongHttpMethod));
+    }
+
+    if request.path != Some("/") {
+      log_request(addr, 404, &request);
+      stream.write_all(NOT_FOUND).await?;
+      return Err(Error::new(ErrorKind::NotFound, "Invalid request path"));
+    }
+
+    let has_connection_upgrade = request
+      .headers
+      .iter()
+      .filter(|h| h.name.eq_ignore_ascii_case("Connection"))
+      .any(|h| {
+        h.value
+          .split(|&c| c == b' ' || c == b',')
+          .any(|p| p.eq_ignore_ascii_case(b"Upgrade"))
+      });
+    let has_upgrade_websocket = has_header(&request, "Upgrade", "websocket");
+
+    if !has_connection_upgrade && !has_upgrade_websocket {
+      log_request(addr, 200, &request);
+      stream.write_all(&response).await?;
+      return Ok(None);
+    }
+
+    if !has_connection_upgrade
+      || !has_upgrade_websocket
+      || !has_header(&request, "Sec-Websocket-Version", "13")
+    {
+      log_request(addr, 400, &request);
+      stream.write_all(&response).await?;
+      return Err(Error::new(
+        ErrorKind::Other,
+        ProtocolError::MissingConnectionUpgradeHeader,
+      ));
+    }
+
+    let key = match get_header(&request, "Sec-Websocket-Key") {
+      Some(key) => key,
+      None => {
+        log_request(addr, 400, &request);
+        stream.write_all(&response).await?;
+        return Err(Error::new(
+          ErrorKind::Other,
+          ProtocolError::MissingSecWebSocketKey,
+        ));
+      }
+    };
+
+    let response = format!(
+      "HTTP/1.1 101 Switching Protocols\r\n\
+      Connection: Upgrade\r\n\
+      Upgrade: websocket\r\n\
+      Sec-WebSocket-Accept: {}\r\n\
+      \r\n",
+      tungstenite::handshake::derive_accept_key(key)
+    );
+    log_request(addr, 101, &request);
+    stream.write_all(response.as_bytes()).await?;
+
+    buf.drain(..bytes);
+    break;
+  }
+
+  let wss = WebSocketStream::from_partially_read(stream, buf, Role::Server, None).await;
+  Ok(Some(wss))
 }
