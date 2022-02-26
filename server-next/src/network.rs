@@ -249,13 +249,9 @@ async fn run_connection(
 ) -> std::io::Result<()> {
   let addr = stream.peer_addr().unwrap_or(addr);
 
-  let mut ws_stream = match websocket_handshake(stream, &addr).await {
-    Ok(Some(stream)) => stream,
-    Ok(None) => return Ok(()),
-    Err(e) => {
-      warn!("{}", e);
-      return Ok(());
-    }
+  let mut ws_stream = match websocket_handshake(stream, &addr).await? {
+    Some(stream) => stream,
+    None => return Ok(()),
   };
 
   let (tx, mut rx) = unbounded_channel();
