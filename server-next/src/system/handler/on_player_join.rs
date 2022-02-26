@@ -132,6 +132,30 @@ fn send_player_new(event: &PlayerJoin, game: &mut AirmashGame) {
 }
 
 #[handler]
+fn send_score_update(event: &PlayerJoin, game: &mut AirmashGame) {
+  use crate::protocol::server::ScoreUpdate;
+
+  let (score, earnings, deaths, kills, upgrades) =
+    match game
+      .world
+      .query_one_mut::<(&Score, &Earnings, &DeathCount, &KillCount, &Upgrades)>(event.player)
+    {
+      Ok(query) => query,
+      Err(_) => return,
+    };
+
+  let packet = ScoreUpdate {
+    id: event.player.id() as _,
+    score: score.0,
+    earnings: earnings.0,
+    total_deaths: deaths.0,
+    total_kills: kills.0,
+    upgrades: upgrades.unused,
+  };
+  game.send_to(event.player, packet);
+}
+
+#[handler]
 fn update_server_stats(_: &PlayerJoin, game: &mut AirmashGame) {
   use crate::network::NUM_PLAYERS;
 
