@@ -6,7 +6,7 @@ use std::{
 
 use airmash_protocol::client::Pong;
 
-use crate::{component::*, event::PacketEvent, AirmashGame, resource::ServerStats};
+use crate::{component::*, event::PacketEvent, resource::ServerStats, AirmashGame};
 
 struct PingData {
   seqs: VecDeque<(u32, Instant)>,
@@ -48,7 +48,7 @@ fn send_ping_packets(game: &mut AirmashGame) {
   use crate::protocol::server::Ping;
 
   let this_frame = game.this_frame();
-  let clock = crate::util::get_current_clock(game);
+  let clock = crate::util::get_time_clock(game, Instant::now());
   let data = game
     .resources
     .entry::<PingData>()
@@ -56,7 +56,7 @@ fn send_ping_packets(game: &mut AirmashGame) {
 
   if data
     .last_ping()
-    .map(|p| this_frame - p < Duration::from_secs(5))
+    .map(|p| this_frame.saturating_duration_since(p) < Duration::from_secs(5))
     .unwrap_or(false)
   {
     return;
@@ -72,7 +72,6 @@ fn send_ping_packets(game: &mut AirmashGame) {
 fn handle_ping_response(event: &PacketEvent<Pong>, game: &mut AirmashGame) {
   use crate::protocol::server::PingResult;
 
-  let this_frame = game.this_frame();
   let num_players = game.resources.read::<ServerStats>().num_players;
   let data = match game.resources.get::<PingData>() {
     Some(data) => data,
@@ -80,7 +79,7 @@ fn handle_ping_response(event: &PacketEvent<Pong>, game: &mut AirmashGame) {
   };
 
   let ping: u16 = match data.seq_time(event.packet.num) {
-    Some(time) => (this_frame - time)
+    Some(time) => (event.time.saturating_duration_since(time))
       .as_millis()
       .try_into()
       .unwrap_or(u16::MAX),
