@@ -22,9 +22,9 @@ fn main() {
     .version(env!("CARGO_PKG_VERSION"))
     .author("STEAMROLLER")
     .about("Airmash Test Server")
-    .arg(arg!(-c --config <FILE> "Provides an alternate config file"))
-    .arg(arg!(--port   <PORT>    "Port that the server will listen on"))
-    .arg(arg!(--region <REGION>  "The region that this server belongs to"))
+    .arg(arg!(-c --config [FILE] "Provides an alternate config file"))
+    .arg(arg!(--port   [PORT]    "Port that the server will listen on"))
+    .arg(arg!(--region [REGION]  "The region that this server belongs to"))
     .get_matches();
 
   set_default_var("RUST_BACKTRACE", "full");
