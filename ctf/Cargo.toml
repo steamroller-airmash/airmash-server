@@ -20,7 +20,7 @@ bstr = "0.2"
 
 lazy_static = "1.4"
 smallvec = "1.6"
-phf = { version="0.9", features=["macros"] }
+phf = { version="0.10", features=["macros"] }
 
 [dependencies.airmash]
 path="../server-next"
