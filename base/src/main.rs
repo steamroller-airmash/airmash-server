@@ -1,6 +1,7 @@
 #[macro_use]
 extern crate log;
 
+use clap::arg;
 use serde_deserialize_over::DeserializeOver;
 use std::env;
 use std::fs::File;
@@ -17,11 +18,13 @@ fn set_default_var(name: &str, value: &str) {
 }
 
 fn main() {
-  let matches = clap::App::new("airmash-server-base")
+  let matches = clap::Command::new("airmash-server-base")
     .version(env!("CARGO_PKG_VERSION"))
     .author("STEAMROLLER")
     .about("Airmash Test Server")
-    .args_from_usage("-c, --config=[FILE] 'Provides an alternate config file'")
+    .arg(arg!(-c --config <FILE> "Provides an alternate config file"))
+    .arg(arg!(--port   <PORT>    "Port that the server will listen on"))
+    .arg(arg!(--region <REGION>  "The region that this server belongs to"))
     .get_matches();
 
   set_default_var("RUST_BACKTRACE", "full");
@@ -29,8 +32,16 @@ fn main() {
 
   env_logger::init();
 
-  let mut game = AirmashGame::with_network("0.0.0.0:3501".parse().unwrap());
-  game.resources.insert(RegionName("matrix".to_owned()));
+  let bind_addr = format!("0.0.0.0:{}", matches.value_of("port").unwrap_or("3501"));
+
+  let mut game = AirmashGame::with_network(
+    bind_addr
+      .parse()
+      .expect("Unable to parse provided network port address"),
+  );
+  game.resources.insert(RegionName(
+    matches.value_of("region").unwrap_or("default").to_string(),
+  ));
   game.resources.insert(GameType::FFA);
 
   // Use the FFA scoreboard.

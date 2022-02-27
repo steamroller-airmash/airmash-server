@@ -1,6 +1,7 @@
 use std::env;
 use std::fs::File;
 
+use clap::arg;
 use serde_deserialize_over::DeserializeOver;
 
 use server::*;
@@ -18,13 +19,13 @@ fn set_default_var(name: &str, value: &str) {
 }
 
 fn main() {
-  let matches = clap::App::new("airmash-server-ffa")
+  let matches = clap::Command::new("airmash-server-ffa")
     .version(env!("CARGO_PKG_VERSION"))
     .author("STEAMROLLER")
     .about("Airmash FFA server")
-    .arg_from_usage("-c, --config=[FILE] 'Provides an alternate config file'")
-    .arg_from_usage("--port=[PORT]       'Port that the server will listen on'")
-    .arg_from_usage("--region=[REGION]   'The region that this server belongs to'")
+    .arg(arg!(-c --config <FILE> "Provides an alternate config file"))
+    .arg(arg!(--port   <PORT>    "Port that the server will listen on"))
+    .arg(arg!(--region <REGION>  "The region that this server belongs to"))
     .get_matches();
 
   set_default_var("RUST_BACKTRACE", "full");

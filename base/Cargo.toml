@@ -12,6 +12,6 @@ edition = "2018"
 airmash-server = { path='../server-next' }
 log = "0.4"
 env_logger = "0.9"
-clap = "2.33"
+clap = "3.1.2"
 serde_json = "1.0" 
 serde-deserialize-over = "0.1.0"
