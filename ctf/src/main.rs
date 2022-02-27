@@ -11,16 +11,17 @@ fn set_default_var(name: &str, value: &str) {
 
 fn main() {
   use airmash::resource::{Config, RegionName};
+  use clap::arg;
   use std::env;
   use std::fs::File;
 
-  let matches = clap::App::new("airmash-server-ctf")
+  let matches = clap::Command::new("airmash-server-ctf")
     .version(env!("CARGO_PKG_VERSION"))
     .author("STEAMROLLER")
     .about("Airmash CTF server")
-    .arg_from_usage("-c, --config=[FILE] 'Provides an alternate config file'")
-    .arg_from_usage("--port=[PORT]       'Port that the server will listen on'")
-    .arg_from_usage("--region=[REGION]   'The region that this server belongs to'")
+    .arg(arg!(-c --config <FILE> "Provides an alternate config file"))
+    .arg(arg!(--port   <PORT>    "Port that the server will listen on"))
+    .arg(arg!(--region <REGION>  "The region that this server belongs to"))
     .get_matches();
 
   set_default_var("RUST_BACKTRACE", "1");

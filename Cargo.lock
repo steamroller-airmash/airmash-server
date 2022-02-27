@@ -100,7 +100,7 @@ version = "0.0.1"
 dependencies = [
  "airmash-server",
  "bstr",
- "clap 2.34.0",
+ "clap 3.1.2",
  "env_logger",
  "htmlescape",
  "lazy_static",
