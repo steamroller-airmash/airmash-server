@@ -915,7 +915,8 @@ dependencies = [
 [[package]]
 name = "serde-deserialize-over"
 version = "0.1.0"
-source = "git+https://github.com/steamroller-airmash/serde-deserialize-over#a4e0988a52cf02a86d0188792a5f61279f51a8a3"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "92aecfcb836b587016e7af6e9f678efbad47471411bfbd3bc7c4a40a29cc59dd"
 dependencies = [
  "serde",
  "serde-deserialize-over-derive",
@@ -924,7 +925,8 @@ dependencies = [
 [[package]]
 name = "serde-deserialize-over-derive"
 version = "0.1.0"
-source = "git+https://github.com/steamroller-airmash/serde-deserialize-over#a4e0988a52cf02a86d0188792a5f61279f51a8a3"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "41762564174798c7f0e74e193ba4dfbcfd58c28927a44db8deed603b0f255ddf"
 dependencies = [
  "proc-macro-crate",
  "proc-macro2",
