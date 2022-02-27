@@ -24,8 +24,8 @@ jobs:
       - uses: docker/build-push-action@v2
         with:
           context: .
-          tags: ghcr.io/${{ github.repository_owner }}/server:${{ matrix.target }}
+          tags: ghcr.io/${{ github.repository_owner }}/server-${{ matrix.target }}:latest
           build-args: |
             TARGET=${{ matrix.target }}
-          push: ${{ github.event_name == 'workflow_dispatch' }}
+          push: ${{ github.ref == 'refs/heads/master' }}
 
