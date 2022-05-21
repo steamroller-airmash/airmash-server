@@ -1,6 +1,5 @@
 //! Components used within airmash.
 
-use crate::protocol::PowerupType;
 use airmash_protocol::Vector2;
 use bstr::BString;
 use hecs::Entity;
@@ -11,7 +10,7 @@ mod keystate;
 
 pub use self::keystate::KeyState;
 
-pub use crate::protocol::{FlagCode, MobType, PlaneType};
+pub use crate::protocol::{FlagCode, MobType, PlaneType, PowerupType};
 
 def_wrappers! {
   /// The position of an entity.
