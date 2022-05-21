@@ -1,5 +1,8 @@
+use std::time::Duration;
+
 use crate::component::*;
-use crate::event::{MobDespawn, MobDespawnType, PlayerMobCollision};
+use crate::event::{MobDespawn, MobDespawnType, PlayerMobCollision, PlayerPowerup, PowerupExpire};
+use crate::protocol::PowerupType;
 use crate::AirmashGame;
 
 #[handler]
@@ -72,4 +75,40 @@ fn send_player_upgrade(event: &PlayerMobCollision, game: &mut AirmashGame) {
     total_deaths: deaths.0,
   };
   game.send_to(event.player, packet);
+}
+
+#[handler(priority = crate::priority::HIGH)]
+fn update_player_powerup(event: &PlayerMobCollision, game: &mut AirmashGame) {
+  let (&mob, _) = match game.world.query_one_mut::<(&MobType, &IsMob)>(event.mob) {
+    Ok(query) => query,
+    Err(_) => return,
+  };
+
+  if !mob.is_powerup() {
+    return;
+  }
+
+  let (&powerup, _) = match game
+    .world
+    .query_one_mut::<(&Powerup, &IsPlayer)>(event.player)
+  {
+    Ok(query) => query,
+    Err(_) => return,
+  };
+
+  if let Some(_) = powerup.data {
+    game.dispatch(PowerupExpire {
+      player: event.player,
+    });
+  }
+
+  game.dispatch(PlayerPowerup {
+    player: event.player,
+    ty: match mob {
+      MobType::Shield => PowerupType::Shield,
+      MobType::Inferno => PowerupType::Inferno,
+      _ => unreachable!(),
+    },
+    duration: Duration::from_secs(10),
+  });
 }
