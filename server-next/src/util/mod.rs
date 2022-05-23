@@ -9,7 +9,10 @@ use nalgebra::vector;
 use std::time::{Duration, Instant};
 
 pub(crate) mod escapes;
+mod powerup_spawner;
 pub mod spectate;
+
+pub use self::powerup_spawner::PeriodicPowerupSpawner;
 
 pub fn convert_time(dur: Duration) -> Time {
   dur.as_secs_f32() * 60.0
