@@ -1,4 +1,6 @@
-use airmash::AirmashGame;
+use std::time::Duration;
+
+use airmash::{util::PeriodicPowerupSpawner, AirmashGame, Vector2};
 use serde_deserialize_over::DeserializeOver;
 
 fn set_default_var(name: &str, value: &str) {
@@ -60,6 +62,31 @@ fn main() {
   }
 
   airmash_server_ctf::setup_ctf_server(&mut game);
+
+  // Inferno in Europe
+  game.register(PeriodicPowerupSpawner::inferno(
+    Vector2::new(920.0, -2800.0),
+    Duration::from_secs(105),
+  ));
+  game.register(PeriodicPowerupSpawner::inferno(
+    Vector2::new(-7440.0, -1360.0),
+    Duration::from_secs(105),
+  ));
+  game.register(PeriodicPowerupSpawner::inferno(
+    Vector2::new(6565.0, -935.0),
+    Duration::from_secs(105),
+  ));
+
+  // Blue base shield
+  game.register(PeriodicPowerupSpawner::shield(
+    Vector2::new(-9300.0, -1480.0),
+    Duration::from_secs(90),
+  ));
+  // Red base shield
+  game.register(PeriodicPowerupSpawner::shield(
+    Vector2::new(8350.0, -935.0),
+    Duration::from_secs(90),
+  ));
 
   game.run_until_shutdown();
 }
