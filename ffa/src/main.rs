@@ -4,16 +4,15 @@ use std::time::Duration;
 
 use clap::arg;
 use serde_deserialize_over::DeserializeOver;
-use upgrades::PeriodicPowerupSpawner;
 
 use server::*;
 use server::{
   protocol::GameType,
   resource::{Config, RegionName},
+  util::PeriodicPowerupSpawner,
 };
 
 mod systems;
-mod upgrades;
 
 fn set_default_var(name: &str, value: &str) {
   if None == env::var_os(name) {
