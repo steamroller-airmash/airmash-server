@@ -44,8 +44,8 @@ pub fn team_respawn_pos(team: u16) -> Vector2<f32> {
 
 pub fn flag_message_team(team: u16) -> &'static str {
   match team {
-    BLUE_TEAM => "blueteam",
-    RED_TEAM => "redteam",
+    BLUE_TEAM => "blueflag",
+    RED_TEAM => "redflag",
     _ => unreachable!(),
   }
 }
