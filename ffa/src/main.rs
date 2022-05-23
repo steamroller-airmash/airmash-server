@@ -1,5 +1,6 @@
 use std::env;
 use std::fs::File;
+use std::time::Duration;
 
 use clap::arg;
 use serde_deserialize_over::DeserializeOver;
@@ -8,6 +9,7 @@ use server::*;
 use server::{
   protocol::GameType,
   resource::{Config, RegionName},
+  util::PeriodicPowerupSpawner,
 };
 
 mod systems;
@@ -47,6 +49,20 @@ fn main() {
 
   // Use the provided FFA scoreboard systems.
   server::system::ffa::register_all(&mut game);
+
+  // Inferno in Europe
+  game.register(PeriodicPowerupSpawner::inferno(
+    Vector2::new(920.0, -2800.0),
+    Duration::from_secs(105),
+  ));
+  game.register(PeriodicPowerupSpawner::inferno(
+    Vector2::new(-7440.0, -1360.0),
+    Duration::from_secs(105),
+  ));
+  game.register(PeriodicPowerupSpawner::inferno(
+    Vector2::new(6565.0, -935.0),
+    Duration::from_secs(105),
+  ));
 
   if let Some(path) = matches.value_of("config") {
     let file = match File::open(path) {
