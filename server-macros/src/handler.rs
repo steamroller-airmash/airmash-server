@@ -64,7 +64,7 @@ fn impl_handler(item: ItemFn, args: MacroArgs) -> Result<TokenStream> {
 
   let priority = args
     .priority
-    .map(|x| x.value.clone())
+    .map(|x| x.value)
     .unwrap_or_else(|| parse_quote! { 0 });
 
   Ok(quote! {
