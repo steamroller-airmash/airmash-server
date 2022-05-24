@@ -21,6 +21,7 @@ pub fn process_packets(game: &mut AirmashGame) {
       None => return,
     };
 
+    #[allow(clippy::or_fun_call)]
     if let ConnectionEvent::Opened = &evt {
       debug!(
         "Got new connection from {} with id {:?}",
@@ -47,7 +48,7 @@ pub fn process_packets(game: &mut AirmashGame) {
           continue;
         }
 
-        if !game.world.get_mut::<IsPlayer>(entity).is_ok() {
+        if game.world.get_mut::<IsPlayer>(entity).is_err() {
           warn!(
             "Connection {:?} was for a non player entity {:?}",
             conn, entity

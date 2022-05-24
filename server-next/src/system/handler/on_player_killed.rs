@@ -165,7 +165,7 @@ fn update_upgrades(event: &PlayerKilled, game: &mut AirmashGame) {
 
   let offsets = rand::random::<u8>() & 0xF;
 
-  upgrades.speed += (offsets >> 0) & 1;
+  upgrades.speed += offsets & 1;
   upgrades.defense += (offsets >> 1) & 1;
   upgrades.energy += (offsets >> 2) & 1;
   upgrades.missile += (offsets >> 3) & 1;

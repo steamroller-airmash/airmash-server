@@ -96,7 +96,7 @@ fn update_player_powerup(event: &PlayerMobCollision, game: &mut AirmashGame) {
     Err(_) => return,
   };
 
-  if let Some(_) = powerup.data {
+  if powerup.data.is_some() {
     game.dispatch(PowerupExpire {
       player: event.player,
     });

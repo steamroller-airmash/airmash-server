@@ -88,7 +88,7 @@ impl TaskScheduler {
   /// mutable reference to [`AirmashGame`] (gotten by dereferencing [`GameRef`])
   /// across an await.
   ///
-  /// If you are only using the async method on [`GameRef`] to suspend then this
+  /// If you are only using the async methods on [`GameRef`] to suspend then this
   /// is impossible, however external futures don't have that limitation.
   pub unsafe fn spawn<Fut, Fn>(&self, func: Fn)
   where
@@ -117,6 +117,12 @@ impl TaskScheduler {
     let inner = Rc::clone(&self.inner);
     let mut inner = inner.borrow_mut();
     inner.turn(game);
+  }
+}
+
+impl Default for TaskScheduler {
+  fn default() -> Self {
+    Self::new()
   }
 }
 
@@ -187,7 +193,6 @@ impl TaskSchedulerImpl {
       if desc.time > this_frame {
         break;
       }
-      drop(desc);
 
       let desc = self.queue.pop().unwrap();
       self.poll_task(desc.task, &timeout);

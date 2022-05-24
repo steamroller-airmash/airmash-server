@@ -27,7 +27,6 @@ fn send_packets(game: &mut AirmashGame) {
   }
 
   last_sb.0 = this_frame;
-  drop(last_sb);
 
   let mut data = Vec::new();
   let query = game

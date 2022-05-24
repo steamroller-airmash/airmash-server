@@ -71,19 +71,11 @@ impl SpatialTree {
     let pos = [pos.x, pos.y];
 
     match layer {
-      LayerSpec::Exclude(layer) => self
-        .tree
-        .within(pos, rad)
-        .filter(|x| x.layer != layer)
-        .next()
-        .is_some(),
+      LayerSpec::Exclude(layer) => self.tree.within(pos, rad).any(|x| x.layer != layer),
       LayerSpec::Include(layer) => self
         .tree
         .within(pos, rad)
-        .filter(|x| x.layer == layer)
-        .map(|x| x.entity)
-        .next()
-        .is_some(),
+        .any(|x| x.layer == layer),
       LayerSpec::None => self
         .tree
         .within(pos, rad)
