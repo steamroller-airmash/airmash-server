@@ -1,12 +1,12 @@
 use std::ops::RangeInclusive;
 
 #[derive(Clone, Debug)]
-pub(crate) struct AABB {
+pub(crate) struct Aabb {
   pub x: RangeInclusive<f32>,
   pub y: RangeInclusive<f32>,
 }
 
-impl AABB {
+impl Aabb {
   pub fn contains(&self, point: [f32; 2]) -> bool {
     return point[0] >= *self.x.start()
       && point[0] <= *self.x.end()
@@ -44,7 +44,7 @@ impl AABB {
   }
 }
 
-impl Default for AABB {
+impl Default for Aabb {
   fn default() -> Self {
     Self::empty()
   }

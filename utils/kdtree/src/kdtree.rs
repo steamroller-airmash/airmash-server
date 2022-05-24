@@ -39,7 +39,7 @@ impl<T> Entry<T> {
 #[derive(Clone)]
 pub struct KdTree<T> {
   entries: Vec<Entry<T>>,
-  extents: AABB,
+  extents: Aabb,
   max_radius: f32,
 }
 
@@ -103,7 +103,7 @@ impl<T: Node> KdTree<T> {
     let [px, py] = point;
     let r = radius + self.max_radius;
 
-    let bounds = AABB {
+    let bounds = Aabb {
       x: px - r..=px + r,
       y: py - r..=py + r,
     };
@@ -128,7 +128,7 @@ impl<T: Node> KdTree<T> {
   ) -> impl Iterator<Item = &T> {
     WithinIterator::new(
       self,
-      AABB {
+      Aabb {
         x: x_lo..=x_hi,
         y: y_lo..=y_hi,
       },
@@ -196,7 +196,7 @@ impl<T> Default for KdTree<T> {
   fn default() -> Self {
     Self {
       entries: Vec::new(),
-      extents: AABB::empty(),
+      extents: Aabb::empty(),
       max_radius: 0.0,
     }
   }
@@ -211,13 +211,13 @@ impl<T: Debug> Debug for KdTree<T> {
 }
 
 struct WithinIterator<'a, T> {
-  bounds: AABB,
+  bounds: Aabb,
   stack: Vec<(usize, usize)>,
   tree: &'a KdTree<T>,
 }
 
 impl<'a, T: Node> WithinIterator<'a, T> {
-  pub fn new(tree: &'a KdTree<T>, bounds: AABB) -> Self {
+  pub fn new(tree: &'a KdTree<T>, bounds: Aabb) -> Self {
     let mut stack = Vec::with_capacity(1);
     // bounds.clip(&tree.extents);
 
