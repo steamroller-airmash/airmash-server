@@ -111,12 +111,10 @@ fn update_player_positions(game: &mut AirmashGame) {
 
     if speed > max_speed {
       vel.0 *= max_speed / speed;
+    } else if vel.x.abs() > min_speed || vel.y.abs() > min_speed {
+      vel.0 *= 1.0 - info.brake_factor * delta;
     } else {
-      if vel.x.abs() > min_speed || vel.y.abs() > min_speed {
-        vel.0 *= 1.0 - info.brake_factor * delta;
-      } else {
-        vel.0 = Vector2::default();
-      }
+      vel.0 = Vector2::default();
     }
 
     pos.0 += old_vel * delta + (vel.0 - old_vel) * delta * 0.5;

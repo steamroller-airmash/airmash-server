@@ -51,6 +51,7 @@ impl<E: Event> DelayedEvent for ConcreteDelayedEvent<E> {
 ///
 /// This is responsible for maintaining all the event handlers and invoking them
 /// whenever an event is dispatched.
+#[allow(clippy::type_complexity)]
 struct BaseEventDispatcher {
   lists: RefCell<AnyMap>,
   queue: RefCell<VecDeque<Box<dyn DelayedEvent>>>,

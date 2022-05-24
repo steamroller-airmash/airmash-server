@@ -74,7 +74,7 @@ impl MockConnection {
     Some(packet)
   }
 
-  pub fn packets<'a>(&'a mut self) -> impl Iterator<Item = ServerPacket> + 'a {
+  pub fn packets(&mut self) -> impl Iterator<Item = ServerPacket> + '_ {
     std::iter::from_fn(move || self.next_packet())
   }
 

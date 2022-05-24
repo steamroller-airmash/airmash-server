@@ -88,8 +88,8 @@ impl TaskScheduler {
   /// mutable reference to [`AirmashGame`] (gotten by dereferencing [`GameRef`])
   /// across an await.
   ///
-  /// If you are only using the async methods on [`GameRef`] to suspend then this
-  /// is impossible, however external futures don't have that limitation.
+  /// If you are only using the async methods on [`GameRef`] to suspend then
+  /// this is impossible, however external futures don't have that limitation.
   pub unsafe fn spawn<Fut, Fn>(&self, func: Fn)
   where
     Fn: FnOnce(GameRef) -> Fut + 'static,
