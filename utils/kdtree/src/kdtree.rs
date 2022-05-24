@@ -97,7 +97,7 @@ impl<T: Node> KdTree<T> {
   }
 
   /// Find all circles that overlap with the provided query circle.
-  pub fn within<'a>(&'a self, point: [f32; 2], radius: f32) -> impl Iterator<Item = &'a T> {
+  pub fn within(&self, point: [f32; 2], radius: f32) -> impl Iterator<Item = &T> {
     assert!(radius >= 0.0);
 
     let [px, py] = point;
@@ -119,13 +119,13 @@ impl<T: Node> KdTree<T> {
     })
   }
 
-  pub fn within_aabb<'a>(
-    &'a self,
+  pub fn within_aabb(
+    &self,
     x_lo: f32,
     x_hi: f32,
     y_lo: f32,
     y_hi: f32,
-  ) -> impl Iterator<Item = &'a T> {
+  ) -> impl Iterator<Item = &T> {
     WithinIterator::new(
       self,
       AABB {
@@ -147,7 +147,7 @@ impl<T: Node> KdTree<T> {
     })
   }
 
-  pub fn iter<'a>(&'a self) -> impl Iterator<Item = &'a T> {
+  pub fn iter(&self) -> impl Iterator<Item = &T> {
     self.entries.iter().map(|x| &x.value)
   }
 }
@@ -176,7 +176,6 @@ impl<T: Node> KdTree<T> {
 
       f32::partial_cmp(&ap, &bp).expect("KdTree node had NaN as position")
     });
-    drop(slice);
 
     let (front, mid, back) = split_around_mut(values, median);
 
