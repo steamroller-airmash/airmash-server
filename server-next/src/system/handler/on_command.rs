@@ -148,7 +148,7 @@ fn on_flag_command(event: &PacketEvent<Command>, game: &mut AirmashGame) {
     Err(_) => return,
   };
 
-  let newflag = FlagCode::from_str(&event.packet.data.to_str().unwrap_or("UN"))
+  let newflag = FlagCode::from_str(event.packet.data.to_str().unwrap_or("UN"))
     .unwrap_or(FlagCode::UnitedNations);
   *flag = newflag;
 

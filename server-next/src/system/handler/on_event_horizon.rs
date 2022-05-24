@@ -84,7 +84,7 @@ fn send_horizon_packet(event: &EventHorizon, game: &mut AirmashGame) {
     return;
   }
 
-  if !game.world.get::<IsPlayer>(event.player).is_ok() {
+  if game.world.get::<IsPlayer>(event.player).is_err() {
     return;
   }
 

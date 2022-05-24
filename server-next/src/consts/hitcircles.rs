@@ -8,13 +8,13 @@ macro_rules! hit_circle {
   };
 }
 
-const PRED_HC: &'static [HitCircle] = &[
+const PRED_HC: &[HitCircle] = &[
   hit_circle!(0, 5, 23),
   hit_circle!(0, -15, 15),
   hit_circle!(0, -25, 12),
 ];
 
-const GOLI_HC: &'static [HitCircle] = &[
+const GOLI_HC: &[HitCircle] = &[
   hit_circle!(0, 0, 35),
   hit_circle!(50, 14, 16),
   hit_circle!(74, 26, 14),
@@ -26,14 +26,14 @@ const GOLI_HC: &'static [HitCircle] = &[
   hit_circle!(-63, 22, 15),
 ];
 
-const MOHAWK_HC: &'static [HitCircle] = &[
+const MOHAWK_HC: &[HitCircle] = &[
   hit_circle!(0, -12, 15),
   hit_circle!(0, 0, 17),
   hit_circle!(0, 13, 15),
   hit_circle!(0, 26, 15),
 ];
 
-const TORNADO_HC: &'static [HitCircle] = &[
+const TORNADO_HC: &[HitCircle] = &[
   hit_circle!(0, 8, 18),
   hit_circle!(14, 12, 13),
   hit_circle!(-14, 12, 13),
@@ -42,7 +42,7 @@ const TORNADO_HC: &'static [HitCircle] = &[
   hit_circle!(0, -35, 12),
 ];
 
-const PROWLER_HC: &'static [HitCircle] = &[
+const PROWLER_HC: &[HitCircle] = &[
   hit_circle!(0, 11, 25),
   hit_circle!(0, -8, 18),
   hit_circle!(19, 20, 10),

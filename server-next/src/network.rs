@@ -257,10 +257,13 @@ async fn run_connection(
 
   let (tx, mut rx) = unbounded_channel();
 
-  if let Err(_) = events.send((
-    conn,
-    InternalEvent::Opened(ConnectionData { send: tx, addr }),
-  )) {
+  if events
+    .send((
+      conn,
+      InternalEvent::Opened(ConnectionData { send: tx, addr }),
+    ))
+    .is_err()
+  {
     return Ok(());
   }
 
@@ -278,7 +281,7 @@ async fn run_connection(
             time: Instant::now()
           };
 
-          if let Err(_) = events.send((conn, evt)) {
+          if events.send((conn, evt)).is_err() {
             return Ok(())
           }
         } else {
@@ -303,7 +306,7 @@ async fn run_connection(
           Err(e) => (*e).clone()
         };
 
-        if let Err(_) = ws_stream.send(Message::binary(data)).await {
+        if ws_stream.send(Message::binary(data)).await.is_err() {
           return Ok(())
         }
       }
@@ -346,9 +349,7 @@ fn has_header(request: &httparse::Request, name: &str, value: &str) -> bool {
   request
     .headers
     .iter()
-    .filter(|h| h.name.eq_ignore_ascii_case(name) && h.value.eq_ignore_ascii_case(value.as_bytes()))
-    .next()
-    .is_some()
+    .any(|h| h.name.eq_ignore_ascii_case(name) && h.value.eq_ignore_ascii_case(value.as_bytes()))
 }
 
 async fn websocket_handshake(

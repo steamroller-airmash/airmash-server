@@ -75,7 +75,7 @@ fn tornado_special_fire(game: &mut AirmashGame) {
       continue;
     }
 
-    let ref info = config.planes[plane];
+    let info = &config.planes[plane];
     if this_frame - last_fire.0 < info.fire_delay {
       continue;
     }
@@ -224,7 +224,6 @@ fn track_predator_boost(event: &KeyEvent, game: &mut AirmashGame) {
         player: event.player,
         boosting: false,
       });
-      return;
     }
 
     // ... Otherwise we continue boosting
@@ -240,7 +239,6 @@ fn track_predator_boost(event: &KeyEvent, game: &mut AirmashGame) {
         player: event.player,
         boosting: true,
       });
-      return;
     }
   }
 }

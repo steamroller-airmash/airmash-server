@@ -70,6 +70,5 @@ pub fn send_player_fire(event: &PlayerFire, game: &mut AirmashGame) {
     game.send_to_visible(pos.0, packet);
   } else {
     warn!("Player {:?} missing required components", event.player);
-    return;
   }
 }

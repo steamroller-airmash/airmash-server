@@ -9,7 +9,7 @@ use crate::{component::*, resource::ServerStats};
 fn send_packet(event: &PlayerLeave, game: &mut AirmashGame) {
   use crate::protocol::server as s;
 
-  if let Err(_) = game.world.get::<IsPlayer>(event.player) {
+  if game.world.get::<IsPlayer>(event.player).is_err() {
     return;
   }
 

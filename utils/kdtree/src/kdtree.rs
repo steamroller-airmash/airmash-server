@@ -39,7 +39,7 @@ impl<T> Entry<T> {
 #[derive(Clone)]
 pub struct KdTree<T> {
   entries: Vec<Entry<T>>,
-  extents: AABB,
+  extents: Aabb,
   max_radius: f32,
 }
 
@@ -97,13 +97,13 @@ impl<T: Node> KdTree<T> {
   }
 
   /// Find all circles that overlap with the provided query circle.
-  pub fn within<'a>(&'a self, point: [f32; 2], radius: f32) -> impl Iterator<Item = &'a T> {
+  pub fn within(&self, point: [f32; 2], radius: f32) -> impl Iterator<Item = &T> {
     assert!(radius >= 0.0);
 
     let [px, py] = point;
     let r = radius + self.max_radius;
 
-    let bounds = AABB {
+    let bounds = Aabb {
       x: px - r..=px + r,
       y: py - r..=py + r,
     };
@@ -119,16 +119,16 @@ impl<T: Node> KdTree<T> {
     })
   }
 
-  pub fn within_aabb<'a>(
-    &'a self,
+  pub fn within_aabb(
+    &self,
     x_lo: f32,
     x_hi: f32,
     y_lo: f32,
     y_hi: f32,
-  ) -> impl Iterator<Item = &'a T> {
+  ) -> impl Iterator<Item = &T> {
     WithinIterator::new(
       self,
-      AABB {
+      Aabb {
         x: x_lo..=x_hi,
         y: y_lo..=y_hi,
       },
@@ -147,7 +147,7 @@ impl<T: Node> KdTree<T> {
     })
   }
 
-  pub fn iter<'a>(&'a self) -> impl Iterator<Item = &'a T> {
+  pub fn iter(&self) -> impl Iterator<Item = &T> {
     self.entries.iter().map(|x| &x.value)
   }
 }
@@ -176,7 +176,6 @@ impl<T: Node> KdTree<T> {
 
       f32::partial_cmp(&ap, &bp).expect("KdTree node had NaN as position")
     });
-    drop(slice);
 
     let (front, mid, back) = split_around_mut(values, median);
 
@@ -197,7 +196,7 @@ impl<T> Default for KdTree<T> {
   fn default() -> Self {
     Self {
       entries: Vec::new(),
-      extents: AABB::empty(),
+      extents: Aabb::empty(),
       max_radius: 0.0,
     }
   }
@@ -212,13 +211,13 @@ impl<T: Debug> Debug for KdTree<T> {
 }
 
 struct WithinIterator<'a, T> {
-  bounds: AABB,
+  bounds: Aabb,
   stack: Vec<(usize, usize)>,
   tree: &'a KdTree<T>,
 }
 
 impl<'a, T: Node> WithinIterator<'a, T> {
-  pub fn new(tree: &'a KdTree<T>, bounds: AABB) -> Self {
+  pub fn new(tree: &'a KdTree<T>, bounds: Aabb) -> Self {
     let mut stack = Vec::with_capacity(1);
     // bounds.clip(&tree.extents);
 

@@ -196,7 +196,7 @@ fn repel_missiles(event: &PlayerRepel, game: &mut AirmashGame) {
 
 #[handler]
 fn decloak_prowlers(event: &PlayerRepel, game: &mut AirmashGame) {
-  if let Err(_) = game.world.get::<IsPlayer>(event.player) {
+  if game.world.get::<IsPlayer>(event.player).is_err() {
     return;
   }
 

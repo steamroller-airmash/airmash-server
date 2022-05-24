@@ -8,7 +8,7 @@ use crate::AirmashGame;
 fn send_packet(event: &PlayerPowerup, game: &mut AirmashGame) {
   use crate::protocol::server as s;
 
-  if let Err(_) = game.world.query_one_mut::<&IsPlayer>(event.player) {
+  if game.world.query_one_mut::<&IsPlayer>(event.player).is_err() {
     return;
   }
 

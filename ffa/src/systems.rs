@@ -30,7 +30,7 @@ pub fn select_spawn_position(game: &AirmashGame) -> Vector2<f32> {
 fn choose_join_position(event: &PlayerJoin, game: &mut AirmashGame) {
   let spawn_pos = select_spawn_position(game);
 
-  if let Some(mut pos) = game.world.get_mut::<Position>(event.player).ok() {
+  if let Ok(mut pos) = game.world.get_mut::<Position>(event.player) {
     pos.0 = spawn_pos;
   }
 }
@@ -39,7 +39,7 @@ fn choose_join_position(event: &PlayerJoin, game: &mut AirmashGame) {
 fn choose_respawn_position(event: &PlayerRespawn, game: &mut AirmashGame) {
   let spawn_pos = select_spawn_position(game);
 
-  if let Some(mut pos) = game.world.get_mut::<Position>(event.player).ok() {
+  if let Ok(mut pos) = game.world.get_mut::<Position>(event.player) {
     pos.0 = spawn_pos;
   }
 }

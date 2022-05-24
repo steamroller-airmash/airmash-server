@@ -39,7 +39,7 @@ pub fn team_respawn_pos(team: u16) -> Vector2<f32> {
   TEAM_RESPAWN_POS
     .get((team - 1) as usize)
     .copied()
-    .unwrap_or(Vector2::zeros())
+    .unwrap_or_else(Vector2::zeros)
 }
 
 pub fn flag_message_team(team: u16) -> &'static str {

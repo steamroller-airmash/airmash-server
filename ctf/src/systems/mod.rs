@@ -19,7 +19,7 @@ pub fn drop_carried_flags(player: Entity, game: &mut AirmashGame) {
   use airmash::component::IsPlayer;
   use smallvec::SmallVec;
 
-  if !game.world.get::<IsPlayer>(player).is_ok() {
+  if game.world.get::<IsPlayer>(player).is_err() {
     return;
   }
 

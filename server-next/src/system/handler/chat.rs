@@ -6,7 +6,7 @@ use crate::AirmashGame;
 
 #[handler]
 fn on_chat(event: &PacketEvent<Chat>, game: &mut AirmashGame) {
-  if let Err(_) = game.world.get::<IsPlayer>(event.entity) {
+  if game.world.get::<IsPlayer>(event.entity).is_err() {
     return;
   }
 
@@ -18,7 +18,7 @@ fn on_chat(event: &PacketEvent<Chat>, game: &mut AirmashGame) {
 
 #[handler]
 fn on_team_chat(event: &PacketEvent<TeamChat>, game: &mut AirmashGame) {
-  if let Err(_) = game.world.get::<IsPlayer>(event.entity) {
+  if game.world.get::<IsPlayer>(event.entity).is_err() {
     return;
   }
 
@@ -35,7 +35,7 @@ fn on_team_chat(event: &PacketEvent<TeamChat>, game: &mut AirmashGame) {
 
 #[handler]
 fn on_whisper(event: &PacketEvent<Whisper>, game: &mut AirmashGame) {
-  if let Err(_) = game.world.get::<IsPlayer>(event.entity) {
+  if game.world.get::<IsPlayer>(event.entity).is_err() {
     return;
   }
 
@@ -44,7 +44,7 @@ fn on_whisper(event: &PacketEvent<Whisper>, game: &mut AirmashGame) {
     None => return,
   };
 
-  if let Err(_) = game.world.get::<IsPlayer>(target) {
+  if game.world.get::<IsPlayer>(target).is_err() {
     return;
   }
 

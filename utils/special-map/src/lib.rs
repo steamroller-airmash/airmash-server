@@ -26,6 +26,10 @@ where
     self.set.len()
   }
 
+  pub fn is_empty(&self) -> bool {
+    self.set.is_empty()
+  }
+
   pub fn contains(&self, key: &K) -> bool {
     self.set.contains(key)
   }
