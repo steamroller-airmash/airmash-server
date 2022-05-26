@@ -239,3 +239,20 @@ impl From<IsAlive> for crate::protocol::PlayerStatus {
     }
   }
 }
+
+/// The side from which the next missile from this player will be fired. This
+/// alternates every time the player fires.
+#[derive(Copy, Clone, Debug, Eq, PartialEq, Hash)]
+pub enum MissileFiringSide {
+  Left,
+  Right,
+}
+
+impl MissileFiringSide {
+  pub fn reverse(self) -> Self {
+    match self {
+      Self::Left => Self::Right,
+      Self::Right => Self::Left,
+    }
+  }
+}

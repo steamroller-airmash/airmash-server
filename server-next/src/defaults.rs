@@ -58,7 +58,8 @@ pub(crate) fn build_default_player(
     .add(Spectating::default())
     .add(PlayerPing(Duration::ZERO))
     .add(TotalDamage(0.0))
-    .add(Captures(0));
+    .add(Captures(0))
+    .add(MissileFiringSide::Left);
 
   builder
 }

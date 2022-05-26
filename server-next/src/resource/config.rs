@@ -1,5 +1,6 @@
 //! Configuration info controlling how planes and missiles behave.
 
+use nalgebra::vector;
 use serde_deserialize_over::DeserializeOver;
 use std::ops::Index;
 use std::time::Duration;
@@ -9,6 +10,7 @@ use crate::protocol::{
   AccelScalar, Distance, Energy, EnergyRegen, Health, HealthRegen, MobType as Mob,
   PlaneType as Plane, Rotation, RotationRate, Speed,
 };
+use crate::Vector2;
 
 #[derive(Debug, Clone, Serialize, Deserialize, DeserializeOver)]
 pub struct PlaneInfo {
@@ -39,8 +41,10 @@ pub struct PlaneInfo {
 
   // Type of missile that the plane fires
   pub missile_type: Mob,
-  // Offset of missile (in the Y dir) when fired
-  pub missile_offset: Distance,
+  // Offset of missile relative to the plane when fired.
+  //
+  // The horizontal (X) offset will alternate sides with every shot.
+  pub missile_offset: Vector2<Distance>,
 
   // Angle and displacement of the other two missiles when inferno firing
   // (assuming symmetry around central missile)
@@ -294,7 +298,7 @@ mod plane_defaults {
       fire_energy: 0.6,
 
       missile_type: MobType::PredatorMissile,
-      missile_offset: 35.0,
+      missile_offset: vector![35.0, 0.0],
 
       missile_inferno_angle: 0.05,
       missile_inferno_offset_x: 18.0,
@@ -323,7 +327,7 @@ mod plane_defaults {
       fire_energy: 0.9,
 
       missile_type: MobType::GoliathMissile,
-      missile_offset: 35.0,
+      missile_offset: vector![35.0, 0.0],
 
       missile_inferno_angle: 0.04,
       missile_inferno_offset_x: 30.0,
@@ -353,7 +357,7 @@ mod plane_defaults {
 
       missile_type: MobType::MohawkMissile,
       // This will have to be a special case
-      missile_offset: 10.0,
+      missile_offset: vector![10.0, 15.0],
 
       missile_inferno_angle: 0.1,
       missile_inferno_offset_x: 0.0,
@@ -382,7 +386,7 @@ mod plane_defaults {
       fire_energy: 0.5,
 
       missile_type: MobType::TornadoSingleMissile,
-      missile_offset: 40.0,
+      missile_offset: vector![40.0, 0.0],
 
       missile_inferno_angle: 0.05,
       missile_inferno_offset_x: 15.1,
@@ -411,7 +415,7 @@ mod plane_defaults {
       fire_energy: 0.75,
 
       missile_type: MobType::ProwlerMissile,
-      missile_offset: 35.0,
+      missile_offset: vector![35.0, 0.0],
 
       missile_inferno_angle: 0.05,
       missile_inferno_offset_x: 18.0,
