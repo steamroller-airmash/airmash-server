@@ -74,6 +74,7 @@ dependencies = [
  "rand",
  "serde",
  "serde-deserialize-over",
+ "serde_json",
  "server-macros",
  "slab",
  "smallvec",
