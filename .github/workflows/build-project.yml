@@ -60,10 +60,9 @@ jobs:
       - uses: Swatinem/rust-cache@v1
         with:
           key: verify-config
-      - uses: actions-rs/cargo@v1
-        with:
-          command: run
-          args: --example export-config > new-default.json
+      - name: Build and run
+        run: |
+          cargo run --example export-config > new-default.json
       - name: Diff configs
         run: |
           cp configs/default.json old-default.json
