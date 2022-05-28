@@ -43,7 +43,7 @@ pub struct PlaneInfo {
   pub missile_type: Mob,
   // Offset of missile relative to the plane when fired.
   //
-  // The horizontal (X) offset will alternate sides with every shot.
+  // The horizontal (Y) offset will alternate sides with every shot.
   pub missile_offset: Vector2<Distance>,
 
   // Angle and displacement of the other two missiles when inferno firing
