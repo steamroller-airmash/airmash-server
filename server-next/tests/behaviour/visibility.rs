@@ -60,10 +60,10 @@ fn out_of_visibility_collision() {
 
   let offset = {
     let mut config = game.resources.write::<Config>();
-    config.planes.predator.missile_offset = 500.0;
+    config.planes.predator.missile_offset.x = 500.0;
     config.view_radius = 100.0;
 
-    config.planes.predator.missile_offset
+    config.planes.predator.missile_offset.x
   };
 
   let mut client1 = mock.open();
