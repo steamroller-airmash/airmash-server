@@ -259,10 +259,7 @@ impl Default for Config {
       planes: Default::default(),
       mobs: Default::default(),
       upgrades: Default::default(),
-      // This is a nasty bodge, but there seems to be no more appropriate
-      // default feature defined. Ensure admin commands are disabled by
-      // default in release mode, unless explicitly requested.
-      admin_enabled: cfg!(debug_assertions),
+      admin_enabled: false,
       allow_spectate_while_moving: true,
       spawn_shield_duration: Duration::from_secs(2),
       shield_duration: Duration::from_secs(10),

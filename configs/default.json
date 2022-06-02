@@ -294,7 +294,7 @@
       ]
     }
   },
-  "admin_enabled": true,
+  "admin_enabled": false,
   "allow_spectate_while_moving": true,
   "spawn_shield_duration": {
     "secs": 2,

@@ -19,7 +19,7 @@ jobs:
           override: true
       - uses: Swatinem/rust-cache@v1
         with:
-          key: ${{ matrix.config }}
+          sharedKey: build-cache-${{ matrix.config }}
       - name: Setup cargo flags
         if: matrix.config == 'release'
         run: |
@@ -46,9 +46,12 @@ jobs:
             command: fmt
             args: --all -- --check --config unstable_features=true
 
-  verify-config:
-    name: verify-config
+  verify-default-config:
+    name: verify-default-config
     runs-on: ubuntu-latest
+
+    needs:
+      - test
 
     steps:
       - uses: actions/checkout@v2
@@ -59,19 +62,46 @@ jobs:
           override: true
       - uses: Swatinem/rust-cache@v1
         with:
-          key: verify-config
+          sharedKey: build-cache-release
       - name: Build and run
         run: |
-          cargo run --example export-config > new-default.json
+          cargo run --release --example export-config --color always > new-default.json
       - name: Diff configs
         run: |
           cp configs/default.json old-default.json
           diff -u new-default.json old-default.json
 
 
+  validate-configs:
+    name: validate-configs
+    runs-on: ubuntu-latest
+    continue-on-error: true
+
+    needs:
+      - test
+
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions-rs/toolchain@v1
+        with:
+          toolchain: stable
+          profile: minimal
+          override: true
+          components: rustfmt
+      - uses: Swatinem/rust-cache@v1
+        with:
+          sharedKey: build-cache-release
+      - name: Build and run
+        run: |
+          cargo run --release --color always --example validate-config -- configs/*.json
+
   verify-pass:
     name: verify-tests-pass
-    needs: [test, format, verify-config]
+    needs: 
+      - test
+      - format
+      - verify-default-config
+      - validate-configs
     runs-on: ubuntu-latest
 
     steps:
