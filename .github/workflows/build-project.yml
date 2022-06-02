@@ -62,7 +62,7 @@ jobs:
           key: verify-config
       - name: Build and run
         run: |
-          cargo run --example export-config > new-default.json
+          cargo run --example export-config --color always > new-default.json
       - name: Diff configs
         run: |
           cp configs/default.json old-default.json
@@ -87,7 +87,7 @@ jobs:
       - uses: actions-rs/cargo@v1
         with:
             command: run
-            args: --release --example validate-config -- configs/*.json
+            args: --release --color always --example validate-config -- configs/*.json
 
   verify-pass:
     name: verify-tests-pass
