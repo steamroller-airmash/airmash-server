@@ -46,17 +46,9 @@ jobs:
             command: fmt
             args: --all -- --check --config unstable_features=true
 
-  verify-config:
-    name: verify-config
+  verify-default-config:
+    name: verify-default-config
     runs-on: ubuntu-latest
-
-    steps:
-      - uses: actions/checkout@v2
-      - uses: actions-rs/toolchain@v1
-        with:
-          toolchain: stable
-          profile: minimal
-          override: true
       - uses: Swatinem/rust-cache@v1
         with:
           key: verify-config
@@ -69,9 +61,33 @@ jobs:
           diff -u new-default.json old-default.json
 
 
+  validate-configs:
+    name: validate-configs
+    runs-on: ubuntu-latest
+    continue-on-error: true
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions-rs/toolchain@v1
+        with:
+          toolchain: stable
+          profile: minimal
+          override: true
+          components: rustfmt
+      - uses: Swatinem/rust-cache@v1
+        with:
+          key: validate-configs
+      - uses: actions-rs/cargo@v1
+        with:
+            command: run
+            args: --release --example validate-config -- configs/*.json
+
   verify-pass:
     name: verify-tests-pass
-    needs: [test, format, verify-config]
+    needs: 
+      - test
+      - format
+      - verify-default-config
+      - validate-configs
     runs-on: ubuntu-latest
 
     steps:
