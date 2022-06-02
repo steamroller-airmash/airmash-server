@@ -19,8 +19,7 @@ jobs:
           override: true
       - uses: Swatinem/rust-cache@v1
         with:
-          key: ${{ matrix.config }}
-          sharedKey: build-cache
+          sharedKey: build-cache-${{ matrix.config }}
       - name: Setup cargo flags
         if: matrix.config == 'release'
         run: |
@@ -63,8 +62,7 @@ jobs:
           override: true
       - uses: Swatinem/rust-cache@v1
         with:
-          key: release
-          sharedKey: build-cache
+          sharedKey: build-cache-release
       - name: Build and run
         run: |
           cargo run --release --example export-config --color always > new-default.json
@@ -92,8 +90,7 @@ jobs:
           components: rustfmt
       - uses: Swatinem/rust-cache@v1
         with:
-          key: release
-          sharedKey: build-cache
+          sharedKey: build-cache-release
       - name: Build and run
         run: |
           cargo run --release --color always --example validate-config -- configs/*.json
