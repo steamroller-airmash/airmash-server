@@ -46,9 +46,32 @@ jobs:
             command: fmt
             args: --all -- --check --config unstable_features=true
 
+  verify-config:
+    name: verify-config
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions-rs/toolchain@v1
+        with:
+          toolchain: stable
+          profile: minimal
+          override: true
+      - uses: Swatinem/rust-cache@v1
+        with:
+          key: verify-config
+      - name: Build and run
+        run: |
+          cargo run --example export-config > new-default.json
+      - name: Diff configs
+        run: |
+          cp configs/default.json old-default.json
+          diff -u new-default.json old-default.json
+
+
   verify-pass:
     name: verify-tests-pass
-    needs: [test, format]
+    needs: [test, format, verify-config]
     runs-on: ubuntu-latest
 
     steps:
