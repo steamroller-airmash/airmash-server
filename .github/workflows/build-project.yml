@@ -49,6 +49,14 @@ jobs:
   verify-default-config:
     name: verify-default-config
     runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions-rs/toolchain@v1
+        with:
+          toolchain: stable
+          profile: minimal
+          override: true
       - uses: Swatinem/rust-cache@v1
         with:
           key: verify-config
