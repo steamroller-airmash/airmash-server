@@ -13,10 +13,7 @@
       "energy_regen": 0.008,
       "damage_factor": 2.0,
       "fire_energy": 0.6,
-      "fire_delay": {
-        "secs": 0,
-        "nanos": 550000000
-      },
+      "fire_delay": 0.55,
       "missile_type": "PredatorMissile",
       "missile_offset": [
         35.0,
@@ -39,10 +36,7 @@
       "energy_regen": 0.006,
       "damage_factor": 1.6666666,
       "fire_energy": 0.5,
-      "fire_delay": {
-        "secs": 0,
-        "nanos": 500000000
-      },
+      "fire_delay": 0.5,
       "missile_type": "TornadoSingleMissile",
       "missile_offset": [
         40.0,
@@ -65,10 +59,7 @@
       "energy_regen": 0.006,
       "damage_factor": 1.6666666,
       "fire_energy": 0.75,
-      "fire_delay": {
-        "secs": 0,
-        "nanos": 300000000
-      },
+      "fire_delay": 0.3,
       "missile_type": "ProwlerMissile",
       "missile_offset": [
         35.0,
@@ -91,10 +82,7 @@
       "energy_regen": 0.01,
       "damage_factor": 2.6375,
       "fire_energy": 0.3,
-      "fire_delay": {
-        "secs": 0,
-        "nanos": 300000000
-      },
+      "fire_delay": 0.3,
       "missile_type": "MohawkMissile",
       "missile_offset": [
         10.0,
@@ -117,10 +105,7 @@
       "energy_regen": 0.005,
       "damage_factor": 1.0,
       "fire_energy": 0.9,
-      "fire_delay": {
-        "secs": 0,
-        "nanos": 300000000
-      },
+      "fire_delay": 0.3,
       "missile_type": "GoliathMissile",
       "missile_offset": [
         35.0,
@@ -199,24 +184,15 @@
       }
     },
     "upgrade": {
-      "lifetime": {
-        "secs": 60,
-        "nanos": 0
-      },
+      "lifetime": 60.0,
       "missile": null
     },
     "inferno": {
-      "lifetime": {
-        "secs": 60,
-        "nanos": 0
-      },
+      "lifetime": 60.0,
       "missile": null
     },
     "shield": {
-      "lifetime": {
-        "secs": 60,
-        "nanos": 0
-      },
+      "lifetime": 60.0,
       "missile": null
     }
   },
@@ -296,21 +272,9 @@
   },
   "admin_enabled": false,
   "allow_spectate_while_moving": true,
-  "spawn_shield_duration": {
-    "secs": 2,
-    "nanos": 0
-  },
-  "shield_duration": {
-    "secs": 10,
-    "nanos": 0
-  },
-  "inferno_duration": {
-    "secs": 10,
-    "nanos": 0
-  },
+  "spawn_shield_duration": 2.0,
+  "shield_duration": 10.0,
+  "inferno_duration": 10.0,
   "view_radius": 2250.0,
-  "respawn_delay": {
-    "secs": 2,
-    "nanos": 0
-  }
+  "respawn_delay": 2.0
 }

@@ -37,6 +37,7 @@ pub struct PlaneInfo {
 
   // Energy requirement
   pub fire_energy: Energy,
+  #[serde(with = "duration")]
   pub fire_delay: Duration,
 
   // Type of missile that the plane fires
@@ -65,6 +66,7 @@ pub struct MissileInfo {
 
 #[derive(Clone, Debug, Default, Serialize, Deserialize, DeserializeOver)]
 pub struct MobInfo {
+  #[serde(with = "option_duration")]
   pub lifetime: Option<Duration>,
   #[deserialize_over]
   pub missile: Option<MissileInfo>,
@@ -134,14 +136,18 @@ pub struct Config {
 
   pub admin_enabled: bool,
   pub allow_spectate_while_moving: bool,
+  #[serde(with = "duration")]
   pub spawn_shield_duration: Duration,
+  #[serde(with = "duration")]
   pub shield_duration: Duration,
+  #[serde(with = "duration")]
   pub inferno_duration: Duration,
 
   /// The radius in which the player can observe events happening.
   pub view_radius: Distance,
 
   /// The delay between a player dying and them being allowed to respawn.
+  #[serde(with = "duration")]
   pub respawn_delay: Duration,
 }
 
@@ -525,5 +531,36 @@ mod mob_defaults {
       lifetime: Some(Duration::from_secs(60)),
       missile: None,
     }
+  }
+}
+
+mod duration {
+  use serde::{Deserialize, Deserializer, Serializer};
+  use std::time::Duration;
+
+  pub(super) fn serialize<S: Serializer>(dur: &Duration, ser: S) -> Result<S::Ok, S::Error> {
+    ser.serialize_f64(dur.as_secs_f64())
+  }
+
+  pub(super) fn deserialize<'de, D: Deserializer<'de>>(de: D) -> Result<Duration, D::Error> {
+    f64::deserialize(de).map(Duration::from_secs_f64)
+  }
+}
+
+mod option_duration {
+  use serde::{Deserialize, Deserializer, Serialize, Serializer};
+  use std::time::Duration;
+
+  pub(super) fn serialize<S: Serializer>(
+    dur: &Option<Duration>,
+    ser: S,
+  ) -> Result<S::Ok, S::Error> {
+    dur.map(|d| d.as_secs_f64()).serialize(ser)
+  }
+
+  pub(super) fn deserialize<'de, D: Deserializer<'de>>(
+    de: D,
+  ) -> Result<Option<Duration>, D::Error> {
+    Ok(Option::deserialize(de)?.map(Duration::from_secs_f64))
   }
 }
