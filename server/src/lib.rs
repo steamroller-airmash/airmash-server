@@ -31,6 +31,7 @@ mod worldext;
 pub mod component;
 pub mod event;
 pub mod network;
+pub mod prototype;
 pub mod resource;
 pub mod system;
 pub mod util;
