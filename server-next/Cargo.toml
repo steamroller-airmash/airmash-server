@@ -8,7 +8,7 @@ mt-network = []
 
 [dependencies]
 hecs = "0.7.6"
-nalgebra = { version = "0.30.1", features = ["serde-serialize"] }
+nalgebra = { version = "0.31.0", features = ["serde-serialize"] }
 anymap = "=1.0.0-beta.2"
 linkme = "0.2.6"
 log = "0.4"
