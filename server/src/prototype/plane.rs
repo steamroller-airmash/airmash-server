@@ -2,10 +2,11 @@ use crate::protocol::PlaneType;
 use crate::Vector2;
 use nalgebra::vector;
 use serde::{Deserialize, Serialize};
+use serde_deserialize_over::DeserializeOver;
 use std::borrow::Cow;
 use std::time::Duration;
 
-#[derive(Clone, Debug, Serialize, Deserialize)]
+#[derive(Clone, Debug, Serialize, Deserialize, DeserializeOver)]
 pub struct PlanePrototype {
   /// The name with which to refer to this plane prototype. It must be unique
   /// among all plane prototypes.
