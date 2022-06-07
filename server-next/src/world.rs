@@ -282,7 +282,7 @@ impl Resources {
 
 /// A view into a single location in the [`Resources`] map.
 pub struct ResourceEntry<'a, T> {
-  entry: anymap::Entry<'a, dyn anymap::any::Any, RefCell<T>>,
+  entry: anymap::Entry<'a, dyn std::any::Any, RefCell<T>>,
 }
 
 impl<'a, T: 'static> ResourceEntry<'a, T> {
