@@ -23,7 +23,7 @@ smallvec = "1.6"
 phf = { version="0.10", features=["macros"] }
 
 [dependencies.airmash]
-path="../server-next"
+path="../server"
 package = "airmash-server"
 features = ["mt-network"]
 
