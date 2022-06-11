@@ -255,4 +255,11 @@ impl MissileFiringSide {
       Self::Right => Self::Left,
     }
   }
+
+  pub fn multiplier(self) -> f32 {
+    match self {
+      Self::Left => -1.0,
+      Self::Right => 1.0,
+    }
+  }
 }
