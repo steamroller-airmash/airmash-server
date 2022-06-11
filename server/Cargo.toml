@@ -42,7 +42,7 @@ thiserror = "1.0"
 [dependencies.futures-util]
 version = "0.3"
 default-features = false
-features = [ "sink" ] 
+features = [ "sink" ]
 
 [dependencies.futures-task]
 version = "0.3"

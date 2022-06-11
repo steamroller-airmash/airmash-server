@@ -8,7 +8,7 @@ members = [
 	"base",
 	"ctf",
 	"ffa",
-	"server-next",
+	"server",
 	"server-macros",
 	"utils/bounded-queue",
 	"utils/special-map",

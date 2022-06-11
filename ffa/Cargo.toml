@@ -9,7 +9,7 @@ repository = 'https://github.com/steamroller-airmash/airmash-server'
 edition = "2018"
 
 [dependencies]
-server = { path="../server-next", package="airmash-server" }
+server = { path="../server", package="airmash-server" }
 log = "0.4"
 env_logger = "0.9"
 rand = "0.8"
