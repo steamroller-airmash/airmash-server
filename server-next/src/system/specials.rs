@@ -1,4 +1,3 @@
-use hecs::Entity;
 use smallvec::SmallVec;
 
 use crate::{
@@ -10,7 +9,7 @@ use crate::{
     collision::{LayerSpec, MissileCollideDb, PlayerCollideDb},
     Config,
   },
-  AirmashGame, FireMissileInfo,
+  AirmashGame,
 };
 
 pub fn update(game: &mut AirmashGame) {
@@ -69,7 +68,7 @@ fn tornado_special_fire(game: &mut AirmashGame) {
     )>()
     .with::<IsPlayer>();
 
-  let mut events: Vec<(Entity, SmallVec<[FireMissileInfo; 5]>)> = Vec::new();
+  let mut events = Vec::new();
   for (ent, (keystate, last_fire, energy, &plane, powerup, alive)) in query.iter() {
     if plane != PlaneType::Tornado || !keystate.special || !alive.0 {
       continue;
@@ -86,7 +85,7 @@ fn tornado_special_fire(game: &mut AirmashGame) {
 
     energy.0 -= TORNADO_SPECIAL_ENERGY;
 
-    let mut missiles = SmallVec::new();
+    let mut missiles = SmallVec::<[_; 5]>::new();
     if powerup.inferno() {
       missiles.extend_from_slice(&TORNADO_INFERNO_MISSILE_DETAILS[..]);
     } else {

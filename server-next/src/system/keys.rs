@@ -1,14 +1,10 @@
 use airmash_protocol::{KeyCode, PlaneType};
-use hecs::Entity;
-use nalgebra::vector;
-use smallvec::smallvec;
-use smallvec::SmallVec;
 
 use crate::{
   component::*,
   event::KeyEvent,
   resource::{Config, StartTime, ThisFrame},
-  AirmashGame, FireMissileInfo,
+  AirmashGame,
 };
 
 pub fn update(game: &mut AirmashGame) {
@@ -28,12 +24,11 @@ fn fire_missiles(game: &mut AirmashGame) {
       &PlaneType,
       &Powerup,
       &IsAlive,
-      &mut MissileFiringSide,
     )>()
     .with::<IsPlayer>();
 
-  let mut events: Vec<(Entity, SmallVec<[FireMissileInfo; 3]>)> = Vec::new();
-  for (ent, (keystate, last_fire, energy, plane, powerup, alive, side)) in query.iter() {
+  let mut events = Vec::new();
+  for (ent, (keystate, last_fire, energy, plane, powerup, alive)) in query.iter() {
     let info = &config.planes[*plane];
 
     if !alive.0
@@ -46,45 +41,19 @@ fn fire_missiles(game: &mut AirmashGame) {
 
     energy.0 -= info.fire_energy;
 
-    let side_mult = match std::mem::replace(side, side.reverse()) {
-      MissileFiringSide::Left => -1.0,
-      MissileFiringSide::Right => 1.0,
-    };
-    let hor_offset = info.missile_offset.y * side_mult;
-
-    let mut missile_info = smallvec![FireMissileInfo {
-      pos_offset: vector![hor_offset, info.missile_offset.x],
-      rot_offset: 0.0,
-      ty: info.missile_type
-    }];
-
+    let mut count = 1;
     if powerup.inferno() {
-      missile_info.push(FireMissileInfo {
-        pos_offset: vector![
-          info.missile_inferno_offset_x + hor_offset,
-          info.missile_inferno_offset_y
-        ],
-        rot_offset: -info.missile_inferno_angle,
-        ty: info.missile_type,
-      });
-      missile_info.push(FireMissileInfo {
-        pos_offset: vector![
-          -info.missile_inferno_offset_x + hor_offset,
-          info.missile_inferno_offset_y
-        ],
-        rot_offset: info.missile_inferno_angle,
-        ty: info.missile_type,
-      });
+      count = count * 2 + 1;
     }
 
-    events.push((ent, missile_info));
+    events.push((ent, count, info.missile_type));
   }
 
   drop(config);
   drop(query);
 
-  for (ent, missiles) in events {
-    let _ = game.fire_missiles(ent, &missiles);
+  for (ent, missiles, ty) in events {
+    let _ = game.fire_missiles_count(ent, missiles, ty);
   }
 }
 
