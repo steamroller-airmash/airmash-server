@@ -161,6 +161,79 @@ impl AirmashGame {
     Ok(entities)
   }
 
+  /// Fire a number of missiles from a plane, automatically determining the
+  /// offsets and angles for each fired missile. This method gives less control
+  /// than [fire_missiles](self::AirmashGame::fire_missiles) but is easier to
+  /// use and is generally what you want unless you need to control exactly
+  /// where the missiles are being fired from.
+  pub fn fire_missiles_count(
+    &mut self,
+    player: Entity,
+    mut count: usize,
+    ty: MobType,
+  ) -> Result<SmallVec<[Entity; 3]>, hecs::QueryOneError> {
+    // Only fire an odd number of missiles
+    if count % 2 == 0 {
+      count += 1;
+    }
+
+    assert!(
+      count <= 255,
+      "tried to spawn {} missiles at once - at most 255 can be spawned at a time",
+      count
+    );
+
+    let scale_offset = |count: f32, base: f32| 2.0 * base * (1.0 - 1.0 / (1.0 + count));
+
+    let (&plane, side, _) = self
+      .world
+      .query_one_mut::<(&PlaneType, &mut MissileFiringSide, &IsPlayer)>(player)?;
+
+    let halfcnt = (count / 2) as f32;
+    let config = self.resources.read::<Config>();
+    let pconfig = &config.planes[plane];
+
+    let total_angle = halfcnt * pconfig.missile_inferno_angle;
+    let total_offset_x = scale_offset(halfcnt, pconfig.missile_inferno_offset_x);
+    let total_offset_y = scale_offset(halfcnt, pconfig.missile_inferno_offset_y);
+
+    let side = std::mem::replace(side, side.reverse());
+    let start_x = pconfig.missile_offset.x;
+    let start_y = pconfig.missile_offset.y * side.multiplier();
+
+    let mut infos = SmallVec::<[_; 3]>::new();
+    infos.push(FireMissileInfo {
+      pos_offset: vector![start_y, start_x],
+      rot_offset: 0.0,
+      ty,
+    });
+
+    for i in 1..=(count / 2) {
+      let frac = (i as f32) / halfcnt;
+      let angle = total_angle * frac;
+
+      infos.push(FireMissileInfo {
+        pos_offset: vector![
+          start_y + total_offset_y * frac,
+          start_x - total_offset_x * frac
+        ],
+        rot_offset: -angle,
+        ty,
+      });
+      infos.push(FireMissileInfo {
+        pos_offset: vector![
+          start_y - total_offset_y * frac,
+          start_x - total_offset_x * frac
+        ],
+        rot_offset: angle,
+        ty,
+      });
+    }
+
+    drop(config);
+    Ok(self.fire_missiles(player, &infos)?)
+  }
+
   /// Spawn a mob (upgrade or powerup).
   ///
   /// # Panics
@@ -255,7 +328,7 @@ impl AirmashGame {
       // missiles just lying around.
       game.world.spawn_at(
         entity,
-        (Expiry(Instant::now() + Duration::from_secs(60)), IsZombie),
+        (Expiry(Instant::now() + Duration::from_secs(10)), IsZombie),
       );
     });
   }
