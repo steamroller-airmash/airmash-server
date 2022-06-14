@@ -1,6 +1,0 @@
-[package]
-name = "bounded-queue"
-version = "0.0.1"
-authors = ["STEAMROLLER"]
-
-[dependencies]

@@ -200,10 +200,6 @@ dependencies = [
 ]
 
 [[package]]
-name = "bounded-queue"
-version = "0.0.1"
-
-[[package]]
 name = "bstr"
 version = "0.2.17"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -1106,13 +1102,6 @@ checksum = "66d72b759436ae32898a2af0a14218dbf55efde3feeb170eb623637db85ee1e0"
 dependencies = [
  "libc",
  "winapi",
-]
-
-[[package]]
-name = "special-map"
-version = "0.1.0"
-dependencies = [
- "hashbrown 0.12.1",
 ]
 
 [[package]]
