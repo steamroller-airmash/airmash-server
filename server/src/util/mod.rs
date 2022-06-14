@@ -11,6 +11,7 @@ use crate::AirmashGame;
 
 pub(crate) mod escapes;
 mod powerup_spawner;
+pub(crate) mod serde;
 pub mod spectate;
 
 pub use self::powerup_spawner::PeriodicPowerupSpawner;
