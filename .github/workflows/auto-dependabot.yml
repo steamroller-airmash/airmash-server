@@ -11,4 +11,4 @@ jobs:
         with:
           target: minor
           command: squash and merge
-          github-token: ${{ secrets.mytoken }}
+          github-token: ${{ secrets.USER_TOKEN }}
