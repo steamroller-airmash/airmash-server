@@ -118,10 +118,13 @@ pub enum SpecialPrototypeData {
 
 impl SpecialPrototype {
   pub const fn predator() -> Self {
+    // Workaround for the fact that floating point ops in const fns are unstable.
+    const REGEN: f32 = -crate::consts::PREDATOR_SPECIAL_REGEN;
+
     Self {
       name: Cow::Borrowed("boost"),
       data: Boost(BoostPrototype {
-        cost: -crate::consts::PREDATOR_SPECIAL_REGEN,
+        cost: REGEN,
         speedup: 1.5,
       }),
     }
