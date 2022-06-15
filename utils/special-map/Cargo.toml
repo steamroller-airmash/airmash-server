@@ -1,7 +1,0 @@
-[package]
-name = "special-map"
-version = "0.1.0"
-authors = ["steamroller-airmash <38710707+steamroller-airmash@users.noreply.github.com>"]
-
-[dependencies]
-hashbrown = "*"

@@ -10,7 +10,5 @@ members = [
 	"ffa",
 	"server",
 	"server-macros",
-	"utils/bounded-queue",
-	"utils/special-map",
 	"utils/kdtree"
 ]
