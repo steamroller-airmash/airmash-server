@@ -1,12 +1,18 @@
 name: Auto-merge compatible dependabot PRs
 on:
-  pull_request:
+  pull_request_target:
+    types: [opened, synchronize, reopened]
 
 jobs:
   auto-merge:
     if: ${{ github.actor == 'dependabot[bot]' }}
     runs-on: ubuntu-latest
     steps:
+      # Validate that the PR is from dependabot
+      - id: metadata
+        uses: dependabot/fetch-metadata@v1.1.1
+        with:
+          github-token: "${{ secrets.GITHUB_TOKEN }}"
       - uses: ahmadnassri/action-dependabot-auto-merge@v2
         with:
           target: minor
