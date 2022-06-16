@@ -1,10 +1,10 @@
 use protocol::{PlaneType, Vector2};
 use serde::{Deserialize, Serialize};
-use serde_deserialize_over::DeserializeOver;
 use std::borrow::Cow;
 use std::time::Duration;
+use crate::util::duration;
 
-#[derive(Clone, Debug, Serialize, Deserialize, DeserializeOver)]
+#[derive(Clone, Debug, Serialize, Deserialize)]
 pub struct PlanePrototype {
   /// The name with which to refer to this plane prototype. It must be unique
   /// among all plane prototypes.
@@ -42,6 +42,7 @@ pub struct PlanePrototype {
   pub fire_energy: f32,
 
   /// The minimum delay between firing two consecutive shots.
+  #[serde(with = "duration")]
   pub fire_delay: Duration,
 
   /// Multiplier for missile damage. This is somewhat like the inverse of player
