@@ -3,10 +3,16 @@ name = "server-prototypes"
 version = "0.1.0"
 edition = "2021"
 
+[features]
+script = [ "rlua" ]
+default = [ "script" ]
+
 [dependencies]
 serde = { version = "1.0", features = [ "derive" ] }
 serde-value = "0.7"
 nalgebra = { version = "0.31", features = ["serde-serialize"] }
+
+rlua = { version = "0.19", optional = true }
 
 [dependencies.protocol]
 version = "0.5"
