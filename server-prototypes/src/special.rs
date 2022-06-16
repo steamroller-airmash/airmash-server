@@ -93,7 +93,7 @@ pub struct StealthPrototype {
   pub delay: Duration,
 }
 
-#[derive(Serialize, Clone, Debug)]
+#[derive(Serialize, Deserialize, Clone, Debug)]
 pub struct SpecialPrototype {
   /// The name with which this special effect will be referred to.
   pub name: Cow<'static, str>,
