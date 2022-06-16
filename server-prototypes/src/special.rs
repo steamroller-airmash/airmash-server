@@ -1,5 +1,4 @@
 use crate::util::duration;
-use serde_deserialize_over::DeserializeOver;
 use std::borrow::Cow;
 use std::time::Duration;
 
@@ -16,7 +15,7 @@ use std::time::Duration;
 ///   speedup: 1.5,
 /// }
 /// ```
-#[derive(Serialize, Deserialize, DeserializeOver, Clone, Debug)]
+#[derive(Serialize, Deserialize, Clone, Debug)]
 #[non_exhaustive]
 pub struct BoostPrototype {
   /// The rate at which boosting uses up energy in (energy/frame)
@@ -29,7 +28,7 @@ pub struct BoostPrototype {
 /// Prototype for a special which fires a number of missiles.
 ///
 /// This is the same special effect as the tornado.
-#[derive(Serialize, Deserialize, DeserializeOver, Clone, Debug)]
+#[derive(Serialize, Deserialize, Clone, Debug)]
 #[non_exhaustive]
 pub struct MultishotPrototype {
   /// The name of the missile prototype corresponding to the missile that will
@@ -64,7 +63,7 @@ pub struct MultishotPrototype {
 /// Prototype for a goliath repel.
 // TODO: We might want to have repels which only effect one of missiles and players instead of
 //       always doing both.
-#[derive(Serialize, Deserialize, DeserializeOver, Clone, Debug)]
+#[derive(Serialize, Deserialize, Clone, Debug)]
 #[non_exhaustive]
 pub struct RepelPrototype {
   /// The range out to which missiles will be repelled when this special is
@@ -81,7 +80,7 @@ pub struct RepelPrototype {
   pub delay: Duration,
 }
 
-#[derive(Serialize, Deserialize, DeserializeOver, Clone, Debug)]
+#[derive(Serialize, Deserialize, Clone, Debug)]
 #[non_exhaustive]
 pub struct StealthPrototype {
   /// The cost of engaging stealth. Dropping out of stealth is always free.

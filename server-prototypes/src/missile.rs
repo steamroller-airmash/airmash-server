@@ -1,8 +1,7 @@
 use protocol::MobType;
-use serde_deserialize_over::DeserializeOver;
 use std::borrow::Cow;
 
-#[derive(Clone, Debug, Serialize, Deserialize, DeserializeOver)]
+#[derive(Clone, Debug, Serialize, Deserialize)]
 pub struct MissilePrototype {
   /// The name with which to refer to this missile prototype. It must be unique
   /// among all missile prototypes.
