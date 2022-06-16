@@ -1,12 +1,3 @@
-mod seq;
-mod tag;
-
-#[cfg(feature = "script")]
-pub(crate) mod rlua;
-
-pub(crate) use self::seq::SeqFwdDeserializer;
-pub(crate) use self::tag::TagSerializer;
-
 pub(crate) mod duration {
   use serde::{Deserialize, Deserializer, Serializer};
   use std::time::Duration;

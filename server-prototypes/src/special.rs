@@ -90,20 +90,35 @@ pub struct SpecialPrototype {
 }
 
 /// Prototype for the special action of a plane
-#[derive(Clone, Debug)]
+#[derive(Clone, Debug, Serialize, Deserialize)]
 #[non_exhaustive]
+#[serde(tag = "type")]
+#[serde(deny_unknown_fields)]
 pub enum SpecialPrototypeData {
   /// No special effect whatsoever.
+  #[serde(rename = "none")]
   None,
+  #[serde(rename = "boost")]
   Boost(BoostPrototype),
+  #[serde(rename = "multishot")]
   Multishot(MultishotPrototype),
+  #[serde(rename = "repel")]
   Repel(RepelPrototype),
+  #[serde(rename = "strafe")]
   Strafe,
+  #[serde(rename = "stealth")]
   Stealth(StealthPrototype),
 }
 
 impl SpecialPrototype {
-  pub const fn predator() -> Self {
+  pub const fn none() -> Self {
+    Self {
+      name: Cow::Borrowed("none"),
+      data: SpecialPrototypeData::None,
+    }
+  }
+
+  pub const fn boost() -> Self {
     use self::SpecialPrototypeData::*;
     Self {
       name: Cow::Borrowed("boost"),
@@ -114,7 +129,7 @@ impl SpecialPrototype {
     }
   }
 
-  pub const fn tornado() -> Self {
+  pub const fn multishot() -> Self {
     use self::SpecialPrototypeData::*;
     Self {
       name: Cow::Borrowed("multishot"),
@@ -138,7 +153,7 @@ impl SpecialPrototype {
     }
   }
 
-  pub const fn goliath() -> Self {
+  pub const fn repel() -> Self {
     use self::SpecialPrototypeData::*;
     Self {
       name: Cow::Borrowed("repel"),
@@ -155,7 +170,7 @@ impl SpecialPrototype {
     }
   }
 
-  pub const fn mohawk() -> Self {
+  pub const fn strafe() -> Self {
     use self::SpecialPrototypeData::*;
     Self {
       name: Cow::Borrowed("strafe"),
@@ -163,10 +178,10 @@ impl SpecialPrototype {
     }
   }
 
-  pub const fn prowler() -> Self {
+  pub const fn stealth() -> Self {
     use self::SpecialPrototypeData::*;
     Self {
-      name: Cow::Borrowed("prowler"),
+      name: Cow::Borrowed("stealth"),
       data: Stealth(StealthPrototype {
         cost: 0.6,
         delay: Duration::from_millis(1500),
@@ -215,200 +230,6 @@ impl SpecialPrototype {
     match self.data {
       SpecialPrototypeData::Stealth(_) => true,
       _ => false,
-    }
-  }
-}
-
-use crate::util::TagSerializer;
-use serde::{Deserialize, Deserializer, Serialize, Serializer};
-
-impl SpecialPrototypeData {
-  const NAME: &'static str = "SpecialPrototypeData";
-  const TAG: &'static str = "type";
-
-  fn serialize_unit_variant<S>(&self, variant: &str, ser: S) -> Result<S::Ok, S::Error>
-  where
-    S: Serializer,
-  {
-    use serde::ser::SerializeStruct as _;
-
-    let mut ser = ser.serialize_struct(Self::NAME, 1)?;
-    ser.serialize_field(Self::TAG, variant)?;
-    ser.end()
-  }
-
-  fn serialize_variant<S, V>(&self, name: &str, proto: V, ser: S) -> Result<S::Ok, S::Error>
-  where
-    S: Serializer,
-    V: Serialize,
-  {
-    proto.serialize(TagSerializer::new(Self::NAME, Self::TAG, name, ser))
-  }
-}
-
-impl Serialize for SpecialPrototypeData {
-  fn serialize<S>(&self, ser: S) -> Result<S::Ok, S::Error>
-  where
-    S: Serializer,
-  {
-    match self {
-      Self::None => self.serialize_unit_variant("none", ser),
-      Self::Boost(proto) => self.serialize_variant("boost", proto, ser),
-      Self::Multishot(proto) => self.serialize_variant("multishot", proto, ser),
-      Self::Repel(proto) => self.serialize_variant("repel", proto, ser),
-      Self::Strafe => self.serialize_unit_variant("strafe", ser),
-      Self::Stealth(proto) => self.serialize_variant("stealth", proto, ser),
-    }
-  }
-}
-
-impl<'de> Deserialize<'de> for SpecialPrototypeData {
-  fn deserialize<D>(de: D) -> Result<Self, D::Error>
-  where
-    D: Deserializer<'de>,
-  {
-    use serde::de::{self, Visitor};
-
-    struct DeVisitor;
-
-    impl DeVisitor {
-      const VARIANTS: &'static [&'static str] =
-        &["none", "boost", "multishot", "repel", "strafe", "stealth"];
-
-      fn deserialize_seq_variant<'de, V, A>(seq: A) -> Result<V, A::Error>
-      where
-        V: Deserialize<'de>,
-        A: serde::de::SeqAccess<'de>,
-      {
-        use crate::util::SeqFwdDeserializer;
-
-        V::deserialize(SeqFwdDeserializer(seq))
-      }
-    }
-
-    impl<'de> Visitor<'de> for DeVisitor {
-      type Value = SpecialPrototypeData;
-
-      fn expecting(&self, formatter: &mut std::fmt::Formatter) -> std::fmt::Result {
-        formatter.write_str("tagged result")
-      }
-
-      fn visit_seq<A>(self, mut seq: A) -> Result<Self::Value, A::Error>
-      where
-        A: serde::de::SeqAccess<'de>,
-      {
-        let tag: &'de str = match seq.next_element()? {
-          Some(tag) => tag,
-          None => return Err(de::Error::missing_field(SpecialPrototypeData::TAG)),
-        };
-
-        Ok(match tag {
-          "none" => SpecialPrototypeData::None,
-          "boost" => SpecialPrototypeData::Boost(Self::deserialize_seq_variant(seq)?),
-          "multishot" => SpecialPrototypeData::Multishot(Self::deserialize_seq_variant(seq)?),
-          "repel" => SpecialPrototypeData::Repel(Self::deserialize_seq_variant(seq)?),
-          "strafe" => SpecialPrototypeData::Strafe,
-          "stealth" => SpecialPrototypeData::Stealth(Self::deserialize_seq_variant(seq)?),
-          _ => return Err(de::Error::unknown_variant(tag, Self::VARIANTS)),
-        })
-      }
-
-      fn visit_map<A>(self, mut map: A) -> Result<Self::Value, A::Error>
-      where
-        A: de::MapAccess<'de>,
-      {
-        use serde_value::{Value, ValueDeserializer};
-        use std::collections::BTreeMap;
-
-        let mut tag: Option<&'de str> = None;
-        let mut entries: BTreeMap<Value, Value> = BTreeMap::new();
-
-        while let Some(key) = map.next_key::<&'de str>()? {
-          if key == SpecialPrototypeData::TAG {
-            if tag.is_some() {
-              return Err(de::Error::duplicate_field(SpecialPrototypeData::TAG));
-            }
-
-            tag = Some(map.next_value()?);
-            continue;
-          }
-
-          if entries
-            .insert(Value::String(key.to_owned()), map.next_value()?)
-            .is_some()
-          {
-            return Err(de::Error::custom(format_args!("duplicate field `{}`", key)));
-          }
-        }
-
-        let tag = match tag {
-          Some(tag) => tag,
-          None => return Err(de::Error::missing_field(SpecialPrototypeData::TAG)),
-        };
-        let de = ValueDeserializer::new(Value::Map(entries));
-
-        Ok(match tag {
-          "none" => SpecialPrototypeData::None,
-          "boost" => SpecialPrototypeData::Boost(Deserialize::deserialize(de)?),
-          "multishot" => SpecialPrototypeData::Multishot(Deserialize::deserialize(de)?),
-          "repel" => SpecialPrototypeData::Repel(Deserialize::deserialize(de)?),
-          "strafe" => SpecialPrototypeData::Strafe,
-          "stealth" => SpecialPrototypeData::Stealth(Deserialize::deserialize(de)?),
-          _ => return Err(de::Error::unknown_variant(tag, Self::VARIANTS)),
-        })
-      }
-    }
-
-    de.deserialize_struct(Self::NAME, DeVisitor::VARIANTS, DeVisitor)
-  }
-}
-
-#[cfg(test)]
-mod tests {
-  use super::*;
-
-  use serde::de;
-
-  #[derive(Clone, Debug)]
-  struct DeError(String);
-
-  impl std::fmt::Display for DeError {
-    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-      f.write_str(&self.0)
-    }
-  }
-
-  impl std::error::Error for DeError {}
-
-  impl de::Error for DeError {
-    fn custom<T>(msg: T) -> Self
-    where
-      T: std::fmt::Display,
-    {
-      Self(msg.to_string())
-    }
-  }
-
-  #[test]
-  fn none_disallows_extra_fields() {
-    #[derive(Serialize)]
-    struct TestStruct {
-      name: &'static str,
-      #[serde(rename = "type")]
-      ty: &'static str,
-      bogus: i32,
-    }
-
-    let value = TestStruct {
-      name: "test",
-      ty: "none",
-      bogus: 3,
-    };
-    let value = serde_value::to_value(value).expect("Failed to serialize TestStruct");
-    let de = serde_value::ValueDeserializer::<DeError>::new(value);
-
-    if SpecialPrototype::deserialize(de).is_ok() {
-      panic!("SpecialPrototype deserialized without an error");
     }
   }
 }

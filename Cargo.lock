@@ -1140,6 +1140,7 @@ dependencies = [
  "nalgebra",
  "rlua",
  "serde",
+ "serde-rlua",
  "serde-value",
  "serde_json",
  "serde_path_to_error",

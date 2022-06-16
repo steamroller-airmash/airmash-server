@@ -8,6 +8,9 @@ mod plane;
 mod special;
 mod util;
 
+#[cfg(feature = "script")]
+mod script;
+
 pub use self::missile::MissilePrototype;
 pub use self::plane::PlanePrototype;
 pub use self::special::*;
@@ -39,11 +42,11 @@ impl Default for GamePrototype {
         MissilePrototype::mohawk(),
       ],
       specials: vec![
-        SpecialPrototype::predator(),
-        SpecialPrototype::tornado(),
-        SpecialPrototype::mohawk(),
-        SpecialPrototype::goliath(),
-        SpecialPrototype::prowler(),
+        SpecialPrototype::boost(),
+        SpecialPrototype::multishot(),
+        SpecialPrototype::strafe(),
+        SpecialPrototype::repel(),
+        SpecialPrototype::stealth(),
       ],
     }
   }
