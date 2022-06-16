@@ -1,8 +1,8 @@
+use crate::util::duration;
 use protocol::{PlaneType, Vector2};
 use serde::{Deserialize, Serialize};
 use std::borrow::Cow;
 use std::time::Duration;
-use crate::util::duration;
 
 #[derive(Clone, Debug, Serialize, Deserialize)]
 pub struct PlanePrototype {

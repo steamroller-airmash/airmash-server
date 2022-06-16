@@ -4,13 +4,11 @@ pub(crate) struct SeqFwdDeserializer<A>(pub A);
 
 impl<'de, A> SeqFwdDeserializer<A>
 where
-  A: serde::de::SeqAccess<'de>
+  A: serde::de::SeqAccess<'de>,
 {
   #[allow(dead_code, unused_variables)]
   fn bad_type(found: &str) -> <Self as Deserializer<'de>>::Error {
-    serde::de::Error::custom(format_args!(
-      "expected "
-    ))
+    serde::de::Error::custom(format_args!("expected "))
   }
 }
 
@@ -34,7 +32,7 @@ where
   {
     visitor.visit_seq(self.0)
   }
-  
+
   fn deserialize_struct<V>(
     self,
     _: &'static str,
