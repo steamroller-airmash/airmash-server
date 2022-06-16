@@ -2,6 +2,7 @@ use protocol::MobType;
 use std::borrow::Cow;
 
 #[derive(Clone, Debug, Serialize, Deserialize)]
+#[serde(deny_unknown_fields)]
 pub struct MissilePrototype {
   /// The name with which to refer to this missile prototype. It must be unique
   /// among all missile prototypes.
@@ -46,7 +47,7 @@ impl MissilePrototype {
 
   pub const fn tornado() -> Self {
     Self {
-      name: Cow::Borrowed("tornado"),
+      name: Cow::Borrowed("tornado-single"),
       server_type: MobType::TornadoSingleMissile,
       max_speed: 7.0,
       base_speed: 3.5,

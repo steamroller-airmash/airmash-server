@@ -17,6 +17,7 @@ pub use self::special::*;
 
 #[derive(Serialize, Deserialize, Clone, Debug)]
 #[non_exhaustive]
+#[serde(deny_unknown_fields)]
 pub struct GamePrototype {
   pub planes: Vec<PlanePrototype>,
   pub missiles: Vec<MissilePrototype>,

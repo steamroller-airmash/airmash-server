@@ -5,6 +5,7 @@ use std::time::Duration;
 /// Prototype for a boost effect similar to the predator boost.
 #[derive(Serialize, Deserialize, Clone, Debug)]
 #[non_exhaustive]
+#[serde(deny_unknown_fields)]
 pub struct BoostPrototype {
   /// The rate at which boosting uses up energy in (energy/frame)
   pub cost: f32,
@@ -18,6 +19,7 @@ pub struct BoostPrototype {
 /// This is the same special effect as the tornado.
 #[derive(Serialize, Deserialize, Clone, Debug)]
 #[non_exhaustive]
+#[serde(deny_unknown_fields)]
 pub struct MultishotPrototype {
   /// The name of the missile prototype corresponding to the missile that will
   /// be fired.
@@ -53,6 +55,7 @@ pub struct MultishotPrototype {
 //       always doing both.
 #[derive(Serialize, Deserialize, Clone, Debug)]
 #[non_exhaustive]
+#[serde(deny_unknown_fields)]
 pub struct RepelPrototype {
   /// The range out to which missiles will be repelled when this special is
   /// triggered.
@@ -70,6 +73,7 @@ pub struct RepelPrototype {
 
 #[derive(Serialize, Deserialize, Clone, Debug)]
 #[non_exhaustive]
+#[serde(deny_unknown_fields)]
 pub struct StealthPrototype {
   /// The cost of engaging stealth. Dropping out of stealth is always free.
   pub cost: f32,

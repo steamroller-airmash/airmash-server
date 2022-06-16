@@ -5,6 +5,7 @@ use std::borrow::Cow;
 use std::time::Duration;
 
 #[derive(Clone, Debug, Serialize, Deserialize)]
+#[serde(deny_unknown_fields)]
 pub struct PlanePrototype {
   /// The name with which to refer to this plane prototype. It must be unique
   /// among all plane prototypes.
