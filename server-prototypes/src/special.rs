@@ -284,7 +284,7 @@ impl<'de> Deserialize<'de> for SpecialPrototypeData {
     struct DeVisitor;
 
     impl DeVisitor {
-      const FIELDS: &'static [&'static str] =
+      const VARIANTS: &'static [&'static str] =
         &["none", "boost", "multishot", "repel", "strafe", "stealth"];
 
       fn deserialize_seq_variant<'de, V, A>(seq: A) -> Result<V, A::Error>
@@ -321,7 +321,7 @@ impl<'de> Deserialize<'de> for SpecialPrototypeData {
           "repel" => SpecialPrototypeData::Repel(Self::deserialize_seq_variant(seq)?),
           "strafe" => SpecialPrototypeData::Strafe,
           "stealth" => SpecialPrototypeData::Stealth(Self::deserialize_seq_variant(seq)?),
-          _ => return Err(de::Error::unknown_variant(tag, Self::FIELDS)),
+          _ => return Err(de::Error::unknown_variant(tag, Self::VARIANTS)),
         })
       }
 
@@ -371,6 +371,6 @@ impl<'de> Deserialize<'de> for SpecialPrototypeData {
       }
     }
 
-    de.deserialize_struct(Self::NAME, DeVisitor::FIELDS, DeVisitor)
+    de.deserialize_struct(Self::NAME, DeVisitor::VARIANTS, DeVisitor)
   }
 }
