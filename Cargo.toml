@@ -11,5 +11,6 @@ members = [
 	"server",
 	"server-macros",
 	"server-prototypes",
-	"utils/kdtree"
+	"utils/kdtree",
+	"utils/serde-rlua"
 ]
