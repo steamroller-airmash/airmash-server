@@ -1071,7 +1071,6 @@ version = "0.1.0"
 dependencies = [
  "airmash-protocol",
  "serde",
- "serde-deserialize-over",
  "serde-value",
  "serde_json",
 ]
