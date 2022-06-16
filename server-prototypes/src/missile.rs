@@ -1,6 +1,8 @@
 use protocol::MobType;
 use std::borrow::Cow;
 
+use crate::ValidationError;
+
 #[derive(Clone, Debug, Serialize, Deserialize)]
 #[serde(deny_unknown_fields)]
 pub struct MissilePrototype {
@@ -108,5 +110,15 @@ impl MissilePrototype {
       damage: 0.3,
       distance: 581.0,
     }
+  }
+}
+
+impl MissilePrototype {
+  pub fn validate(&self) -> Result<(), ValidationError> {
+    if self.name.is_empty() {
+      return Err(ValidationError::custom("name", &"prototype had empty name"));
+    }
+
+    Ok(())
   }
 }
