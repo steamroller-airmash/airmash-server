@@ -3,6 +3,7 @@
 #[macro_use]
 extern crate serde;
 
+mod error;
 mod missile;
 mod plane;
 mod special;
@@ -11,6 +12,7 @@ mod util;
 #[cfg(feature = "script")]
 mod script;
 
+pub use self::game::GamePrototype;
 pub use self::missile::MissilePrototype;
 pub use self::plane::PlanePrototype;
 pub use self::special::*;
@@ -52,3 +54,4 @@ impl Default for GamePrototype {
     }
   }
 }
+pub use self::error::{ValidationError, Path, Segment};
