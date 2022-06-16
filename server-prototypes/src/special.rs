@@ -3,18 +3,6 @@ use std::borrow::Cow;
 use std::time::Duration;
 
 /// Prototype for a boost effect similar to the predator boost.
-///
-/// # Example
-/// The prototype for the predator boost looks like this:
-/// ```
-/// # use server::prototype::BoostPrototype;
-/// # use std::borrow::Cow;
-/// BoostPrototype {
-///   name: Cow::Borrowed("boost"),
-///   cost: 0.01,
-///   speedup: 1.5,
-/// }
-/// ```
 #[derive(Serialize, Deserialize, Clone, Debug)]
 #[non_exhaustive]
 pub struct BoostPrototype {
@@ -366,11 +354,61 @@ impl<'de> Deserialize<'de> for SpecialPrototypeData {
           "repel" => SpecialPrototypeData::Repel(Deserialize::deserialize(de)?),
           "strafe" => SpecialPrototypeData::Strafe,
           "stealth" => SpecialPrototypeData::Stealth(Deserialize::deserialize(de)?),
-          _ => return Err(de::Error::unknown_variant(tag, Self::FIELDS)),
+          _ => return Err(de::Error::unknown_variant(tag, Self::VARIANTS)),
         })
       }
     }
 
     de.deserialize_struct(Self::NAME, DeVisitor::VARIANTS, DeVisitor)
+  }
+}
+
+#[cfg(test)]
+mod tests {
+  use super::*;
+
+  use serde::de;
+
+  #[derive(Clone, Debug)]
+  struct DeError(String);
+
+  impl std::fmt::Display for DeError {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+      f.write_str(&self.0)
+    }
+  }
+
+  impl std::error::Error for DeError {}
+
+  impl de::Error for DeError {
+    fn custom<T>(msg: T) -> Self
+    where
+      T: std::fmt::Display,
+    {
+      Self(msg.to_string())
+    }
+  }
+
+  #[test]
+  fn none_disallows_extra_fields() {
+    #[derive(Serialize)]
+    struct TestStruct {
+      name: &'static str,
+      #[serde(rename = "type")]
+      ty: &'static str,
+      bogus: i32,
+    }
+
+    let value = TestStruct {
+      name: "test",
+      ty: "none",
+      bogus: 3,
+    };
+    let value = serde_value::to_value(value).expect("Failed to serialize TestStruct");
+    let de = serde_value::ValueDeserializer::<DeError>::new(value);
+
+    if SpecialPrototype::deserialize(de).is_ok() {
+      panic!("SpecialPrototype deserialized without an error");
+    }
   }
 }

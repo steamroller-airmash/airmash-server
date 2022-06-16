@@ -1070,6 +1070,7 @@ name = "server-prototypes"
 version = "0.1.0"
 dependencies = [
  "airmash-protocol",
+ "nalgebra",
  "serde",
  "serde-value",
  "serde_json",
