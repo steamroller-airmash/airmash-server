@@ -1,0 +1,10 @@
+[package]
+name = "server-prototypes"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+serde = { version = "1.0", features = [ "derive" ] }
+serde-value = "0.7"
+protocol = { version = "0.5", package = "airmash-protocol" }
+serde-deserialize-over = "0.1.1"
