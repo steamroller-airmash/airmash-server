@@ -51,21 +51,18 @@ impl GameConfig {
         );
       }
 
-      match &special.data {
-        SpecialPrototypeData::Multishot(multishot) => {
-          if !missiles.contains_key(&*multishot.missile) {
-            return Err(ValidationError::custom(
-              "missile",
-              format_args!(
-                "multishot special refers to nonexistant missile prototype `{}`",
-                multishot.missile
-              ),
-            ))
-            .with(special.name.into_owned())
-            .with("specials");
-          }
+      if let SpecialPrototypeData::Multishot(multishot) = &special.data {
+        if !missiles.contains_key(&*multishot.missile) {
+          return Err(ValidationError::custom(
+            "missile",
+            format_args!(
+              "multishot special refers to nonexistant missile prototype `{}`",
+              multishot.missile
+            ),
+          ))
+          .with(special.name.into_owned())
+          .with("specials");
         }
-        _ => (),
       }
 
       if let Some(special) = specials.insert(special.name.to_string(), special) {
