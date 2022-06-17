@@ -1,3 +1,5 @@
 
 tab_spaces = 2
 wrap_comments = true
+imports_granularity = "module"
+group_imports = "stdexternalcrate"
