@@ -87,7 +87,7 @@ fn on_respawn_command(event: &PacketEvent<Command>, game: &mut AirmashGame) {
   };
 
   let this_frame = game.resources.read::<ThisFrame>().0;
-  let gconfig = game.resources.read::<GameConfig>().inner;
+  let gconfig = game.resources.read::<GameConfig>();
 
   let mut query = match game.world.query_one::<(
     &RespawnAllowed,
@@ -143,6 +143,7 @@ fn on_respawn_command(event: &PacketEvent<Command>, game: &mut AirmashGame) {
   let prev_alive = std::mem::replace(&mut alive.0, true);
 
   drop(query);
+  drop(gconfig);
 
   game.dispatch(PlayerRespawn {
     player: event.entity,

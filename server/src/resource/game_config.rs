@@ -41,7 +41,7 @@ pub struct GameConfig {
   /// This is set to false by default.
   pub always_upgraded: bool,
 
-  pub inner: &'static server_config::GameConfig,
+  pub inner: server_config::GameConfig,
 }
 
 impl Default for GameConfig {
@@ -52,7 +52,7 @@ impl Default for GameConfig {
       allow_damage: true,
       spawn_upgrades: true,
       always_upgraded: false,
-      inner: server_config::GameConfig::default().leak(),
+      inner: server_config::GameConfig::default(),
     }
   }
 }
@@ -61,6 +61,6 @@ impl Deref for GameConfig {
   type Target = server_config::GameConfig;
 
   fn deref(&self) -> &Self::Target {
-    self.inner
+    &self.inner
   }
 }

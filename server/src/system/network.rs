@@ -210,13 +210,9 @@ fn handle_login(game: &mut AirmashGame, mut login: Login, conn: ConnectionId) {
 
     make_unique_name(&mut names, &mut login.name);
 
-    let gconfig = game.resources.read::<GameConfig>().inner;
-    let proto = gconfig
-      .planes
-      .get(&*gconfig.default_plane)
-      .expect("default_plane prototype does not exist");
-
-    let mut builder = crate::defaults::build_default_player(&login, proto, start_time, this_frame);
+    let gconfig = &game.resources.read::<GameConfig>().inner;
+    let mut builder =
+      crate::defaults::build_default_player(&login, gconfig.default_plane, start_time, this_frame);
 
     let entity = game.world.spawn(builder.build());
 

@@ -22,7 +22,6 @@ pub fn update(game: &mut AirmashGame) {
 }
 
 fn update_player_positions(game: &mut AirmashGame) {
-  let gconfig = game.resources.read::<GameConfig>().inner;
   let config = game.resources.read::<Config>();
   let delta = game.frame_delta();
 
@@ -46,10 +45,7 @@ fn update_player_positions(game: &mut AirmashGame) {
       continue;
     }
 
-    let special = gconfig
-      .specials
-      .get(&*plane.special)
-      .expect("plane prototype referred to nonexistant special prototype");
+    let special = plane.special;
 
     let boost_factor = match &special.data {
       SpecialPrototypeData::Boost(boost) if active.0 => boost.speedup,
