@@ -1,5 +1,5 @@
 [package]
-name = "server-prototypes"
+name = "server-config"
 version = "0.1.0"
 edition = "2021"
 

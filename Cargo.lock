@@ -1128,17 +1128,7 @@ dependencies = [
 ]
 
 [[package]]
-name = "server-macros"
-version = "0.1.0"
-dependencies = [
- "proc-macro-crate",
- "proc-macro2 1.0.39",
- "quote 1.0.18",
- "syn",
-]
-
-[[package]]
-name = "server-prototypes"
+name = "server-config"
 version = "0.1.0"
 dependencies = [
  "airmash-protocol",
@@ -1151,6 +1141,16 @@ dependencies = [
  "serde-value",
  "serde_json",
  "serde_path_to_error",
+]
+
+[[package]]
+name = "server-macros"
+version = "0.1.0"
+dependencies = [
+ "proc-macro-crate",
+ "proc-macro2 1.0.39",
+ "quote 1.0.18",
+ "syn",
 ]
 
 [[package]]

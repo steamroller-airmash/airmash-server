@@ -3,7 +3,7 @@ compile_error!("export example requires the `script` feature to be enabled");
 
 use anyhow::Context;
 use serde::Deserialize;
-use server_prototypes::{GameConfig, GamePrototype};
+use server_config::{GameConfig, GamePrototype};
 use std::error::Error;
 use std::fmt;
 

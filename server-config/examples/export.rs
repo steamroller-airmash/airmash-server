@@ -2,7 +2,7 @@
 compile_error!("export example requires the `script` feature to be enabled");
 
 use serde::Deserialize;
-use server_prototypes::GamePrototype;
+use server_config::GamePrototype;
 use std::io::Write;
 
 fn main() -> Result<(), Box<dyn std::error::Error>> {
