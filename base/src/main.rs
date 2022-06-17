@@ -1,15 +1,14 @@
 #[macro_use]
 extern crate log;
 
-use clap::arg;
-use serde_deserialize_over::DeserializeOver;
 use std::env;
 use std::fs::File;
 
 use airmash_server::protocol::GameType;
-use airmash_server::resource::Config;
-use airmash_server::resource::RegionName;
+use airmash_server::resource::{Config, RegionName};
 use airmash_server::*;
+use clap::arg;
+use serde_deserialize_over::DeserializeOver;
 
 fn set_default_var(name: &str, value: &str) {
   if None == env::var_os(name) {
