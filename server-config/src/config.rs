@@ -1,5 +1,6 @@
 use std::collections::HashMap;
 use std::convert::TryFrom;
+use std::fmt;
 use std::mem::ManuallyDrop;
 use std::ops::{Deref, DerefMut};
 use std::ptr::NonNull;
@@ -9,6 +10,7 @@ use crate::{
   StringRef, ValidationError, ValidationExt,
 };
 
+#[derive(Clone, Debug)]
 #[non_exhaustive]
 pub struct GameConfig {
   pub planes: HashMap<&'static str, &'static PlanePrototype<'static, PtrRef>>,
@@ -18,56 +20,6 @@ pub struct GameConfig {
   pub common: GameConfigCommon<'static, PtrRef>,
 
   data: GameConfigData,
-}
-
-struct GameConfigData {
-  planes: NonNull<[PlanePrototype<'static, PtrRef>]>,
-  missiles: NonNull<[MissilePrototype]>,
-  specials: NonNull<[SpecialPrototype<'static, PtrRef>]>,
-}
-
-impl GameConfigData {
-  /// Create a set of GameConfigData.
-  ///
-  /// # Safety
-  /// None of the prototypes may refer to any non-static data outside of that
-  /// being passed in here. The slices must not be dropped except by safely
-  /// calling [`reclaim`] once it is safe to do so.
-  unsafe fn new(
-    planes: &[PlanePrototype<PtrRef>],
-    missiles: &[MissilePrototype],
-    specials: &[SpecialPrototype<PtrRef>],
-  ) -> Self {
-    Self {
-      planes: NonNull::new(planes as *const _ as *mut _).unwrap(),
-      missiles: NonNull::new(missiles as *const _ as *mut _).unwrap(),
-      specials: NonNull::new(specials as *const _ as *mut _).unwrap(),
-    }
-  }
-
-  /// Free all the memory that had been previously leaked.
-  ///
-  /// # Safety
-  /// There must be no existing references to any of the data stored within this
-  /// type or else those references will be left as dangling references.
-  unsafe fn reclaim(self) {
-    // Note: Order matters here!
-    let _ = Box::from_raw(self.planes.as_ptr());
-    let _ = Box::from_raw(self.specials.as_ptr());
-    let _ = Box::from_raw(self.missiles.as_ptr());
-  }
-
-  fn planes(&self) -> &'static [PlanePrototype<'static, PtrRef>] {
-    unsafe { self.planes.as_ref() }
-  }
-
-  fn missiles(&self) -> &'static [MissilePrototype] {
-    unsafe { self.missiles.as_ref() }
-  }
-
-  fn specials(&self) -> &'static [SpecialPrototype<'static, PtrRef>] {
-    unsafe { self.specials.as_ref() }
-  }
 }
 
 impl GameConfig {
@@ -196,5 +148,62 @@ impl Deref for GameConfig {
 impl DerefMut for GameConfig {
   fn deref_mut(&mut self) -> &mut Self::Target {
     &mut self.common
+  }
+}
+
+#[derive(Clone)]
+struct GameConfigData {
+  planes: NonNull<[PlanePrototype<'static, PtrRef>]>,
+  missiles: NonNull<[MissilePrototype]>,
+  specials: NonNull<[SpecialPrototype<'static, PtrRef>]>,
+}
+
+impl GameConfigData {
+  /// Create a set of GameConfigData.
+  ///
+  /// # Safety
+  /// None of the prototypes may refer to any non-static data outside of that
+  /// being passed in here. The slices must not be dropped except by safely
+  /// calling [`reclaim`] once it is safe to do so.
+  unsafe fn new(
+    planes: &[PlanePrototype<PtrRef>],
+    missiles: &[MissilePrototype],
+    specials: &[SpecialPrototype<PtrRef>],
+  ) -> Self {
+    Self {
+      planes: NonNull::new(planes as *const _ as *mut _).unwrap(),
+      missiles: NonNull::new(missiles as *const _ as *mut _).unwrap(),
+      specials: NonNull::new(specials as *const _ as *mut _).unwrap(),
+    }
+  }
+
+  /// Free all the memory that had been previously leaked.
+  ///
+  /// # Safety
+  /// There must be no existing references to any of the data stored within this
+  /// type or else those references will be left as dangling references.
+  unsafe fn reclaim(self) {
+    // Note: Order matters here!
+    let _ = Box::from_raw(self.planes.as_ptr());
+    let _ = Box::from_raw(self.specials.as_ptr());
+    let _ = Box::from_raw(self.missiles.as_ptr());
+  }
+
+  fn planes(&self) -> &'static [PlanePrototype<'static, PtrRef>] {
+    unsafe { self.planes.as_ref() }
+  }
+
+  fn missiles(&self) -> &'static [MissilePrototype] {
+    unsafe { self.missiles.as_ref() }
+  }
+
+  fn specials(&self) -> &'static [SpecialPrototype<'static, PtrRef>] {
+    unsafe { self.specials.as_ref() }
+  }
+}
+
+impl fmt::Debug for GameConfigData {
+  fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+    f.write_str("..")
   }
 }
