@@ -9,6 +9,7 @@ members = [
 	"ctf",
 	"ffa",
 	"server",
+	"server-config",
 	"server-macros",
 	"utils/kdtree",
 	"utils/serde-rlua"
