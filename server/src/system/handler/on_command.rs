@@ -139,7 +139,7 @@ fn on_respawn_command(event: &PacketEvent<Command>, game: &mut AirmashGame) {
     }
   };
 
-  let oldplane = std::mem::replace(plane, newplane);
+  let oldplane = std::mem::replace(plane, proto.server_type);
   let prev_alive = std::mem::replace(&mut alive.0, true);
 
   drop(query);
