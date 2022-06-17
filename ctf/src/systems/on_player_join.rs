@@ -1,13 +1,12 @@
-use crate::{
-  component::*,
-  config,
-  resource::{CTFGameStats, GameScores},
-};
-use airmash::event::PlayerJoin;
-use airmash::AirmashGame;
-use airmash::{component::*, Vector2};
-
 use std::cmp::Ordering;
+
+use airmash::component::*;
+use airmash::event::PlayerJoin;
+use airmash::{AirmashGame, Vector2};
+
+use crate::component::*;
+use crate::config;
+use crate::resource::{CTFGameStats, GameScores};
 
 #[handler(priority = airmash::priority::PRE_LOGIN)]
 fn setup_team_and_pos(event: &PlayerJoin, game: &mut AirmashGame) {
@@ -37,7 +36,8 @@ fn setup_team_and_pos(event: &PlayerJoin, game: &mut AirmashGame) {
 
 #[handler]
 fn send_flag_position_on_join(event: &PlayerJoin, game: &mut AirmashGame) {
-  use airmash::protocol::{server::GameFlag, FlagUpdateType};
+  use airmash::protocol::server::GameFlag;
+  use airmash::protocol::FlagUpdateType;
 
   let scores = game.resources.read::<GameScores>();
   let mut query = game

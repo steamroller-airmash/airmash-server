@@ -1,6 +1,8 @@
-use crate::config::{BLUE_TEAM, RED_TEAM};
-use airmash::{component::*, AirmashGame, Entity};
+use airmash::component::*;
+use airmash::{AirmashGame, Entity};
 use rand::prelude::SliceRandom;
+
+use crate::config::{BLUE_TEAM, RED_TEAM};
 
 #[derive(Copy, Clone, Debug, PartialEq, Eq)]
 pub struct TeamChangeEntry {

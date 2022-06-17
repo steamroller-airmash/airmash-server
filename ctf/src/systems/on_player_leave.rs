@@ -3,12 +3,10 @@ use airmash::event::PlayerLeave;
 use airmash::AirmashGame;
 use smallvec::SmallVec;
 
-use crate::{
-  component::{FlagCarrier, IsFlag},
-  config,
-  event::FlagEvent,
-  resource::CTFGameStats,
-};
+use crate::component::{FlagCarrier, IsFlag};
+use crate::config;
+use crate::event::FlagEvent;
+use crate::resource::CTFGameStats;
 
 #[handler]
 fn drop_flag(event: &PlayerLeave, game: &mut AirmashGame) {

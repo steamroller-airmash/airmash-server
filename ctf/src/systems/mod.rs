@@ -12,12 +12,11 @@ mod on_player_leave;
 mod on_player_respawn;
 
 pub fn drop_carried_flags(player: Entity, game: &mut AirmashGame) {
-  use crate::{
-    component::{FlagCarrier, IsFlag},
-    event::FlagEvent,
-  };
   use airmash::component::IsPlayer;
   use smallvec::SmallVec;
+
+  use crate::component::{FlagCarrier, IsFlag};
+  use crate::event::FlagEvent;
 
   if game.world.get::<IsPlayer>(player).is_err() {
     return;

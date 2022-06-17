@@ -1,5 +1,6 @@
-use airmash::Vector2;
 use std::time::Duration;
+
+use airmash::Vector2;
 
 pub const BLUE_TEAM: u16 = 1;
 pub const RED_TEAM: u16 = 2;

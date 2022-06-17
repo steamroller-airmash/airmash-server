@@ -1,4 +1,5 @@
-use std::{borrow::Cow, time::Duration};
+use std::borrow::Cow;
+use std::time::Duration;
 
 use airmash::component::*;
 use airmash::event::{PacketEvent, PlayerRespawn};
@@ -7,9 +8,10 @@ use airmash::AirmashGame;
 
 #[handler]
 fn switch_teams(event: &PacketEvent<Command>, game: &mut AirmashGame) {
-  use crate::config::{BLUE_TEAM, RED_TEAM};
   use airmash::protocol::server::{CommandReply, Error, PlayerReteam, PlayerReteamPlayer};
   use airmash::protocol::ErrorType;
+
+  use crate::config::{BLUE_TEAM, RED_TEAM};
 
   if event.packet.com != "switch" {
     return;

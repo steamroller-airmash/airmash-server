@@ -1,12 +1,13 @@
-use crate::component::*;
-use crate::config;
-use crate::event::*;
-use crate::resource::*;
 use airmash::component::*;
 use airmash::event::Frame;
 use airmash::resource::collision::LayerSpec;
 use airmash::AirmashGame;
 use smallvec::SmallVec;
+
+use crate::component::*;
+use crate::config;
+use crate::event::*;
+use crate::resource::*;
 
 fn update_flag_positions(game: &mut AirmashGame) {
   let mut query = game

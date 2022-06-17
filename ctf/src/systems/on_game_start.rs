@@ -1,9 +1,12 @@
-use crate::event::GameStartEvent;
-use crate::{component::IsFlag, event::FlagEvent, resource::*};
+use airmash::component::*;
 use airmash::event::*;
+use airmash::resource::GameConfig;
 use airmash::AirmashGame;
-use airmash::{component::*, resource::GameConfig};
 use smallvec::SmallVec;
+
+use crate::component::IsFlag;
+use crate::event::{FlagEvent, GameStartEvent};
+use crate::resource::*;
 
 #[handler]
 fn respawn_all_players(_: &GameStartEvent, game: &mut AirmashGame) {
