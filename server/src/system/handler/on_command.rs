@@ -117,7 +117,7 @@ fn on_respawn_command(event: &PacketEvent<Command>, game: &mut AirmashGame) {
     return;
   }
 
-  let pname = match plane {
+  let pname = match newplane {
     PlaneType::Predator => "predator",
     PlaneType::Tornado => "tornado",
     PlaneType::Goliath => "goliath",
