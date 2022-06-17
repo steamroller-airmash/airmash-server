@@ -5,10 +5,15 @@ use protocol::{PlaneType, Vector2};
 use serde::{Deserialize, Serialize};
 
 use crate::util::duration;
+use crate::{MissilePrototype, PrototypeRef, PtrRef, SpecialPrototype, StringRef, ValidationError};
 
 #[derive(Clone, Debug, Serialize, Deserialize)]
 #[serde(deny_unknown_fields)]
-pub struct PlanePrototype {
+#[serde(bound(
+  serialize = "Ref::MissileRef: Serialize, Ref::SpecialRef: Serialize",
+  deserialize = "Ref::MissileRef: Deserialize<'de>, Ref::SpecialRef: Deserialize<'de>"
+))]
+pub struct PlanePrototype<'a, Ref: PrototypeRef<'a>> {
   /// The name with which to refer to this plane prototype. It must be unique
   /// among all plane prototypes.
   pub name: Cow<'static, str>,
@@ -29,12 +34,12 @@ pub struct PlanePrototype {
 
   /// Name of the special effect that this plane has. This will correspond to a
   /// named SpecialPrototype instance.
-  pub special: Cow<'static, str>,
+  pub special: Ref::SpecialRef,
 
   /// Name of the missile that this plane will fire. This will correspond to a
   /// named MissilePrototype instance which will be used to determine the type
   /// of the fired missile.
-  pub missile: Cow<'static, str>,
+  pub missile: Ref::MissileRef,
 
   /// The offset at which the missile will be fired from the plane. X
   /// corresponds to the distance in front of the plane while Y gives the
@@ -80,7 +85,7 @@ pub struct PlanePrototype {
   pub brake: f32,
 }
 
-impl PlanePrototype {
+impl PlanePrototype<'_, StringRef> {
   pub const fn predator() -> Self {
     Self {
       name: Cow::Borrowed("predator"),
@@ -189,5 +194,65 @@ impl PlanePrototype {
       accel: 0.15,
       brake: 0.015,
     }
+  }
+}
+
+impl PlanePrototype<'_, StringRef> {
+  pub(crate) fn resolve<'a>(
+    self,
+    missiles: &'a [MissilePrototype],
+    specials: &'a [SpecialPrototype<'a, PtrRef>],
+  ) -> Result<PlanePrototype<'a, PtrRef>, ValidationError> {
+    if self.name.is_empty() {
+      return Err(ValidationError::custom(
+        "name",
+        "plane prototype had an empty name",
+      ));
+    }
+
+    let missile =
+      missiles
+        .iter()
+        .find(|m| m.name == self.missile)
+        .ok_or(ValidationError::custom(
+          "missile",
+          format_args!(
+            "plane prototype refers to a nonexistant missile prototype `{}`",
+            self.missile
+          ),
+        ))?;
+    let special =
+      specials
+        .iter()
+        .find(|s| s.name == self.special)
+        .ok_or(ValidationError::custom(
+          "special",
+          format_args!(
+            "plane prototype refers to nonexistant special prototype `{}`",
+            self.special
+          ),
+        ))?;
+
+    // FIXME: Once <https://github.com/rust-lang/rust/issues/86555> stabilizes we can replace this with
+    //        Ok(PlanePrototype { missile, special, ..self })
+    Ok(PlanePrototype {
+      missile,
+      special,
+      name: self.name,
+      server_type: self.server_type,
+      missile_offset: self.missile_offset,
+      fire_energy: self.fire_energy,
+      fire_delay: self.fire_delay,
+      damage_factor: self.damage_factor,
+      max_speed: self.max_speed,
+      min_speed: self.min_speed,
+      flag_speed: self.flag_speed,
+      inferno_factor: self.inferno_factor,
+      health_regen: self.health_regen,
+      energy_regen: self.energy_regen,
+      turn_factor: self.turn_factor,
+      accel: self.accel,
+      brake: self.brake,
+    })
   }
 }

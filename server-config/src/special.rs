@@ -2,6 +2,7 @@ use std::borrow::Cow;
 use std::time::Duration;
 
 use crate::util::duration;
+use crate::{MissilePrototype, PrototypeRef, PtrRef, StringRef, ValidationError};
 
 /// Prototype for a boost effect similar to the predator boost.
 #[derive(Serialize, Deserialize, Clone, Debug)]
@@ -21,10 +22,13 @@ pub struct BoostPrototype {
 #[derive(Serialize, Deserialize, Clone, Debug)]
 #[non_exhaustive]
 #[serde(deny_unknown_fields)]
-pub struct MultishotPrototype {
-  /// The name of the missile prototype corresponding to the missile that will
-  /// be fired.
-  pub missile: Cow<'static, str>,
+#[serde(bound(
+  serialize = "Ref::MissileRef: serde::Serialize",
+  deserialize = "Ref::MissileRef: serde::Deserialize<'de>"
+))]
+pub struct MultishotPrototype<'a, Ref: PrototypeRef<'a>> {
+  /// The missile prototype corresponding to the missile that will be fired.
+  pub missile: Ref::MissileRef,
 
   /// The number of missiles that will be fired when this special is triggered.
   /// Note that if this is an even number then it will be rounded up to an odd
@@ -86,12 +90,16 @@ pub struct StealthPrototype {
 }
 
 #[derive(Serialize, Deserialize, Clone, Debug)]
-pub struct SpecialPrototype {
+#[serde(bound(
+  serialize = "Ref::MissileRef: serde::Serialize",
+  deserialize = "Ref::MissileRef: serde::Deserialize<'de>"
+))]
+pub struct SpecialPrototype<'a, Ref: PrototypeRef<'a>> {
   /// The name with which this special effect will be referred to.
   pub name: Cow<'static, str>,
   /// Parameters for the general class of special that is being configured.
   #[serde(flatten)]
-  pub data: SpecialPrototypeData,
+  pub data: SpecialPrototypeData<'a, Ref>,
 }
 
 /// Prototype for the special action of a plane
@@ -99,14 +107,18 @@ pub struct SpecialPrototype {
 #[non_exhaustive]
 #[serde(tag = "type")]
 #[serde(deny_unknown_fields)]
-pub enum SpecialPrototypeData {
+#[serde(bound(
+  serialize = "Ref::MissileRef: serde::Serialize",
+  deserialize = "Ref::MissileRef: serde::Deserialize<'de>"
+))]
+pub enum SpecialPrototypeData<'a, Ref: PrototypeRef<'a>> {
   /// No special effect whatsoever.
   #[serde(rename = "none")]
   None,
   #[serde(rename = "boost")]
   Boost(BoostPrototype),
   #[serde(rename = "multishot")]
-  Multishot(MultishotPrototype),
+  Multishot(MultishotPrototype<'a, Ref>),
   #[serde(rename = "repel")]
   Repel(RepelPrototype),
   #[serde(rename = "strafe")]
@@ -115,7 +127,7 @@ pub enum SpecialPrototypeData {
   Stealth(StealthPrototype),
 }
 
-impl SpecialPrototype {
+impl SpecialPrototype<'_, StringRef> {
   pub const fn none() -> Self {
     Self {
       name: Cow::Borrowed("none"),
@@ -195,7 +207,7 @@ impl SpecialPrototype {
   }
 }
 
-impl SpecialPrototype {
+impl<'a, R: PrototypeRef<'a>> SpecialPrototype<'a, R> {
   pub const fn is_none(&self) -> bool {
     matches!(self.data, SpecialPrototypeData::None)
   }
@@ -218,5 +230,64 @@ impl SpecialPrototype {
 
   pub const fn is_stealth(&self) -> bool {
     matches!(self.data, SpecialPrototypeData::Stealth(_))
+  }
+}
+
+impl MultishotPrototype<'_, StringRef> {
+  pub(crate) fn resolve(
+    self,
+    missiles: &[MissilePrototype],
+  ) -> Result<MultishotPrototype<PtrRef>, ValidationError> {
+    let missile = missiles
+      .iter()
+      .find(|missile| missile.name == self.missile)
+      .ok_or(ValidationError::custom(
+        "missile",
+        format_args!(
+          "multishot special refers to nonexistant missile prototype `{}`",
+          self.missile
+        ),
+      ))?;
+
+    // FIXME: Once <https://github.com/rust-lang/rust/issues/86555> stabilizes we can replace this with
+    //        Ok(MultishotPrototype { missile, ..self })
+    Ok(MultishotPrototype {
+      missile,
+      count: self.count,
+      cost: self.cost,
+      delay: self.delay,
+      offset_x: self.offset_x,
+      offset_y: self.offset_y,
+    })
+  }
+}
+
+impl SpecialPrototype<'_, StringRef> {
+  pub(crate) fn resolve<'a>(
+    self,
+    missiles: &'a [MissilePrototype],
+  ) -> Result<SpecialPrototype<'a, PtrRef>, ValidationError> {
+    use self::SpecialPrototypeData::*;
+
+    if self.name.is_empty() {
+      return Err(ValidationError::custom(
+        "name",
+        "special prototype had an empty name",
+      ));
+    }
+
+    let data = match self.data {
+      None => None,
+      Strafe => Strafe,
+      Boost(x) => Boost(x),
+      Repel(x) => Repel(x),
+      Stealth(x) => Stealth(x),
+      Multishot(x) => Multishot(x.resolve(missiles)?),
+    };
+
+    Ok(SpecialPrototype {
+      name: self.name,
+      data,
+    })
   }
 }
