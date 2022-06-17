@@ -1,5 +1,6 @@
 use quote::ToTokens;
-use syn::{parse::Parse, Ident, Token};
+use syn::parse::Parse;
+use syn::{Ident, Token};
 
 pub struct AttrArg<P> {
   pub ident: Ident,
