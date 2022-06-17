@@ -4,6 +4,7 @@ use serde::ser::{self, Serialize, Serializer};
 
 use super::Error;
 
+/// Serializer for rlua `Value`s.
 pub struct LuaSerializer<'lua> {
   lua: Context<'lua>,
 }

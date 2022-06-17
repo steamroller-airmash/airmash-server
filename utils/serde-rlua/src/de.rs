@@ -12,6 +12,7 @@ impl<'lua> FromLua<'lua> for Empty {
   }
 }
 
+/// Deserializer from rlua `Value`s.
 pub struct LuaDeserializer<'lua> {
   value: Value<'lua>,
 }
