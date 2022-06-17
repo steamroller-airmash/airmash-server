@@ -1,15 +1,15 @@
 //! Components used within airmash.
 
+use std::time::{Duration, Instant};
+
 use airmash_protocol::Vector2;
 use bstr::BString;
 use hecs::Entity;
-use std::time::{Duration, Instant};
 use uuid::Uuid;
 
 mod keystate;
 
 pub use self::keystate::KeyState;
-
 pub use crate::protocol::{FlagCode, MobType, PlaneType, PowerupType};
 
 def_wrappers! {

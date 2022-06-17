@@ -1,12 +1,13 @@
 //! Various utility functions that perform common functions.
 
-use crate::component::Powerup;
-use crate::component::Upgrades;
+use std::time::{Duration, Instant};
+
+use nalgebra::vector;
+
+use crate::component::{Powerup, Upgrades};
 use crate::protocol::{Time, Vector2};
 use crate::resource::*;
 use crate::AirmashGame;
-use nalgebra::vector;
-use std::time::{Duration, Instant};
 
 pub(crate) mod escapes;
 mod powerup_spawner;

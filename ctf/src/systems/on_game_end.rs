@@ -1,16 +1,14 @@
 use std::time::Duration;
 
-use crate::{
-  component::IsFlag,
-  config::GAME_WIN_BOUNTY_BASE,
-  event::{FlagEvent, GameStartEvent},
-  resource::GameActive,
-};
-use crate::{event::GameEndEvent, shuffle::ShuffleType};
-use airmash::resource::GameConfig;
-use airmash::resource::{ServerStats, TaskScheduler};
+use airmash::resource::{GameConfig, ServerStats, TaskScheduler};
 use airmash::AirmashGame;
 use smallvec::SmallVec;
+
+use crate::component::IsFlag;
+use crate::config::GAME_WIN_BOUNTY_BASE;
+use crate::event::{FlagEvent, GameEndEvent, GameStartEvent};
+use crate::resource::GameActive;
+use crate::shuffle::ShuffleType;
 
 fn display_message(game: &mut AirmashGame, msg: &str, duration: u32) {
   use airmash::protocol::server::ServerMessage;

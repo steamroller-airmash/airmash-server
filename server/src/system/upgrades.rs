@@ -1,5 +1,6 @@
 use crate::component::{IsPlayer, PrevUpgrades, Upgrades};
-use crate::protocol::{server::PlayerUpgrade, UpgradeType};
+use crate::protocol::server::PlayerUpgrade;
+use crate::protocol::UpgradeType;
 use crate::AirmashGame;
 
 pub fn update(game: &mut AirmashGame) {

@@ -1,14 +1,12 @@
-use std::{
-  cell::{Cell, RefCell, UnsafeCell},
-  collections::BinaryHeap,
-  future::Future,
-  marker::PhantomData,
-  ops::{Deref, DerefMut},
-  pin::Pin,
-  rc::Rc,
-  sync::Arc,
-  time::{Duration, Instant},
-};
+use std::cell::{Cell, RefCell, UnsafeCell};
+use std::collections::BinaryHeap;
+use std::future::Future;
+use std::marker::PhantomData;
+use std::ops::{Deref, DerefMut};
+use std::pin::Pin;
+use std::rc::Rc;
+use std::sync::Arc;
+use std::time::{Duration, Instant};
 
 use crossbeam_channel::{Receiver, Sender};
 use futures_task::{ArcWake, Context, Poll};

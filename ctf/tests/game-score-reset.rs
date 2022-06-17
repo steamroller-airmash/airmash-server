@@ -1,11 +1,11 @@
 use std::time::Duration;
 
+use airmash::component::*;
+use airmash::protocol::ServerPacket;
+use airmash::resource::Config;
 use airmash::test::*;
-use airmash::{component::*, protocol::ServerPacket, resource::Config};
-use airmash_server_ctf::{
-  config::{FLAG_NO_REGRAB_TIME, RED_TEAM},
-  resource::GameScores,
-};
+use airmash_server_ctf::config::{FLAG_NO_REGRAB_TIME, RED_TEAM};
+use airmash_server_ctf::resource::GameScores;
 
 #[test]
 fn scores_reset_on_game_win() {

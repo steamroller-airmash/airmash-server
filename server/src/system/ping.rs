@@ -1,12 +1,13 @@
-use std::{
-  collections::VecDeque,
-  convert::TryInto,
-  time::{Duration, Instant},
-};
+use std::collections::VecDeque;
+use std::convert::TryInto;
+use std::time::{Duration, Instant};
 
 use airmash_protocol::client::Pong;
 
-use crate::{component::*, event::PacketEvent, resource::ServerStats, AirmashGame};
+use crate::component::*;
+use crate::event::PacketEvent;
+use crate::resource::ServerStats;
+use crate::AirmashGame;
 
 struct PingData {
   seqs: VecDeque<(u32, Instant)>,

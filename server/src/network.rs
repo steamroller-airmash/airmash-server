@@ -6,33 +6,25 @@
 //!
 //! [`AirmashGame`]: crate::AirmashGame
 
-use std::{
-  collections::HashMap,
-  fmt,
-  io::ErrorKind,
-  net::SocketAddr,
-  sync::atomic::{AtomicBool, AtomicUsize, Ordering},
-  sync::Arc,
-  thread::JoinHandle,
-  time::Instant,
-};
+use std::collections::HashMap;
+use std::fmt;
+use std::io::ErrorKind;
+use std::net::SocketAddr;
+use std::sync::atomic::{AtomicBool, AtomicUsize, Ordering};
+use std::sync::Arc;
+use std::thread::JoinHandle;
+use std::time::Instant;
 
 use crossbeam_channel::{unbounded, Receiver, Sender};
-use futures_util::{sink::SinkExt, stream::StreamExt};
+use futures_util::sink::SinkExt;
+use futures_util::stream::StreamExt;
 use hecs::Entity;
 use httparse::{Status, EMPTY_HEADER};
-use tokio::{
-  io::AsyncReadExt,
-  net::{TcpListener, TcpStream},
-};
-use tokio::{
-  io::AsyncWriteExt,
-  sync::mpsc::{unbounded_channel, UnboundedSender as AsyncSender},
-};
-use tokio_tungstenite::{
-  tungstenite::{self, Message},
-  WebSocketStream,
-};
+use tokio::io::{AsyncReadExt, AsyncWriteExt};
+use tokio::net::{TcpListener, TcpStream};
+use tokio::sync::mpsc::{unbounded_channel, UnboundedSender as AsyncSender};
+use tokio_tungstenite::tungstenite::{self, Message};
+use tokio_tungstenite::WebSocketStream;
 
 use crate::mock::MockConnectionEndpoint;
 
@@ -356,8 +348,9 @@ async fn websocket_handshake(
   mut stream: TcpStream,
   addr: &SocketAddr,
 ) -> std::io::Result<Option<WebSocketStream<TcpStream>>> {
-  use httparse::Request;
   use std::io::Error;
+
+  use httparse::Request;
   use tungstenite::error::ProtocolError;
   use tungstenite::protocol::Role;
 

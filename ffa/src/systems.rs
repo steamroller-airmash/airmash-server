@@ -1,10 +1,7 @@
-use server::{
-  component::*,
-  event::{PlayerJoin, PlayerRespawn},
-  resource::collision::LayerSpec,
-  resource::collision::Terrain,
-  AirmashGame, Vector2,
-};
+use server::component::*;
+use server::event::{PlayerJoin, PlayerRespawn};
+use server::resource::collision::{LayerSpec, Terrain};
+use server::{AirmashGame, Vector2};
 
 const SPAWN_TOP_RIGHT: Vector2<f32> = Vector2::new(-1325.0, -4330.0);
 const SPAWN_SIZE: Vector2<f32> = Vector2::new(3500.0, 2500.0);

@@ -1,13 +1,13 @@
 //! Configuration info controlling how planes and missiles behave.
 
-use nalgebra::vector;
-use serde_deserialize_over::DeserializeOver;
 use std::ops::Index;
 use std::time::Duration;
 
-use crate::protocol::MobType;
+use nalgebra::vector;
+use serde_deserialize_over::DeserializeOver;
+
 use crate::protocol::{
-  AccelScalar, Distance, Energy, EnergyRegen, Health, HealthRegen, MobType as Mob,
+  AccelScalar, Distance, Energy, EnergyRegen, Health, HealthRegen, MobType, MobType as Mob,
   PlaneType as Plane, Rotation, RotationRate, Speed,
 };
 use crate::Vector2;
@@ -535,8 +535,9 @@ mod mob_defaults {
 }
 
 mod duration {
-  use serde::{Deserialize, Deserializer, Serializer};
   use std::time::Duration;
+
+  use serde::{Deserialize, Deserializer, Serializer};
 
   pub(super) fn serialize<S: Serializer>(dur: &Duration, ser: S) -> Result<S::Ok, S::Error> {
     ser.serialize_f64(dur.as_secs_f64())
@@ -548,8 +549,9 @@ mod duration {
 }
 
 mod option_duration {
-  use serde::{Deserialize, Deserializer, Serialize, Serializer};
   use std::time::Duration;
+
+  use serde::{Deserialize, Deserializer, Serialize, Serializer};
 
   pub(super) fn serialize<S: Serializer>(
     dur: &Option<Duration>,

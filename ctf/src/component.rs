@@ -1,6 +1,6 @@
-use airmash::Entity;
-
 use std::time::Instant;
+
+use airmash::Entity;
 
 #[derive(Copy, Clone, Debug, Default)]
 pub struct IsFlag;

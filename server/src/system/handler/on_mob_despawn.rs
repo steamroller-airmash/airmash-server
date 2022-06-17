@@ -4,7 +4,8 @@ use crate::AirmashGame;
 
 #[handler]
 fn send_packet(event: &MobDespawn, game: &mut AirmashGame) {
-  use crate::protocol::{server::MobDespawn, DespawnType};
+  use crate::protocol::server::MobDespawn;
+  use crate::protocol::DespawnType;
 
   let (&pos, _) = match game.world.query_one_mut::<(&Position, &IsMob)>(event.mob) {
     Ok(query) => query,

@@ -1,8 +1,9 @@
 use std::convert::TryInto;
 
 use crate::component::*;
+use crate::event::PacketEvent;
+use crate::protocol::client::ScoreDetailed;
 use crate::AirmashGame;
-use crate::{event::PacketEvent, protocol::client::ScoreDetailed};
 
 pub fn register_all(game: &mut AirmashGame) {
   game.register(respond_to_packet);

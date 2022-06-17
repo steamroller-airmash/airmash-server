@@ -1,11 +1,13 @@
+use airmash::component::*;
+use airmash::protocol::server::{GameFlag, ServerMessage};
+use airmash::protocol::FlagUpdateType;
+use airmash::resource::ServerStats;
+use airmash::AirmashGame;
+
 use crate::component::*;
 use crate::config;
 use crate::event::*;
 use crate::resource::*;
-use airmash::protocol::server::{GameFlag, ServerMessage};
-use airmash::protocol::FlagUpdateType;
-use airmash::AirmashGame;
-use airmash::{component::*, resource::ServerStats};
 
 #[handler]
 fn check_game_win(event: &FlagEvent, game: &mut AirmashGame) {

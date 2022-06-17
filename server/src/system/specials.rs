@@ -1,16 +1,14 @@
 use smallvec::SmallVec;
 
-use crate::{
-  component::*,
-  consts::*,
-  event::{EventBoost, EventStealth, KeyEvent, PlayerFire, PlayerMissileCollision, PlayerRepel},
-  protocol::KeyCode,
-  resource::{
-    collision::{LayerSpec, MissileCollideDb, PlayerCollideDb},
-    Config,
-  },
-  AirmashGame,
+use crate::component::*;
+use crate::consts::*;
+use crate::event::{
+  EventBoost, EventStealth, KeyEvent, PlayerFire, PlayerMissileCollision, PlayerRepel,
 };
+use crate::protocol::KeyCode;
+use crate::resource::collision::{LayerSpec, MissileCollideDb, PlayerCollideDb};
+use crate::resource::Config;
+use crate::AirmashGame;
 
 pub fn update(game: &mut AirmashGame) {
   kill_predator_boost_when_out_of_energy(game);

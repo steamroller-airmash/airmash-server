@@ -2,11 +2,10 @@ use std::time::Duration;
 
 use airmash_protocol::Vector2;
 
-use crate::event::PlayerKilled;
-use crate::event::PlayerRespawn;
+use crate::component::*;
+use crate::event::{PlayerKilled, PlayerRespawn};
 use crate::resource::{Config, GameConfig, TaskScheduler, ThisFrame};
-use crate::AirmashGame;
-use crate::{component::*, consts};
+use crate::{consts, AirmashGame};
 
 #[handler]
 fn launch_respawn_task(event: &PlayerKilled, game: &mut AirmashGame) {

@@ -1,6 +1,7 @@
 use std::time::Duration;
 
-use airmash::{util::PeriodicPowerupSpawner, AirmashGame, Vector2};
+use airmash::util::PeriodicPowerupSpawner;
+use airmash::{AirmashGame, Vector2};
 use serde_deserialize_over::DeserializeOver;
 
 fn set_default_var(name: &str, value: &str) {
@@ -12,10 +13,11 @@ fn set_default_var(name: &str, value: &str) {
 }
 
 fn main() {
-  use airmash::resource::{Config, RegionName};
-  use clap::arg;
   use std::env;
   use std::fs::File;
+
+  use airmash::resource::{Config, RegionName};
+  use clap::arg;
 
   let matches = clap::Command::new("airmash-server-ctf")
     .version(env!("CARGO_PKG_VERSION"))

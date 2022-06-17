@@ -1,6 +1,5 @@
 use crate::component::*;
-use crate::event::KeyEvent;
-use crate::event::PacketEvent;
+use crate::event::{KeyEvent, PacketEvent};
 use crate::protocol::client::Key;
 use crate::AirmashGame;
 

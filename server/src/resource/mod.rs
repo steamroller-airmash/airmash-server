@@ -1,9 +1,10 @@
 //! All resource types used within the server.
 
-use bstr::BString;
-use hecs::Entity;
 use std::collections::{HashMap, HashSet};
 use std::time::Instant;
+
+use bstr::BString;
+use hecs::Entity;
 
 pub mod collision;
 pub mod config;

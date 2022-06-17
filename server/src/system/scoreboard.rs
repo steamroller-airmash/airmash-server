@@ -1,9 +1,9 @@
+use std::cmp::Reverse;
+use std::time::{Duration, Instant};
+
 use crate::component::*;
 use crate::resource::ThisFrame;
 use crate::AirmashGame;
-use std::cmp::Reverse;
-use std::time::Duration;
-use std::time::Instant;
 
 def_wrappers! {
   type LastScoreBoardTime = Instant;

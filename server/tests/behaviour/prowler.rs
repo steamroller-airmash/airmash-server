@@ -1,5 +1,6 @@
 use nalgebra::vector;
-use server::{component::*, protocol::KeyCode};
+use server::component::*;
+use server::protocol::KeyCode;
 
 #[test]
 fn prowler_decloak_on_hit() {

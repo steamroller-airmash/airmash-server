@@ -1,7 +1,8 @@
-use crate::config;
 use airmash::component::*;
-use airmash::AirmashGame;
-use airmash::{event::PlayerRespawn, Vector2};
+use airmash::event::PlayerRespawn;
+use airmash::{AirmashGame, Vector2};
+
+use crate::config;
 
 #[handler(priority = airmash::priority::MEDIUM)]
 fn setup_team_and_pos(event: &PlayerRespawn, game: &mut AirmashGame) {

@@ -1,5 +1,4 @@
-use airmash_protocol::GameType;
-use airmash_protocol::{FlagCode, PlaneType, PlayerStatus};
+use airmash_protocol::{FlagCode, GameType, PlaneType, PlayerStatus};
 use bstr::BString;
 
 use crate::component::*;

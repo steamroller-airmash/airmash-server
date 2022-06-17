@@ -2,9 +2,11 @@ use bstr::BString;
 use smallvec::SmallVec;
 
 use crate::component::*;
+use crate::event::PacketEvent;
 use crate::protocol::client::Command;
-use crate::protocol::{server::CommandReply, CommandReplyType};
-use crate::{event::PacketEvent, resource::Config};
+use crate::protocol::server::CommandReply;
+use crate::protocol::CommandReplyType;
+use crate::resource::Config;
 use crate::{AirmashGame, Vector2};
 
 #[handler]

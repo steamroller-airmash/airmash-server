@@ -15,11 +15,12 @@ pub mod shuffle;
 mod systems;
 
 fn setup_flag_entities(game: &mut AirmashGame) {
-  use crate::component::*;
-  use crate::config::{BLUE_TEAM, RED_TEAM};
+  use std::time::Instant;
 
   use airmash::component::*;
-  use std::time::Instant;
+
+  use crate::component::*;
+  use crate::config::{BLUE_TEAM, RED_TEAM};
 
   game.world.spawn((
     Position(config::flag_home_pos(RED_TEAM)),

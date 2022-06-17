@@ -77,8 +77,7 @@ fn send_mob_update(event: &EventHorizon, game: &mut AirmashGame) {
 
 #[handler]
 fn send_horizon_packet(event: &EventHorizon, game: &mut AirmashGame) {
-  use crate::protocol::server as s;
-  use crate::protocol::LeaveHorizonType;
+  use crate::protocol::{server as s, LeaveHorizonType};
 
   if event.in_horizon {
     return;

@@ -1,10 +1,8 @@
 use proc_macro2::{Span, TokenStream};
-
 use proc_macro_crate::FoundCrate;
 use quote::quote;
 use syn::parse::Parse;
-use syn::{parse_macro_input, parse_quote, Expr, Ident};
-use syn::{ItemFn, Result};
+use syn::{parse_macro_input, parse_quote, Expr, Ident, ItemFn, Result};
 
 use crate::args::AttrArg;
 

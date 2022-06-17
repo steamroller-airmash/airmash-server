@@ -1,3 +1,6 @@
+use std::f32::consts::{FRAC_PI_2, PI, TAU};
+use std::time::Duration;
+
 use airmash_protocol::server::PlayerUpdate;
 use airmash_protocol::MobType;
 use nalgebra::vector;
@@ -8,8 +11,6 @@ use crate::protocol::{PlaneType, Upgrades as ServerUpgrades, Vector2};
 use crate::resource::*;
 use crate::util::get_current_clock;
 use crate::AirmashGame;
-use std::f32::consts::{FRAC_PI_2, PI, TAU};
-use std::time::Duration;
 
 pub fn update(game: &mut AirmashGame) {
   update_player_positions(game);

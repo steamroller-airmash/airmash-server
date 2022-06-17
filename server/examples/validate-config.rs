@@ -1,9 +1,10 @@
+use std::env;
+use std::io::Read;
+use std::path::{Path, PathBuf};
+
 use airmash_server::resource::Config;
 use miette::{Diagnostic, NamedSource, SourceOffset};
 use serde_deserialize_over::DeserializeOver;
-use std::io::Read;
-use std::path::Path;
-use std::{env, path::PathBuf};
 use thiserror::Error;
 
 #[derive(Debug, Error, Diagnostic)]
