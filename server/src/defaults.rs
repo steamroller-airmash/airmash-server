@@ -9,20 +9,17 @@ use hecs::EntityBuilder;
 use uuid::Uuid;
 
 use crate::component::*;
+use crate::config::PlanePrototype;
 use crate::protocol::client::Login;
-use crate::protocol::{FlagCode, PlaneType, Vector2};
-use crate::resource::Config;
+use crate::protocol::{FlagCode, Vector2};
 
 /// Build a player
 pub(crate) fn build_default_player(
   login: &Login,
-  config: &Config,
+  proto: &'static PlanePrototype,
   start_time: Instant,
   this_frame: Instant,
 ) -> EntityBuilder {
-  let plane = PlaneType::Predator;
-  let info = &config.planes[plane];
-
   let mut builder = EntityBuilder::new();
   builder
     .add(IsPlayer)
@@ -31,9 +28,10 @@ pub(crate) fn build_default_player(
     .add(Rotation(0.0))
     .add(Energy(1.0))
     .add(Health(1.0))
-    .add(EnergyRegen(info.energy_regen))
-    .add(HealthRegen(info.health_regen))
-    .add(plane)
+    .add(EnergyRegen(proto.energy_regen))
+    .add(HealthRegen(proto.health_regen))
+    .add(proto.server_type)
+    .add(proto)
     .add(FlagCode::from_str(&login.flag.to_string()).unwrap_or(FlagCode::UnitedNations))
     .add(Level(0))
     .add(Score(0))

@@ -8,7 +8,7 @@ use crate::network::*;
 use crate::protocol::client::{self as c, Login};
 use crate::protocol::v5::deserialize;
 use crate::protocol::ClientPacket;
-use crate::resource::{Config, GameConfig, TakenNames};
+use crate::resource::{GameConfig, TakenNames};
 use crate::AirmashGame;
 
 pub fn process_packets(game: &mut AirmashGame) {
@@ -182,8 +182,6 @@ fn handle_login(game: &mut AirmashGame, mut login: Login, conn: ConnectionId) {
   debug!("Handling login on {}", conn);
 
   let entity = {
-    let config = game.resources.read::<Config>();
-
     let mut conn_mgr = game.resources.write::<ConnectionMgr>();
     let mut names = game.resources.write::<TakenNames>();
     let mut mapping = game.resources.write::<EntityMapping>();
@@ -213,16 +211,12 @@ fn handle_login(game: &mut AirmashGame, mut login: Login, conn: ConnectionId) {
     make_unique_name(&mut names, &mut login.name);
 
     let gconfig = game.resources.read::<GameConfig>().inner;
+    let proto = gconfig
+      .planes
+      .get(&*gconfig.default_plane)
+      .expect("default_plane prototype does not exist");
 
-    let mut builder =
-      crate::defaults::build_default_player(&login, &config, start_time, this_frame);
-
-    builder.add(
-      gconfig
-        .planes
-        .get(&*gconfig.default_plane)
-        .expect("default_plane prototype does not exist"),
-    );
+    let mut builder = crate::defaults::build_default_player(&login, proto, start_time, this_frame);
 
     let entity = game.world.spawn(builder.build());
 
