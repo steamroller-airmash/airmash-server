@@ -124,7 +124,7 @@ fn on_respawn_command(event: &PacketEvent<Command>, game: &mut AirmashGame) {
     PlaneType::Prowler => "prowler",
     PlaneType::Mohawk => "mohawk",
   };
-  *proto = match gconfig.planes.get(pname) {
+  let new_proto = match gconfig.planes.get(pname) {
     Some(proto) => proto,
     None => {
       game.send_to(
@@ -139,6 +139,7 @@ fn on_respawn_command(event: &PacketEvent<Command>, game: &mut AirmashGame) {
     }
   };
 
+  let old_proto = std::mem::replace(proto, new_proto);
   let oldplane = std::mem::replace(plane, proto.server_type);
   let prev_alive = std::mem::replace(&mut alive.0, true);
 
@@ -153,7 +154,7 @@ fn on_respawn_command(event: &PacketEvent<Command>, game: &mut AirmashGame) {
   if oldplane != newplane {
     game.dispatch(PlayerChangePlane {
       player: event.entity,
-      old_plane: oldplane,
+      old_proto,
     });
   }
 }

@@ -1,8 +1,10 @@
 use std::time::Duration;
 
-use airmash_protocol::{PlaneType, PowerupType};
 use hecs::Entity;
 use smallvec::SmallVec;
+
+use crate::config::PlanePrototypeRef;
+use crate::protocol::PowerupType;
 
 /// A new player has joined the game.
 #[derive(Clone, Copy, Debug)]
@@ -57,7 +59,7 @@ pub struct PlayerSpawn {
 #[derive(Copy, Clone, Debug)]
 pub struct PlayerChangePlane {
   pub player: Entity,
-  pub old_plane: PlaneType,
+  pub old_proto: PlanePrototypeRef,
 }
 
 /// A player has obtained a powerup.
