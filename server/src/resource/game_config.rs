@@ -1,7 +1,9 @@
+use std::ops::Deref;
+
 /// Flags to enable and/or disable engine features.
 ///
 /// By default these configs are set as would be needed for an FFA gamemode.
-#[derive(Clone, Debug, Serialize, Deserialize)]
+#[derive(Clone, Debug)]
 pub struct GameConfig {
   /// Whether or not to enable the default respawn logic.
   ///
@@ -38,6 +40,8 @@ pub struct GameConfig {
   ///
   /// This is set to false by default.
   pub always_upgraded: bool,
+
+  pub inner: &'static server_config::GameConfig,
 }
 
 impl Default for GameConfig {
@@ -48,6 +52,15 @@ impl Default for GameConfig {
       allow_damage: true,
       spawn_upgrades: true,
       always_upgraded: false,
+      inner: server_config::GameConfig::default().leak(),
     }
+  }
+}
+
+impl Deref for GameConfig {
+  type Target = server_config::GameConfig;
+
+  fn deref(&self) -> &Self::Target {
+    self.inner
   }
 }

@@ -132,12 +132,19 @@ impl GameConfig {
   }
 
   /// Unsafelly reclaim and free a static reference that was created by calling
-  /// `leak`. This is mainly useful for tracking leaks in other parts of the program.
+  /// `leak`. This is mainly useful for tracking leaks in other parts of the
+  /// program.
   ///
   /// # Safety
   /// - The reference to `self` must never be used again after this method is
   ///   called.
   pub unsafe fn reclaim(&'static mut self) {
     let _ = Box::from_raw(self as *const Self as *mut Self);
+  }
+}
+
+impl Default for GameConfig {
+  fn default() -> Self {
+    Self::new(GamePrototype::default()).unwrap()
   }
 }
