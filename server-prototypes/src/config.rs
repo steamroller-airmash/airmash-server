@@ -13,6 +13,7 @@ pub struct GameConfig {
 }
 
 impl GameConfig {
+  /// Create a `GameConfig` from the provided [`GamePrototype`].
   pub fn new(proto: GamePrototype) -> Result<Self, ValidationError> {
     let mut missiles = HashMap::new();
     let mut planes = HashMap::new();
@@ -117,6 +118,26 @@ impl GameConfig {
       }
     }
 
-    Ok(Self { missiles, planes, specials })
+    Ok(Self {
+      missiles,
+      planes,
+      specials,
+    })
+  }
+
+  /// Purposefully leak this `GameConfig` in order to allow for static
+  /// references to be stored easily within the server datastructures.
+  pub fn leak(self) -> &'static mut Self {
+    Box::leak(Box::new(self))
+  }
+
+  /// Unsafelly reclaim and free a static reference that was created by calling
+  /// `leak`. This is mainly useful for tracking leaks in other parts of the program.
+  ///
+  /// # Safety
+  /// - The reference to `self` must never be used again after this method is
+  ///   called.
+  pub unsafe fn reclaim(&'static mut self) {
+    let _ = Box::from_raw(self as *const Self as *mut Self);
   }
 }
