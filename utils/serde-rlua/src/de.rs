@@ -1,7 +1,8 @@
-use super::Error;
 use rlua::{FromLua, TablePairs, TableSequence, Value};
 use serde::de::{self, Deserializer, IntoDeserializer as _};
 use serde::forward_to_deserialize_any;
+
+use super::Error;
 
 struct Empty;
 
@@ -363,8 +364,9 @@ impl<'lua, 'de> de::VariantAccess<'de> for VariantDeserializer<'lua> {
 
 #[cfg(test)]
 mod tests {
-  use super::super::from_value;
   use rlua::Lua;
+
+  use super::super::from_value;
 
   #[test]
   fn test_struct() {

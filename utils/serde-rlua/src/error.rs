@@ -1,7 +1,8 @@
-use rlua::Error as LuaError;
-use serde::{de, ser};
 use std::error::Error as StdError;
 use std::fmt;
+
+use rlua::Error as LuaError;
+use serde::{de, ser};
 
 #[derive(Clone, Debug)]
 pub struct Error(LuaError);

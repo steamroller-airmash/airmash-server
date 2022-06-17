@@ -1,6 +1,8 @@
-use super::Error;
-use rlua::{prelude::LuaString, Context, Table, Value};
+use rlua::prelude::LuaString;
+use rlua::{Context, Table, Value};
 use serde::ser::{self, Serialize, Serializer};
+
+use super::Error;
 
 pub struct LuaSerializer<'lua> {
   lua: Context<'lua>,
@@ -435,8 +437,9 @@ impl<'lua> ser::SerializeTupleVariant for SerializeTupleVariant<'lua> {
 
 #[cfg(test)]
 mod tests {
-  use super::super::to_value;
   use rlua::Lua;
+
+  use super::super::to_value;
 
   #[test]
   fn test_struct() {
