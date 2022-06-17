@@ -1,0 +1,11 @@
+[package]
+name = "serde-rlua"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+serde = "1.0"
+rlua = "0.19"
+
+[dev-dependencies]
+serde = { version = "1.0", features = [ "derive" ] }

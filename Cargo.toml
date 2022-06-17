@@ -10,5 +10,6 @@ members = [
 	"ffa",
 	"server",
 	"server-macros",
-	"utils/kdtree"
+	"utils/kdtree",
+	"utils/serde-rlua"
 ]
