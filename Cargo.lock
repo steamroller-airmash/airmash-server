@@ -846,6 +846,12 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "8b870d8c151b6f2fb93e84a13146138f05d02ed11c7e7c54f8826aaaf7c9f184"
 
 [[package]]
+name = "pkg-config"
+version = "0.3.25"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "1df8c4ec4b0627e53bdf214615ad287367e482558cf84b109250b37464dc03ae"
+
+[[package]]
 name = "ppv-lite86"
 version = "0.2.16"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -945,6 +951,30 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "49b3de9ec5dc0a3417da371aab17d729997c15010e7fd24ff707773a33bddb64"
 
 [[package]]
+name = "rlua"
+version = "0.19.2"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "7a8b33d82d6653c447e40067dcf3c970b76e6ebf13807f6acee934f06cc2e35e"
+dependencies = [
+ "bitflags",
+ "bstr",
+ "libc",
+ "num-traits",
+ "rlua-lua54-sys",
+]
+
+[[package]]
+name = "rlua-lua54-sys"
+version = "0.1.2"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "9ca23c19a6782d115dce7e11be719b4dbea833acd0d0599e963abf4f31ad9137"
+dependencies = [
+ "cc",
+ "libc",
+ "pkg-config",
+]
+
+[[package]]
 name = "rustc-demangle"
 version = "0.1.21"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -1002,6 +1032,14 @@ version = "0.2.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "f89b56c640df910a470a1d9992e4b3da2b8d638d7cbc3717c7ebc4d626add290"
 dependencies = [
+ "serde",
+]
+
+[[package]]
+name = "serde-rlua"
+version = "0.1.0"
+dependencies = [
+ "rlua",
  "serde",
 ]
 
