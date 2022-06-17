@@ -31,7 +31,7 @@ jobs:
       - uses: actions-rs/cargo@v1
         with:
           command: test
-          args: --color always ${{ env.CARGO_FLAGS }}
+          args: --all-features --color always ${{ env.CARGO_FLAGS }}
   
   format:
     name: check-fmt
