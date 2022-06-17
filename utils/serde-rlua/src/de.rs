@@ -12,6 +12,7 @@ impl<'lua> FromLua<'lua> for Empty {
   }
 }
 
+/// Deserializer from rlua `Value`s.
 pub struct LuaDeserializer<'lua> {
   value: Value<'lua>,
 }
@@ -66,13 +67,7 @@ impl<'lua, 'de> Deserializer<'de> for LuaDeserializer<'lua> {
           return visitor.visit_map(MapDeserializer::new(table.pairs()));
         }
 
-        if table
-          .clone()
-          .pairs::<Empty, Empty>()
-          .skip(len)
-          .next()
-          .is_some()
-        {
+        if table.clone().pairs::<Empty, Empty>().nth(len).is_some() {
           visitor.visit_map(MapDeserializer::new(table.pairs()))
         } else {
           visitor.visit_seq(SeqDeserializer(table.sequence_values()))
@@ -141,7 +136,7 @@ impl<'lua, 'de> Deserializer<'de> for LuaDeserializer<'lua> {
         let seq = visitor.visit_seq(&mut de)?;
 
         match de.0.count() {
-          0 => return Ok(seq),
+          0 => Ok(seq),
           n => Err(de::Error::custom(format_args!(
             "invalid length {}, expected sequence with {} elements",
             len,
