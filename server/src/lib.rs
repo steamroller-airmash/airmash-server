@@ -7,6 +7,11 @@ pub mod protocol {
 
 pub mod config {
   pub use server_config::*;
+
+  pub type GameConfigRef = &'static GameConfig;
+  pub type PlanePrototypeRef = &'static PlanePrototype;
+  pub type MissilePrototypeRef = &'static MissilePrototype;
+  pub type SpecialPrototypeRef = &'static SpecialPrototype;
 }
 
 pub extern crate hecs;
