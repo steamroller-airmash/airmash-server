@@ -5,7 +5,7 @@ use std::time::{Duration, Instant};
 use bstr::{BString, ByteSlice};
 
 use crate::component::*;
-use crate::config::PlanePrototype;
+use crate::config::PlanePrototypeRef;
 use crate::event::{PacketEvent, PlayerChangePlane, PlayerRespawn, PlayerSpectate};
 use crate::protocol::client::Command;
 use crate::protocol::server::PlayerFlag;
@@ -95,7 +95,7 @@ fn on_respawn_command(event: &PacketEvent<Command>, game: &mut AirmashGame) {
     &Health,
     &LastActionTime,
     &mut PlaneType,
-    &mut &'static PlanePrototype,
+    &mut PlanePrototypeRef,
   )>(event.entity)
   {
     Ok(query) => query.with::<IsPlayer>(),

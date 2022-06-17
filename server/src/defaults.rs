@@ -9,14 +9,14 @@ use hecs::EntityBuilder;
 use uuid::Uuid;
 
 use crate::component::*;
-use crate::config::PlanePrototype;
+use crate::config::PlanePrototypeRef;
 use crate::protocol::client::Login;
 use crate::protocol::{FlagCode, Vector2};
 
 /// Build a player
 pub(crate) fn build_default_player(
   login: &Login,
-  proto: &'static PlanePrototype,
+  proto: PlanePrototypeRef,
   start_time: Instant,
   this_frame: Instant,
 ) -> EntityBuilder {
