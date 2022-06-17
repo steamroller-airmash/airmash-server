@@ -5,7 +5,6 @@ edition = "2021"
 
 [features]
 script = [ "rlua", "serde-rlua" ]
-default = [ "script" ]
 
 [dependencies]
 serde = { version = "1.0", features = [ "derive" ] }
@@ -25,3 +24,11 @@ features = [ "serde" ]
 [dev-dependencies]
 serde_json = "1.0"
 anyhow = "1.0"
+
+[[example]]
+name = "export"
+required-features = ["script"]
+
+[[example]]
+name = "validate"
+required-features = ["script"]
