@@ -1,7 +1,7 @@
-use airmash_protocol::{KeyCode, PlaneType};
-
 use crate::component::*;
+use crate::config::PlanePrototypeRef;
 use crate::event::KeyEvent;
+use crate::protocol::KeyCode;
 use crate::resource::{Config, StartTime, ThisFrame};
 use crate::AirmashGame;
 
@@ -19,7 +19,7 @@ fn fire_missiles(game: &mut AirmashGame) {
       &KeyState,
       &LastFireTime,
       &mut Energy,
-      &PlaneType,
+      &PlanePrototypeRef,
       &Powerup,
       &IsAlive,
     )>()
@@ -27,31 +27,29 @@ fn fire_missiles(game: &mut AirmashGame) {
 
   let mut events = Vec::new();
   for (ent, (keystate, last_fire, energy, plane, powerup, alive)) in query.iter() {
-    let info = &config.planes[*plane];
-
     if !alive.0
       || !keystate.fire
-      || this_frame - last_fire.0 < info.fire_delay
-      || energy.0 < info.fire_energy
+      || this_frame - last_fire.0 < plane.fire_delay
+      || energy.0 < plane.fire_energy
     {
       continue;
     }
 
-    energy.0 -= info.fire_energy;
+    energy.0 -= plane.fire_energy;
 
     let mut count = 1;
     if powerup.inferno() {
       count = count * 2 + 1;
     }
 
-    events.push((ent, count, info.missile_type));
+    events.push((ent, count, plane.missile));
   }
 
   drop(config);
   drop(query);
 
   for (ent, missiles, ty) in events {
-    let _ = game.fire_missiles_count(ent, missiles, ty);
+    let _ = game.fire_missiles_count(ent, missiles, ty.server_type);
   }
 }
 
