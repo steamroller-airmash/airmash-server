@@ -1,11 +1,12 @@
 #[cfg(not(feature = "script"))]
 compile_error!("export example requires the `script` feature to be enabled");
 
+use std::error::Error;
+use std::fmt;
+
 use anyhow::Context;
 use serde::Deserialize;
 use server_config::{GameConfig, GamePrototype};
-use std::error::Error;
-use std::fmt;
 
 #[derive(Clone, Debug)]
 struct ValidationError<E> {

@@ -1,6 +1,7 @@
 pub(crate) mod duration {
-  use serde::{Deserialize, Deserializer, Serializer};
   use std::time::Duration;
+
+  use serde::{Deserialize, Deserializer, Serializer};
 
   pub(crate) fn serialize<S: Serializer>(dur: &Duration, ser: S) -> Result<S::Ok, S::Error> {
     ser.serialize_f64(dur.as_secs_f64())

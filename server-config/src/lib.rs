@@ -15,10 +15,9 @@ mod util;
 #[cfg(feature = "script")]
 mod script;
 
-pub(crate) use self::error::ValidationExt;
-
 pub use self::common::GameConfigCommon;
 pub use self::config::GameConfig;
+pub(crate) use self::error::ValidationExt;
 pub use self::error::{Path, Segment, ValidationError};
 pub use self::game::GamePrototype;
 pub use self::missile::MissilePrototype;

@@ -1,5 +1,6 @@
-use protocol::MobType;
 use std::borrow::Cow;
+
+use protocol::MobType;
 
 use crate::ValidationError;
 

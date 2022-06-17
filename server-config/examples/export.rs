@@ -1,9 +1,10 @@
 #[cfg(not(feature = "script"))]
 compile_error!("export example requires the `script` feature to be enabled");
 
+use std::io::Write;
+
 use serde::Deserialize;
 use server_config::GamePrototype;
-use std::io::Write;
 
 fn main() -> Result<(), Box<dyn std::error::Error>> {
   let args = std::env::args().skip(1).collect::<Vec<_>>();

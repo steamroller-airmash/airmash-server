@@ -1,6 +1,7 @@
-use crate::util::duration;
 use std::borrow::Cow;
 use std::time::Duration;
+
+use crate::util::duration;
 
 /// Prototype for a boost effect similar to the predator boost.
 #[derive(Serialize, Deserialize, Clone, Debug)]

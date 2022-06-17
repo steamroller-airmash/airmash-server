@@ -1,10 +1,11 @@
+use std::collections::HashMap;
+use std::convert::TryFrom;
+use std::ops::{Deref, DerefMut};
+
 use crate::{
   GameConfigCommon, GamePrototype, MissilePrototype, PlanePrototype, SpecialPrototype,
   SpecialPrototypeData, ValidationError, ValidationExt,
 };
-use std::collections::HashMap;
-use std::convert::TryFrom;
-use std::ops::{Deref, DerefMut};
 
 #[derive(Clone, Debug)]
 #[non_exhaustive]
