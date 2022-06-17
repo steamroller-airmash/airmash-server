@@ -1,13 +1,16 @@
-use crate::event::ServerStartup;
-use crate::network::ConnectionMgr;
-use crate::{dispatch::EventDispatcher, Event, EventHandler};
-use anymap::AnyMap;
-use hecs::Entity;
 use std::cell::{Ref, RefCell, RefMut};
 use std::net::SocketAddr;
 use std::sync::atomic::{AtomicBool, Ordering};
 use std::sync::Arc;
 use std::time::{Duration, Instant};
+
+use anymap::AnyMap;
+use hecs::Entity;
+
+use crate::dispatch::EventDispatcher;
+use crate::event::ServerStartup;
+use crate::network::ConnectionMgr;
+use crate::{Event, EventHandler};
 
 /// Main airmash game, containing all game data and resources.
 pub struct AirmashGame {

@@ -1,11 +1,8 @@
 use crate::component::*;
-use crate::event::PlayerRespawn;
-use crate::event::{PlayerPowerup, PlayerSpawn};
-use crate::protocol::PlaneType;
-use crate::protocol::PowerupType;
+use crate::event::{PlayerPowerup, PlayerRespawn, PlayerSpawn};
+use crate::protocol::{PlaneType, PowerupType};
 use crate::resource::Config;
-use crate::Vector2;
-use crate::{AirmashGame, EntitySetBuilder};
+use crate::{AirmashGame, EntitySetBuilder, Vector2};
 
 #[handler]
 fn send_packet(event: &PlayerRespawn, game: &mut AirmashGame) {

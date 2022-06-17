@@ -2,8 +2,8 @@
 //! meant to make it easier add new ones for use within the main server.
 //! (External code can add them in EntitySpawn events if it needs to.)
 
-use std::time::Instant;
-use std::{str::FromStr, time::Duration};
+use std::str::FromStr;
+use std::time::{Duration, Instant};
 
 use hecs::EntityBuilder;
 use uuid::Uuid;

@@ -1,15 +1,15 @@
-use crate::protocol::{client as c, ClientPacket, ServerPacket};
-use crate::{network::*, AirmashGame};
+use std::net::{IpAddr, SocketAddr};
+use std::sync::Arc;
+use std::time::{Duration, Instant};
 
 use airmash_protocol::KeyCode;
 use crossbeam_channel::Sender;
 use hecs::Entity;
-use std::{
-  net::{IpAddr, SocketAddr},
-  sync::Arc,
-  time::{Duration, Instant},
-};
 use tokio::sync::mpsc::{unbounded_channel, UnboundedReceiver};
+
+use crate::network::*;
+use crate::protocol::{client as c, ClientPacket, ServerPacket};
+use crate::AirmashGame;
 
 /// Mock connection for testing purposes.
 ///

@@ -1,8 +1,7 @@
 use airmash_protocol::MobType;
 
 use crate::component::*;
-use crate::event::MissileDespawn;
-use crate::event::MissileDespawnType;
+use crate::event::{MissileDespawn, MissileDespawnType};
 use crate::AirmashGame;
 
 #[handler]

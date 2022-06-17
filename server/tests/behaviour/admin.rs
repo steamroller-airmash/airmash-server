@@ -1,4 +1,5 @@
-use airmash_server::{component::Position, resource::Config};
+use airmash_server::component::Position;
+use airmash_server::resource::Config;
 use server::protocol::client as c;
 
 #[test]

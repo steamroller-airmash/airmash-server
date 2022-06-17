@@ -71,8 +71,9 @@ pub fn update(game: &mut AirmashGame) {
 ///
 /// Since nothing should be interacting with these entities it emits no events.
 fn cull_zombies(game: &mut AirmashGame) {
-  use crate::component::{Expiry, IsZombie};
   use smallvec::SmallVec;
+
+  use crate::component::{Expiry, IsZombie};
 
   let this_frame = game.this_frame();
 

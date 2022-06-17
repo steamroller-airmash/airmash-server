@@ -1,6 +1,9 @@
-use crate::{network::ConnectionId, protocol::client as c};
-use hecs::Entity;
 use std::time::Instant;
+
+use hecs::Entity;
+
+use crate::network::ConnectionId;
+use crate::protocol::client as c;
 
 /// A packet has been recieved from a connection that has been associated with
 /// an entity.

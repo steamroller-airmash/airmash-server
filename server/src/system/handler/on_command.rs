@@ -2,10 +2,9 @@ use std::convert::TryFrom;
 use std::str::FromStr;
 use std::time::{Duration, Instant};
 
-use airmash_protocol::PlaneType;
-use airmash_protocol::{server::PlayerFlag, UpgradeType};
-use bstr::BString;
-use bstr::ByteSlice;
+use airmash_protocol::server::PlayerFlag;
+use airmash_protocol::{PlaneType, UpgradeType};
+use bstr::{BString, ByteSlice};
 
 use crate::component::*;
 use crate::event::{PacketEvent, PlayerChangePlane, PlayerRespawn, PlayerSpectate};

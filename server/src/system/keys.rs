@@ -1,11 +1,9 @@
 use airmash_protocol::{KeyCode, PlaneType};
 
-use crate::{
-  component::*,
-  event::KeyEvent,
-  resource::{Config, StartTime, ThisFrame},
-  AirmashGame,
-};
+use crate::component::*;
+use crate::event::KeyEvent;
+use crate::resource::{Config, StartTime, ThisFrame};
+use crate::AirmashGame;
 
 pub fn update(game: &mut AirmashGame) {
   fire_missiles(game);

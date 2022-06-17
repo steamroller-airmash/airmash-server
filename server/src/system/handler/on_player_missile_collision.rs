@@ -1,13 +1,12 @@
 use std::collections::HashSet;
 
-use airmash_protocol::MobType;
-use airmash_protocol::PlaneType;
+use airmash_protocol::{MobType, PlaneType};
 use smallvec::SmallVec;
 
+use crate::component::*;
 use crate::event::{PlayerHit, PlayerKilled, PlayerMissileCollision};
-use crate::resource::Config;
+use crate::resource::{Config, GameConfig};
 use crate::AirmashGame;
-use crate::{component::*, resource::GameConfig};
 
 #[handler(priority = crate::priority::MEDIUM)]
 fn damage_player(event: &PlayerMissileCollision, game: &mut AirmashGame) {

@@ -1,17 +1,15 @@
-use std::net::Ipv4Addr;
-use std::net::SocketAddr;
-use std::net::SocketAddrV4;
+use std::net::{Ipv4Addr, SocketAddr, SocketAddrV4};
 
 use bstr::BString;
 
 use crate::component::IsPlayer;
 use crate::event::*;
+use crate::network::*;
 use crate::protocol::client::{self as c, Login};
 use crate::protocol::v5::deserialize;
 use crate::protocol::ClientPacket;
-use crate::resource::Config;
-use crate::resource::TakenNames;
-use crate::{network::*, AirmashGame};
+use crate::resource::{Config, TakenNames};
+use crate::AirmashGame;
 
 pub fn process_packets(game: &mut AirmashGame) {
   loop {

@@ -1,6 +1,5 @@
 use crate::component::*;
-use crate::event::EventStealth;
-use crate::event::PlayerRepel;
+use crate::event::{EventStealth, PlayerRepel};
 use crate::resource::Config;
 use crate::AirmashGame;
 

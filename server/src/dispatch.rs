@@ -1,9 +1,11 @@
-use crate::AirmashGame;
-use anymap::AnyMap;
-use linkme::distributed_slice;
 use std::cell::RefCell;
 use std::collections::VecDeque;
 use std::rc::Rc;
+
+use anymap::AnyMap;
+use linkme::distributed_slice;
+
+use crate::AirmashGame;
 
 #[distributed_slice]
 pub static AIRMASH_EVENT_HANDLERS: [fn(&EventDispatcher)] = [..];

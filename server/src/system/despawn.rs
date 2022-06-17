@@ -1,7 +1,6 @@
 use smallvec::SmallVec;
 
-use crate::component::IsMissile;
-use crate::component::*;
+use crate::component::{IsMissile, *};
 use crate::event::{MissileDespawn, MissileDespawnType, MobDespawn, MobDespawnType};
 use crate::AirmashGame;
 

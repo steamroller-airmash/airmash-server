@@ -1,16 +1,17 @@
-use std::{cmp::Ordering, time::Duration};
+use std::cmp::Ordering;
+use std::time::Duration;
 
 use airmash_protocol::PlaneType;
 use itertools::Itertools;
 use smallvec::SmallVec;
 
+use crate::component::*;
 use crate::consts::{self, hitcircles_for_plane};
-use crate::event::EventBounce;
-use crate::event::MissileTerrainCollision;
-use crate::event::PlayerMissileCollision;
+use crate::event::{
+  EventBounce, MissileTerrainCollision, PlayerMissileCollision, PlayerMobCollision,
+};
 use crate::resource::collision::*;
 use crate::AirmashGame;
-use crate::{component::*, event::PlayerMobCollision};
 
 struct FrameId(usize);
 

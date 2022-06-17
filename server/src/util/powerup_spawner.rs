@@ -1,7 +1,8 @@
 use std::time::{Duration, Instant};
 
+use crate::event::Frame;
 use crate::protocol::{MobType, Position};
-use crate::{event::Frame, Entity, EventHandler};
+use crate::{Entity, EventHandler};
 
 #[derive(Copy, Clone)]
 enum SpawnerState {

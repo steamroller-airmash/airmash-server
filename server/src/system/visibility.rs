@@ -1,14 +1,11 @@
-use crate::event::EntitySpawn;
-use crate::event::EventHorizon;
-use crate::event::PlayerFire;
-use crate::resource::collision as c;
-use crate::resource::collision::LayerSpec;
-use crate::resource::Config;
-use crate::AirmashGame;
-use crate::{component::*, event::MobSpawn};
-
 use fxhash::FxHashSet as HashSet;
 use hecs::Entity;
+
+use crate::component::*;
+use crate::event::{EntitySpawn, EventHorizon, MobSpawn, PlayerFire};
+use crate::resource::collision::LayerSpec;
+use crate::resource::{collision as c, Config};
+use crate::AirmashGame;
 
 def_wrappers! {
   type FrameId = u64;

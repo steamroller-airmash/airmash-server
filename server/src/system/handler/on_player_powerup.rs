@@ -1,5 +1,4 @@
-use crate::component::IsPlayer;
-use crate::component::*;
+use crate::component::{IsPlayer, *};
 use crate::event::PlayerPowerup;
 use crate::resource::{StartTime, ThisFrame};
 use crate::AirmashGame;

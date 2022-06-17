@@ -1,9 +1,11 @@
 #![allow(dead_code)]
 
+use std::time::Duration;
+
 use nalgebra::vector;
 
-use crate::{protocol::*, FireMissileInfo};
-use std::time::Duration;
+use crate::protocol::*;
+use crate::FireMissileInfo;
 
 mod hitcircles;
 mod terrain;
