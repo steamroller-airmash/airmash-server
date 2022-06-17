@@ -27,7 +27,15 @@ pub use self::missile::MissilePrototype;
 pub use self::plane::PlanePrototype;
 pub use self::special::*;
 
-pub trait PrototypeRef<'a> {
+mod sealed {
+  pub trait Sealed {}
+}
+
+use self::sealed::Sealed;
+
+pub trait PrototypeRef<'a>: Sealed {
+  // Any traits we want to have automatically derived on the prototypes must be
+  // mirrored here and the concrete instantiations must also derive them.
   type MissileRef: Clone + Debug + 'a;
   type SpecialRef: Clone + Debug + 'a;
   type PlaneRef: Clone + Debug + 'a;
@@ -38,6 +46,9 @@ pub struct StringRef;
 
 #[derive(Copy, Clone, Debug)]
 pub struct PtrRef;
+
+impl Sealed for StringRef {}
+impl Sealed for PtrRef {}
 
 impl<'a> PrototypeRef<'a> for StringRef {
   type MissileRef = Cow<'a, str>;
