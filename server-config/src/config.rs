@@ -1,8 +1,10 @@
 use crate::{
-  GamePrototype, MissilePrototype, PlanePrototype, SpecialPrototype, SpecialPrototypeData,
-  ValidationError, ValidationExt,
+  GameConfigCommon, GamePrototype, MissilePrototype, PlanePrototype, SpecialPrototype,
+  SpecialPrototypeData, ValidationError, ValidationExt,
 };
 use std::collections::HashMap;
+use std::convert::TryFrom;
+use std::ops::{Deref, DerefMut};
 
 #[derive(Clone, Debug)]
 #[non_exhaustive]
@@ -10,6 +12,8 @@ pub struct GameConfig {
   pub planes: HashMap<String, PlanePrototype>,
   pub missiles: HashMap<String, MissilePrototype>,
   pub specials: HashMap<String, SpecialPrototype>,
+
+  pub common: GameConfigCommon,
 }
 
 impl GameConfig {
@@ -111,17 +115,29 @@ impl GameConfig {
 
       if let Some(plane) = planes.insert(plane.name.to_string(), plane) {
         return Err(
-          ValidationError::custom("name", &"multiple missile prototypes had the same name")
+          ValidationError::custom("name", "multiple missile prototypes had the same name")
             .with(plane.name.into_owned())
             .with("plane"),
         );
       }
     }
 
+    if !planes.contains_key(&*proto.common.default_plane) {
+      return Err(ValidationError::custom(
+        "default_plane",
+        format_args!(
+          "default_plane refers to a plane prototype `{}` which does not exist",
+          proto.common.default_plane
+        ),
+      ));
+    }
+
     Ok(Self {
       missiles,
       planes,
       specials,
+
+      common: proto.common,
     })
   }
 
@@ -146,5 +162,27 @@ impl GameConfig {
 impl Default for GameConfig {
   fn default() -> Self {
     Self::new(GamePrototype::default()).unwrap()
+  }
+}
+
+impl TryFrom<GamePrototype> for GameConfig {
+  type Error = ValidationError;
+
+  fn try_from(value: GamePrototype) -> Result<Self, Self::Error> {
+    Self::new(value)
+  }
+}
+
+impl Deref for GameConfig {
+  type Target = GameConfigCommon;
+
+  fn deref(&self) -> &Self::Target {
+    &self.common
+  }
+}
+
+impl DerefMut for GameConfig {
+  fn deref_mut(&mut self) -> &mut Self::Target {
+    &mut self.common
   }
 }

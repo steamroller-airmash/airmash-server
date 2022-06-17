@@ -1,4 +1,6 @@
-use crate::{PlanePrototype, MissilePrototype, SpecialPrototype};
+use std::ops::{Deref, DerefMut};
+
+use crate::{GameConfigCommon, MissilePrototype, PlanePrototype, SpecialPrototype};
 
 #[derive(Serialize, Deserialize, Clone, Debug)]
 #[non_exhaustive]
@@ -7,6 +9,9 @@ pub struct GamePrototype {
   pub planes: Vec<PlanePrototype>,
   pub missiles: Vec<MissilePrototype>,
   pub specials: Vec<SpecialPrototype>,
+
+  #[serde(flatten)]
+  pub common: GameConfigCommon,
 }
 
 impl Default for GamePrototype {
@@ -34,6 +39,21 @@ impl Default for GamePrototype {
         SpecialPrototype::repel(),
         SpecialPrototype::stealth(),
       ],
+      common: GameConfigCommon::default(),
     }
+  }
+}
+
+impl Deref for GamePrototype {
+  type Target = GameConfigCommon;
+
+  fn deref(&self) -> &Self::Target {
+    &self.common
+  }
+}
+
+impl DerefMut for GamePrototype {
+  fn deref_mut(&mut self) -> &mut Self::Target {
+    &mut self.common
   }
 }
