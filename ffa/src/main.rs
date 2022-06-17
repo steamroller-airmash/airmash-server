@@ -4,13 +4,10 @@ use std::time::Duration;
 
 use clap::arg;
 use serde_deserialize_over::DeserializeOver;
-
+use server::protocol::GameType;
+use server::resource::{Config, RegionName};
+use server::util::PeriodicPowerupSpawner;
 use server::*;
-use server::{
-  protocol::GameType,
-  resource::{Config, RegionName},
-  util::PeriodicPowerupSpawner,
-};
 
 mod systems;
 
