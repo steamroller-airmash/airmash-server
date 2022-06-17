@@ -197,44 +197,26 @@ impl SpecialPrototype {
 
 impl SpecialPrototype {
   pub const fn is_none(&self) -> bool {
-    match self.data {
-      SpecialPrototypeData::None => true,
-      _ => false,
-    }
+    matches!(self.data, SpecialPrototypeData::None)
   }
 
   pub const fn is_boost(&self) -> bool {
-    match self.data {
-      SpecialPrototypeData::Boost(_) => true,
-      _ => false,
-    }
+    matches!(self.data, SpecialPrototypeData::Boost(_))
   }
 
   pub const fn is_multishot(&self) -> bool {
-    match self.data {
-      SpecialPrototypeData::Multishot(_) => true,
-      _ => false,
-    }
+    matches!(self.data, SpecialPrototypeData::Multishot(_))
   }
 
   pub const fn is_repel(&self) -> bool {
-    match self.data {
-      SpecialPrototypeData::Repel(_) => true,
-      _ => false,
-    }
+    matches!(self.data, SpecialPrototypeData::Repel(_))
   }
 
   pub const fn is_strafe(&self) -> bool {
-    match self.data {
-      SpecialPrototypeData::Strafe => true,
-      _ => false,
-    }
+    matches!(self.data, SpecialPrototypeData::Strafe)
   }
 
   pub const fn is_stealth(&self) -> bool {
-    match self.data {
-      SpecialPrototypeData::Stealth(_) => true,
-      _ => false,
-    }
+    matches!(self.data, SpecialPrototypeData::Stealth(_))
   }
 }
