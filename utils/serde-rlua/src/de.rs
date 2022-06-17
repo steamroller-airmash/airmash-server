@@ -67,12 +67,7 @@ impl<'lua, 'de> Deserializer<'de> for LuaDeserializer<'lua> {
           return visitor.visit_map(MapDeserializer::new(table.pairs()));
         }
 
-        if table
-          .clone()
-          .pairs::<Empty, Empty>()
-          .nth(len)
-          .is_some()
-        {
+        if table.clone().pairs::<Empty, Empty>().nth(len).is_some() {
           visitor.visit_map(MapDeserializer::new(table.pairs()))
         } else {
           visitor.visit_seq(SeqDeserializer(table.sequence_values()))
