@@ -1,0 +1,26 @@
+[package]
+name = "server-config"
+version = "0.1.0"
+edition = "2021"
+
+[features]
+script = [ "rlua", "serde-rlua" ]
+
+[dependencies]
+serde = { version = "1.0", features = [ "derive" ] }
+serde-value = "0.7"
+serde_path_to_error = "0.1.7"
+nalgebra = { version = "0.31", features = ["serde-serialize"] }
+doc-cfg = "0.1"
+
+rlua = { version = "0.19", optional = true }
+serde-rlua = { path = "../utils/serde-rlua", optional = true }
+
+[dependencies.protocol]
+version = "0.5"
+package = "airmash-protocol"
+features = [ "serde" ]
+
+[dev-dependencies]
+serde_json = "1.0"
+anyhow = "1.0"
