@@ -127,7 +127,7 @@ impl PlanePrototype {
     Self {
       name: Cow::Borrowed("prowler"),
       server_type: PlaneType::Prowler,
-      special: Cow::Borrowed("cloak"),
+      special: Cow::Borrowed("stealth"),
       missile: Cow::Borrowed("prowler"),
       missile_offset: Vector2::new(35.0, 0.0),
       fire_energy: 0.75,
@@ -171,7 +171,7 @@ impl PlanePrototype {
     Self {
       name: Cow::Borrowed("goliath"),
       server_type: PlaneType::Goliath,
-      special: Cow::Borrowed("reflect"),
+      special: Cow::Borrowed("repel"),
       missile: Cow::Borrowed("goliath"),
       missile_offset: Vector2::new(35.0, 0.0),
       fire_energy: 0.9,

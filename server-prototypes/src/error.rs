@@ -1,3 +1,4 @@
+use std::borrow::Cow;
 use std::error::Error;
 use std::fmt;
 
@@ -24,7 +25,7 @@ impl Path {
 
 impl fmt::Display for Path {
   fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-    let mut iter = self.segments.iter();
+    let mut iter = self.segments.iter().rev();
 
     if let Some(seg) = iter.next() {
       seg.fmt(f)?;
@@ -45,9 +46,9 @@ impl fmt::Debug for Path {
   }
 }
 
-#[derive(Copy, Clone, Debug, Eq, PartialEq, Hash)]
+#[derive(Clone, Debug, Eq, PartialEq, Hash)]
 pub enum Segment {
-  Field(&'static str),
+  Field(Cow<'static, str>),
   Index(usize),
 }
 
@@ -62,7 +63,13 @@ impl fmt::Display for Segment {
 
 impl From<&'static str> for Segment {
   fn from(field: &'static str) -> Self {
-    Self::Field(field)
+    Self::Field(field.into())
+  }
+}
+
+impl From<String> for Segment {
+  fn from(field: String) -> Self {
+    Self::Field(field.into())
   }
 }
 
@@ -91,14 +98,14 @@ impl Error for StringError {}
 #[derive(Debug)]
 pub struct ValidationError {
   path: Path,
-  error: Box<dyn Error + 'static>,
+  error: Box<dyn Error + Send + Sync + 'static>,
 }
 
 impl ValidationError {
   pub fn new<I, E>(field: I, error: E) -> Self
   where
     I: Into<Segment>,
-    E: Error + 'static,
+    E: Error + Send + Sync + 'static,
   {
     Self {
       path: Path::new(field.into()),
@@ -106,9 +113,10 @@ impl ValidationError {
     }
   }
 
-  pub fn custom<I>(field: I, message: &dyn fmt::Display) -> Self
+  pub fn custom<I, D>(field: I, message: D) -> Self
   where
     I: Into<Segment>,
+    D: fmt::Display,
   {
     Self::new(field.into(), StringError(format!("{}", message)))
   }
@@ -128,7 +136,7 @@ impl ValidationError {
 
 impl fmt::Display for ValidationError {
   fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-    f.write_fmt(format_args!("Error while validating field `{}`", self.path))
+    f.write_fmt(format_args!("error while validating field `{}`", self.path))
   }
 }
 
