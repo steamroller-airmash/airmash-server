@@ -83,6 +83,11 @@ pub struct PlanePrototype<'a, Ref: PrototypeRef<'a>> {
   pub accel: f32,
   /// The rate at which this plane slows down when no thrust is being applied.
   pub brake: f32,
+
+  /// Displacement of the outside missile when the plane fires with an inferno.
+  pub inferno_offset: Vector2<f32>,
+  /// Angle of the outside missile when the plane fires with an inferno.
+  pub inferno_angle: f32,
 }
 
 impl PlanePrototype<'_, StringRef> {
@@ -105,6 +110,8 @@ impl PlanePrototype<'_, StringRef> {
       turn_factor: 0.065,
       accel: 0.225,
       brake: 0.025,
+      inferno_offset: Vector2::new(18.0, 1.25),
+      inferno_angle: 0.05,
     }
   }
 
@@ -127,6 +134,8 @@ impl PlanePrototype<'_, StringRef> {
       turn_factor: 0.055,
       accel: 0.2,
       brake: 0.025,
+      inferno_offset: Vector2::new(15.1, 10.0),
+      inferno_angle: 0.05,
     }
   }
 
@@ -149,6 +158,8 @@ impl PlanePrototype<'_, StringRef> {
       turn_factor: 0.055,
       accel: 0.2,
       brake: 0.025,
+      inferno_offset: Vector2::new(18.0, 2.25),
+      inferno_angle: 0.05,
     }
   }
 
@@ -171,6 +182,8 @@ impl PlanePrototype<'_, StringRef> {
       turn_factor: 0.07,
       accel: 0.275,
       brake: 0.025,
+      inferno_offset: Vector2::new(0.0, 0.0),
+      inferno_angle: 0.1,
     }
   }
 
@@ -193,6 +206,8 @@ impl PlanePrototype<'_, StringRef> {
       turn_factor: 0.04,
       accel: 0.15,
       brake: 0.015,
+      inferno_offset: Vector2::new(30.0, 2.1),
+      inferno_angle: 0.04,
     }
   }
 }
@@ -253,6 +268,8 @@ impl PlanePrototype<'_, StringRef> {
       turn_factor: self.turn_factor,
       accel: self.accel,
       brake: self.brake,
+      inferno_offset: self.inferno_offset,
+      inferno_angle: self.inferno_angle,
     })
   }
 }
