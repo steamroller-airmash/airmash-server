@@ -1,6 +1,3 @@
-#[cfg(not(feature = "script"))]
-compile_error!("export example requires the `script` feature to be enabled");
-
 use std::error::Error;
 use std::fmt;
 
