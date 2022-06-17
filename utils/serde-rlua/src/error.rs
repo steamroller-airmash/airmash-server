@@ -4,6 +4,20 @@ use std::fmt;
 use rlua::Error as LuaError;
 use serde::{de, ser};
 
+/// Error for when a conversion between rust values and [`rlua`] [`Value`]s
+/// fails.
+///
+/// This type is just a wrapper around [`rlua::Error`] that provides some useful
+/// trait implementations as needed by the [`Serializer`] and [`Deserializer`]
+/// types. Usually you won't want to use this type but instead just convert it
+/// directly to [`rlua::Error`]. The [`to_value`] and [`from_value`] helper
+/// methods will do this for you.
+///
+/// [`Value`]: rlua::Value
+/// [`Serializer`]: crate::Serializer
+/// [`Deserializer`]: crate::Deserializer
+/// [`to_value`]: crate::to_value
+/// [`from_value`]: crate::from_value
 #[derive(Clone, Debug)]
 pub struct Error(LuaError);
 
