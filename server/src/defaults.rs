@@ -30,7 +30,6 @@ pub(crate) fn build_default_player(
     .add(Health(1.0))
     .add(EnergyRegen(proto.energy_regen))
     .add(HealthRegen(proto.health_regen))
-    .add(proto.server_type)
     .add(proto)
     .add(FlagCode::from_str(&login.flag.to_string()).unwrap_or(FlagCode::UnitedNations))
     .add(Level(0))

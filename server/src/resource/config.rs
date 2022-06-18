@@ -129,6 +129,7 @@ pub struct UpgradeInfos {
 #[derive(Clone, Debug, Serialize, Deserialize, DeserializeOver)]
 pub struct Config {
   #[deserialize_over]
+  #[deprecated]
   pub planes: PlaneInfos,
   #[deserialize_over]
   pub mobs: MobInfos,
@@ -260,6 +261,7 @@ impl Default for UpgradeInfos {
   }
 }
 
+#[allow(deprecated)]
 impl Default for Config {
   fn default() -> Self {
     Self {

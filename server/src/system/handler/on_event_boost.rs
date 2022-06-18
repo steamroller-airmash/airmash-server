@@ -1,6 +1,6 @@
 use crate::component::*;
+use crate::config::PlanePrototypeRef;
 use crate::event::EventBoost;
-use crate::resource::Config;
 use crate::AirmashGame;
 
 /// When an internal EventBoost occurs we also need to forward it on so that
@@ -38,16 +38,19 @@ fn send_boost_packet(event: &EventBoost, game: &mut AirmashGame) {
 /// When boosting the player has negative regen. We need to set that.
 #[handler]
 fn set_player_energy_regen(event: &EventBoost, game: &mut AirmashGame) {
-  let regen = match game.world.query_one_mut::<&mut EnergyRegen>(event.player) {
+  let (regen, plane) = match game.world.query_one_mut::<(&mut EnergyRegen, &PlanePrototypeRef)>(event.player) {
     Ok(query) => query,
     Err(_) => return,
   };
 
-  let config = game.resources.read::<Config>();
+  let boost = match plane.special.as_boost() {
+    Some(boost) => boost,
+    None => return
+  };
 
   if event.boosting {
-    regen.0 = crate::consts::PREDATOR_SPECIAL_REGEN;
+    regen.0 = -boost.cost;
   } else {
-    regen.0 = config.planes.predator.energy_regen;
+    regen.0 = plane.energy_regen;
   }
 }
