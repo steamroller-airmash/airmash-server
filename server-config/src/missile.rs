@@ -115,11 +115,11 @@ impl MissilePrototype {
 }
 
 impl MissilePrototype {
-  pub fn validate(&self) -> Result<(), ValidationError> {
+  pub(crate) fn resolve(self) -> Result<Self, ValidationError> {
     if self.name.is_empty() {
-      return Err(ValidationError::custom("name", &"prototype had empty name"));
+      return Err(ValidationError::custom("name", "prototype had empty name"));
     }
 
-    Ok(())
+    Ok(self)
   }
 }

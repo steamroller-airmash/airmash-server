@@ -1,20 +1,28 @@
 use std::ops::{Deref, DerefMut};
 
-use crate::{GameConfigCommon, MissilePrototype, PlanePrototype, SpecialPrototype};
+use serde::{Deserialize, Serialize};
+
+use crate::{
+  GameConfigCommon, MissilePrototype, PlanePrototype, PrototypeRef, SpecialPrototype, StringRef,
+};
 
 #[derive(Serialize, Deserialize, Clone, Debug)]
 #[non_exhaustive]
 #[serde(deny_unknown_fields)]
-pub struct GamePrototype {
-  pub planes: Vec<PlanePrototype>,
+#[serde(bound(
+  serialize = "Ref::MissileRef: Serialize, Ref::SpecialRef: Serialize, Ref::PlaneRef: Serialize",
+  deserialize = "Ref::MissileRef: Deserialize<'de>, Ref::SpecialRef: Deserialize<'de>, Ref::PlaneRef: Deserialize<'de>"
+))]
+pub struct GamePrototype<'a, Ref: PrototypeRef<'a>> {
+  pub planes: Vec<PlanePrototype<'a, Ref>>,
   pub missiles: Vec<MissilePrototype>,
-  pub specials: Vec<SpecialPrototype>,
+  pub specials: Vec<SpecialPrototype<'a, Ref>>,
 
   #[serde(flatten)]
-  pub common: GameConfigCommon,
+  pub common: GameConfigCommon<'a, Ref>,
 }
 
-impl Default for GamePrototype {
+impl Default for GamePrototype<'_, StringRef> {
   fn default() -> Self {
     Self {
       planes: vec![
@@ -44,15 +52,15 @@ impl Default for GamePrototype {
   }
 }
 
-impl Deref for GamePrototype {
-  type Target = GameConfigCommon;
+impl<'a, R: PrototypeRef<'a>> Deref for GamePrototype<'a, R> {
+  type Target = GameConfigCommon<'a, R>;
 
   fn deref(&self) -> &Self::Target {
     &self.common
   }
 }
 
-impl DerefMut for GamePrototype {
+impl<'a, R: PrototypeRef<'a>> DerefMut for GamePrototype<'a, R> {
   fn deref_mut(&mut self) -> &mut Self::Target {
     &mut self.common
   }
