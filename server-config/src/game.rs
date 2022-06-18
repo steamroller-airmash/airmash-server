@@ -3,7 +3,8 @@ use std::ops::{Deref, DerefMut};
 use serde::{Deserialize, Serialize};
 
 use crate::{
-  GameConfigCommon, MissilePrototype, PlanePrototype, PrototypeRef, SpecialPrototype, StringRef,
+  GameConfigCommon, MissilePrototype, MobPrototype, PlanePrototype, PrototypeRef, SpecialPrototype,
+  StringRef,
 };
 
 #[derive(Serialize, Deserialize, Clone, Debug)]
@@ -17,6 +18,7 @@ pub struct GamePrototype<'a, Ref: PrototypeRef<'a>> {
   pub planes: Vec<PlanePrototype<'a, Ref>>,
   pub missiles: Vec<MissilePrototype>,
   pub specials: Vec<SpecialPrototype<'a, Ref>>,
+  pub mobs: Vec<MobPrototype>,
 
   #[serde(flatten)]
   pub common: GameConfigCommon<'a, Ref>,
@@ -46,6 +48,11 @@ impl Default for GamePrototype<'_, StringRef> {
         SpecialPrototype::strafe(),
         SpecialPrototype::repel(),
         SpecialPrototype::stealth(),
+      ],
+      mobs: vec![
+        MobPrototype::inferno(),
+        MobPrototype::shield(),
+        MobPrototype::upgrade(),
       ],
       common: GameConfigCommon::default(),
     }

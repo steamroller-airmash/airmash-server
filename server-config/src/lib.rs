@@ -8,6 +8,7 @@ mod config;
 mod error;
 mod game;
 mod missile;
+mod mob;
 mod plane;
 mod special;
 mod util;
@@ -24,6 +25,7 @@ pub(crate) use self::error::ValidationExt;
 pub use self::error::{Path, Segment, ValidationError};
 pub use self::game::GamePrototype;
 pub use self::missile::MissilePrototype;
+pub use self::mob::MobPrototype;
 pub use self::plane::PlanePrototype;
 pub use self::special::*;
 
@@ -39,6 +41,7 @@ pub trait PrototypeRef<'a>: Sealed {
   type MissileRef: Clone + Debug + 'a;
   type SpecialRef: Clone + Debug + 'a;
   type PlaneRef: Clone + Debug + 'a;
+  type MobRef: Clone + Debug + 'a;
 }
 
 #[derive(Copy, Clone, Debug)]
@@ -54,10 +57,12 @@ impl<'a> PrototypeRef<'a> for StringRef {
   type MissileRef = Cow<'a, str>;
   type SpecialRef = Cow<'a, str>;
   type PlaneRef = Cow<'a, str>;
+  type MobRef = Cow<'a, str>;
 }
 
 impl<'a> PrototypeRef<'a> for PtrRef {
   type MissileRef = &'a MissilePrototype;
   type SpecialRef = &'a SpecialPrototype<'a, Self>;
   type PlaneRef = &'a PlanePrototype<'a, Self>;
+  type MobRef = &'a MobPrototype;
 }

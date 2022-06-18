@@ -6,8 +6,8 @@ use std::ops::{Deref, DerefMut};
 use std::ptr::NonNull;
 
 use crate::{
-  GameConfigCommon, GamePrototype, MissilePrototype, PlanePrototype, PtrRef, SpecialPrototype,
-  StringRef, ValidationError, ValidationExt,
+  GameConfigCommon, GamePrototype, MissilePrototype, MobPrototype, PlanePrototype, PtrRef,
+  SpecialPrototype, StringRef, ValidationError, ValidationExt,
 };
 
 #[derive(Clone, Debug)]
@@ -16,6 +16,7 @@ pub struct GameConfig {
   pub planes: HashMap<&'static str, &'static PlanePrototype<'static, PtrRef>>,
   pub missiles: HashMap<&'static str, &'static MissilePrototype>,
   pub specials: HashMap<&'static str, &'static SpecialPrototype<'static, PtrRef>>,
+  pub mobs: HashMap<&'static str, &'static MobPrototype>,
 
   pub common: GameConfigCommon<'static, PtrRef>,
 
@@ -30,6 +31,16 @@ impl GameConfig {
     //       one comes up, then we'll fix it but otherwise it's cleaner to do it
     //       this way.
 
+    let mobs = ManuallyDrop::new(
+      proto
+        .mobs
+        .into_iter()
+        .enumerate()
+        .map(|(idx, m)| m.resolve().with(idx))
+        .collect::<Result<Vec<_>, _>>()
+        .with("mobs")?
+        .into_boxed_slice(),
+    );
     let missiles = ManuallyDrop::new(
       proto
         .missiles
@@ -61,11 +72,22 @@ impl GameConfig {
         .into_boxed_slice(),
     );
 
-    let data = unsafe { GameConfigData::new(&planes, &missiles, &specials) };
+    let data = unsafe { GameConfigData::new(&planes, &missiles, &specials, &mobs) };
 
     let mut missiles = HashMap::new();
     let mut planes = HashMap::new();
     let mut specials = HashMap::new();
+    let mut mobs = HashMap::new();
+
+    for mob in data.mobs() {
+      if mobs.insert(&*mob.name, mob).is_some() {
+        return Err(
+          ValidationError::custom("name", "multiple mob prototypes had the same name")
+            .with(mob.name.to_string())
+            .with("mobs"),
+        );
+      }
+    }
 
     for missile in data.missiles() {
       if missiles.insert(&*missile.name, missile).is_some() {
@@ -101,6 +123,7 @@ impl GameConfig {
       missiles,
       planes,
       specials,
+      mobs,
 
       common: proto.common.resolve(data.planes())?,
       data,
@@ -156,6 +179,7 @@ struct GameConfigData {
   planes: NonNull<[PlanePrototype<'static, PtrRef>]>,
   missiles: NonNull<[MissilePrototype]>,
   specials: NonNull<[SpecialPrototype<'static, PtrRef>]>,
+  mobs: NonNull<[MobPrototype]>,
 }
 
 impl GameConfigData {
@@ -169,11 +193,13 @@ impl GameConfigData {
     planes: &[PlanePrototype<PtrRef>],
     missiles: &[MissilePrototype],
     specials: &[SpecialPrototype<PtrRef>],
+    mobs: &[MobPrototype],
   ) -> Self {
     Self {
       planes: NonNull::new(planes as *const _ as *mut _).unwrap(),
       missiles: NonNull::new(missiles as *const _ as *mut _).unwrap(),
       specials: NonNull::new(specials as *const _ as *mut _).unwrap(),
+      mobs: NonNull::new(mobs as *const _ as *mut _).unwrap(),
     }
   }
 
@@ -187,6 +213,7 @@ impl GameConfigData {
     let _ = Box::from_raw(self.planes.as_ptr());
     let _ = Box::from_raw(self.specials.as_ptr());
     let _ = Box::from_raw(self.missiles.as_ptr());
+    let _ = Box::from_raw(self.mobs.as_ptr());
   }
 
   fn planes(&self) -> &'static [PlanePrototype<'static, PtrRef>] {
@@ -199,6 +226,10 @@ impl GameConfigData {
 
   fn specials(&self) -> &'static [SpecialPrototype<'static, PtrRef>] {
     unsafe { self.specials.as_ref() }
+  }
+
+  fn mobs(&self) -> &'static [MobPrototype] {
+    unsafe { self.mobs.as_ref() }
   }
 }
 
