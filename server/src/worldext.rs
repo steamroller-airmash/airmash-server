@@ -8,7 +8,7 @@ use nalgebra::vector;
 use smallvec::SmallVec;
 
 use crate::component::*;
-use crate::config::MissilePrototypeRef;
+use crate::config::{MissilePrototypeRef, PlanePrototypeRef};
 use crate::event::{EntitySpawn, MobSpawn, PlayerFire};
 use crate::network::{ConnectionId, ConnectionMgr};
 use crate::protocol::{v5, ServerPacket};
@@ -186,19 +186,17 @@ impl AirmashGame {
 
     let (&plane, side, _) = self
       .world
-      .query_one_mut::<(&PlaneType, &mut MissileFiringSide, &IsPlayer)>(player)?;
+      .query_one_mut::<(&PlanePrototypeRef, &mut MissileFiringSide, &IsPlayer)>(player)?;
 
     let halfcnt = (count / 2) as f32;
-    let config = self.resources.read::<Config>();
-    let pconfig = &config.planes[plane];
 
-    let total_angle = halfcnt * pconfig.missile_inferno_angle;
-    let total_offset_x = scale_offset(halfcnt, pconfig.missile_inferno_offset_x);
-    let total_offset_y = scale_offset(halfcnt, pconfig.missile_inferno_offset_y);
+    let total_angle = halfcnt * plane.inferno_angle;
+    let total_offset_x = scale_offset(halfcnt, plane.inferno_offset.x);
+    let total_offset_y = scale_offset(halfcnt, plane.inferno_offset.y);
 
     let side = std::mem::replace(side, side.reverse());
-    let start_x = pconfig.missile_offset.x;
-    let start_y = pconfig.missile_offset.y * side.multiplier();
+    let start_x = plane.missile_offset.x;
+    let start_y = plane.missile_offset.y * side.multiplier();
 
     let mut infos = SmallVec::<[_; 3]>::new();
     infos.push(FireMissileInfo {
@@ -229,7 +227,6 @@ impl AirmashGame {
       });
     }
 
-    drop(config);
     Ok(self.fire_missiles(player, &infos)?)
   }
 

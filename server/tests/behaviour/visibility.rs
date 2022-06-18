@@ -1,11 +1,13 @@
+use std::convert::TryInto;
 use std::time::Duration;
 
 use airmash_protocol::{KeyCode, MobType, ServerPacket};
 use airmash_server::component::Position;
-use airmash_server::resource::Config;
+use airmash_server::resource::{Config, GameConfig};
 use airmash_server::Vector2;
 use nalgebra::vector;
 use server::test::TestGame;
+use server_config::GamePrototype;
 
 /// If a player is at the very edge of another player's horizon then
 /// LeaveHorizon packets may not be sent correctly because the missile might be
@@ -59,13 +61,13 @@ fn out_of_visibility_missiles_properly_deleted() {
 fn out_of_visibility_collision() {
   let (mut game, mut mock) = TestGame::new();
 
-  let offset = {
-    let mut config = game.resources.write::<Config>();
-    config.planes.predator.missile_offset.x = 500.0;
-    config.view_radius = 100.0;
+  let offset = 500.0;
 
-    config.planes.predator.missile_offset.x
-  };
+  let mut proto = GamePrototype::default();
+  proto.planes[0].missile_offset.x = offset;
+  
+  game.resources.write::<GameConfig>().inner = proto.try_into().unwrap();
+  game.resources.write::<Config>().view_radius = 100.0;
 
   let mut client1 = mock.open();
   let mut client2 = mock.open();
