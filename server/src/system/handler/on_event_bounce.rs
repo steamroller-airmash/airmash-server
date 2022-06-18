@@ -1,6 +1,5 @@
-use airmash_protocol::PlaneType;
-
 use crate::component::*;
+use crate::config::PlanePrototypeRef;
 use crate::event::EventBounce;
 use crate::world::AirmashGame;
 
@@ -13,7 +12,7 @@ fn send_bounce_packet(event: &EventBounce, game: &mut AirmashGame) {
     &Velocity,
     &Rotation,
     &KeyState,
-    &PlaneType,
+    &PlanePrototypeRef,
     &Team,
     &SpecialActive,
   )>(event.player);
@@ -28,7 +27,7 @@ fn send_bounce_packet(event: &EventBounce, game: &mut AirmashGame) {
     pos: pos.0,
     rot: rot.0,
     speed: vel.0,
-    keystate: keystate.to_server(plane, active),
+    keystate: keystate.to_server(&plane.server_type, active),
   };
 
   let team = team.0;

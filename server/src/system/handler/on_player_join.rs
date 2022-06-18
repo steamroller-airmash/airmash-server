@@ -1,7 +1,8 @@
-use airmash_protocol::{FlagCode, GameType, PlaneType, PlayerStatus};
+use airmash_protocol::{FlagCode, GameType, PlayerStatus};
 use bstr::BString;
 
 use crate::component::*;
+use crate::config::PlanePrototypeRef;
 use crate::event::PlayerJoin;
 use crate::resource::{RegionName, ServerStats};
 use crate::world::AirmashGame;
@@ -16,7 +17,7 @@ fn send_login_packet(event: &PlayerJoin, game: &mut AirmashGame) {
       &IsAlive,
       &Level,
       &Name,
-      &PlaneType,
+      &PlanePrototypeRef,
       &Team,
       &Position,
       &Rotation,
@@ -33,7 +34,7 @@ fn send_login_packet(event: &PlayerJoin, game: &mut AirmashGame) {
         status: PlayerStatus::from(*alive),
         level: level.0,
         name: name.0.clone(),
-        ty: *plane,
+        ty: plane.server_type,
         team: team.0,
         pos: pos.0,
         rot: rot.0,
@@ -100,7 +101,7 @@ fn send_player_new(event: &PlayerJoin, game: &mut AirmashGame) {
   let mut query = match game.world.query_one::<(
     &IsAlive,
     &Name,
-    &PlaneType,
+    &PlanePrototypeRef,
     &Team,
     &Position,
     &Rotation,
@@ -118,7 +119,7 @@ fn send_player_new(event: &PlayerJoin, game: &mut AirmashGame) {
       id: event.player.id() as _,
       status: PlayerStatus::from(*alive),
       name: name.0.clone(),
-      ty: *plane,
+      ty: plane.server_type,
       team: team.0,
       pos: pos.0,
       rot: rot.0,

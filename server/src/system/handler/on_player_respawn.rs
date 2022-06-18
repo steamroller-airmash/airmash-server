@@ -1,6 +1,7 @@
 use crate::component::*;
+use crate::config::PlanePrototypeRef;
 use crate::event::{PlayerPowerup, PlayerRespawn, PlayerSpawn};
-use crate::protocol::{PlaneType, PowerupType};
+use crate::protocol::PowerupType;
 use crate::resource::Config;
 use crate::{AirmashGame, EntitySetBuilder, Vector2};
 
@@ -49,7 +50,7 @@ fn reset_player(event: &PlayerRespawn, game: &mut AirmashGame) {
     &mut SpecialActive,
     &mut KeyState,
     &mut Spectating,
-    &PlaneType,
+    &PlanePrototypeRef,
   )>(event.player)
   {
     Ok(query) => query.with::<IsPlayer>(),
@@ -75,15 +76,13 @@ fn reset_player(event: &PlayerRespawn, game: &mut AirmashGame) {
     None => return,
   };
 
-  let info = &config.planes[plane];
-
   pos.0 = Vector2::zeros();
   vel.0 = Vector2::zeros();
   rot.0 = 0.0;
   health.0 = 1.0;
   energy.0 = 1.0;
-  health_regen.0 = info.health_regen;
-  energy_regen.0 = info.energy_regen;
+  health_regen.0 = plane.health_regen;
+  energy_regen.0 = plane.energy_regen;
   *keystate = KeyState::default();
   alive.0 = true;
   spectating.0 = false;
