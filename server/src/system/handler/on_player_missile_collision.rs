@@ -1,9 +1,10 @@
 use std::collections::HashSet;
 
-use airmash_protocol::{MobType, PlaneType};
+use airmash_protocol::MobType;
 use smallvec::SmallVec;
 
 use crate::component::*;
+use crate::config::PlanePrototypeRef;
 use crate::event::{PlayerHit, PlayerKilled, PlayerMissileCollision};
 use crate::resource::{Config, GameConfig};
 use crate::AirmashGame;
@@ -30,17 +31,19 @@ fn damage_player(event: &PlayerMissileCollision, game: &mut AirmashGame) {
   let mut hits = SmallVec::<[_; 16]>::new();
   let mut killed = HashSet::new();
   for player in event.players.iter().copied() {
-    let query = game
-      .world
-      .query_one::<(&mut Health, &PlaneType, &Powerup, &Upgrades, &mut IsAlive)>(player);
+    let query = game.world.query_one::<(
+      &mut Health,
+      &PlanePrototypeRef,
+      &Powerup,
+      &Upgrades,
+      &mut IsAlive,
+    )>(player);
     let mut query = match query {
       Ok(query) => query.with::<IsPlayer>(),
       Err(_) => continue,
     };
 
     if let Some((health, &plane, powerup, upgrades, alive)) = query.get() {
-      let pinfo = &config.planes[plane];
-
       // No damage can be done if the player is dead
       if !alive.0 {
         continue;
@@ -60,7 +63,7 @@ fn damage_player(event: &PlayerMissileCollision, game: &mut AirmashGame) {
 
       let damage = match game_config.allow_damage {
         true => {
-          minfo.damage * pinfo.damage_factor
+          minfo.damage * plane.damage_factor
             / config.upgrades.defense.factor[upgrades.defense as usize]
         }
         false => 0.0,

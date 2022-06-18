@@ -30,6 +30,7 @@ serde-deserialize-over = "0.1.1"
 
 airmash-protocol = { version = "0.5.0", features = ["serde"] }
 server-macros = { path="../server-macros" }
+server-config = { path="../server-config" }
 kdtree = { path="../utils/kdtree" }
 
 [dev-dependencies]

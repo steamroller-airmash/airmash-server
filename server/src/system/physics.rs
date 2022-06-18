@@ -6,8 +6,9 @@ use airmash_protocol::MobType;
 use nalgebra::vector;
 
 use crate::component::*;
+use crate::config::PlanePrototypeRef;
 use crate::event::PlayerJoin;
-use crate::protocol::{PlaneType, Upgrades as ServerUpgrades, Vector2};
+use crate::protocol::{Upgrades as ServerUpgrades, Vector2};
 use crate::resource::*;
 use crate::util::get_current_clock;
 use crate::AirmashGame;
@@ -32,7 +33,7 @@ fn update_player_positions(game: &mut AirmashGame) {
       &KeyState,
       &Upgrades,
       &Powerup,
-      &PlaneType,
+      &PlanePrototypeRef,
       &SpecialActive,
       &IsAlive,
     )>()
@@ -43,14 +44,16 @@ fn update_player_positions(game: &mut AirmashGame) {
       continue;
     }
 
-    let mut movement_angle = None;
-    let info = &config.planes[*plane];
-    let boost_factor = match *plane == PlaneType::Predator && active.0 {
-      true => info.boost_factor,
-      false => 1.0,
-    };
+    let special = plane.special;
 
-    if keystate.strafe(plane) {
+    let boost_factor = match special.as_boost() {
+      Some(boost) if active.0 => boost.speedup,
+      _ => 1.0,
+    };
+    let strafe = special.is_strafe() && keystate.special && (keystate.left || keystate.right);
+
+    let mut movement_angle = None;
+    if strafe {
       if keystate.left {
         movement_angle = Some(rot.0 - FRAC_PI_2);
       }
@@ -59,10 +62,10 @@ fn update_player_positions(game: &mut AirmashGame) {
       }
     } else {
       if keystate.left {
-        rot.0 -= delta * info.turn_factor;
+        rot.0 -= delta * plane.turn_factor;
       }
       if keystate.right {
-        rot.0 += delta * info.turn_factor;
+        rot.0 += delta * plane.turn_factor;
       }
     }
 
@@ -89,31 +92,31 @@ fn update_player_positions(game: &mut AirmashGame) {
     }
 
     if let Some(angle) = movement_angle {
-      let mult = info.accel_factor * delta * boost_factor;
+      let mult = plane.accel * delta * boost_factor;
       vel.0 += vector![mult * angle.sin(), mult * -angle.cos()];
     }
 
     let old_vel = vel.0;
     let speed = vel.norm();
-    let mut max_speed = info.max_speed * boost_factor;
-    let min_speed = info.min_speed;
+    let mut max_speed = plane.max_speed * boost_factor;
+    let min_speed = plane.min_speed;
 
     if upgrades.speed != 0 {
       max_speed *= config.upgrades.speed.factor[upgrades.speed as usize];
     }
 
     if powerup.inferno() {
-      max_speed *= info.inferno_factor;
+      max_speed *= plane.inferno_factor;
     }
 
     if keystate.flagspeed {
-      max_speed = info.flag_speed;
+      max_speed = plane.flag_speed;
     }
 
     if speed > max_speed {
       vel.0 *= max_speed / speed;
     } else if vel.x.abs() > min_speed || vel.y.abs() > min_speed {
-      vel.0 *= 1.0 - info.brake_factor * delta;
+      vel.0 *= 1.0 - plane.brake * delta;
     } else {
       vel.0 = Vector2::default();
     }
@@ -202,7 +205,7 @@ fn send_update_packets(game: &mut AirmashGame) {
       &Position,
       &Rotation,
       &Velocity,
-      &PlaneType,
+      &PlanePrototypeRef,
       &KeyState,
       &Upgrades,
       &Powerup,

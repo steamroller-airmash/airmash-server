@@ -1,5 +1,6 @@
 use crate::component::SpecialActive;
-use crate::protocol::{PlaneType, ServerKeyState};
+use crate::config::PlanePrototypeRef;
+use crate::protocol::ServerKeyState;
 
 /// Known key state of a player.
 ///
@@ -22,17 +23,17 @@ pub struct KeyState {
 }
 
 impl KeyState {
-  pub fn strafe(&self, plane: &PlaneType) -> bool {
-    *plane == PlaneType::Mohawk && self.special
+  pub fn strafe(&self, plane: &PlanePrototypeRef) -> bool {
+    plane.special.is_strafe() && self.special
   }
 
-  pub fn to_server(&self, plane: &PlaneType, active: &SpecialActive) -> ServerKeyState {
+  pub fn to_server(&self, plane: &PlanePrototypeRef, active: &SpecialActive) -> ServerKeyState {
     ServerKeyState {
       up: self.up,
       down: self.down,
       left: self.left,
       right: self.right,
-      boost: *plane == PlaneType::Predator && active.0,
+      boost: plane.special.is_boost() && active.0,
       strafe: self.strafe(plane),
       stealth: self.stealthed,
       flagspeed: self.flagspeed,

@@ -1,3 +1,4 @@
+use airmash_server::resource::GameConfig;
 use nalgebra::vector;
 use server::component::*;
 use server::protocol::KeyCode;
@@ -5,6 +6,8 @@ use server::protocol::KeyCode;
 #[test]
 fn prowler_decloak_on_hit() {
   let (mut game, mut mock) = crate::utils::create_mock_server();
+
+  let &prowler = game.resources.read::<GameConfig>().planes.get("prowler").unwrap();
 
   let mut client1 = mock.open();
   let mut client2 = mock.open();
@@ -22,7 +25,7 @@ fn prowler_decloak_on_hit() {
 
   game
     .world
-    .insert(ent1, (Position(vector![0.0, -250.0]), PlaneType::Prowler))
+    .insert(ent1, (Position(vector![0.0, -250.0]), prowler))
     .unwrap();
   game
     .world

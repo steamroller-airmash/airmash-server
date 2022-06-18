@@ -1,4 +1,5 @@
 use crate::component::*;
+use crate::config::PlanePrototypeRef;
 use crate::event::PlayerChangePlane;
 use crate::AirmashGame;
 
@@ -8,7 +9,7 @@ fn send_packet(event: &PlayerChangePlane, game: &mut AirmashGame) {
 
   let (&plane, _) = match game
     .world
-    .query_one_mut::<(&PlaneType, &IsPlayer)>(event.player)
+    .query_one_mut::<(&PlanePrototypeRef, &IsPlayer)>(event.player)
   {
     Ok(query) => query,
     Err(_) => return,
@@ -16,6 +17,6 @@ fn send_packet(event: &PlayerChangePlane, game: &mut AirmashGame) {
 
   game.send_to_all(s::PlayerType {
     id: event.player.id() as _,
-    ty: plane,
+    ty: plane.server_type,
   });
 }

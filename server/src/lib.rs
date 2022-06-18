@@ -5,6 +5,15 @@ pub mod protocol {
   pub use airmash_protocol::*;
 }
 
+pub mod config {
+  pub use server_config::*;
+
+  pub type GameConfigRef = &'static GameConfig;
+  pub type PlanePrototypeRef = &'static PlanePrototype<'static, PtrRef>;
+  pub type MissilePrototypeRef = &'static MissilePrototype;
+  pub type SpecialPrototypeRef = &'static SpecialPrototype<'static, PtrRef>;
+}
+
 pub extern crate hecs;
 pub extern crate nalgebra;
 

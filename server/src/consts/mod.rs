@@ -4,6 +4,7 @@ use std::time::Duration;
 
 use nalgebra::vector;
 
+use crate::config::MissilePrototypeRef;
 use crate::protocol::*;
 use crate::FireMissileInfo;
 
@@ -35,50 +36,54 @@ pub const GOLIATH_SPECIAL_INTERVAL: Duration = Duration::from_secs(1);
 
 // TODO: Tornado
 pub const TORNADO_SPECIAL_ENERGY: Energy = 0.9;
-pub const TORNADO_MISSILE_DETAILS: [FireMissileInfo; 3] = [
-  FireMissileInfo {
-    pos_offset: vector![0.0, 40.1],
-    rot_offset: 0.0,
-    ty: MobType::TornadoTripleMissile,
-  },
-  FireMissileInfo {
-    pos_offset: vector![15.0, 9.6],
-    rot_offset: -0.05,
-    ty: MobType::TornadoTripleMissile,
-  },
-  FireMissileInfo {
-    pos_offset: vector![-15.0, 9.6],
-    rot_offset: 0.05,
-    ty: MobType::TornadoTripleMissile,
-  },
-];
-pub const TORNADO_INFERNO_MISSILE_DETAILS: [FireMissileInfo; 5] = [
-  FireMissileInfo {
-    pos_offset: vector![0.0, 40.1],
-    rot_offset: 0.0,
-    ty: MobType::TornadoTripleMissile,
-  },
-  FireMissileInfo {
-    pos_offset: vector![30.0, 15.0],
-    rot_offset: -0.1,
-    ty: MobType::TornadoTripleMissile,
-  },
-  FireMissileInfo {
-    pos_offset: vector![20.0, 25.0],
-    rot_offset: -0.05,
-    ty: MobType::TornadoTripleMissile,
-  },
-  FireMissileInfo {
-    pos_offset: vector![-20.0, 25.0],
-    rot_offset: 0.05,
-    ty: MobType::TornadoTripleMissile,
-  },
-  FireMissileInfo {
-    pos_offset: vector![-30.0, 15.0],
-    rot_offset: 0.1,
-    ty: MobType::TornadoTripleMissile,
-  },
-];
+pub fn tornado_missile_details(proto: MissilePrototypeRef) -> [FireMissileInfo; 3] {
+  [
+    FireMissileInfo {
+      pos_offset: vector![0.0, 40.1],
+      rot_offset: 0.0,
+      proto,
+    },
+    FireMissileInfo {
+      pos_offset: vector![15.0, 9.6],
+      rot_offset: -0.05,
+      proto,
+    },
+    FireMissileInfo {
+      pos_offset: vector![-15.0, 9.6],
+      rot_offset: 0.05,
+      proto,
+    },
+  ]
+}
+pub fn tornado_inferno_missile_details(proto: MissilePrototypeRef) -> [FireMissileInfo; 5] {
+  [
+    FireMissileInfo {
+      pos_offset: vector![0.0, 40.1],
+      rot_offset: 0.0,
+      proto,
+    },
+    FireMissileInfo {
+      pos_offset: vector![30.0, 15.0],
+      rot_offset: -0.1,
+      proto,
+    },
+    FireMissileInfo {
+      pos_offset: vector![20.0, 25.0],
+      rot_offset: -0.05,
+      proto,
+    },
+    FireMissileInfo {
+      pos_offset: vector![-20.0, 25.0],
+      rot_offset: 0.05,
+      proto,
+    },
+    FireMissileInfo {
+      pos_offset: vector![-30.0, 15.0],
+      rot_offset: 0.1,
+      proto,
+    },
+  ]
+}
 
 pub const PROWLER_SPECIAL_ENERGY: Energy = 0.6;
 pub const PROWLER_SPECIAL_DELAY: Duration = Duration::from_millis(1500);

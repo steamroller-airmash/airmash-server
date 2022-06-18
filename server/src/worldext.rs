@@ -8,6 +8,7 @@ use nalgebra::vector;
 use smallvec::SmallVec;
 
 use crate::component::*;
+use crate::config::{MissilePrototypeRef, PlanePrototypeRef};
 use crate::event::{EntitySpawn, MobSpawn, PlayerFire};
 use crate::network::{ConnectionId, ConnectionMgr};
 use crate::protocol::{v5, ServerPacket};
@@ -25,7 +26,7 @@ pub struct FireMissileInfo {
   /// the plane is facing when it fires.
   pub rot_offset: f32,
   /// Type of the missile.
-  pub ty: MobType,
+  pub proto: MissilePrototypeRef,
 }
 
 impl AirmashGame {
@@ -107,22 +108,23 @@ impl AirmashGame {
     for info in missiles {
       let rot = rot.0 + info.rot_offset;
       let pos = pos.0 - crate::util::rotate(info.pos_offset, rot);
-      let missile = config.mobs[info.ty].missile.expect("Mob was not a missile");
+      let missile = info.proto;
 
       // Rotate starting angle 90 degrees so that it's inline with the plane. Change
       // this and missiles will shoot sideways
       let dir = vector![rot.sin(), -rot.cos()];
-      let vel = dir * (missile.base_speed + speed * missile.speed_factor) * upg_factor;
+      let vel = dir * (missile.base_speed + speed * missile.inherit_factor) * upg_factor;
 
       let mut builder = crate::defaults::build_default_missile();
       builder
         .add(Position(pos))
         .add(Velocity(vel))
         .add(Accel(dir * missile.accel))
-        .add(info.ty)
+        .add(info.proto)
         .add(Owner(player))
         .add(Team(team.0))
         .add(SpawnTime(this_frame))
+        .add(missile.server_type)
         .add(MissileTrajectory {
           start: pos,
           maxdist: missile.distance,
@@ -168,7 +170,7 @@ impl AirmashGame {
     &mut self,
     player: Entity,
     mut count: usize,
-    ty: MobType,
+    missile: MissilePrototypeRef,
   ) -> Result<SmallVec<[Entity; 3]>, hecs::QueryOneError> {
     // Only fire an odd number of missiles
     if count % 2 == 0 {
@@ -185,25 +187,23 @@ impl AirmashGame {
 
     let (&plane, side, _) = self
       .world
-      .query_one_mut::<(&PlaneType, &mut MissileFiringSide, &IsPlayer)>(player)?;
+      .query_one_mut::<(&PlanePrototypeRef, &mut MissileFiringSide, &IsPlayer)>(player)?;
 
     let halfcnt = (count / 2) as f32;
-    let config = self.resources.read::<Config>();
-    let pconfig = &config.planes[plane];
 
-    let total_angle = halfcnt * pconfig.missile_inferno_angle;
-    let total_offset_x = scale_offset(halfcnt, pconfig.missile_inferno_offset_x);
-    let total_offset_y = scale_offset(halfcnt, pconfig.missile_inferno_offset_y);
+    let total_angle = halfcnt * plane.inferno_angle;
+    let total_offset_x = scale_offset(halfcnt, plane.inferno_offset.x);
+    let total_offset_y = scale_offset(halfcnt, plane.inferno_offset.y);
 
     let side = std::mem::replace(side, side.reverse());
-    let start_x = pconfig.missile_offset.x;
-    let start_y = pconfig.missile_offset.y * side.multiplier();
+    let start_x = plane.missile_offset.x;
+    let start_y = plane.missile_offset.y * side.multiplier();
 
     let mut infos = SmallVec::<[_; 3]>::new();
     infos.push(FireMissileInfo {
       pos_offset: vector![start_y, start_x],
       rot_offset: 0.0,
-      ty,
+      proto: missile,
     });
 
     for i in 1..=(count / 2) {
@@ -216,7 +216,7 @@ impl AirmashGame {
           start_x - total_offset_x * frac
         ],
         rot_offset: -angle,
-        ty,
+        proto: missile,
       });
       infos.push(FireMissileInfo {
         pos_offset: vector![
@@ -224,11 +224,10 @@ impl AirmashGame {
           start_x - total_offset_x * frac
         ],
         rot_offset: angle,
-        ty,
+        proto: missile,
       });
     }
 
-    drop(config);
     Ok(self.fire_missiles(player, &infos)?)
   }
 

@@ -10,6 +10,7 @@ use crate::protocol::{
   AccelScalar, Distance, Energy, EnergyRegen, Health, HealthRegen, MobType, MobType as Mob,
   PlaneType as Plane, Rotation, RotationRate, Speed,
 };
+use crate::util::serde::*;
 use crate::Vector2;
 
 #[derive(Debug, Clone, Serialize, Deserialize, DeserializeOver)]
@@ -128,6 +129,7 @@ pub struct UpgradeInfos {
 #[derive(Clone, Debug, Serialize, Deserialize, DeserializeOver)]
 pub struct Config {
   #[deserialize_over]
+  #[deprecated]
   pub planes: PlaneInfos,
   #[deserialize_over]
   pub mobs: MobInfos,
@@ -259,6 +261,7 @@ impl Default for UpgradeInfos {
   }
 }
 
+#[allow(deprecated)]
 impl Default for Config {
   fn default() -> Self {
     Self {
@@ -531,38 +534,5 @@ mod mob_defaults {
       lifetime: Some(Duration::from_secs(60)),
       missile: None,
     }
-  }
-}
-
-mod duration {
-  use std::time::Duration;
-
-  use serde::{Deserialize, Deserializer, Serializer};
-
-  pub(super) fn serialize<S: Serializer>(dur: &Duration, ser: S) -> Result<S::Ok, S::Error> {
-    ser.serialize_f64(dur.as_secs_f64())
-  }
-
-  pub(super) fn deserialize<'de, D: Deserializer<'de>>(de: D) -> Result<Duration, D::Error> {
-    f64::deserialize(de).map(Duration::from_secs_f64)
-  }
-}
-
-mod option_duration {
-  use std::time::Duration;
-
-  use serde::{Deserialize, Deserializer, Serialize, Serializer};
-
-  pub(super) fn serialize<S: Serializer>(
-    dur: &Option<Duration>,
-    ser: S,
-  ) -> Result<S::Ok, S::Error> {
-    dur.map(|d| d.as_secs_f64()).serialize(ser)
-  }
-
-  pub(super) fn deserialize<'de, D: Deserializer<'de>>(
-    de: D,
-  ) -> Result<Option<Duration>, D::Error> {
-    Ok(Option::deserialize(de)?.map(Duration::from_secs_f64))
   }
 }

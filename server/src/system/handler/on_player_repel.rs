@@ -1,4 +1,5 @@
 use crate::component::*;
+use crate::config::PlanePrototypeRef;
 use crate::event::{EventStealth, PlayerRepel};
 use crate::resource::Config;
 use crate::AirmashGame;
@@ -24,39 +25,28 @@ fn send_packet(event: &PlayerRepel, game: &mut AirmashGame) {
 
   let mut players = Vec::new();
   for player in event.repelled_players.iter().copied() {
-    let (
-      &pos,
-      &rot,
-      &vel,
-      keystate,
-      health,
-      health_regen,
-      energy,
-      energy_regen,
-      &plane,
-      active,
-      ..,
-    ) = match game.world.query_one_mut::<(
-      &Position,
-      &Rotation,
-      &Velocity,
-      &KeyState,
-      &Health,
-      &HealthRegen,
-      &Energy,
-      &EnergyRegen,
-      &PlaneType,
-      &SpecialActive,
-      &IsPlayer,
-    )>(player)
-    {
-      Ok(query) => query,
-      Err(_) => continue,
-    };
+    let (&pos, &rot, &vel, keystate, health, health_regen, energy, energy_regen, plane, active, ..) =
+      match game.world.query_one_mut::<(
+        &Position,
+        &Rotation,
+        &Velocity,
+        &KeyState,
+        &Health,
+        &HealthRegen,
+        &Energy,
+        &EnergyRegen,
+        &PlanePrototypeRef,
+        &SpecialActive,
+        &IsPlayer,
+      )>(player)
+      {
+        Ok(query) => query,
+        Err(_) => continue,
+      };
 
     players.push(s::EventRepelPlayer {
       id: player.id() as _,
-      keystate: keystate.to_server(&plane, active),
+      keystate: keystate.to_server(plane, active),
       health: health.0,
       health_regen: health_regen.0,
       energy: energy.0,
@@ -202,13 +192,13 @@ fn decloak_prowlers(event: &PlayerRepel, game: &mut AirmashGame) {
   for player in event.repelled_players.iter().copied() {
     let (&plane, active, _) = match game
       .world
-      .query_one_mut::<(&PlaneType, &mut SpecialActive, &IsPlayer)>(player)
+      .query_one_mut::<(&PlanePrototypeRef, &mut SpecialActive, &IsPlayer)>(player)
     {
       Ok(query) => query,
       Err(_) => continue,
     };
 
-    if !active.0 || plane != PlaneType::Prowler {
+    if !active.0 || !plane.special.is_stealth() {
       continue;
     }
 
