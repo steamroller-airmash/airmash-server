@@ -49,7 +49,7 @@ fn fire_missiles(game: &mut AirmashGame) {
   drop(query);
 
   for (ent, missiles, ty) in events {
-    let _ = game.fire_missiles_count(ent, missiles, ty.server_type);
+    let _ = game.fire_missiles_count(ent, missiles, ty);
   }
 }
 

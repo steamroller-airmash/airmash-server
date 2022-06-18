@@ -8,6 +8,7 @@ use nalgebra::vector;
 use smallvec::SmallVec;
 
 use crate::component::*;
+use crate::config::MissilePrototypeRef;
 use crate::event::{EntitySpawn, MobSpawn, PlayerFire};
 use crate::network::{ConnectionId, ConnectionMgr};
 use crate::protocol::{v5, ServerPacket};
@@ -168,7 +169,7 @@ impl AirmashGame {
     &mut self,
     player: Entity,
     mut count: usize,
-    ty: MobType,
+    missile: MissilePrototypeRef,
   ) -> Result<SmallVec<[Entity; 3]>, hecs::QueryOneError> {
     // Only fire an odd number of missiles
     if count % 2 == 0 {
@@ -203,7 +204,7 @@ impl AirmashGame {
     infos.push(FireMissileInfo {
       pos_offset: vector![start_y, start_x],
       rot_offset: 0.0,
-      ty,
+      ty: missile.server_type,
     });
 
     for i in 1..=(count / 2) {
@@ -216,7 +217,7 @@ impl AirmashGame {
           start_x - total_offset_x * frac
         ],
         rot_offset: -angle,
-        ty,
+        ty: missile.server_type,
       });
       infos.push(FireMissileInfo {
         pos_offset: vector![
@@ -224,7 +225,7 @@ impl AirmashGame {
           start_x - total_offset_x * frac
         ],
         rot_offset: angle,
-        ty,
+        ty: missile.server_type,
       });
     }
 
