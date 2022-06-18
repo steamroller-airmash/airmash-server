@@ -46,7 +46,7 @@ fn send_packet(event: &PlayerRepel, game: &mut AirmashGame) {
 
     players.push(s::EventRepelPlayer {
       id: player.id() as _,
-      keystate: keystate.to_server(&plane.server_type, active),
+      keystate: keystate.to_server(plane, active),
       health: health.0,
       health_regen: health_regen.0,
       energy: energy.0,

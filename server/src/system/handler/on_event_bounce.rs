@@ -27,7 +27,7 @@ fn send_bounce_packet(event: &EventBounce, game: &mut AirmashGame) {
     pos: pos.0,
     rot: rot.0,
     speed: vel.0,
-    keystate: keystate.to_server(&plane.server_type, active),
+    keystate: keystate.to_server(plane, active),
   };
 
   let team = team.0;
