@@ -94,7 +94,6 @@ fn on_respawn_command(event: &PacketEvent<Command>, game: &mut AirmashGame) {
     &mut IsAlive,
     &Health,
     &LastActionTime,
-    &mut PlaneType,
     &mut PlanePrototypeRef,
   )>(event.entity)
   {
@@ -102,7 +101,7 @@ fn on_respawn_command(event: &PacketEvent<Command>, game: &mut AirmashGame) {
     Err(_) => return,
   };
 
-  let (&allowed, alive, &health, &last_action, plane, proto) = match query.get() {
+  let (&allowed, alive, &health, &last_action, proto) = match query.get() {
     Some(query) => query,
     None => return,
   };
@@ -125,14 +124,14 @@ fn on_respawn_command(event: &PacketEvent<Command>, game: &mut AirmashGame) {
     PlaneType::Mohawk => "mohawk",
   };
   let new_proto = match gconfig.planes.get(pname) {
-    Some(proto) => proto,
+    Some(proto) => *proto,
     None => {
       game.send_to(
         event.entity,
         s::ServerMessage {
           ty: crate::protocol::ServerMessageType::Banner,
           duration: 5000,
-          text: format!("{:?} is not available on this server", plane).into(),
+          text: format!("{:?} is not available on this server", newplane).into(),
         },
       );
       return;
@@ -140,7 +139,6 @@ fn on_respawn_command(event: &PacketEvent<Command>, game: &mut AirmashGame) {
   };
 
   let old_proto = std::mem::replace(proto, new_proto);
-  let oldplane = std::mem::replace(plane, proto.server_type);
   let prev_alive = std::mem::replace(&mut alive.0, true);
 
   drop(query);
@@ -151,7 +149,7 @@ fn on_respawn_command(event: &PacketEvent<Command>, game: &mut AirmashGame) {
     alive: prev_alive,
   });
 
-  if oldplane != newplane {
+  if old_proto.server_type != new_proto.server_type {
     game.dispatch(PlayerChangePlane {
       player: event.entity,
       old_proto,
