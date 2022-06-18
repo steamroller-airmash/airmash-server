@@ -1,8 +1,6 @@
-use airmash_protocol::MobType;
-
 use crate::component::*;
+use crate::config::{MissilePrototypeRef, MobPrototypeRef};
 use crate::event::EventHorizon;
-use crate::resource::Config;
 use crate::AirmashGame;
 
 #[handler]
@@ -15,24 +13,16 @@ fn send_missile_update(event: &EventHorizon, game: &mut AirmashGame) {
 
   let clock = crate::util::get_current_clock(game);
 
-  let (&pos, &vel, &accel, &mob, _) =
-    match game
-      .world
-      .query_one_mut::<(&Position, &Velocity, &Accel, &MobType, &IsMissile)>(event.entity)
-    {
-      Ok(query) => query,
-      Err(_) => return,
-    };
-
-  let max_speed = {
-    let config = game.resources.read::<Config>();
-
-    let info = match config.mobs[mob].missile {
-      Some(ref info) => info,
-      None => return,
-    };
-
-    info.max_speed
+  let (&pos, &vel, &accel, &missile, _) = match game.world.query_one_mut::<(
+    &Position,
+    &Velocity,
+    &Accel,
+    &MissilePrototypeRef,
+    &IsMissile,
+  )>(event.entity)
+  {
+    Ok(query) => query,
+    Err(_) => return,
   };
 
   game.send_to(
@@ -40,11 +30,11 @@ fn send_missile_update(event: &EventHorizon, game: &mut AirmashGame) {
     MobUpdate {
       id: event.entity.id() as _,
       clock,
-      ty: mob,
+      ty: missile.server_type,
       pos: pos.0,
       speed: vel.0,
       accel: accel.0,
-      max_speed,
+      max_speed: missile.max_speed,
     },
   );
 }
@@ -59,7 +49,7 @@ fn send_mob_update(event: &EventHorizon, game: &mut AirmashGame) {
 
   let (&pos, &mob, _) = match game
     .world
-    .query_one_mut::<(&Position, &MobType, &IsMob)>(event.entity)
+    .query_one_mut::<(&Position, &MobPrototypeRef, &IsMob)>(event.entity)
   {
     Ok(query) => query,
     Err(_) => return,
@@ -69,7 +59,7 @@ fn send_mob_update(event: &EventHorizon, game: &mut AirmashGame) {
     event.player,
     MobUpdateStationary {
       id: event.entity.id() as _,
-      ty: mob,
+      ty: mob.server_type,
       pos: pos.0,
     },
   );
