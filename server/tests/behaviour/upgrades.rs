@@ -12,10 +12,11 @@ fn player_does_not_drop_upgrade_when_not_configured() {
   let mut client = mock.open();
   let ent = client.login("test", &mut game);
 
-  {
+  let pred_missile = {
     let mut game_config = game.resources.write::<GameConfig>();
     game_config.spawn_upgrades = false;
-  }
+    *game_config.missiles.get("predator").unwrap()
+  };
 
   game.world.get_mut::<Position>(ent).unwrap().0 = Vector2::zeros();
   game.run_once();
@@ -26,7 +27,7 @@ fn player_does_not_drop_upgrade_when_not_configured() {
       &[FireMissileInfo {
         pos_offset: Vector2::new(0.0, 100.0),
         rot_offset: 0.0,
-        ty: MobType::PredatorMissile,
+        proto: pred_missile,
       }],
     )
     .unwrap();

@@ -1,6 +1,7 @@
 use smallvec::SmallVec;
 
 use crate::component::*;
+use crate::config::{PlanePrototypeRef, SpecialPrototypeData};
 use crate::consts::*;
 use crate::event::{
   EventBoost, EventStealth, KeyEvent, PlayerFire, PlayerMissileCollision, PlayerRepel,
@@ -60,7 +61,7 @@ fn tornado_special_fire(game: &mut AirmashGame) {
       &KeyState,
       &LastFireTime,
       &mut Energy,
-      &PlaneType,
+      &PlanePrototypeRef,
       &Powerup,
       &IsAlive,
     )>()
@@ -68,26 +69,27 @@ fn tornado_special_fire(game: &mut AirmashGame) {
 
   let mut events = Vec::new();
   for (ent, (keystate, last_fire, energy, &plane, powerup, alive)) in query.iter() {
-    if plane != PlaneType::Tornado || !keystate.special || !alive.0 {
+    if !keystate.special || !alive.0 {
       continue;
     }
 
-    let info = &config.planes[plane];
-    if this_frame - last_fire.0 < info.fire_delay {
+    let multishot = match &plane.special.data {
+      SpecialPrototypeData::Multishot(multishot) => multishot,
+      _ => continue,
+    };
+
+    if this_frame - last_fire.0 < multishot.delay || energy.0 < multishot.cost {
       continue;
     }
 
-    if energy.0 < TORNADO_SPECIAL_ENERGY {
-      continue;
-    }
-
-    energy.0 -= TORNADO_SPECIAL_ENERGY;
+    energy.0 -= multishot.cost;
 
     let mut missiles = SmallVec::<[_; 5]>::new();
+    // FIXME: This currently ignores the multishot.count property.
     if powerup.inferno() {
-      missiles.extend_from_slice(&TORNADO_INFERNO_MISSILE_DETAILS[..]);
+      missiles.extend_from_slice(&tornado_inferno_missile_details(multishot.missile))
     } else {
-      missiles.extend_from_slice(&TORNADO_MISSILE_DETAILS[..]);
+      missiles.extend_from_slice(&tornado_missile_details(multishot.missile));
     }
 
     events.push((ent, missiles));

@@ -26,7 +26,7 @@ pub struct FireMissileInfo {
   /// the plane is facing when it fires.
   pub rot_offset: f32,
   /// Type of the missile.
-  pub ty: MobType,
+  pub proto: MissilePrototypeRef,
 }
 
 impl AirmashGame {
@@ -108,22 +108,23 @@ impl AirmashGame {
     for info in missiles {
       let rot = rot.0 + info.rot_offset;
       let pos = pos.0 - crate::util::rotate(info.pos_offset, rot);
-      let missile = config.mobs[info.ty].missile.expect("Mob was not a missile");
+      let missile = info.proto;
 
       // Rotate starting angle 90 degrees so that it's inline with the plane. Change
       // this and missiles will shoot sideways
       let dir = vector![rot.sin(), -rot.cos()];
-      let vel = dir * (missile.base_speed + speed * missile.speed_factor) * upg_factor;
+      let vel = dir * (missile.base_speed + speed * missile.inherit_factor) * upg_factor;
 
       let mut builder = crate::defaults::build_default_missile();
       builder
         .add(Position(pos))
         .add(Velocity(vel))
         .add(Accel(dir * missile.accel))
-        .add(info.ty)
+        .add(info.proto)
         .add(Owner(player))
         .add(Team(team.0))
         .add(SpawnTime(this_frame))
+        .add(missile.server_type)
         .add(MissileTrajectory {
           start: pos,
           maxdist: missile.distance,
@@ -202,7 +203,7 @@ impl AirmashGame {
     infos.push(FireMissileInfo {
       pos_offset: vector![start_y, start_x],
       rot_offset: 0.0,
-      ty: missile.server_type,
+      proto: missile,
     });
 
     for i in 1..=(count / 2) {
@@ -215,7 +216,7 @@ impl AirmashGame {
           start_x - total_offset_x * frac
         ],
         rot_offset: -angle,
-        ty: missile.server_type,
+        proto: missile,
       });
       infos.push(FireMissileInfo {
         pos_offset: vector![
@@ -223,7 +224,7 @@ impl AirmashGame {
           start_x - total_offset_x * frac
         ],
         rot_offset: angle,
-        ty: missile.server_type,
+        proto: missile,
       });
     }
 
