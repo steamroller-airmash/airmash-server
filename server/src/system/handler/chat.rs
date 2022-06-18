@@ -1,7 +1,8 @@
 use crate::component::{IsPlayer, Position, SpecialActive, Team};
+use crate::config::PlanePrototypeRef;
 use crate::event::PacketEvent;
 use crate::protocol::client::{Chat, Say, TeamChat, Whisper};
-use crate::protocol::{server as s, PlaneType};
+use crate::protocol::server as s;
 use crate::AirmashGame;
 
 #[handler]
@@ -62,21 +63,24 @@ fn on_whisper(event: &PacketEvent<Whisper>, game: &mut AirmashGame) {
 
 #[handler]
 fn on_say(event: &PacketEvent<Say>, game: &mut AirmashGame) {
-  let (&pos, &plane, &special, &team, _) =
-    match game
-      .world
-      .query_one_mut::<(&Position, &PlaneType, &SpecialActive, &Team, &IsPlayer)>(event.entity)
-    {
-      Ok(query) => query,
-      Err(_) => return,
-    };
+  let (&pos, &plane, &special, &team, _) = match game.world.query_one_mut::<(
+    &Position,
+    &PlanePrototypeRef,
+    &SpecialActive,
+    &Team,
+    &IsPlayer,
+  )>(event.entity)
+  {
+    Ok(query) => query,
+    Err(_) => return,
+  };
 
   let packet = s::ChatSay {
     id: event.entity.id() as _,
     text: event.packet.text.clone(),
   };
 
-  if plane == PlaneType::Prowler && special.0 {
+  if plane.special.is_stealth() && special.0 {
     game.send_to_team_visible(team.0, pos.0, packet);
   } else {
     game.send_to_visible(pos.0, packet);
