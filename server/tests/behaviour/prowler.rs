@@ -7,7 +7,12 @@ use server::protocol::KeyCode;
 fn prowler_decloak_on_hit() {
   let (mut game, mut mock) = crate::utils::create_mock_server();
 
-  let &prowler = game.resources.read::<GameConfig>().planes.get("prowler").unwrap();
+  let &prowler = game
+    .resources
+    .read::<GameConfig>()
+    .planes
+    .get("prowler")
+    .unwrap();
 
   let mut client1 = mock.open();
   let mut client2 = mock.open();
