@@ -65,7 +65,7 @@ fn out_of_visibility_collision() {
 
   let mut proto = GamePrototype::default();
   proto.planes[0].missile_offset.x = offset;
-  
+
   game.resources.write::<GameConfig>().inner = proto.try_into().unwrap();
   game.resources.write::<Config>().view_radius = 100.0;
 
