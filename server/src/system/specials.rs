@@ -1,7 +1,7 @@
 use smallvec::SmallVec;
 
 use crate::component::*;
-use crate::config::{PlanePrototypeRef, SpecialPrototypeData};
+use crate::config::PlanePrototypeRef;
 use crate::consts::*;
 use crate::event::{
   EventBoost, EventStealth, KeyEvent, PlayerFire, PlayerMissileCollision, PlayerRepel,
@@ -20,19 +20,18 @@ pub fn update(game: &mut AirmashGame) {
 fn kill_predator_boost_when_out_of_energy(game: &mut AirmashGame) {
   let mut query = game
     .world
-    .query::<(&Energy, &PlaneType, &mut SpecialActive, &IsAlive)>()
+    .query::<(&Energy, &PlanePrototypeRef, &mut SpecialActive, &IsAlive)>()
     .with::<IsPlayer>();
-
-  let config = game.resources.read::<Config>();
 
   let mut events = vec![];
 
   for (ent, (energy, plane, active, alive)) in query.iter() {
-    if *plane != PlaneType::Predator || !alive.0 {
-      continue;
-    }
+    let boost = match plane.special.as_boost() {
+      Some(boost) => boost,
+      _ => continue,
+    };
 
-    if energy.0 >= config.planes.predator.energy_regen {
+    if energy.0 >= boost.cost || !alive.0 {
       continue;
     }
 
@@ -44,7 +43,6 @@ fn kill_predator_boost_when_out_of_energy(game: &mut AirmashGame) {
   }
 
   drop(query);
-  drop(config);
 
   for event in events {
     game.dispatch(event);
@@ -73,8 +71,8 @@ fn tornado_special_fire(game: &mut AirmashGame) {
       continue;
     }
 
-    let multishot = match &plane.special.data {
-      SpecialPrototypeData::Multishot(multishot) => multishot,
+    let multishot = match plane.special.as_multishot() {
+      Some(multishot) => multishot,
       _ => continue,
     };
 
@@ -113,27 +111,28 @@ fn goliath_repel(game: &mut AirmashGame) {
       &mut Energy,
       &KeyState,
       &mut LastSpecialTime,
-      &PlaneType,
+      &PlanePrototypeRef,
       &IsAlive,
     )>()
     .with::<IsPlayer>();
 
   let mut players = SmallVec::<[_; 16]>::new();
   for (ent, (pos, team, energy, keystate, last_special, &plane, alive)) in query {
-    if plane != PlaneType::Goliath || !keystate.special || !alive.0 {
-      continue;
-    }
+    let repel = match plane.special.as_repel() {
+      Some(repel) => repel,
+      _ => continue,
+    };
 
-    if this_frame - last_special.0 < GOLIATH_SPECIAL_INTERVAL {
-      continue;
-    }
-
-    if energy.0 < GOLIATH_SPECIAL_ENERGY {
+    if !keystate.special
+      || !alive.0
+      || this_frame - last_special.0 < repel.delay
+      || energy.0 < repel.cost
+    {
       continue;
     }
 
     last_special.0 = this_frame;
-    energy.0 -= GOLIATH_SPECIAL_ENERGY;
+    energy.0 -= repel.cost;
     players.push((ent, pos.0, team.0));
   }
 
@@ -147,6 +146,7 @@ fn goliath_repel(game: &mut AirmashGame) {
       repelled_missiles: SmallVec::new(),
     };
 
+    // FIXME: These should use the radius parameter from the prototype.
     player_db.query(
       pos,
       GOLIATH_SPECIAL_RADIUS_PLAYER,
@@ -183,14 +183,9 @@ fn track_predator_boost(event: &KeyEvent, game: &mut AirmashGame) {
     _ => return,
   }
 
-  let pred_regen = {
-    let config = game.resources.read::<Config>();
-    config.planes.predator.energy_regen
-  };
-
   let (keystate, plane, energy, active, ..) = match game.world.query_one_mut::<(
     &KeyState,
-    &PlaneType,
+    &PlanePrototypeRef,
     &Energy,
     &mut SpecialActive,
     &IsPlayer,
@@ -200,9 +195,10 @@ fn track_predator_boost(event: &KeyEvent, game: &mut AirmashGame) {
     Err(_) => return,
   };
 
-  if *plane != PlaneType::Predator {
-    return;
-  }
+  let boost = match plane.special.as_boost() {
+    Some(boost) => boost,
+    _ => return,
+  };
 
   if !keystate.special {
     if active.0 {
@@ -227,7 +223,7 @@ fn track_predator_boost(event: &KeyEvent, game: &mut AirmashGame) {
 
     // ... Otherwise we continue boosting
   } else {
-    if energy.0 < pred_regen {
+    if energy.0 < boost.cost {
       return;
     }
 
@@ -252,7 +248,7 @@ fn prowler_cloak(event: &KeyEvent, game: &mut AirmashGame) {
   let this_frame = game.this_frame();
 
   let (&plane, energy, last_special, active, alive, _) = match game.world.query_one_mut::<(
-    &PlaneType,
+    &PlanePrototypeRef,
     &mut Energy,
     &mut LastSpecialTime,
     &mut SpecialActive,
@@ -264,21 +260,26 @@ fn prowler_cloak(event: &KeyEvent, game: &mut AirmashGame) {
     Err(_) => return,
   };
 
-  if plane != PlaneType::Prowler || !event.state || !alive.0 {
+  let stealth = match plane.special.as_stealth() {
+    Some(stealth) => stealth,
+    _ => return,
+  };
+
+  if !event.state || !alive.0 {
     return;
   }
 
   if !active.0 {
-    if this_frame - last_special.0 < PROWLER_SPECIAL_DELAY {
+    if this_frame - last_special.0 < stealth.delay {
       return;
     }
 
-    if energy.0 < PROWLER_SPECIAL_ENERGY {
+    if energy.0 < stealth.cost {
       return;
     }
 
     last_special.0 = this_frame;
-    energy.0 -= PROWLER_SPECIAL_ENERGY;
+    energy.0 -= stealth.cost;
   }
 
   let evt = EventStealth {
@@ -293,13 +294,13 @@ fn prowler_cloak(event: &KeyEvent, game: &mut AirmashGame) {
 fn prowler_decloak_on_fire(event: &PlayerFire, game: &mut AirmashGame) {
   let (&plane, &active, _) = match game
     .world
-    .query_one_mut::<(&PlaneType, &SpecialActive, &IsPlayer)>(event.player)
+    .query_one_mut::<(&PlanePrototypeRef, &SpecialActive, &IsPlayer)>(event.player)
   {
     Ok(query) => query,
     Err(_) => return,
   };
 
-  if plane != PlaneType::Prowler || !active.0 {
+  if !plane.special.is_stealth() || !active.0 {
     return;
   }
 
@@ -314,13 +315,13 @@ fn prowler_decloak_on_hit(event: &PlayerMissileCollision, game: &mut AirmashGame
   for player in event.players.iter().copied() {
     let (&plane, &active, _) = match game
       .world
-      .query_one_mut::<(&PlaneType, &SpecialActive, &IsPlayer)>(player)
+      .query_one_mut::<(&PlanePrototypeRef, &SpecialActive, &IsPlayer)>(player)
     {
       Ok(query) => query,
       Err(_) => return,
     };
 
-    if plane != PlaneType::Prowler || !active.0 {
+    if !plane.special.is_stealth() || !active.0 {
       return;
     }
 
@@ -339,15 +340,15 @@ fn update_mohawk_on_strafe(event: &KeyEvent, game: &mut AirmashGame) {
 
   let start_time = game.resources.read::<crate::resource::StartTime>().0;
 
-  let (&plane, last_update, _) = match game
+  let (plane, last_update, _) = match game
     .world
-    .query_one_mut::<(&PlaneType, &mut LastUpdateTime, &IsPlayer)>(event.player)
+    .query_one_mut::<(&PlanePrototypeRef, &mut LastUpdateTime, &IsPlayer)>(event.player)
   {
     Ok(query) => query,
     Err(_) => return,
   };
 
-  if plane != PlaneType::Mohawk {
+  if !plane.special.is_strafe() {
     return;
   }
 

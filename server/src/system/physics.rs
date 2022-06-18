@@ -4,12 +4,11 @@ use std::time::Duration;
 use airmash_protocol::server::PlayerUpdate;
 use airmash_protocol::MobType;
 use nalgebra::vector;
-use server_config::SpecialPrototypeData;
 
 use crate::component::*;
 use crate::config::PlanePrototypeRef;
 use crate::event::PlayerJoin;
-use crate::protocol::{PlaneType, Upgrades as ServerUpgrades, Vector2};
+use crate::protocol::{Upgrades as ServerUpgrades, Vector2};
 use crate::resource::*;
 use crate::util::get_current_clock;
 use crate::AirmashGame;
@@ -47,14 +46,11 @@ fn update_player_positions(game: &mut AirmashGame) {
 
     let special = plane.special;
 
-    let boost_factor = match &special.data {
-      SpecialPrototypeData::Boost(boost) if active.0 => boost.speedup,
+    let boost_factor = match special.as_boost() {
+      Some(boost) if active.0 => boost.speedup,
       _ => 1.0,
     };
-    let strafe = match &special.data {
-      SpecialPrototypeData::Strafe => keystate.special && (keystate.left || keystate.right),
-      _ => false,
-    };
+    let strafe = special.is_strafe() && keystate.special && (keystate.left || keystate.right);
 
     let mut movement_angle = None;
     if strafe {
@@ -209,7 +205,7 @@ fn send_update_packets(game: &mut AirmashGame) {
       &Position,
       &Rotation,
       &Velocity,
-      &PlaneType,
+      &PlanePrototypeRef,
       &KeyState,
       &Upgrades,
       &Powerup,
@@ -245,7 +241,7 @@ fn send_update_packets(game: &mut AirmashGame) {
     let packet = PlayerUpdate {
       clock,
       id: ent.id() as u16,
-      keystate: keystate.to_server(plane, active),
+      keystate: keystate.to_server(&plane.server_type, active),
       pos: pos.0,
       rot: rot.0,
       speed: vel.0,
