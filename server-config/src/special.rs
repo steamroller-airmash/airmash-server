@@ -208,6 +208,34 @@ impl SpecialPrototype<'_, StringRef> {
 }
 
 impl<'a, R: PrototypeRef<'a>> SpecialPrototype<'a, R> {
+  pub const fn as_boost(&self) -> Option<&BoostPrototype> {
+    match &self.data {
+      SpecialPrototypeData::Boost(boost) => Some(boost),
+      _ => None,
+    }
+  }
+
+  pub const fn as_multishot(&self) -> Option<&MultishotPrototype<'a, R>> {
+    match &self.data {
+      SpecialPrototypeData::Multishot(multishot) => Some(multishot),
+      _ => None,
+    }
+  }
+
+  pub const fn as_repel(&self) -> Option<&RepelPrototype> {
+    match &self.data {
+      SpecialPrototypeData::Repel(repel) => Some(repel),
+      _ => None,
+    }
+  }
+
+  pub const fn as_stealth(&self) -> Option<&StealthPrototype> {
+    match &self.data {
+      SpecialPrototypeData::Stealth(stealth) => Some(stealth),
+      _ => None,
+    }
+  }
+
   pub const fn is_none(&self) -> bool {
     matches!(self.data, SpecialPrototypeData::None)
   }
