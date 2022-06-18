@@ -38,14 +38,17 @@ fn send_boost_packet(event: &EventBoost, game: &mut AirmashGame) {
 /// When boosting the player has negative regen. We need to set that.
 #[handler]
 fn set_player_energy_regen(event: &EventBoost, game: &mut AirmashGame) {
-  let (regen, plane) = match game.world.query_one_mut::<(&mut EnergyRegen, &PlanePrototypeRef)>(event.player) {
+  let (regen, plane) = match game
+    .world
+    .query_one_mut::<(&mut EnergyRegen, &PlanePrototypeRef)>(event.player)
+  {
     Ok(query) => query,
     Err(_) => return,
   };
 
   let boost = match plane.special.as_boost() {
     Some(boost) => boost,
-    None => return
+    None => return,
   };
 
   if event.boosting {
