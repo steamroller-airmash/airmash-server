@@ -21,7 +21,7 @@ macro_rules! declare_userdata {
 
 fn patch_defaults<'lua>(lua: rlua::Context<'lua>) -> rlua::Result<rlua::Table<'lua>> {
   declare_userdata! {
-    struct PlaneDefaults : PlanePrototype => [
+    struct PlaneDefaults : PlanePrototype<'_, StringRef> => [
       predator,
       tornado,
       mohawk,
@@ -38,7 +38,7 @@ fn patch_defaults<'lua>(lua: rlua::Context<'lua>) -> rlua::Result<rlua::Table<'l
       prowler,
     ];
 
-    struct SpecialDefaults : SpecialPrototype => [
+    struct SpecialDefaults : SpecialPrototype<'_, StringRef> => [
       none,
       boost,
       multishot,
@@ -56,7 +56,7 @@ fn patch_defaults<'lua>(lua: rlua::Context<'lua>) -> rlua::Result<rlua::Table<'l
   Ok(table)
 }
 
-impl GamePrototype {
+impl<'a> GamePrototype<'a, StringRef> {
   /// Similar to [`patch`] but it instead returns the rlua [`Value`] object
   /// directly. This isn't usually needed but it is useful if you want more
   /// control over the deserialization process. For example, the export binary

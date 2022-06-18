@@ -42,10 +42,10 @@ pub trait PrototypeRef<'a>: Sealed {
 }
 
 #[derive(Copy, Clone, Debug)]
-pub struct StringRef;
+pub enum StringRef {}
 
 #[derive(Copy, Clone, Debug)]
-pub struct PtrRef;
+pub enum PtrRef {}
 
 impl Sealed for StringRef {}
 impl Sealed for PtrRef {}
