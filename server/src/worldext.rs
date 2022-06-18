@@ -13,7 +13,7 @@ use crate::event::{EntitySpawn, MobSpawn, PlayerFire};
 use crate::network::{ConnectionId, ConnectionMgr};
 use crate::protocol::{v5, ServerPacket};
 use crate::resource::collision::LayerSpec;
-use crate::resource::{Config, LastFrame, ThisFrame};
+use crate::resource::{Config, GameConfig, LastFrame, ThisFrame};
 use crate::AirmashGame;
 
 /// Info required to spawn a new missile.
@@ -245,10 +245,23 @@ impl AirmashGame {
       "Can only spawn stationary mobs"
     );
 
+    let gconfig = self.resources.read::<GameConfig>();
+    let proto = *match mob {
+      MobType::Inferno => gconfig.mobs.get("inferno").unwrap(),
+      MobType::Shield => gconfig.mobs.get("shield").unwrap(),
+      MobType::Upgrade => gconfig.mobs.get("upgrade").unwrap(),
+      _ => unreachable!(),
+    };
+    drop(gconfig);
+
     let this_frame = self.this_frame();
-    let entity = self
-      .world
-      .spawn((mob, Position(pos), Expiry(this_frame + lifetime), IsMob));
+    let entity = self.world.spawn((
+      mob,
+      proto,
+      Position(pos),
+      Expiry(this_frame + lifetime),
+      IsMob,
+    ));
 
     self.dispatch(EntitySpawn { entity });
     self.dispatch(MobSpawn { mob: entity });
