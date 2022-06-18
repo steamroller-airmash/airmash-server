@@ -1,11 +1,11 @@
 use std::cmp::Ordering;
 use std::time::Duration;
 
-use airmash_protocol::PlaneType;
 use itertools::Itertools;
 use smallvec::SmallVec;
 
 use crate::component::*;
+use crate::config::PlanePrototypeRef;
 use crate::consts::{self, hitcircles_for_plane};
 use crate::event::{
   EventBounce, MissileTerrainCollision, PlayerMissileCollision, PlayerMobCollision,
@@ -71,7 +71,7 @@ fn generate_player_collide_db(game: &mut AirmashGame) {
 
   let query = game
     .world
-    .query_mut::<(&Position, &Rotation, &PlaneType, &Team, &IsAlive)>()
+    .query_mut::<(&Position, &Rotation, &PlanePrototypeRef, &Team, &IsAlive)>()
     .with::<IsPlayer>();
   let mut entries = Vec::new();
 
@@ -80,7 +80,7 @@ fn generate_player_collide_db(game: &mut AirmashGame) {
       continue;
     }
 
-    for hc in hitcircles_for_plane(*plane) {
+    for hc in hitcircles_for_plane(plane.server_type) {
       let offset = crate::util::rotate(hc.0, rot.0);
 
       entries.push(Entry {
