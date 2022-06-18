@@ -1,6 +1,7 @@
 use airmash_protocol::server::MobUpdateStationary;
 
 use crate::component::*;
+use crate::config::MobPrototypeRef;
 use crate::event::MobSpawn;
 use crate::AirmashGame;
 
@@ -8,7 +9,7 @@ use crate::AirmashGame;
 fn send_packet(event: &MobSpawn, game: &mut AirmashGame) {
   let (&mob, &pos, _) = match game
     .world
-    .query_one_mut::<(&MobType, &Position, &IsMob)>(event.mob)
+    .query_one_mut::<(&MobPrototypeRef, &Position, &IsMob)>(event.mob)
   {
     Ok(query) => query,
     Err(_) => return,
@@ -18,7 +19,7 @@ fn send_packet(event: &MobSpawn, game: &mut AirmashGame) {
     pos.0,
     MobUpdateStationary {
       id: event.mob.id() as _,
-      ty: mob,
+      ty: mob.server_type,
       pos: pos.0,
     },
   );
