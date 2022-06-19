@@ -1,6 +1,5 @@
-use airmash_protocol::MobType;
-
 use crate::component::*;
+use crate::config::MissilePrototypeRef;
 use crate::event::PlayerFire;
 use crate::resource::Config;
 use crate::AirmashGame;
@@ -16,7 +15,7 @@ pub fn send_player_fire(event: &PlayerFire, game: &mut AirmashGame) {
   for &missile in event.missiles.iter() {
     let mut query = match game
       .world
-      .query_one::<(&Position, &Velocity, &MobType)>(missile)
+      .query_one::<(&Position, &Velocity, &MissilePrototypeRef)>(missile)
     {
       Ok(query) => query.with::<IsMissile>(),
       Err(_) => {
@@ -25,22 +24,14 @@ pub fn send_player_fire(event: &PlayerFire, game: &mut AirmashGame) {
       }
     };
 
-    if let Some((pos, vel, mob)) = query.get() {
-      let info = match config.mobs[*mob].missile {
-        Some(ref x) => x,
-        None => {
-          warn!("Missile {:?} had invalid mob type: {:?}", missile, *mob);
-          continue;
-        }
-      };
-
+    if let Some((pos, vel, &mob)) = query.get() {
       projectiles.push(s::PlayerFireProjectile {
         id: missile.id() as _,
         pos: pos.0,
         speed: vel.0,
-        ty: *mob,
-        accel: vel.normalize() * info.accel,
-        max_speed: info.max_speed,
+        ty: mob.server_type,
+        accel: vel.normalize() * mob.accel,
+        max_speed: mob.max_speed,
       });
     } else {
       warn!("Missile {:?} missing required components", missile);
