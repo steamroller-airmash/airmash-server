@@ -132,6 +132,7 @@ pub struct Config {
   #[deprecated]
   pub planes: PlaneInfos,
   #[deserialize_over]
+  #[deprecated]
   pub mobs: MobInfos,
   #[deserialize_over]
   pub upgrades: UpgradeInfos,

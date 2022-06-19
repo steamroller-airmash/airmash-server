@@ -1,6 +1,5 @@
-use airmash_protocol::MobType;
-
 use crate::component::*;
+use crate::config::MissilePrototypeRef;
 use crate::event::MissileTerrainCollision;
 use crate::AirmashGame;
 
@@ -10,7 +9,7 @@ fn send_despawn_packet(event: &MissileTerrainCollision, game: &mut AirmashGame) 
 
   let query = game
     .world
-    .query_one_mut::<(&MobType, &Position, &IsMissile)>(event.missile);
+    .query_one_mut::<(&MissilePrototypeRef, &Position, &IsMissile)>(event.missile);
   let (&mob, pos, ..) = match query {
     Ok(query) => query,
     Err(_) => return,
@@ -18,7 +17,7 @@ fn send_despawn_packet(event: &MissileTerrainCollision, game: &mut AirmashGame) 
 
   let packet = MobDespawnCoords {
     id: event.missile.id() as _,
-    ty: mob,
+    ty: mob.server_type,
     pos: pos.0,
   };
   game.send_to_visible(packet.pos, packet);

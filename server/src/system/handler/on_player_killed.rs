@@ -178,7 +178,6 @@ fn update_upgrades(event: &PlayerKilled, game: &mut AirmashGame) {
 #[handler(priority = crate::priority::HIGH)]
 fn drop_upgrade(event: &PlayerKilled, game: &mut AirmashGame) {
   let this_frame = game.this_frame();
-  let config = game.resources.read::<Config>();
   let game_config = game.resources.read::<GameConfig>();
 
   // Do nothing if we aren't supposed to be spawning upgrades.
@@ -200,17 +199,18 @@ fn drop_upgrade(event: &PlayerKilled, game: &mut AirmashGame) {
     return;
   }
 
-  let lifetime = config
-    .mobs
-    .upgrade
-    .lifetime
-    .unwrap_or(Duration::from_secs(60));
+  let gconfig = game.resources.read::<GameConfig>();
+  let mob = match gconfig.mobs.get("upgrade").copied() {
+    Some(mob) => mob,
+    // If there is no upgrade prototype then we don't drop upgrades
+    None => return,
+  };
   let prob = rand::random::<f32>();
 
-  drop(config);
+  drop(gconfig);
   drop(game_config);
 
   if total_upgrades > 0 || prob < consts::UPGRADE_DROP_PROBABILITY {
-    game.spawn_mob(MobType::Upgrade, pos.0, lifetime);
+    game.spawn_mob(mob.server_type, pos.0, mob.lifetime);
   }
 }

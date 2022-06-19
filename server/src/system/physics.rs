@@ -1,13 +1,12 @@
 use std::f32::consts::{FRAC_PI_2, PI, TAU};
 use std::time::Duration;
 
-use airmash_protocol::server::PlayerUpdate;
-use airmash_protocol::MobType;
 use nalgebra::vector;
 
 use crate::component::*;
-use crate::config::PlanePrototypeRef;
+use crate::config::{MissilePrototypeRef, PlanePrototypeRef};
 use crate::event::PlayerJoin;
+use crate::protocol::server::PlayerUpdate;
 use crate::protocol::{Upgrades as ServerUpgrades, Vector2};
 use crate::resource::*;
 use crate::util::get_current_clock;
@@ -135,25 +134,20 @@ fn update_player_positions(game: &mut AirmashGame) {
 }
 
 fn update_missile_positions(game: &mut AirmashGame) {
-  let config = game.resources.read::<Config>();
   let delta = game.frame_delta();
 
   let mut query = game
     .world
-    .query::<(&mut Position, &mut Velocity, &Accel, &MobType)>()
+    .query::<(&mut Position, &mut Velocity, &Accel, &MissilePrototypeRef)>()
     .with::<IsMissile>();
 
-  for (_, (pos, vel, accel, mob)) in query.iter() {
-    let info = config.mobs[*mob]
-      .missile
-      .expect("Missile had invalid mob type");
-
+  for (_, (pos, vel, accel, missile)) in query.iter() {
     let oldvel = vel.0;
     vel.0 += accel.0 * delta;
 
     let speed = vel.norm();
-    if speed > info.max_speed {
-      vel.0 *= info.max_speed / speed;
+    if speed > missile.max_speed {
+      vel.0 *= missile.max_speed / speed;
     }
 
     pos.0 += oldvel * delta + (vel.0 - oldvel) * delta * 0.5;

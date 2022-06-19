@@ -1,10 +1,9 @@
 use std::collections::HashSet;
 
-use airmash_protocol::MobType;
 use smallvec::SmallVec;
 
 use crate::component::*;
-use crate::config::PlanePrototypeRef;
+use crate::config::{MissilePrototypeRef, PlanePrototypeRef};
 use crate::event::{PlayerHit, PlayerKilled, PlayerMissileCollision};
 use crate::resource::{Config, GameConfig};
 use crate::AirmashGame;
@@ -13,7 +12,7 @@ use crate::AirmashGame;
 fn damage_player(event: &PlayerMissileCollision, game: &mut AirmashGame) {
   let query = game
     .world
-    .query_one_mut::<(&MobType, &Owner, &IsMissile)>(event.missile);
+    .query_one_mut::<(&MissilePrototypeRef, &Owner, &IsMissile)>(event.missile);
   let (&mob, &owner, _) = match query {
     Ok(query) => query,
     Err(_) => return,
@@ -21,10 +20,6 @@ fn damage_player(event: &PlayerMissileCollision, game: &mut AirmashGame) {
 
   let game_config = game.resources.read::<GameConfig>();
   let config = game.resources.read::<Config>();
-  let minfo = match &config.mobs[mob].missile {
-    Some(info) => info,
-    None => return,
-  };
   let attacker = game.world.get::<IsPlayer>(owner.0).ok().map(|_| owner.0);
 
   let mut events = SmallVec::<[_; 16]>::new();
@@ -63,7 +58,7 @@ fn damage_player(event: &PlayerMissileCollision, game: &mut AirmashGame) {
 
       let damage = match game_config.allow_damage {
         true => {
-          minfo.damage * plane.damage_factor
+          mob.damage * plane.damage_factor
             / config.upgrades.defense.factor[upgrades.defense as usize]
         }
         false => 0.0,
@@ -107,7 +102,7 @@ fn send_player_hit(event: &PlayerMissileCollision, game: &mut AirmashGame) {
 
   let query = game
     .world
-    .query_one_mut::<(&MobType, &Owner, &Position, &IsMissile)>(event.missile);
+    .query_one_mut::<(&MissilePrototypeRef, &Owner, &Position, &IsMissile)>(event.missile);
   let (&mob, &owner, &pos, _) = match query {
     Ok(query) => query,
     Err(_) => return,
@@ -135,7 +130,7 @@ fn send_player_hit(event: &PlayerMissileCollision, game: &mut AirmashGame) {
     id: event.missile.id() as _,
     owner: owner.0.id() as _,
     pos: pos.0,
-    ty: mob,
+    ty: mob.server_type,
     players,
   };
 

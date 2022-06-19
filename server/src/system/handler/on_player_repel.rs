@@ -1,7 +1,6 @@
 use crate::component::*;
-use crate::config::PlanePrototypeRef;
+use crate::config::{MissilePrototypeRef, PlanePrototypeRef};
 use crate::event::{EventStealth, PlayerRepel};
-use crate::resource::Config;
 use crate::AirmashGame;
 
 #[handler]
@@ -61,7 +60,7 @@ fn send_packet(event: &PlayerRepel, game: &mut AirmashGame) {
   for missile in event.repelled_missiles.iter().copied() {
     let mut query = match game
       .world
-      .query_one::<(&Position, &Velocity, &Accel, &MobType)>(missile)
+      .query_one::<(&Position, &Velocity, &Accel, &MissilePrototypeRef)>(missile)
       .map(|q| q.with::<IsMissile>())
     {
       Ok(query) => query,
@@ -73,19 +72,13 @@ fn send_packet(event: &PlayerRepel, game: &mut AirmashGame) {
       None => continue,
     };
 
-    let config = game.resources.read::<Config>();
-    let info = match config.mobs[mob].missile.as_ref() {
-      Some(info) => info,
-      None => continue,
-    };
-
     missiles.push(s::EventRepelMob {
       id: missile.id() as _,
       pos: pos.0,
       accel: accel.0,
       speed: vel.0,
-      max_speed: info.max_speed,
-      ty: mob,
+      max_speed: mob.max_speed,
+      ty: mob.server_type,
     });
   }
 
@@ -141,8 +134,6 @@ fn repel_missiles(event: &PlayerRepel, game: &mut AirmashGame) {
   };
 
   for missile in event.repelled_missiles.iter().copied() {
-    let config = game.resources.read::<Config>();
-
     let mut query = match game
       .world
       .query_one::<(
@@ -152,7 +143,7 @@ fn repel_missiles(event: &PlayerRepel, game: &mut AirmashGame) {
         &mut Team,
         &mut Owner,
         &mut MissileTrajectory,
-        &MobType,
+        &MissilePrototypeRef,
       )>(missile)
       .map(|q| q.with::<IsMissile>())
     {
@@ -165,11 +156,6 @@ fn repel_missiles(event: &PlayerRepel, game: &mut AirmashGame) {
       None => continue,
     };
 
-    let info = match config.mobs[mob].missile.as_ref() {
-      Some(info) => info,
-      None => continue,
-    };
-
     let total_dist = (traj.start - pos.0).norm();
     traj.start = pos.0;
     traj.maxdist -= total_dist;
@@ -177,7 +163,7 @@ fn repel_missiles(event: &PlayerRepel, game: &mut AirmashGame) {
     let dir = (pos.0 - player_pos.0).normalize();
 
     vel.0 = dir * vel.0.norm();
-    accel.0 = (-accel.normalize() + dir).normalize() * info.accel;
+    accel.0 = (-accel.normalize() + dir).normalize() * mob.accel;
     team.0 = player_team.0;
     owner.0 = event.player;
   }

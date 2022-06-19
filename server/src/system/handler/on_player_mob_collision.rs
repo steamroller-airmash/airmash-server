@@ -1,6 +1,7 @@
 use std::time::Duration;
 
 use crate::component::*;
+use crate::config::MobPrototypeRef;
 use crate::event::{MobDespawn, MobDespawnType, PlayerMobCollision, PlayerPowerup, PowerupExpire};
 use crate::protocol::PowerupType;
 use crate::AirmashGame;
@@ -19,12 +20,15 @@ fn dispatch_despawn_event(event: &PlayerMobCollision, game: &mut AirmashGame) {
 
 #[handler(priority = crate::priority::HIGH)]
 fn update_player_upgrades(event: &PlayerMobCollision, game: &mut AirmashGame) {
-  let (&mob, _) = match game.world.query_one_mut::<(&MobType, &IsMob)>(event.mob) {
+  let (&mob, _) = match game
+    .world
+    .query_one_mut::<(&MobPrototypeRef, &IsMob)>(event.mob)
+  {
     Ok(query) => query,
     Err(_) => return,
   };
 
-  if mob != MobType::Upgrade {
+  if mob.server_type != MobType::Upgrade {
     return;
   }
 
@@ -44,12 +48,15 @@ fn update_player_upgrades(event: &PlayerMobCollision, game: &mut AirmashGame) {
 fn send_player_upgrade(event: &PlayerMobCollision, game: &mut AirmashGame) {
   use crate::protocol::server::ScoreUpdate;
 
-  let (&mob, _) = match game.world.query_one_mut::<(&MobType, &IsMob)>(event.mob) {
+  let (&mob, _) = match game
+    .world
+    .query_one_mut::<(&MobPrototypeRef, &IsMob)>(event.mob)
+  {
     Ok(query) => query,
     Err(_) => return,
   };
 
-  if mob != MobType::Upgrade {
+  if mob.server_type != MobType::Upgrade {
     return;
   }
 
@@ -79,12 +86,15 @@ fn send_player_upgrade(event: &PlayerMobCollision, game: &mut AirmashGame) {
 
 #[handler(priority = crate::priority::HIGH)]
 fn update_player_powerup(event: &PlayerMobCollision, game: &mut AirmashGame) {
-  let (&mob, _) = match game.world.query_one_mut::<(&MobType, &IsMob)>(event.mob) {
+  let (&mob, _) = match game
+    .world
+    .query_one_mut::<(&MobPrototypeRef, &IsMob)>(event.mob)
+  {
     Ok(query) => query,
     Err(_) => return,
   };
 
-  if !mob.is_powerup() {
+  if !mob.server_type.is_powerup() {
     return;
   }
 
@@ -104,7 +114,7 @@ fn update_player_powerup(event: &PlayerMobCollision, game: &mut AirmashGame) {
 
   game.dispatch(PlayerPowerup {
     player: event.player,
-    ty: match mob {
+    ty: match mob.server_type {
       MobType::Shield => PowerupType::Shield,
       MobType::Inferno => PowerupType::Inferno,
       _ => unreachable!(),
