@@ -5,10 +5,34 @@ use std::mem::ManuallyDrop;
 use std::ops::{Deref, DerefMut};
 use std::ptr::NonNull;
 
+use crate::util::{DropPtr, MaybeDrop};
 use crate::{
   GameConfigCommon, GamePrototype, MissilePrototype, MobPrototype, PlanePrototype, PtrRef,
-  SpecialPrototype, StringRef, ValidationError, ValidationExt,
+  SpecialPrototype, StringRef, ValidationError,
 };
+
+macro_rules! transform_protos {
+  ($proto:expr => |$item:ident| $resolved:expr) => {{
+    let iter = $proto.into_iter().enumerate();
+    let mut vals = Vec::with_capacity(iter.size_hint().1.unwrap_or(0));
+    let mut result: Option<ValidationError> = None;
+
+    for (idx, $item) in iter {
+      match $resolved {
+        Ok(val) => vals.push(val),
+        Err(e) => {
+          result = Some(e.with(idx));
+          break;
+        }
+      }
+    }
+
+    match result {
+      Some(err) => Err(err),
+      None => Ok(ManuallyDrop::new(vals.into_boxed_slice())),
+    }
+  }};
+}
 
 #[derive(Clone, Debug)]
 #[non_exhaustive]
@@ -24,54 +48,14 @@ pub struct GameConfig {
 }
 
 impl GameConfig {
-  /// Create a `GameConfig` from the provided [`GamePrototype`].
-  pub fn new(proto: GamePrototype<'_, StringRef>) -> Result<Self, ValidationError> {
-    // NOTE: If an error occurs then this function will leak memory. It's possible
-    //       to fix this but there isn't currently a use case where this matters. If
-    //       one comes up, then we'll fix it but otherwise it's cleaner to do it
-    //       this way.
+  fn new_internal(
+    planes: &[PlanePrototype<PtrRef>],
+    missiles: &[MissilePrototype],
+    specials: &[SpecialPrototype<PtrRef>],
+    mobs: &[MobPrototype],
 
-    let mobs = ManuallyDrop::new(
-      proto
-        .mobs
-        .into_iter()
-        .enumerate()
-        .map(|(idx, m)| m.resolve().with(idx))
-        .collect::<Result<Vec<_>, _>>()
-        .with("mobs")?
-        .into_boxed_slice(),
-    );
-    let missiles = ManuallyDrop::new(
-      proto
-        .missiles
-        .into_iter()
-        .enumerate()
-        .map(|(idx, m)| m.resolve().with(idx))
-        .collect::<Result<Vec<_>, _>>()
-        .with("missiles")?
-        .into_boxed_slice(),
-    );
-    let specials = ManuallyDrop::new(
-      proto
-        .specials
-        .into_iter()
-        .enumerate()
-        .map(|(idx, p)| p.resolve(&missiles).with(idx))
-        .collect::<Result<Vec<_>, _>>()
-        .with("specials")?
-        .into_boxed_slice(),
-    );
-    let planes = ManuallyDrop::new(
-      proto
-        .planes
-        .into_iter()
-        .enumerate()
-        .map(|(idx, p)| p.resolve(&missiles, &specials).with(idx))
-        .collect::<Result<Vec<_>, _>>()
-        .with("planes")?
-        .into_boxed_slice(),
-    );
-
+    common: GameConfigCommon<StringRef>,
+  ) -> Result<Self, ValidationError> {
     let data = unsafe { GameConfigData::new(&planes, &missiles, &specials, &mobs) };
 
     let mut missiles = HashMap::new();
@@ -125,9 +109,43 @@ impl GameConfig {
       specials,
       mobs,
 
-      common: proto.common.resolve(data.planes())?,
+      common: common.resolve(data.planes())?,
       data,
     })
+  }
+
+  /// Create a `GameConfig` from the provided [`GamePrototype`].
+  pub fn new(proto: GamePrototype<'_, StringRef>) -> Result<Self, ValidationError> {
+    // These ones will be automatically dropped if something goes wrong. In order to
+    // prevent UB we just need to call MaybeDrop::cancel_drop if everything works
+    // out at the end.
+    let mobs = MaybeDrop::from(transform_protos!(proto.mobs => |m| m.resolve())?);
+    let missiles = MaybeDrop::from(transform_protos!(proto.missiles => |m| m.resolve())?);
+
+    let mut specials = transform_protos!(proto.specials => |s| s.resolve(&missiles))?;
+    // Due to some lifetime issues it's not actually possible to store specials in
+    // something that has a drop function (it would need to be dropped at the exact
+    // same time as `missiles` due to the lifetimes in PlanePrototype::resolve being
+    // invariant). However, to make this all work we can (unsafely) create a second
+    // struct that will drop it at the correct time and which we can cancel the drop
+    // if everything goes successfully.
+    //
+    // SAFETY: special_dropper is dropped just before specials would be dropped so
+    //         it is safe to have it drop specials instead of having a MaybeDrop
+    //         instance directly wrapping specials.
+    let special_dropper = MaybeDrop::new(unsafe { DropPtr::new(&mut specials) });
+
+    let planes =
+      MaybeDrop::from(transform_protos!(proto.planes => |p| p.resolve(&missiles, &specials))?);
+
+    let config = Self::new_internal(&planes, &missiles, &specials, &mobs, proto.common)?;
+
+    MaybeDrop::cancel_drop(&mobs);
+    MaybeDrop::cancel_drop(&missiles);
+    MaybeDrop::cancel_drop(&special_dropper);
+    MaybeDrop::cancel_drop(&planes);
+
+    Ok(config)
   }
 
   fn into_data(self) -> GameConfigData {

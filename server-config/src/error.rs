@@ -145,13 +145,3 @@ impl Error for ValidationError {
     Some(&*self.error)
   }
 }
-
-pub(crate) trait ValidationExt {
-  fn with<I: Into<Segment>>(self, field: I) -> Self;
-}
-
-impl<T> ValidationExt for Result<T, ValidationError> {
-  fn with<I: Into<Segment>>(self, field: I) -> Self {
-    self.map_err(move |e| e.with(field.into()))
-  }
-}
