@@ -137,6 +137,7 @@ pub struct Config {
   #[deserialize_over]
   pub upgrades: UpgradeInfos,
 
+  pub admin_enabled: bool,
   pub allow_spectate_while_moving: bool,
   #[serde(with = "duration")]
   pub spawn_shield_duration: Duration,
@@ -268,6 +269,7 @@ impl Default for Config {
       planes: Default::default(),
       mobs: Default::default(),
       upgrades: Default::default(),
+      admin_enabled: false,
       allow_spectate_while_moving: true,
       spawn_shield_duration: Duration::from_secs(2),
       shield_duration: Duration::from_secs(10),
