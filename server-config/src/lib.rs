@@ -2,6 +2,7 @@
 
 mod common;
 mod config;
+mod effect;
 mod error;
 mod game;
 mod missile;
@@ -18,6 +19,7 @@ use std::fmt::Debug;
 
 pub use self::common::GameConfigCommon;
 pub use self::config::GameConfig;
+pub use self::effect::*;
 pub use self::error::{Path, Segment, ValidationError};
 pub use self::game::GamePrototype;
 pub use self::missile::MissilePrototype;
@@ -38,6 +40,7 @@ pub trait PrototypeRef<'a>: Sealed {
   type SpecialRef: Clone + Debug + 'a;
   type PlaneRef: Clone + Debug + 'a;
   type MobRef: Clone + Debug + 'a;
+  type EffectRef: Clone + Debug + 'a;
 }
 
 #[derive(Copy, Clone, Debug)]
@@ -52,6 +55,7 @@ impl Sealed for PtrRef {}
 impl<'a> PrototypeRef<'a> for StringRef {
   type MissileRef = Cow<'a, str>;
   type SpecialRef = Cow<'a, str>;
+  type EffectRef = Cow<'a, str>;
   type PlaneRef = Cow<'a, str>;
   type MobRef = Cow<'a, str>;
 }
@@ -59,6 +63,7 @@ impl<'a> PrototypeRef<'a> for StringRef {
 impl<'a> PrototypeRef<'a> for PtrRef {
   type MissileRef = &'a MissilePrototype;
   type SpecialRef = &'a SpecialPrototype<'a, Self>;
+  type EffectRef = &'a EffectPrototype;
   type PlaneRef = &'a PlanePrototype<'a, Self>;
   type MobRef = &'a MobPrototype;
 }
