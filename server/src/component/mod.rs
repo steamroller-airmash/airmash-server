@@ -7,8 +7,10 @@ use bstr::BString;
 use hecs::Entity;
 use uuid::Uuid;
 
+mod effect;
 mod keystate;
 
+pub use self::effect::Effects;
 pub use self::keystate::KeyState;
 pub use crate::protocol::{FlagCode, MobType, PlaneType, PowerupType};
 
