@@ -1,8 +1,5 @@
 //!
 
-#[macro_use]
-extern crate serde;
-
 mod common;
 mod config;
 mod error;

@@ -1,6 +1,7 @@
 use std::borrow::Cow;
 
 use protocol::MobType;
+use serde::{Deserialize, Serialize};
 
 use crate::ValidationError;
 

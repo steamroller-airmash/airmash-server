@@ -1,6 +1,8 @@
 use std::borrow::Cow;
 use std::time::Duration;
 
+use serde::{Deserialize, Serialize};
+
 use crate::util::duration;
 use crate::{MissilePrototype, PrototypeRef, PtrRef, StringRef, ValidationError};
 
@@ -91,8 +93,18 @@ pub struct StealthPrototype {
 
 #[derive(Serialize, Deserialize, Clone, Debug)]
 #[serde(bound(
-  serialize = "Ref::MissileRef: serde::Serialize",
-  deserialize = "Ref::MissileRef: serde::Deserialize<'de>"
+  serialize = "
+    Ref::MissileRef: Serialize,
+    Ref::SpecialRef: Serialize,
+    Ref::PlaneRef: Serialize,
+    Ref::MobRef: Serialize,
+  ",
+  deserialize = "
+    Ref::MissileRef: Deserialize<'de>,
+    Ref::SpecialRef: Deserialize<'de>,
+    Ref::PlaneRef: Deserialize<'de>,
+    Ref::MobRef: Deserialize<'de>,
+  "
 ))]
 pub struct SpecialPrototype<'a, Ref: PrototypeRef<'a>> {
   /// The name with which this special effect will be referred to.

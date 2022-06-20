@@ -2,6 +2,7 @@ use std::borrow::Cow;
 use std::time::Duration;
 
 use protocol::MobType;
+use serde::{Deserialize, Serialize};
 
 use crate::util::duration;
 use crate::ValidationError;

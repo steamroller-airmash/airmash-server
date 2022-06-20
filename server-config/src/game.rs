@@ -11,8 +11,18 @@ use crate::{
 #[non_exhaustive]
 #[serde(deny_unknown_fields)]
 #[serde(bound(
-  serialize = "Ref::MissileRef: Serialize, Ref::SpecialRef: Serialize, Ref::PlaneRef: Serialize",
-  deserialize = "Ref::MissileRef: Deserialize<'de>, Ref::SpecialRef: Deserialize<'de>, Ref::PlaneRef: Deserialize<'de>"
+  serialize = "
+    Ref::MissileRef: Serialize,
+    Ref::SpecialRef: Serialize,
+    Ref::PlaneRef: Serialize,
+    Ref::MobRef: Serialize,
+  ",
+  deserialize = "
+    Ref::MissileRef: Deserialize<'de>,
+    Ref::SpecialRef: Deserialize<'de>,
+    Ref::PlaneRef: Deserialize<'de>,
+    Ref::MobRef: Deserialize<'de>,
+  "
 ))]
 pub struct GamePrototype<'a, Ref: PrototypeRef<'a>> {
   pub planes: Vec<PlanePrototype<'a, Ref>>,
