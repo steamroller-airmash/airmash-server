@@ -1,7 +1,7 @@
 use std::collections::HashMap;
 use std::time::Instant;
 
-use crate::config::EffectPrototypeRef;
+use crate::config::EffectPrototype;
 use crate::protocol::PowerupType;
 
 /// Effect manager for a player.
@@ -12,7 +12,7 @@ use crate::protocol::PowerupType;
 /// 2. long-term effects that have their lifetime explicitly managed.
 #[derive(Clone, Debug, Default)]
 pub struct Effects {
-  permanent: HashMap<&'static str, EffectPrototypeRef>,
+  permanent: HashMap<&'static str, EffectPrototype>,
   powerup: Option<PowerupEffects>,
 }
 
@@ -20,7 +20,7 @@ pub struct Effects {
 struct PowerupEffects {
   powerup: PowerupType,
   expiry: Instant,
-  effects: &'static [EffectPrototypeRef],
+  effects: Vec<EffectPrototype>,
 }
 
 impl Effects {
@@ -30,12 +30,16 @@ impl Effects {
     &mut self,
     powerup: PowerupType,
     expiry: Instant,
-    effects: &'static [EffectPrototypeRef],
+    effects: &[EffectPrototype],
   ) {
     self.powerup = Some(PowerupEffects {
       powerup,
       expiry,
-      effects,
+      effects: effects
+        .iter()
+        .filter(|e| !e.is_instant())
+        .cloned()
+        .collect(),
     });
   }
 
@@ -54,8 +58,8 @@ impl Effects {
   }
 
   /// Add a new long-term effect. Long-term effects are deduplicated by name.
-  pub fn add_effect(&mut self, effect: EffectPrototypeRef) {
-    self.permanent.insert(&*effect.name, effect);
+  pub fn add_effect(&mut self, name: &'static str, effect: EffectPrototype) {
+    self.permanent.insert(name, effect);
   }
 
   /// Remove a long-term effect by prototype name.
@@ -63,16 +67,15 @@ impl Effects {
     self.permanent.remove(name).is_some()
   }
 
-  pub fn effects(&self) -> impl Iterator<Item = EffectPrototypeRef> + '_ {
-    let permanent = self.permanent.iter().map(|x| *x.1);
+  pub fn effects<'a>(&'a self) -> impl Iterator<Item = &'a EffectPrototype> {
+    let permanent = self.permanent.iter().map(|x| x.1);
 
     let temporary = self
       .powerup
       .as_ref()
-      .map(|p| p.effects)
+      .map(|p| p.effects.as_slice())
       .unwrap_or(&[])
-      .into_iter()
-      .copied();
+      .iter();
 
     permanent.chain(temporary)
   }
