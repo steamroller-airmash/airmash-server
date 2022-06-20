@@ -68,6 +68,25 @@ impl<T> DerefMut for MaybeDrop<T> {
   }
 }
 
+/// RAII wrapper that drops whatever the stored pointer points to.
+pub(crate) struct DropPtr<T>(*mut ManuallyDrop<T>);
+
+impl<T> DropPtr<T> {
+  /// # Safety
+  /// `ptr` must be valid to drop until the `DropPtr` instance drops or is
+  /// forgotten.
+  pub unsafe fn new(ptr: *mut ManuallyDrop<T>) -> Self {
+    Self(ptr)
+  }
+}
+
+impl<T> Drop for DropPtr<T> {
+  fn drop(&mut self) {
+    // SAFETY: The safety contract for DropPtr::new guarantees that this is safe.
+    unsafe { ManuallyDrop::drop(&mut *self.0) }
+  }
+}
+
 #[cfg(test)]
 mod tests {
   use super::*;
