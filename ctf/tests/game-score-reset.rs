@@ -2,7 +2,7 @@ use std::time::Duration;
 
 use airmash::component::*;
 use airmash::protocol::ServerPacket;
-use airmash::resource::Config;
+use airmash::resource::GameConfig;
 use airmash::test::*;
 use airmash_server_ctf::config::{FLAG_NO_REGRAB_TIME, RED_TEAM};
 use airmash_server_ctf::resource::GameScores;
@@ -15,7 +15,7 @@ fn scores_reset_on_game_win() {
   let mut conn = mock.open();
   let ent = conn.login("test", &mut game);
 
-  game.resources.write::<Config>().admin_enabled = true;
+  game.resources.write::<GameConfig>().admin_enabled = true;
   game.world.insert_one(ent, Team(RED_TEAM)).unwrap();
   game.run_once();
 
