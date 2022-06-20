@@ -6,7 +6,7 @@ use crate::event::PacketEvent;
 use crate::protocol::client::Command;
 use crate::protocol::server::CommandReply;
 use crate::protocol::CommandReplyType;
-use crate::resource::GameConfig;
+use crate::resource::Config;
 use crate::{AirmashGame, Vector2};
 
 #[handler]
@@ -80,7 +80,7 @@ fn teleport(event: &PacketEvent<Command>, game: &mut AirmashGame) {
     Ok(command)
   }
 
-  if !game.resources.read::<GameConfig>().admin_enabled {
+  if !game.resources.read::<Config>().admin_enabled {
     return;
   }
 
