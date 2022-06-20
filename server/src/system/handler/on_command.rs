@@ -144,17 +144,17 @@ fn on_respawn_command(event: &PacketEvent<Command>, game: &mut AirmashGame) {
   drop(query);
   drop(gconfig);
 
-  game.dispatch(PlayerRespawn {
-    player: event.entity,
-    alive: prev_alive,
-  });
-
   if old_proto.server_type != new_proto.server_type {
     game.dispatch(PlayerChangePlane {
       player: event.entity,
       old_proto,
     });
   }
+
+  game.dispatch(PlayerRespawn {
+    player: event.entity,
+    alive: prev_alive,
+  });
 }
 
 #[handler]
