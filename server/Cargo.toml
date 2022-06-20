@@ -7,7 +7,7 @@ edition = "2018"
 mt-network = []
 
 [dependencies]
-hecs = "0.7.6"
+hecs = "0.7.7"
 nalgebra = { version = "0.31.0", features = ["serde-serialize"] }
 anymap = "=1.0.0-beta.2"
 linkme = "0.2.6"
