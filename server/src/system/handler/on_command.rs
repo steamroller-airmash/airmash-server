@@ -144,6 +144,10 @@ fn on_respawn_command(event: &PacketEvent<Command>, game: &mut AirmashGame) {
   drop(query);
   drop(gconfig);
 
+  // We need to make sure to update the plane type before respawning the player as
+  // otherwise using Q and E for strafing in a mohawk stops working. See issue
+  // #201 for a complete description of the issue and a root cause analysis behind
+  // why this is the solution.
   if old_proto.server_type != new_proto.server_type {
     game.dispatch(PlayerChangePlane {
       player: event.entity,
