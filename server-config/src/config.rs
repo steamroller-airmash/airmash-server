@@ -41,7 +41,7 @@ pub struct GameConfig {
   pub missiles: HashMap<&'static str, &'static MissilePrototype>,
   pub specials: HashMap<&'static str, &'static SpecialPrototype<'static, PtrRef>>,
   pub effects: HashMap<&'static str, &'static EffectPrototype>,
-  pub mobs: HashMap<&'static str, &'static MobPrototype>,
+  pub mobs: HashMap<&'static str, &'static MobPrototype<'static, PtrRef>>,
 
   pub common: GameConfigCommon<'static, PtrRef>,
 
@@ -53,7 +53,7 @@ impl GameConfig {
     planes: &[PlanePrototype<PtrRef>],
     missiles: &[MissilePrototype],
     specials: &[SpecialPrototype<PtrRef>],
-    mobs: &[MobPrototype],
+    mobs: &[MobPrototype<PtrRef>],
     effects: &[EffectPrototype],
 
     common: GameConfigCommon<StringRef>,
@@ -133,9 +133,9 @@ impl GameConfig {
     // These ones will be automatically dropped if something goes wrong. In order to
     // prevent UB we just need to call MaybeDrop::cancel_drop if everything works
     // out at the end.
-    let mobs = MaybeDrop::from(transform_protos!(proto.mobs => |m| m.resolve())?);
     let missiles = MaybeDrop::from(transform_protos!(proto.missiles => |m| m.resolve())?);
     let effects = MaybeDrop::from(transform_protos!(proto.effects => |m| m.resolve())?);
+    let mobs = MaybeDrop::from(transform_protos!(proto.mobs => |m| m.resolve(&effects))?);
 
     let mut specials = transform_protos!(proto.specials => |s| s.resolve(&missiles))?;
     // Due to some lifetime issues it's not actually possible to store specials in
@@ -214,7 +214,7 @@ struct GameConfigData {
   missiles: NonNull<[MissilePrototype]>,
   specials: NonNull<[SpecialPrototype<'static, PtrRef>]>,
   effects: NonNull<[EffectPrototype]>,
-  mobs: NonNull<[MobPrototype]>,
+  mobs: NonNull<[MobPrototype<'static, PtrRef>]>,
 }
 
 impl GameConfigData {
@@ -228,7 +228,7 @@ impl GameConfigData {
     planes: &[PlanePrototype<PtrRef>],
     missiles: &[MissilePrototype],
     specials: &[SpecialPrototype<PtrRef>],
-    mobs: &[MobPrototype],
+    mobs: &[MobPrototype<PtrRef>],
     effects: &[EffectPrototype],
   ) -> Self {
     Self {
@@ -266,7 +266,7 @@ impl GameConfigData {
     unsafe { self.specials.as_ref() }
   }
 
-  fn mobs(&self) -> &'static [MobPrototype] {
+  fn mobs(&self) -> &'static [MobPrototype<'static, PtrRef>] {
     unsafe { self.mobs.as_ref() }
   }
 

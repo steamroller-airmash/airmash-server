@@ -12,7 +12,8 @@ pub mod config {
   pub type PlanePrototypeRef = &'static PlanePrototype<'static, PtrRef>;
   pub type MissilePrototypeRef = &'static MissilePrototype;
   pub type SpecialPrototypeRef = &'static SpecialPrototype<'static, PtrRef>;
-  pub type MobPrototypeRef = &'static MobPrototype;
+  pub type EffectPrototypeRef = &'static EffectPrototype;
+  pub type MobPrototypeRef = &'static MobPrototype<'static, PtrRef>;
 }
 
 pub extern crate hecs;

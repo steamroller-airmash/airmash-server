@@ -30,7 +30,7 @@ pub struct GamePrototype<'a, Ref: PrototypeRef<'a>> {
   pub planes: Vec<PlanePrototype<'a, Ref>>,
   pub missiles: Vec<MissilePrototype>,
   pub specials: Vec<SpecialPrototype<'a, Ref>>,
-  pub mobs: Vec<MobPrototype>,
+  pub mobs: Vec<MobPrototype<'a, Ref>>,
   pub effects: Vec<EffectPrototype>,
 
   #[serde(flatten)]

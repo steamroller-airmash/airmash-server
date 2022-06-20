@@ -65,5 +65,5 @@ impl<'a> PrototypeRef<'a> for PtrRef {
   type SpecialRef = &'a SpecialPrototype<'a, Self>;
   type EffectRef = &'a EffectPrototype;
   type PlaneRef = &'a PlanePrototype<'a, Self>;
-  type MobRef = &'a MobPrototype;
+  type MobRef = &'a MobPrototype<'a, Self>;
 }
