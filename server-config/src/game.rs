@@ -3,7 +3,7 @@ use std::ops::{Deref, DerefMut};
 use serde::{Deserialize, Serialize};
 
 use crate::{
-  EffectPrototype, GameConfigCommon, MissilePrototype, MobPrototype, PlanePrototype, PrototypeRef,
+  GameConfigCommon, MissilePrototype, MobPrototype, PlanePrototype, PowerupPrototype, PrototypeRef,
   SpecialPrototype, StringRef,
 };
 
@@ -14,14 +14,14 @@ use crate::{
   serialize = "
     Ref::MissileRef: Serialize,
     Ref::SpecialRef: Serialize,
-    Ref::EffectRef: Serialize,
+    Ref::PowerupRef: Serialize,
     Ref::PlaneRef: Serialize,
     Ref::MobRef: Serialize,
   ",
   deserialize = "
     Ref::MissileRef: Deserialize<'de>,
     Ref::SpecialRef: Deserialize<'de>,
-    Ref::EffectRef: Deserialize<'de>,
+    Ref::PowerupRef: Deserialize<'de>,
     Ref::PlaneRef: Deserialize<'de>,
     Ref::MobRef: Deserialize<'de>,
   "
@@ -31,7 +31,7 @@ pub struct GamePrototype<'a, Ref: PrototypeRef<'a>> {
   pub missiles: Vec<MissilePrototype>,
   pub specials: Vec<SpecialPrototype<'a, Ref>>,
   pub mobs: Vec<MobPrototype<'a, Ref>>,
-  pub effects: Vec<EffectPrototype>,
+  pub powerups: Vec<PowerupPrototype>,
 
   #[serde(flatten)]
   pub common: GameConfigCommon<'a, Ref>,
@@ -67,13 +67,11 @@ impl Default for GamePrototype<'_, StringRef> {
         MobPrototype::shield(),
         MobPrototype::upgrade(),
       ],
-      effects: vec![
-        EffectPrototype::shield(),
-        EffectPrototype::spawn_shield(),
-        EffectPrototype::invulnerable(),
-        EffectPrototype::inferno(),
-        EffectPrototype::flag_speed(),
-        EffectPrototype::upgrade(),
+      powerups: vec![
+        PowerupPrototype::shield(),
+        PowerupPrototype::spawn_shield(),
+        PowerupPrototype::inferno(),
+        PowerupPrototype::upgrade(),
       ],
       common: GameConfigCommon::default(),
     }

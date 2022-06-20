@@ -4,8 +4,9 @@ use std::time::Duration;
 use protocol::MobType;
 use serde::{Deserialize, Serialize};
 
+use crate::powerup::PowerupPrototype;
 use crate::util::duration;
-use crate::{EffectPrototype, PrototypeRef, PtrRef, StringRef, ValidationError};
+use crate::{PrototypeRef, PtrRef, StringRef, ValidationError};
 
 #[derive(Clone, Debug, Serialize, Deserialize)]
 #[serde(deny_unknown_fields)]
@@ -13,14 +14,14 @@ use crate::{EffectPrototype, PrototypeRef, PtrRef, StringRef, ValidationError};
   serialize = "
     Ref::MissileRef: Serialize,
     Ref::SpecialRef: Serialize,
-    Ref::EffectRef: Serialize,
+    Ref::PowerupRef: Serialize,
     Ref::PlaneRef: Serialize,
     Ref::MobRef: Serialize,
   ",
   deserialize = "
     Ref::MissileRef: Deserialize<'de>,
     Ref::SpecialRef: Deserialize<'de>,
-    Ref::EffectRef: Deserialize<'de>,
+    Ref::PowerupRef: Deserialize<'de>,
     Ref::PlaneRef: Deserialize<'de>,
     Ref::MobRef: Deserialize<'de>,
   "
@@ -40,7 +41,7 @@ pub struct MobPrototype<'a, Ref: PrototypeRef<'a>> {
   pub lifetime: Duration,
 
   /// The effects of colliding with this mob.
-  pub effects: Vec<Ref::EffectRef>,
+  pub powerup: Ref::PowerupRef,
 }
 
 impl MobPrototype<'_, StringRef> {
@@ -49,7 +50,7 @@ impl MobPrototype<'_, StringRef> {
       name: Cow::Borrowed("inferno"),
       server_type: MobType::Inferno,
       lifetime: Duration::from_secs(60),
-      effects: vec![Cow::Borrowed("inferno")],
+      powerup: Cow::Borrowed("inferno"),
     }
   }
 
@@ -58,7 +59,7 @@ impl MobPrototype<'_, StringRef> {
       name: Cow::Borrowed("shield"),
       server_type: MobType::Shield,
       lifetime: Duration::from_secs(60),
-      effects: vec![Cow::Borrowed("shield")],
+      powerup: Cow::Borrowed("shield"),
     }
   }
 
@@ -67,7 +68,7 @@ impl MobPrototype<'_, StringRef> {
       name: Cow::Borrowed("upgrade"),
       server_type: MobType::Upgrade,
       lifetime: Duration::from_secs(60),
-      effects: vec![Cow::Borrowed("upgrade")],
+      powerup: Cow::Borrowed("upgrade"),
     }
   }
 }
@@ -75,36 +76,28 @@ impl MobPrototype<'_, StringRef> {
 impl MobPrototype<'_, StringRef> {
   pub fn resolve(
     self,
-    effects: &[EffectPrototype],
+    powerups: &[PowerupPrototype],
   ) -> Result<MobPrototype<PtrRef>, ValidationError> {
     if self.name.is_empty() {
       return Err(ValidationError::custom("name", "prototype had empty name"));
     }
 
-    let effects = self
-      .effects
-      .into_iter()
-      .enumerate()
-      .map(|(idx, effect)| {
-        effects
-          .iter()
-          .find(|&proto| proto.name == effect)
-          .ok_or(ValidationError::custom(
-            idx,
-            format_args!(
-              "mob prototype refers to a nonexistant effect prototype `{}`",
-              effect
-            ),
-          ))
-      })
-      .collect::<Result<_, ValidationError>>()
-      .map_err(|e| e.with("effects"))?;
+    let powerup = powerups
+      .iter()
+      .find(|proto| proto.name == self.powerup)
+      .ok_or(ValidationError::custom(
+        "powerup",
+        format_args!(
+          "mob prototype refers to nonexistant powerup prototype `{}`",
+          self.powerup
+        ),
+      ))?;
 
     Ok(MobPrototype {
       name: self.name,
       server_type: self.server_type,
       lifetime: self.lifetime,
-      effects,
+      powerup,
     })
   }
 }
