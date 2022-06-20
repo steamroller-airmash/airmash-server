@@ -8,7 +8,7 @@ use std::ptr::NonNull;
 use crate::util::{DropPtr, MaybeDrop};
 use crate::{
   GameConfigCommon, GamePrototype, MissilePrototype, MobPrototype, PlanePrototype, PtrRef,
-  SpecialPrototype, StringRef, ValidationError, ValidationExt,
+  SpecialPrototype, StringRef, ValidationError,
 };
 
 macro_rules! transform_protos {
