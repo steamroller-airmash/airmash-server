@@ -270,7 +270,6 @@
       ]
     }
   },
-  "admin_enabled": false,
   "allow_spectate_while_moving": true,
   "spawn_shield_duration": 2.0,
   "shield_duration": 10.0,
