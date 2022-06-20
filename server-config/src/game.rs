@@ -3,22 +3,35 @@ use std::ops::{Deref, DerefMut};
 use serde::{Deserialize, Serialize};
 
 use crate::{
-  GameConfigCommon, MissilePrototype, MobPrototype, PlanePrototype, PrototypeRef, SpecialPrototype,
-  StringRef,
+  EffectPrototype, GameConfigCommon, MissilePrototype, MobPrototype, PlanePrototype, PrototypeRef,
+  SpecialPrototype, StringRef,
 };
 
 #[derive(Serialize, Deserialize, Clone, Debug)]
 #[non_exhaustive]
 #[serde(deny_unknown_fields)]
 #[serde(bound(
-  serialize = "Ref::MissileRef: Serialize, Ref::SpecialRef: Serialize, Ref::PlaneRef: Serialize",
-  deserialize = "Ref::MissileRef: Deserialize<'de>, Ref::SpecialRef: Deserialize<'de>, Ref::PlaneRef: Deserialize<'de>"
+  serialize = "
+    Ref::MissileRef: Serialize,
+    Ref::SpecialRef: Serialize,
+    Ref::EffectRef: Serialize,
+    Ref::PlaneRef: Serialize,
+    Ref::MobRef: Serialize,
+  ",
+  deserialize = "
+    Ref::MissileRef: Deserialize<'de>,
+    Ref::SpecialRef: Deserialize<'de>,
+    Ref::EffectRef: Deserialize<'de>,
+    Ref::PlaneRef: Deserialize<'de>,
+    Ref::MobRef: Deserialize<'de>,
+  "
 ))]
 pub struct GamePrototype<'a, Ref: PrototypeRef<'a>> {
   pub planes: Vec<PlanePrototype<'a, Ref>>,
   pub missiles: Vec<MissilePrototype>,
   pub specials: Vec<SpecialPrototype<'a, Ref>>,
   pub mobs: Vec<MobPrototype>,
+  pub effects: Vec<EffectPrototype>,
 
   #[serde(flatten)]
   pub common: GameConfigCommon<'a, Ref>,
@@ -53,6 +66,14 @@ impl Default for GamePrototype<'_, StringRef> {
         MobPrototype::inferno(),
         MobPrototype::shield(),
         MobPrototype::upgrade(),
+      ],
+      effects: vec![
+        EffectPrototype::shield(),
+        EffectPrototype::spawn_shield(),
+        EffectPrototype::invulnerable(),
+        EffectPrototype::inferno(),
+        EffectPrototype::flag_speed(),
+        EffectPrototype::upgrade(),
       ],
       common: GameConfigCommon::default(),
     }

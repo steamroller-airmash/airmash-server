@@ -10,8 +10,20 @@ use crate::{MissilePrototype, PrototypeRef, PtrRef, SpecialPrototype, StringRef,
 #[derive(Clone, Debug, Serialize, Deserialize)]
 #[serde(deny_unknown_fields)]
 #[serde(bound(
-  serialize = "Ref::MissileRef: Serialize, Ref::SpecialRef: Serialize",
-  deserialize = "Ref::MissileRef: Deserialize<'de>, Ref::SpecialRef: Deserialize<'de>"
+  serialize = "
+    Ref::MissileRef: Serialize,
+    Ref::SpecialRef: Serialize,
+    Ref::EffectRef: Serialize,
+    Ref::PlaneRef: Serialize,
+    Ref::MobRef: Serialize,
+  ",
+  deserialize = "
+    Ref::MissileRef: Deserialize<'de>,
+    Ref::SpecialRef: Deserialize<'de>,
+    Ref::EffectRef: Deserialize<'de>,
+    Ref::PlaneRef: Deserialize<'de>,
+    Ref::MobRef: Deserialize<'de>,
+  "
 ))]
 pub struct PlanePrototype<'a, Ref: PrototypeRef<'a>> {
   /// The name with which to refer to this plane prototype. It must be unique

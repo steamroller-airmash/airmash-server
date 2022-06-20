@@ -7,8 +7,8 @@ use std::ptr::NonNull;
 
 use crate::util::{DropPtr, MaybeDrop};
 use crate::{
-  GameConfigCommon, GamePrototype, MissilePrototype, MobPrototype, PlanePrototype, PtrRef,
-  SpecialPrototype, StringRef, ValidationError,
+  EffectPrototype, GameConfigCommon, GamePrototype, MissilePrototype, MobPrototype, PlanePrototype,
+  PtrRef, SpecialPrototype, StringRef, ValidationError,
 };
 
 macro_rules! transform_protos {
@@ -40,6 +40,7 @@ pub struct GameConfig {
   pub planes: HashMap<&'static str, &'static PlanePrototype<'static, PtrRef>>,
   pub missiles: HashMap<&'static str, &'static MissilePrototype>,
   pub specials: HashMap<&'static str, &'static SpecialPrototype<'static, PtrRef>>,
+  pub effects: HashMap<&'static str, &'static EffectPrototype>,
   pub mobs: HashMap<&'static str, &'static MobPrototype>,
 
   pub common: GameConfigCommon<'static, PtrRef>,
@@ -53,15 +54,27 @@ impl GameConfig {
     missiles: &[MissilePrototype],
     specials: &[SpecialPrototype<PtrRef>],
     mobs: &[MobPrototype],
+    effects: &[EffectPrototype],
 
     common: GameConfigCommon<StringRef>,
   ) -> Result<Self, ValidationError> {
-    let data = unsafe { GameConfigData::new(&planes, &missiles, &specials, &mobs) };
+    let data = unsafe { GameConfigData::new(&planes, &missiles, &specials, &mobs, &effects) };
 
     let mut missiles = HashMap::new();
     let mut planes = HashMap::new();
     let mut specials = HashMap::new();
+    let mut effects = HashMap::new();
     let mut mobs = HashMap::new();
+
+    for effect in data.effects() {
+      if effects.insert(&*effect.name, effect).is_some() {
+        return Err(
+          ValidationError::custom("name", "multiple effect prototypes had the same name")
+            .with(effect.name.to_string())
+            .with("mobs"),
+        );
+      }
+    }
 
     for mob in data.mobs() {
       if mobs.insert(&*mob.name, mob).is_some() {
@@ -107,6 +120,7 @@ impl GameConfig {
       missiles,
       planes,
       specials,
+      effects,
       mobs,
 
       common: common.resolve(data.planes())?,
@@ -121,6 +135,7 @@ impl GameConfig {
     // out at the end.
     let mobs = MaybeDrop::from(transform_protos!(proto.mobs => |m| m.resolve())?);
     let missiles = MaybeDrop::from(transform_protos!(proto.missiles => |m| m.resolve())?);
+    let effects = MaybeDrop::from(transform_protos!(proto.effects => |m| m.resolve())?);
 
     let mut specials = transform_protos!(proto.specials => |s| s.resolve(&missiles))?;
     // Due to some lifetime issues it's not actually possible to store specials in
@@ -138,10 +153,11 @@ impl GameConfig {
     let planes =
       MaybeDrop::from(transform_protos!(proto.planes => |p| p.resolve(&missiles, &specials))?);
 
-    let config = Self::new_internal(&planes, &missiles, &specials, &mobs, proto.common)?;
+    let config = Self::new_internal(&planes, &missiles, &specials, &mobs, &effects, proto.common)?;
 
     MaybeDrop::cancel_drop(&mobs);
     MaybeDrop::cancel_drop(&missiles);
+    MaybeDrop::cancel_drop(&effects);
     MaybeDrop::cancel_drop(&special_dropper);
     MaybeDrop::cancel_drop(&planes);
 
@@ -197,6 +213,7 @@ struct GameConfigData {
   planes: NonNull<[PlanePrototype<'static, PtrRef>]>,
   missiles: NonNull<[MissilePrototype]>,
   specials: NonNull<[SpecialPrototype<'static, PtrRef>]>,
+  effects: NonNull<[EffectPrototype]>,
   mobs: NonNull<[MobPrototype]>,
 }
 
@@ -212,11 +229,13 @@ impl GameConfigData {
     missiles: &[MissilePrototype],
     specials: &[SpecialPrototype<PtrRef>],
     mobs: &[MobPrototype],
+    effects: &[EffectPrototype],
   ) -> Self {
     Self {
       planes: NonNull::new(planes as *const _ as *mut _).unwrap(),
       missiles: NonNull::new(missiles as *const _ as *mut _).unwrap(),
       specials: NonNull::new(specials as *const _ as *mut _).unwrap(),
+      effects: NonNull::new(effects as *const _ as *mut _).unwrap(),
       mobs: NonNull::new(mobs as *const _ as *mut _).unwrap(),
     }
   }
@@ -232,6 +251,7 @@ impl GameConfigData {
     let _ = Box::from_raw(self.specials.as_ptr());
     let _ = Box::from_raw(self.missiles.as_ptr());
     let _ = Box::from_raw(self.mobs.as_ptr());
+    let _ = Box::from_raw(self.effects.as_ptr());
   }
 
   fn planes(&self) -> &'static [PlanePrototype<'static, PtrRef>] {
@@ -248,6 +268,10 @@ impl GameConfigData {
 
   fn mobs(&self) -> &'static [MobPrototype] {
     unsafe { self.mobs.as_ref() }
+  }
+
+  fn effects(&self) -> &'static [EffectPrototype] {
+    unsafe { self.effects.as_ref() }
   }
 }
 
