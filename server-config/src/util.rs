@@ -16,6 +16,25 @@ pub(crate) mod duration {
   }
 }
 
+pub(crate) mod option_duration {
+  use std::time::Duration;
+
+  use serde::{Deserialize, Deserializer, Serialize, Serializer};
+
+  pub(crate) fn serialize<S: Serializer>(
+    dur: &Option<Duration>,
+    ser: S,
+  ) -> Result<S::Ok, S::Error> {
+    dur.map(|d| d.as_secs_f64()).serialize(ser)
+  }
+
+  pub(crate) fn deserialize<'de, D: Deserializer<'de>>(
+    de: D,
+  ) -> Result<Option<Duration>, D::Error> {
+    Ok(Option::deserialize(de)?.map(Duration::from_secs_f64))
+  }
+}
+
 /// Wrapper type around [`ManuallyDrop`] which drops the contained value unless
 /// it is explicitly prevented from doing so.
 pub(crate) struct MaybeDrop<T> {
