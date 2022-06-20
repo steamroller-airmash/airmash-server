@@ -1,5 +1,5 @@
 use airmash_server::component::Position;
-use airmash_server::resource::Config;
+use airmash_server::resource::GameConfig;
 use server::protocol::client as c;
 
 #[test]
@@ -14,7 +14,7 @@ fn admin_teleport() {
   let id = crate::utils::get_login_id(&mut client);
   let ent = game.find_entity_by_id(id).unwrap();
 
-  game.resources.write::<Config>().admin_enabled = true;
+  game.resources.write::<GameConfig>().admin_enabled = true;
 
   client.send(c::Command {
     com: "teleport".into(),

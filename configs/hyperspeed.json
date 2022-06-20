@@ -3,6 +3,5 @@
     "predator": {
       "max_speed": 30.0
     }
-  },
-  "admin_enabled": true
+  }
 }

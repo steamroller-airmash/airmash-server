@@ -41,6 +41,13 @@ pub struct GameConfig {
   /// This is set to false by default.
   pub always_upgraded: bool,
 
+  /// Whether admin commands are enabled.
+  ///
+  /// This is set to false by default.
+  ///
+  /// TODO: This should be replaced with authenticating for admin commands.
+  pub admin_enabled: bool,
+
   pub inner: server_config::GameConfig,
 }
 
@@ -52,6 +59,7 @@ impl Default for GameConfig {
       allow_damage: true,
       spawn_upgrades: true,
       always_upgraded: false,
+      admin_enabled: false,
       inner: server_config::GameConfig::default(),
     }
   }
