@@ -202,7 +202,7 @@ fn send_update_packets(game: &mut AirmashGame) {
       &PlanePrototypeRef,
       &KeyState,
       &Upgrades,
-      &Powerup,
+      &Effects,
       &mut LastUpdateTime,
       &Team,
       &SpecialActive,
@@ -214,7 +214,7 @@ fn send_update_packets(game: &mut AirmashGame) {
 
   for (
     ent,
-    (pos, rot, vel, plane, keystate, upgrades, powerup, last_update, team, active, alive),
+    (pos, rot, vel, plane, keystate, upgrades, effects, last_update, team, active, alive),
   ) in query.iter()
   {
     if !alive.0 {
@@ -228,8 +228,8 @@ fn send_update_packets(game: &mut AirmashGame) {
 
     let ups = ServerUpgrades {
       speed: upgrades.speed,
-      shield: powerup.shield(),
-      inferno: powerup.inferno(),
+      shield: effects.has_shield(),
+      inferno: effects.has_inferno(),
     };
 
     let packet = PlayerUpdate {
