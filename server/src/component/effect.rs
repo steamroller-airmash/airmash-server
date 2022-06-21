@@ -80,3 +80,34 @@ impl Effects {
     permanent.chain(temporary)
   }
 }
+
+impl Effects {
+  /// Whether any of the effects within this component are inferno effects.
+  pub fn has_inferno(&self) -> bool {
+    self
+      .effects()
+      .any(|e| matches!(e, EffectPrototype::Inferno))
+  }
+
+  pub fn has_shield(&self) -> bool {
+    self.damage_mult() == 0.0
+  }
+
+  pub fn damage_mult(&self) -> f32 {
+    self
+      .effects()
+      .filter_map(|e| match e {
+        EffectPrototype::Shield { damage_mult } => Some(*damage_mult),
+        _ => None,
+      })
+      .reduce(|acc, mult| acc * mult)
+      .unwrap_or(1.0)
+  }
+
+  pub fn fixed_speed(&self) -> Option<f32> {
+    self.effects().find_map(|e| match e {
+      EffectPrototype::FixedSpeed { speed } => Some(*speed),
+      _ => None,
+    })
+  }
+}
