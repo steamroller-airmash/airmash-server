@@ -1,4 +1,5 @@
 use airmash::component::*;
+use airmash::config::EffectPrototype;
 use airmash::protocol::server::{GameFlag, ServerMessage};
 use airmash::protocol::FlagUpdateType;
 use airmash::resource::ServerStats;
@@ -193,24 +194,27 @@ fn update_player(event: &FlagEvent, game: &mut AirmashGame) {
 }
 
 #[handler]
-fn update_player_keystate(event: &FlagEvent, game: &mut AirmashGame) {
+fn update_player_effects(event: &FlagEvent, game: &mut AirmashGame) {
   let player = match event.player {
     Some(player) => player,
     None => return,
   };
 
-  let (keystate, _) = match game
+  let (effects, _) = match game
     .world
-    .query_one_mut::<(&mut KeyState, &IsPlayer)>(player)
+    .query_one_mut::<(&mut Effects, &IsPlayer)>(player)
   {
     Ok(query) => query,
     Err(_) => return,
   };
 
+  let flagspeed = EffectPrototype::flag_speed();
+
   match event.ty {
-    FlagEventType::Capture => keystate.flagspeed = false,
-    FlagEventType::Drop => keystate.flagspeed = false,
-    FlagEventType::PickUp => keystate.flagspeed = true,
+    FlagEventType::Capture | FlagEventType::Drop => {
+      effects.remove_effect("flagspeed");
+    }
+    FlagEventType::PickUp => effects.add_effect("flagspeed", flagspeed),
     FlagEventType::Return => return,
   };
 

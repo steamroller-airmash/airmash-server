@@ -20,7 +20,6 @@ pub struct KeyState {
   // keep these, can be moved later if
   // necessary
   pub stealthed: bool,
-  pub flagspeed: bool,
 }
 
 impl KeyState {
@@ -32,7 +31,7 @@ impl KeyState {
     &self,
     plane: &PlanePrototypeRef,
     active: &SpecialActive,
-    _effects: &Effects,
+    effects: &Effects,
   ) -> ServerKeyState {
     ServerKeyState {
       up: self.up,
@@ -42,7 +41,7 @@ impl KeyState {
       boost: plane.special.is_boost() && active.0,
       strafe: plane.special.is_strafe() && self.special,
       stealth: plane.special.is_stealth() && active.0,
-      flagspeed: self.flagspeed,
+      flagspeed: effects.fixed_speed().is_some(),
     }
   }
 }
