@@ -24,28 +24,41 @@ fn send_packet(event: &PlayerRepel, game: &mut AirmashGame) {
 
   let mut players = Vec::new();
   for player in event.repelled_players.iter().copied() {
-    let (&pos, &rot, &vel, keystate, health, health_regen, energy, energy_regen, plane, active, ..) =
-      match game.world.query_one_mut::<(
-        &Position,
-        &Rotation,
-        &Velocity,
-        &KeyState,
-        &Health,
-        &HealthRegen,
-        &Energy,
-        &EnergyRegen,
-        &PlanePrototypeRef,
-        &SpecialActive,
-        &IsPlayer,
-      )>(player)
-      {
-        Ok(query) => query,
-        Err(_) => continue,
-      };
+    let (
+      &pos,
+      &rot,
+      &vel,
+      keystate,
+      health,
+      health_regen,
+      energy,
+      energy_regen,
+      plane,
+      active,
+      effects,
+      ..,
+    ) = match game.world.query_one_mut::<(
+      &Position,
+      &Rotation,
+      &Velocity,
+      &KeyState,
+      &Health,
+      &HealthRegen,
+      &Energy,
+      &EnergyRegen,
+      &PlanePrototypeRef,
+      &SpecialActive,
+      &Effects,
+      &IsPlayer,
+    )>(player)
+    {
+      Ok(query) => query,
+      Err(_) => continue,
+    };
 
     players.push(s::EventRepelPlayer {
       id: player.id() as _,
-      keystate: keystate.to_server(plane, active),
+      keystate: keystate.to_server(plane, active, effects),
       health: health.0,
       health_regen: health_regen.0,
       energy: energy.0,

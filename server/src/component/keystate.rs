@@ -1,3 +1,4 @@
+use super::Effects;
 use crate::component::SpecialActive;
 use crate::config::PlanePrototypeRef;
 use crate::protocol::ServerKeyState;
@@ -27,15 +28,20 @@ impl KeyState {
     plane.special.is_strafe() && self.special
   }
 
-  pub fn to_server(&self, plane: &PlanePrototypeRef, active: &SpecialActive) -> ServerKeyState {
+  pub fn to_server(
+    &self,
+    plane: &PlanePrototypeRef,
+    active: &SpecialActive,
+    _effects: &Effects,
+  ) -> ServerKeyState {
     ServerKeyState {
       up: self.up,
       down: self.down,
       left: self.left,
       right: self.right,
       boost: plane.special.is_boost() && active.0,
-      strafe: self.strafe(plane),
-      stealth: self.stealthed,
+      strafe: plane.special.is_strafe() && self.special,
+      stealth: plane.special.is_stealth() && active.0,
       flagspeed: self.flagspeed,
     }
   }
