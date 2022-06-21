@@ -4,13 +4,12 @@ use airmash_protocol::Vector2;
 
 use crate::component::*;
 use crate::event::{PlayerKilled, PlayerRespawn};
-use crate::resource::{Config, GameConfig, TaskScheduler, ThisFrame};
+use crate::resource::{GameConfig, TaskScheduler, ThisFrame};
 use crate::{consts, AirmashGame};
 
 #[handler]
 fn launch_respawn_task(event: &PlayerKilled, game: &mut AirmashGame) {
   let tasks = game.resources.read::<TaskScheduler>();
-  let config = game.resources.read::<Config>();
   let game_config = game.resources.read::<GameConfig>();
   let this_frame = game.resources.read::<ThisFrame>();
 
@@ -30,7 +29,7 @@ fn launch_respawn_task(event: &PlayerKilled, game: &mut AirmashGame) {
 
   let event = *event;
   tasks.schedule(
-    this_frame.0 + config.respawn_delay,
+    this_frame.0 + game_config.respawn_delay,
     move |game: &mut AirmashGame| {
       let query = game
         .world
