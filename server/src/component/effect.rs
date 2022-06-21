@@ -63,7 +63,7 @@ impl Effects {
   }
 
   /// Remove a long-term effect by prototype name.
-  pub fn erase_effect(&mut self, name: &str) -> bool {
+  pub fn remove_effect(&mut self, name: &str) -> bool {
     self.permanent.remove(name).is_some()
   }
 
