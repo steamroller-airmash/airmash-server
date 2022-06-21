@@ -3,7 +3,6 @@ use std::time::Duration;
 use airmash_server::Vector2;
 use server::component::*;
 use server::protocol::{DespawnType, ServerPacket};
-use server::resource::Config;
 use server::test::TestGame;
 use server_config::GamePrototype;
 
@@ -16,11 +15,6 @@ fn upgrade_despawns_on_time() {
 
   let mut client = mock.open();
   let ent = client.login("test", &mut game);
-
-  {
-    let mut config = game.resources.write::<Config>();
-    config.view_radius = 1000.0;
-  }
 
   game.world.get_mut::<Position>(ent).unwrap().0 = Vector2::zeros();
   let mob = game.spawn_mob(
