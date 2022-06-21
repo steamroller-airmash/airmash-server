@@ -1,14 +1,9 @@
-#[macro_use]
-extern crate log;
-
 use std::env;
-use std::fs::File;
 
 use airmash_server::protocol::GameType;
-use airmash_server::resource::{Config, RegionName};
+use airmash_server::resource::RegionName;
 use airmash_server::*;
 use clap::arg;
-use serde_deserialize_over::DeserializeOver;
 
 fn set_default_var(name: &str, value: &str) {
   if None == env::var_os(name) {
@@ -46,22 +41,25 @@ fn main() {
   // Use the FFA scoreboard.
   airmash_server::system::ffa::register_all(&mut game);
 
+  let mut config = airmash_server::config::GamePrototype::default();
   if let Some(path) = matches.value_of("config") {
-    let file = match File::open(path) {
-      Ok(x) => x,
+    let script = match std::fs::read_to_string(path) {
+      Ok(script) => script,
       Err(e) => {
         eprintln!("Unable to open config file. Error was {}", e);
-        return;
+        std::process::exit(1);
       }
     };
 
-    let mut config = game.resources.write::<Config>();
-    let mut de = serde_json::Deserializer::new(serde_json::de::IoRead::new(file));
-    if let Err(e) = config.deserialize_over(&mut de) {
-      error!("Unable to parse config file: {}", e);
-      return;
-    }
+    config
+      .patch(&script)
+      .expect("Error while running config file");
   }
+
+  game
+    .resources
+    .write::<airmash_server::resource::GameConfig>()
+    .inner = airmash_server::resource::Config2::new(config).unwrap();
 
   game.run_until_shutdown();
 }

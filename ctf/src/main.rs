@@ -2,7 +2,6 @@ use std::time::Duration;
 
 use airmash::util::PeriodicPowerupSpawner;
 use airmash::{AirmashGame, Vector2};
-use serde_deserialize_over::DeserializeOver;
 
 fn set_default_var(name: &str, value: &str) {
   use std::env;
@@ -14,9 +13,8 @@ fn set_default_var(name: &str, value: &str) {
 
 fn main() {
   use std::env;
-  use std::fs::File;
 
-  use airmash::resource::{Config, RegionName};
+  use airmash::resource::RegionName;
   use clap::arg;
 
   let matches = clap::Command::new("airmash-server-ctf")
@@ -43,22 +41,25 @@ fn main() {
     matches.value_of("region").unwrap_or("default").to_string(),
   ));
 
+  let mut config = airmash::config::GamePrototype::default();
   if let Some(path) = matches.value_of("config") {
-    let file = match File::open(path) {
-      Ok(x) => x,
+    let script = match std::fs::read_to_string(path) {
+      Ok(script) => script,
       Err(e) => {
         eprintln!("Unable to open config file. Error was {}", e);
-        return;
+        std::process::exit(1);
       }
     };
 
-    let mut de = serde_json::Deserializer::new(serde_json::de::IoRead::new(file));
-
-    let mut config = Config::default();
-    config.deserialize_over(&mut de).unwrap();
-
-    game.resources.insert(config);
+    config
+      .patch(&script)
+      .expect("Error while running config file");
   }
+
+  game
+    .resources
+    .write::<airmash::resource::GameConfig>()
+    .inner = airmash::resource::Config2::new(config).unwrap();
 
   airmash_server_ctf::setup_ctf_server(&mut game);
 
