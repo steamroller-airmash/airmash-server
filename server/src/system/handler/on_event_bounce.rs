@@ -15,8 +15,9 @@ fn send_bounce_packet(event: &EventBounce, game: &mut AirmashGame) {
     &PlanePrototypeRef,
     &Team,
     &SpecialActive,
+    &Effects,
   )>(event.player);
-  let (pos, vel, rot, keystate, plane, team, active) = match query {
+  let (pos, vel, rot, keystate, plane, team, active, effects) = match query {
     Ok(query) => query,
     Err(_) => return,
   };
@@ -27,7 +28,7 @@ fn send_bounce_packet(event: &EventBounce, game: &mut AirmashGame) {
     pos: pos.0,
     rot: rot.0,
     speed: vel.0,
-    keystate: keystate.to_server(plane, active),
+    keystate: keystate.to_server(plane, active, effects),
   };
 
   let team = team.0;

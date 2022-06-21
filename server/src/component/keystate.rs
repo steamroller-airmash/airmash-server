@@ -1,3 +1,4 @@
+use super::Effects;
 use crate::component::SpecialActive;
 use crate::config::PlanePrototypeRef;
 use crate::protocol::ServerKeyState;
@@ -19,7 +20,6 @@ pub struct KeyState {
   // keep these, can be moved later if
   // necessary
   pub stealthed: bool,
-  pub flagspeed: bool,
 }
 
 impl KeyState {
@@ -27,16 +27,21 @@ impl KeyState {
     plane.special.is_strafe() && self.special
   }
 
-  pub fn to_server(&self, plane: &PlanePrototypeRef, active: &SpecialActive) -> ServerKeyState {
+  pub fn to_server(
+    &self,
+    plane: &PlanePrototypeRef,
+    active: &SpecialActive,
+    effects: &Effects,
+  ) -> ServerKeyState {
     ServerKeyState {
       up: self.up,
       down: self.down,
       left: self.left,
       right: self.right,
       boost: plane.special.is_boost() && active.0,
-      strafe: self.strafe(plane),
-      stealth: self.stealthed,
-      flagspeed: self.flagspeed,
+      strafe: plane.special.is_strafe() && self.special,
+      stealth: plane.special.is_stealth() && active.0,
+      flagspeed: effects.fixed_speed().is_some(),
     }
   }
 }

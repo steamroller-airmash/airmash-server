@@ -235,7 +235,7 @@ fn send_update_packets(game: &mut AirmashGame) {
     let packet = PlayerUpdate {
       clock,
       id: ent.id() as u16,
-      keystate: keystate.to_server(plane, active),
+      keystate: keystate.to_server(plane, active, effects),
       pos: pos.0,
       rot: rot.0,
       speed: vel.0,
