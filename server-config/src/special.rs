@@ -108,7 +108,7 @@ pub struct StealthPrototype {
     Ref::MobRef: Deserialize<'de>,
   "
 ))]
-pub struct SpecialPrototype<'a, Ref: PrototypeRef<'a>> {
+pub struct SpecialPrototype<'a, Ref: PrototypeRef<'a> = StringRef> {
   /// The name with which this special effect will be referred to.
   pub name: Cow<'static, str>,
   /// Parameters for the general class of special that is being configured.

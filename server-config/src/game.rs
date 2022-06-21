@@ -26,7 +26,7 @@ use crate::{
     Ref::MobRef: Deserialize<'de>,
   "
 ))]
-pub struct GamePrototype<'a, Ref: PrototypeRef<'a>> {
+pub struct GamePrototype<'a, Ref: PrototypeRef<'a> = StringRef> {
   pub planes: Vec<PlanePrototype<'a, Ref>>,
   pub missiles: Vec<MissilePrototype>,
   pub specials: Vec<SpecialPrototype<'a, Ref>>,
