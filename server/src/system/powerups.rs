@@ -19,11 +19,6 @@ fn expire_effects(game: &mut AirmashGame) {
       _ => continue,
     };
 
-    info!(
-      "Expiring powerup {:?} on {:?}",
-      effects.powerup().unwrap(),
-      ent
-    );
     events.push(PowerupExpire { player: ent });
   }
 
