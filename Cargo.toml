@@ -11,6 +11,7 @@ members = [
 	"server",
 	"server-config",
 	"server-macros",
+	"utils/anymap",
 	"utils/kdtree",
 	"utils/serde-rlua"
 ]
