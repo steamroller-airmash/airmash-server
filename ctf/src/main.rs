@@ -54,10 +54,7 @@ fn main() {
 
     let mut de = serde_json::Deserializer::new(serde_json::de::IoRead::new(file));
 
-    let mut config = Config {
-      allow_spectate_while_moving: false,
-      ..Config::default()
-    };
+    let mut config = Config::default();
     config.deserialize_over(&mut de).unwrap();
 
     game.resources.insert(config);
