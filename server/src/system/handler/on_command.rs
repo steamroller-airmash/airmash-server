@@ -333,3 +333,28 @@ fn on_upgrade_command(event: &PacketEvent<Command>, game: &mut AirmashGame) {
   game.force_update(event.entity);
   game.send_to(event.entity, packet);
 }
+
+#[handler]
+fn on_uptime_command(event: &PacketEvent<Command>, game: &mut AirmashGame) {
+  if event.packet.com != "uptime" {
+    return;
+  }
+
+  let start_time = game.start_time();
+  let this_frame = game.this_frame();
+  let uptime = this_frame.saturating_duration_since(start_time);
+
+  let message = if event.packet.data == "raw" {
+    uptime.as_secs().to_string()
+  } else {
+    humantime::format_duration(Duration::from_secs(uptime.as_secs())).to_string()
+  };
+
+  game.send_to(
+    event.entity,
+    s::CommandReply {
+      ty: airmash_protocol::CommandReplyType::ShowInConsole,
+      text: message.into(),
+    },
+  );
+}
