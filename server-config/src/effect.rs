@@ -11,7 +11,9 @@ pub enum EffectPrototype {
   FixedSpeed {
     speed: f32,
   },
-  Upgrade,
+  Upgrade {
+    count: u16,
+  },
   /// Despawn the mob that just collided.
   Despawn,
 }
@@ -30,7 +32,7 @@ impl EffectPrototype {
   }
 
   pub const fn upgrade() -> Self {
-    Self::Upgrade
+    Self::Upgrade { count: 1 }
   }
 
   pub const fn despawn() -> Self {
@@ -52,7 +54,7 @@ impl EffectPrototype {
   }
 
   pub const fn is_upgrade(&self) -> bool {
-    matches!(self, Self::Upgrade)
+    matches!(self, Self::Upgrade { .. })
   }
 
   pub const fn is_despawn(&self) -> bool {
@@ -60,6 +62,6 @@ impl EffectPrototype {
   }
 
   pub const fn is_instant(&self) -> bool {
-    matches!(self, Self::Upgrade | Self::Despawn)
+    matches!(self, Self::Upgrade { .. } | Self::Despawn)
   }
 }
