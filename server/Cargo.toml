@@ -21,6 +21,7 @@ itertools = "0.10"
 slab = "0.4"
 fxhash = "0.2"
 httparse = "1.6.0"
+humantime = "2.1.0"
 
 tokio = { version="1.0", features=["rt", "sync", "io-util", "macros", "time", "rt-multi-thread"] }
 tokio-tungstenite = "0.17.1"
@@ -32,7 +33,6 @@ airmash-protocol = { version = "0.5.0", features = ["serde"] }
 server-macros = { path="../server-macros" }
 server-config = { path="../server-config" }
 kdtree = { path="../utils/kdtree" }
-humantime = "2.1.0"
 
 [dev-dependencies]
 approx = "0.5"
