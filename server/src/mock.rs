@@ -9,6 +9,7 @@ use tokio::sync::mpsc::{unbounded_channel, UnboundedReceiver};
 
 use crate::network::*;
 use crate::protocol::{client as c, ClientPacket, ServerPacket};
+use crate::resource::GameConfig;
 use crate::AirmashGame;
 
 /// Mock connection for testing purposes.
@@ -218,9 +219,21 @@ impl TestGame {
 
   /// Create a new server instance and corresponding connection endpoint.
   pub fn new() -> (Self, MockConnectionEndpoint) {
+    Self::with_config(Default::default())
+  }
+
+  pub fn with_config(config: crate::config::GamePrototype) -> (Self, MockConnectionEndpoint) {
     use crate::event::ServerStartup;
 
     let mut game = AirmashGame::with_test_defaults();
+    let oldconfig = std::mem::replace(
+      &mut game.resources.write::<GameConfig>().inner,
+      crate::config::GameConfig::new(config).expect("config was invalid"),
+    );
+    // SAFETY: We just created the game so there should be no references to this
+    // anywhere.
+    unsafe { oldconfig.reclaim() };
+
     let (connmgr, mock) = ConnectionMgr::disconnected();
     game.resources.insert(connmgr);
 
