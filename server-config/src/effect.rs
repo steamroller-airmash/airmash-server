@@ -14,10 +14,6 @@ pub enum EffectPrototype {
   Upgrade,
   /// Despawn the mob that just collided.
   Despawn,
-  /// Multiply the max speed of the plane.
-  Speed {
-    speed_mult: f32,
-  },
 }
 
 impl EffectPrototype {
@@ -61,10 +57,6 @@ impl EffectPrototype {
 
   pub const fn is_despawn(&self) -> bool {
     matches!(self, Self::Despawn)
-  }
-
-  pub const fn is_speed(&self) -> bool {
-    matches!(self, Self::Speed { .. })
   }
 
   pub const fn is_instant(&self) -> bool {

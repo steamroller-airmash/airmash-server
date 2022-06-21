@@ -38,11 +38,7 @@ impl PowerupPrototype {
       name: Cow::Borrowed("inferno"),
       server_type: Some(PowerupType::Inferno),
       duration: Some(Duration::from_secs(10)),
-      effects: vec![
-        EffectPrototype::inferno(),
-        EffectPrototype::despawn(),
-        EffectPrototype::Speed { speed_mult: 0.75 },
-      ],
+      effects: vec![EffectPrototype::inferno(), EffectPrototype::despawn()],
     }
   }
 
