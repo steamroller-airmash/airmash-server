@@ -4,7 +4,7 @@ use hecs::Entity;
 use crate::component::*;
 use crate::event::{EntitySpawn, EventHorizon, MobSpawn, PlayerFire};
 use crate::resource::collision::LayerSpec;
-use crate::resource::{collision as c, Config};
+use crate::resource::{collision as c, GameConfig};
 use crate::AirmashGame;
 
 def_wrappers! {
@@ -26,7 +26,7 @@ pub fn generate_horizon_events(game: &mut AirmashGame) {
   let missile_db = game.resources.read::<c::MissileCollideDb>();
   let player_db = game.resources.read::<c::PlayerPosDb>();
   let mob_db = game.resources.read::<c::MobCollideDb>();
-  let config = game.resources.read::<Config>();
+  let config = game.resources.read::<GameConfig>();
 
   let query = game
     .world
@@ -117,7 +117,7 @@ fn record_new_missiles(event: &PlayerFire, game: &mut AirmashGame) {
     Err(_) => return,
   };
 
-  let config = game.resources.read::<Config>();
+  let config = game.resources.read::<GameConfig>();
   let view2 = config.view_radius * config.view_radius;
 
   let query = game
@@ -139,7 +139,7 @@ fn record_new_mobs(event: &MobSpawn, game: &mut AirmashGame) {
     Err(_) => return,
   };
 
-  let config = game.resources.read::<Config>();
+  let config = game.resources.read::<GameConfig>();
   let view2 = config.view_radius * config.view_radius;
 
   let query = game

@@ -19,12 +19,16 @@ pub struct GameConfigCommon<'a, Ref: PrototypeRef<'a>> {
   /// The default plane that a player joining the game will get unless the
   /// server overrides it.
   pub default_plane: Ref::PlaneRef,
+
+  /// The radius in which the player can observe events happening.
+  pub view_radius: f32,
 }
 
 impl GameConfigCommon<'_, StringRef> {
   pub const fn new() -> Self {
     Self {
       default_plane: Cow::Borrowed("predator"),
+      view_radius: 2250.0,
     }
   }
 
@@ -44,7 +48,10 @@ impl GameConfigCommon<'_, StringRef> {
           ),
         ))?;
 
-    Ok(GameConfigCommon { default_plane })
+    Ok(GameConfigCommon {
+      default_plane,
+      view_radius: self.view_radius,
+    })
   }
 }
 
