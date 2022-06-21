@@ -126,6 +126,7 @@ pub struct UpgradeInfos {
   pub defense: UpgradeInfo,
 }
 
+#[deprecated]
 #[derive(Clone, Debug, Serialize, Deserialize, DeserializeOver)]
 pub struct Config {
   #[deserialize_over]
@@ -139,10 +140,13 @@ pub struct Config {
   pub upgrades: UpgradeInfos,
 
   #[serde(with = "duration")]
+  #[deprecated]
   pub spawn_shield_duration: Duration,
   #[serde(with = "duration")]
+  #[deprecated]
   pub shield_duration: Duration,
   #[serde(with = "duration")]
+  #[deprecated]
   pub inferno_duration: Duration,
 
   #[deprecated]

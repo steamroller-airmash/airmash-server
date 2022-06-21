@@ -2,7 +2,7 @@ use crate::component::*;
 use crate::config::PlanePrototypeRef;
 use crate::event::KeyEvent;
 use crate::protocol::KeyCode;
-use crate::resource::{Config, StartTime, ThisFrame};
+use crate::resource::{StartTime, ThisFrame};
 use crate::AirmashGame;
 
 pub fn update(game: &mut AirmashGame) {
@@ -10,7 +10,6 @@ pub fn update(game: &mut AirmashGame) {
 }
 
 fn fire_missiles(game: &mut AirmashGame) {
-  let config = game.resources.read::<Config>();
   let this_frame = game.this_frame();
 
   let mut query = game
@@ -45,7 +44,6 @@ fn fire_missiles(game: &mut AirmashGame) {
     events.push((ent, count, plane.missile));
   }
 
-  drop(config);
   drop(query);
 
   for (ent, missiles, ty) in events {

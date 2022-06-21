@@ -5,7 +5,7 @@ use smallvec::SmallVec;
 use crate::component::*;
 use crate::config::{MissilePrototypeRef, PlanePrototypeRef};
 use crate::event::{PlayerHit, PlayerKilled, PlayerMissileCollision};
-use crate::resource::{Config, GameConfig};
+use crate::resource::GameConfig;
 use crate::AirmashGame;
 
 #[handler(priority = crate::priority::MEDIUM)]
@@ -19,7 +19,6 @@ fn damage_player(event: &PlayerMissileCollision, game: &mut AirmashGame) {
   };
 
   let game_config = game.resources.read::<GameConfig>();
-  let config = game.resources.read::<Config>();
   let attacker = game.world.get::<IsPlayer>(owner.0).ok().map(|_| owner.0);
 
   let mut events = SmallVec::<[_; 16]>::new();
@@ -78,7 +77,6 @@ fn damage_player(event: &PlayerMissileCollision, game: &mut AirmashGame) {
     }
   }
 
-  drop(config);
   drop(game_config);
 
   game.dispatch_many(hits);

@@ -1,7 +1,7 @@
 use crate::component::*;
 use crate::config::PlanePrototypeRef;
 use crate::event::{PlayerPowerup, PlayerRespawn, PlayerSpawn};
-use crate::resource::{Config, GameConfig};
+use crate::resource::GameConfig;
 use crate::util::NalgebraExt;
 use crate::{AirmashGame, EntitySetBuilder, Vector2};
 
@@ -35,7 +35,6 @@ fn send_packet(event: &PlayerRespawn, game: &mut AirmashGame) {
 // changes don't have theirs get stomped over.
 #[handler(priority = crate::priority::PRE_LOGIN)]
 fn reset_player(event: &PlayerRespawn, game: &mut AirmashGame) {
-  let config = game.resources.read::<Config>();
   let gconfig = game.resources.read::<GameConfig>();
 
   let mut query = match game.world.query_one::<(
@@ -93,7 +92,6 @@ fn reset_player(event: &PlayerRespawn, game: &mut AirmashGame) {
   let proto = gconfig.powerups.get("spawn-shield").copied();
 
   drop(gconfig);
-  drop(config);
   drop(query);
 
   if let Some(proto) = proto {

@@ -11,7 +11,7 @@ use crate::event::{EntitySpawn, MobSpawn, PlayerFire};
 use crate::network::{ConnectionId, ConnectionMgr};
 use crate::protocol::{v5, MobType, ServerPacket};
 use crate::resource::collision::LayerSpec;
-use crate::resource::{Config, GameConfig, LastFrame, ThisFrame};
+use crate::resource::{GameConfig, LastFrame, ThisFrame};
 use crate::util::NalgebraExt;
 use crate::{AirmashGame, Vector2};
 
@@ -85,7 +85,6 @@ impl AirmashGame {
     let mut entities = SmallVec::new();
     let mut builders = SmallVec::<[EntityBuilder; 5]>::new();
 
-    let config = self.resources.read::<Config>();
     let this_frame = self.resources.read::<ThisFrame>().0;
 
     let (pos, rot, vel, team, &upgrades, last_fire_time, _) = self
@@ -133,8 +132,6 @@ impl AirmashGame {
     }
 
     last_fire_time.0 = this_frame;
-
-    drop(config);
 
     for mut builder in builders {
       let entity = self.world.spawn(builder.build());

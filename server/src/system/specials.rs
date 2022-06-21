@@ -8,7 +8,6 @@ use crate::event::{
 };
 use crate::protocol::KeyCode;
 use crate::resource::collision::{LayerSpec, MissileCollideDb, PlayerCollideDb};
-use crate::resource::Config;
 use crate::AirmashGame;
 
 pub fn update(game: &mut AirmashGame) {
@@ -50,7 +49,6 @@ fn kill_predator_boost_when_out_of_energy(game: &mut AirmashGame) {
 }
 
 fn tornado_special_fire(game: &mut AirmashGame) {
-  let config = game.resources.read::<Config>();
   let this_frame = game.this_frame();
 
   let mut query = game
@@ -93,7 +91,6 @@ fn tornado_special_fire(game: &mut AirmashGame) {
     events.push((ent, missiles));
   }
 
-  drop(config);
   drop(query);
 
   for (ent, missiles) in events {
