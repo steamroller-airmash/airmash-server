@@ -4,7 +4,7 @@ use std::time::{Duration, Instant};
 
 use nalgebra::vector;
 
-use crate::component::{Powerup, Upgrades};
+use crate::component::{Effects, Upgrades};
 use crate::protocol::{Time, Vector2};
 use crate::resource::*;
 use crate::AirmashGame;
@@ -39,11 +39,11 @@ pub fn get_current_clock(game: &AirmashGame) -> u32 {
   get_time_clock(game, this_frame.0)
 }
 
-pub fn get_server_upgrades(upgrades: &Upgrades, powerup: &Powerup) -> crate::protocol::Upgrades {
+pub fn get_server_upgrades(upgrades: &Upgrades, effects: &Effects) -> crate::protocol::Upgrades {
   crate::protocol::Upgrades {
     speed: upgrades.speed,
-    shield: powerup.shield(),
-    inferno: powerup.inferno(),
+    shield: effects.has_shield(),
+    inferno: effects.has_inferno(),
   }
 }
 

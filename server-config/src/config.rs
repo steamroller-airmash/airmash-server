@@ -7,8 +7,8 @@ use std::ptr::NonNull;
 
 use crate::util::{DropPtr, MaybeDrop};
 use crate::{
-  EffectPrototype, GameConfigCommon, GamePrototype, MissilePrototype, MobPrototype, PlanePrototype,
-  PtrRef, SpecialPrototype, StringRef, ValidationError,
+  GameConfigCommon, GamePrototype, MissilePrototype, MobPrototype, PlanePrototype,
+  PowerupPrototype, PtrRef, SpecialPrototype, StringRef, ValidationError,
 };
 
 macro_rules! transform_protos {
@@ -40,8 +40,8 @@ pub struct GameConfig {
   pub planes: HashMap<&'static str, &'static PlanePrototype<'static, PtrRef>>,
   pub missiles: HashMap<&'static str, &'static MissilePrototype>,
   pub specials: HashMap<&'static str, &'static SpecialPrototype<'static, PtrRef>>,
-  pub effects: HashMap<&'static str, &'static EffectPrototype>,
-  pub mobs: HashMap<&'static str, &'static MobPrototype>,
+  pub powerups: HashMap<&'static str, &'static PowerupPrototype>,
+  pub mobs: HashMap<&'static str, &'static MobPrototype<'static, PtrRef>>,
 
   pub common: GameConfigCommon<'static, PtrRef>,
 
@@ -53,12 +53,12 @@ impl GameConfig {
     planes: &[PlanePrototype<PtrRef>],
     missiles: &[MissilePrototype],
     specials: &[SpecialPrototype<PtrRef>],
-    mobs: &[MobPrototype],
-    effects: &[EffectPrototype],
+    mobs: &[MobPrototype<PtrRef>],
+    powerups: &[PowerupPrototype],
 
     common: GameConfigCommon<StringRef>,
   ) -> Result<Self, ValidationError> {
-    let data = unsafe { GameConfigData::new(&planes, &missiles, &specials, &mobs, &effects) };
+    let data = unsafe { GameConfigData::new(&planes, &missiles, &specials, &mobs, &powerups) };
 
     let mut missiles = HashMap::new();
     let mut planes = HashMap::new();
@@ -66,7 +66,7 @@ impl GameConfig {
     let mut effects = HashMap::new();
     let mut mobs = HashMap::new();
 
-    for effect in data.effects() {
+    for effect in data.powerups() {
       if effects.insert(&*effect.name, effect).is_some() {
         return Err(
           ValidationError::custom("name", "multiple effect prototypes had the same name")
@@ -120,7 +120,7 @@ impl GameConfig {
       missiles,
       planes,
       specials,
-      effects,
+      powerups: effects,
       mobs,
 
       common: common.resolve(data.planes())?,
@@ -133,9 +133,9 @@ impl GameConfig {
     // These ones will be automatically dropped if something goes wrong. In order to
     // prevent UB we just need to call MaybeDrop::cancel_drop if everything works
     // out at the end.
-    let mobs = MaybeDrop::from(transform_protos!(proto.mobs => |m| m.resolve())?);
     let missiles = MaybeDrop::from(transform_protos!(proto.missiles => |m| m.resolve())?);
-    let effects = MaybeDrop::from(transform_protos!(proto.effects => |m| m.resolve())?);
+    let effects = MaybeDrop::from(transform_protos!(proto.powerups => |m| m.resolve())?);
+    let mobs = MaybeDrop::from(transform_protos!(proto.mobs => |m| m.resolve(&effects))?);
 
     let mut specials = transform_protos!(proto.specials => |s| s.resolve(&missiles))?;
     // Due to some lifetime issues it's not actually possible to store specials in
@@ -213,8 +213,8 @@ struct GameConfigData {
   planes: NonNull<[PlanePrototype<'static, PtrRef>]>,
   missiles: NonNull<[MissilePrototype]>,
   specials: NonNull<[SpecialPrototype<'static, PtrRef>]>,
-  effects: NonNull<[EffectPrototype]>,
-  mobs: NonNull<[MobPrototype]>,
+  effects: NonNull<[PowerupPrototype]>,
+  mobs: NonNull<[MobPrototype<'static, PtrRef>]>,
 }
 
 impl GameConfigData {
@@ -228,8 +228,8 @@ impl GameConfigData {
     planes: &[PlanePrototype<PtrRef>],
     missiles: &[MissilePrototype],
     specials: &[SpecialPrototype<PtrRef>],
-    mobs: &[MobPrototype],
-    effects: &[EffectPrototype],
+    mobs: &[MobPrototype<PtrRef>],
+    effects: &[PowerupPrototype],
   ) -> Self {
     Self {
       planes: NonNull::new(planes as *const _ as *mut _).unwrap(),
@@ -266,11 +266,11 @@ impl GameConfigData {
     unsafe { self.specials.as_ref() }
   }
 
-  fn mobs(&self) -> &'static [MobPrototype] {
+  fn mobs(&self) -> &'static [MobPrototype<'static, PtrRef>] {
     unsafe { self.mobs.as_ref() }
   }
 
-  fn effects(&self) -> &'static [EffectPrototype] {
+  fn powerups(&self) -> &'static [PowerupPrototype] {
     unsafe { self.effects.as_ref() }
   }
 }

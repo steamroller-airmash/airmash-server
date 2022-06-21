@@ -60,7 +60,7 @@ fn tornado_special_fire(game: &mut AirmashGame) {
       &LastFireTime,
       &mut Energy,
       &PlanePrototypeRef,
-      &Powerup,
+      &Effects,
       &IsAlive,
     )>()
     .with::<IsPlayer>();
@@ -84,7 +84,7 @@ fn tornado_special_fire(game: &mut AirmashGame) {
 
     let mut missiles = SmallVec::<[_; 5]>::new();
     // FIXME: This currently ignores the multishot.count property.
-    if powerup.inferno() {
+    if powerup.has_inferno() {
       missiles.extend_from_slice(&tornado_inferno_missile_details(multishot.missile))
     } else {
       missiles.extend_from_slice(&tornado_missile_details(multishot.missile));

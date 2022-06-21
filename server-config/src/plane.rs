@@ -13,14 +13,14 @@ use crate::{MissilePrototype, PrototypeRef, PtrRef, SpecialPrototype, StringRef,
   serialize = "
     Ref::MissileRef: Serialize,
     Ref::SpecialRef: Serialize,
-    Ref::EffectRef: Serialize,
+    Ref::PowerupRef: Serialize,
     Ref::PlaneRef: Serialize,
     Ref::MobRef: Serialize,
   ",
   deserialize = "
     Ref::MissileRef: Deserialize<'de>,
     Ref::SpecialRef: Deserialize<'de>,
-    Ref::EffectRef: Deserialize<'de>,
+    Ref::PowerupRef: Deserialize<'de>,
     Ref::PlaneRef: Deserialize<'de>,
     Ref::MobRef: Deserialize<'de>,
   "

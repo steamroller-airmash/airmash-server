@@ -20,13 +20,13 @@ fn fire_missiles(game: &mut AirmashGame) {
       &LastFireTime,
       &mut Energy,
       &PlanePrototypeRef,
-      &Powerup,
+      &Effects,
       &IsAlive,
     )>()
     .with::<IsPlayer>();
 
   let mut events = Vec::new();
-  for (ent, (keystate, last_fire, energy, plane, powerup, alive)) in query.iter() {
+  for (ent, (keystate, last_fire, energy, plane, effects, alive)) in query.iter() {
     if !alive.0
       || !keystate.fire
       || this_frame - last_fire.0 < plane.fire_delay
@@ -38,7 +38,7 @@ fn fire_missiles(game: &mut AirmashGame) {
     energy.0 -= plane.fire_energy;
 
     let mut count = 1;
-    if powerup.inferno() {
+    if effects.has_inferno() {
       count = count * 2 + 1;
     }
 

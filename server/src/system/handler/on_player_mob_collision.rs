@@ -1,9 +1,6 @@
-use std::time::Duration;
-
 use crate::component::*;
 use crate::config::MobPrototypeRef;
 use crate::event::{MobDespawn, MobDespawnType, PlayerMobCollision, PlayerPowerup, PowerupExpire};
-use crate::protocol::PowerupType;
 use crate::AirmashGame;
 
 #[handler]
@@ -98,15 +95,15 @@ fn update_player_powerup(event: &PlayerMobCollision, game: &mut AirmashGame) {
     return;
   }
 
-  let (&powerup, _) = match game
+  let (effects, _) = match game
     .world
-    .query_one_mut::<(&Powerup, &IsPlayer)>(event.player)
+    .query_one_mut::<(&Effects, &IsPlayer)>(event.player)
   {
     Ok(query) => query,
     Err(_) => return,
   };
 
-  if powerup.data.is_some() {
+  if effects.expiry().is_some() {
     game.dispatch(PowerupExpire {
       player: event.player,
     });
@@ -114,11 +111,8 @@ fn update_player_powerup(event: &PlayerMobCollision, game: &mut AirmashGame) {
 
   game.dispatch(PlayerPowerup {
     player: event.player,
-    ty: match mob.server_type {
-      MobType::Shield => PowerupType::Shield,
-      MobType::Inferno => PowerupType::Inferno,
-      _ => unreachable!(),
-    },
-    duration: Duration::from_secs(10),
+    ty: mob.powerup.server_type.unwrap(),
+    duration: mob.powerup.duration.unwrap(),
+    powerup: mob.powerup,
   });
 }

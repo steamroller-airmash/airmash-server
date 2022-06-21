@@ -31,14 +31,14 @@ fn update_player_positions(game: &mut AirmashGame) {
       &mut Velocity,
       &KeyState,
       &Upgrades,
-      &Powerup,
+      &Effects,
       &PlanePrototypeRef,
       &SpecialActive,
       &IsAlive,
     )>()
     .with::<IsPlayer>();
 
-  for (_entity, (pos, rot, vel, keystate, upgrades, powerup, plane, active, alive)) in query {
+  for (_entity, (pos, rot, vel, keystate, upgrades, effects, plane, active, alive)) in query {
     if !alive.0 {
       continue;
     }
@@ -104,12 +104,12 @@ fn update_player_positions(game: &mut AirmashGame) {
       max_speed *= config.upgrades.speed.factor[upgrades.speed as usize];
     }
 
-    if powerup.inferno() {
+    if effects.has_inferno() {
       max_speed *= plane.inferno_factor;
     }
 
-    if keystate.flagspeed {
-      max_speed = plane.flag_speed;
+    if let Some(speed) = effects.fixed_speed() {
+      max_speed = speed;
     }
 
     if speed > max_speed {
@@ -202,7 +202,7 @@ fn send_update_packets(game: &mut AirmashGame) {
       &PlanePrototypeRef,
       &KeyState,
       &Upgrades,
-      &Powerup,
+      &Effects,
       &mut LastUpdateTime,
       &Team,
       &SpecialActive,
@@ -214,7 +214,7 @@ fn send_update_packets(game: &mut AirmashGame) {
 
   for (
     ent,
-    (pos, rot, vel, plane, keystate, upgrades, powerup, last_update, team, active, alive),
+    (pos, rot, vel, plane, keystate, upgrades, effects, last_update, team, active, alive),
   ) in query.iter()
   {
     if !alive.0 {
@@ -228,8 +228,8 @@ fn send_update_packets(game: &mut AirmashGame) {
 
     let ups = ServerUpgrades {
       speed: upgrades.speed,
-      shield: powerup.shield(),
-      inferno: powerup.inferno(),
+      shield: effects.has_shield(),
+      inferno: effects.has_inferno(),
     };
 
     let packet = PlayerUpdate {

@@ -4,12 +4,29 @@ use std::time::Duration;
 use protocol::MobType;
 use serde::{Deserialize, Serialize};
 
+use crate::powerup::PowerupPrototype;
 use crate::util::duration;
-use crate::ValidationError;
+use crate::{PrototypeRef, PtrRef, StringRef, ValidationError};
 
 #[derive(Clone, Debug, Serialize, Deserialize)]
 #[serde(deny_unknown_fields)]
-pub struct MobPrototype {
+#[serde(bound(
+  serialize = "
+    Ref::MissileRef: Serialize,
+    Ref::SpecialRef: Serialize,
+    Ref::PowerupRef: Serialize,
+    Ref::PlaneRef: Serialize,
+    Ref::MobRef: Serialize,
+  ",
+  deserialize = "
+    Ref::MissileRef: Deserialize<'de>,
+    Ref::SpecialRef: Deserialize<'de>,
+    Ref::PowerupRef: Deserialize<'de>,
+    Ref::PlaneRef: Deserialize<'de>,
+    Ref::MobRef: Deserialize<'de>,
+  "
+))]
+pub struct MobPrototype<'a, Ref: PrototypeRef<'a>> {
   /// The name that will be used to this mob.
   pub name: Cow<'static, str>,
 
@@ -22,40 +39,65 @@ pub struct MobPrototype {
   /// How long this mob will stick around before despawning.
   #[serde(with = "duration")]
   pub lifetime: Duration,
+
+  /// The effects of colliding with this mob.
+  pub powerup: Ref::PowerupRef,
 }
 
-impl MobPrototype {
-  pub const fn inferno() -> Self {
+impl MobPrototype<'_, StringRef> {
+  pub fn inferno() -> Self {
     Self {
       name: Cow::Borrowed("inferno"),
       server_type: MobType::Inferno,
       lifetime: Duration::from_secs(60),
+      powerup: Cow::Borrowed("inferno"),
     }
   }
 
-  pub const fn shield() -> Self {
+  pub fn shield() -> Self {
     Self {
       name: Cow::Borrowed("shield"),
       server_type: MobType::Shield,
       lifetime: Duration::from_secs(60),
+      powerup: Cow::Borrowed("shield"),
     }
   }
 
-  pub const fn upgrade() -> Self {
+  pub fn upgrade() -> Self {
     Self {
       name: Cow::Borrowed("upgrade"),
       server_type: MobType::Upgrade,
       lifetime: Duration::from_secs(60),
+      powerup: Cow::Borrowed("upgrade"),
     }
   }
 }
 
-impl MobPrototype {
-  pub fn resolve(self) -> Result<Self, ValidationError> {
+impl MobPrototype<'_, StringRef> {
+  pub fn resolve(
+    self,
+    powerups: &[PowerupPrototype],
+  ) -> Result<MobPrototype<PtrRef>, ValidationError> {
     if self.name.is_empty() {
       return Err(ValidationError::custom("name", "prototype had empty name"));
     }
 
-    Ok(self)
+    let powerup = powerups
+      .iter()
+      .find(|proto| proto.name == self.powerup)
+      .ok_or(ValidationError::custom(
+        "powerup",
+        format_args!(
+          "mob prototype refers to nonexistant powerup prototype `{}`",
+          self.powerup
+        ),
+      ))?;
+
+    Ok(MobPrototype {
+      name: self.name,
+      server_type: self.server_type,
+      lifetime: self.lifetime,
+      powerup,
+    })
   }
 }
