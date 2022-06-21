@@ -20,7 +20,6 @@ pub fn update(game: &mut AirmashGame) {
 }
 
 fn update_player_positions(game: &mut AirmashGame) {
-  let config = game.resources.read::<Config>();
   let delta = game.frame_delta();
 
   let query = game
@@ -101,7 +100,7 @@ fn update_player_positions(game: &mut AirmashGame) {
     let min_speed = plane.min_speed;
 
     if upgrades.speed != 0 {
-      max_speed *= config.upgrades.speed.factor[upgrades.speed as usize];
+      max_speed *= crate::consts::UPGRADE_MULTIPLIERS[upgrades.speed as usize];
     }
 
     if effects.has_inferno() {

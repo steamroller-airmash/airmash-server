@@ -135,6 +135,7 @@ pub struct Config {
   #[deprecated]
   pub mobs: MobInfos,
   #[deserialize_over]
+  #[deprecated]
   pub upgrades: UpgradeInfos,
 
   #[serde(with = "duration")]

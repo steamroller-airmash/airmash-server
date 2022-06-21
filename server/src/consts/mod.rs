@@ -14,6 +14,8 @@ mod terrain;
 pub use self::hitcircles::hitcircles_for_plane;
 pub use self::terrain::TERRAIN;
 
+pub const UPGRADE_MULTIPLIERS: [f32; 6] = [1.0, 1.05, 1.1, 1.15, 1.2, 1.25];
+
 /// The probability that, when an unupgraded player dies, they will drop an
 /// upgrade.
 pub const UPGRADE_DROP_PROBABILITY: f32 = 0.5;
