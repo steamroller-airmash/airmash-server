@@ -1,6 +1,7 @@
 use std::time::Duration;
 
 use server::component::*;
+use server::protocol::{server as s, ServerPacket};
 use server::test::TestGame;
 use server::Vector2;
 
@@ -55,4 +56,33 @@ fn dual_powerup_collision() {
   let p2pow = game.world.get::<Powerup>(p2).unwrap();
 
   assert!(p1pow.data.is_some() != p2pow.data.is_some());
+}
+
+#[test]
+fn inferno_slows_down_plane() {
+  let (mut game, mut mock) = TestGame::new();
+
+  let mut client = mock.open();
+  let entity = client.login("test", &mut game);
+
+  game.world.get_mut::<Position>(entity).unwrap().0 = Vector2::zeros();
+  game.spawn_mob(MobType::Inferno, Vector2::zeros(), Duration::from_secs(60));
+  game.run_for(Duration::from_secs(2));
+
+  assert!(client.packets().any(|p| matches!(
+    p,
+    ServerPacket::PlayerPowerup(s::PlayerPowerup {
+      ty: PowerupType::Inferno,
+      ..
+    })
+  )));
+
+  let has_inferno = client
+    .packets()
+    .filter_map(|p| match p {
+      ServerPacket::PlayerUpdate(p) => Some(p),
+      _ => None,
+    })
+    .any(|p| p.upgrades.inferno);
+  assert!(has_inferno);
 }
