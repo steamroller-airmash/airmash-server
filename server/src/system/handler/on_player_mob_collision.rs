@@ -95,15 +95,15 @@ fn update_player_powerup(event: &PlayerMobCollision, game: &mut AirmashGame) {
     return;
   }
 
-  let (&powerup, _) = match game
+  let (effects, _) = match game
     .world
-    .query_one_mut::<(&Powerup, &IsPlayer)>(event.player)
+    .query_one_mut::<(&Effects, &IsPlayer)>(event.player)
   {
     Ok(query) => query,
     Err(_) => return,
   };
 
-  if powerup.data.is_some() {
+  if effects.expiry().is_some() {
     game.dispatch(PowerupExpire {
       player: event.player,
     });

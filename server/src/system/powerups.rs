@@ -29,6 +29,5 @@ fn expire_effects(game: &mut AirmashGame) {
       .get_mut::<Effects>(event.player)
       .unwrap()
       .clear_powerup();
-    game.world.get_mut::<Powerup>(event.player).unwrap().data = None;
   }
 }

@@ -163,49 +163,6 @@ pub struct PowerupData {
   pub end_time: Instant,
 }
 
-/// The current powerup that a player has, or none if the player has no powerup.
-///
-/// Utility methods are provided to simplify checking what powerups a player
-/// has.
-#[derive(Copy, Clone, Debug, Eq, PartialEq, Hash, Default)]
-pub struct Powerup {
-  pub data: Option<PowerupData>,
-}
-
-impl Powerup {
-  pub fn none() -> Self {
-    Self::default()
-  }
-
-  /// Create a new powerup with the provided type and expiry time.
-  pub fn new(ty: PowerupType, end_time: Instant) -> Self {
-    Self {
-      data: Some(PowerupData { ty, end_time }),
-    }
-  }
-
-  /// Whether the current powerup is an inferno.
-  pub fn inferno(&self) -> bool {
-    self
-      .data
-      .map(|x| x.ty == PowerupType::Inferno)
-      .unwrap_or(false)
-  }
-
-  /// Whether the current powerup is a shield.
-  pub fn shield(&self) -> bool {
-    self
-      .data
-      .map(|x| x.ty == PowerupType::Shield)
-      .unwrap_or(false)
-  }
-
-  /// The time at which the current powerup expires, should there be one.
-  pub fn expires(&self) -> Option<Instant> {
-    self.data.map(|x| x.end_time)
-  }
-}
-
 /// The current state of the upgrades that a player has.
 #[derive(Default, Clone, Copy, Debug, PartialEq, Eq, Hash)]
 pub struct Upgrades {

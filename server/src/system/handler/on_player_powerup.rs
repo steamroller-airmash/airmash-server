@@ -1,6 +1,5 @@
 use crate::component::{IsPlayer, *};
 use crate::event::PlayerPowerup;
-use crate::resource::{StartTime, ThisFrame};
 use crate::AirmashGame;
 
 #[handler]
@@ -25,23 +24,6 @@ fn send_packet(event: &PlayerPowerup, game: &mut AirmashGame) {
       ty,
     },
   );
-}
-
-#[handler]
-fn update_fields(event: &PlayerPowerup, game: &mut AirmashGame) {
-  let start_time = game.resources.read::<StartTime>().0;
-  let this_frame = game.resources.read::<ThisFrame>().0;
-
-  let (last_update, powerup, _) = match game
-    .world
-    .query_one_mut::<(&mut LastUpdateTime, &mut Powerup, &IsPlayer)>(event.player)
-  {
-    Ok(query) => query,
-    Err(_) => return,
-  };
-
-  last_update.0 = start_time;
-  *powerup = Powerup::new(event.ty, this_frame + event.duration);
 }
 
 #[handler]
