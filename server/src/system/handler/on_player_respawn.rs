@@ -8,10 +8,10 @@ use crate::{AirmashGame, EntitySetBuilder, Vector2};
 fn send_packet(event: &PlayerRespawn, game: &mut AirmashGame) {
   use crate::protocol::server::PlayerRespawn;
 
-  let (&pos, &rot, upgrades, powerup, _) =
+  let (&pos, &rot, upgrades, effects, _) =
     match game
       .world
-      .query_one_mut::<(&Position, &Rotation, &Upgrades, &Powerup, &IsAlive)>(event.player)
+      .query_one_mut::<(&Position, &Rotation, &Upgrades, &Effects, &IsAlive)>(event.player)
     {
       Ok(query) => query,
       Err(_) => return,
@@ -21,7 +21,7 @@ fn send_packet(event: &PlayerRespawn, game: &mut AirmashGame) {
     id: event.player.id() as _,
     pos: pos.0,
     rot: rot.0,
-    upgrades: crate::util::get_server_upgrades(upgrades, powerup),
+    upgrades: crate::util::get_server_upgrades(upgrades, effects),
   };
 
   game.send_to_entities(
@@ -96,6 +96,7 @@ fn reset_player(event: &PlayerRespawn, game: &mut AirmashGame) {
   drop(query);
 
   if let Some(proto) = proto {
+    #[allow(deprecated)]
     game.dispatch(PlayerPowerup {
       player: event.player,
       ty: proto.server_type.unwrap(),

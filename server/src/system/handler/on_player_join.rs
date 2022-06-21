@@ -23,13 +23,13 @@ fn send_login_packet(event: &PlayerJoin, game: &mut AirmashGame) {
       &Rotation,
       &FlagCode,
       &Upgrades,
-      &Powerup,
+      &Effects,
     )>()
     .with::<IsPlayer>();
   let players = query
     .into_iter()
     .map(
-      |(ent, (alive, level, name, plane, team, pos, rot, flag, upgrades, powerup))| LoginPlayer {
+      |(ent, (alive, level, name, plane, team, pos, rot, flag, upgrades, effects))| LoginPlayer {
         id: ent.id() as u16,
         status: PlayerStatus::from(*alive),
         level: level.0,
@@ -39,7 +39,7 @@ fn send_login_packet(event: &PlayerJoin, game: &mut AirmashGame) {
         pos: pos.0,
         rot: rot.0,
         flag: *flag,
-        upgrades: crate::util::get_server_upgrades(upgrades, powerup),
+        upgrades: crate::util::get_server_upgrades(upgrades, effects),
       },
     )
     .collect::<Vec<_>>();
@@ -107,14 +107,14 @@ fn send_player_new(event: &PlayerJoin, game: &mut AirmashGame) {
     &Rotation,
     &FlagCode,
     &Upgrades,
-    &Powerup,
+    &Effects,
   )>(event.player)
   {
     Ok(query) => query.with::<IsPlayer>(),
     Err(_) => return,
   };
 
-  if let Some((alive, name, plane, team, pos, rot, flag, upgrades, powerup)) = query.get() {
+  if let Some((alive, name, plane, team, pos, rot, flag, upgrades, effects)) = query.get() {
     let packet = PlayerNew {
       id: event.player.id() as _,
       status: PlayerStatus::from(*alive),
@@ -124,7 +124,7 @@ fn send_player_new(event: &PlayerJoin, game: &mut AirmashGame) {
       pos: pos.0,
       rot: rot.0,
       flag: *flag,
-      upgrades: crate::util::get_server_upgrades(upgrades, powerup),
+      upgrades: crate::util::get_server_upgrades(upgrades, effects),
     };
 
     game.send_to_others(event.player, packet);
