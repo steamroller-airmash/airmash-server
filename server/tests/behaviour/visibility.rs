@@ -1,9 +1,8 @@
-use std::convert::TryInto;
 use std::time::Duration;
 
 use airmash_protocol::{KeyCode, MobType, ServerPacket};
 use airmash_server::component::Position;
-use airmash_server::resource::{Config, GameConfig};
+use airmash_server::resource::GameConfig;
 use airmash_server::Vector2;
 use nalgebra::vector;
 use server::test::TestGame;
@@ -27,7 +26,7 @@ fn out_of_visibility_missiles_properly_deleted() {
   let ent1 = client1.login("test-1", &mut game);
   let ent2 = client2.login("test-2", &mut game);
 
-  let view_radius = game.resources.read::<Config>().view_radius;
+  let view_radius = game.resources.read::<GameConfig>().view_radius;
 
   game.world.get_mut::<Position>(ent2).unwrap().0 = vector![0.0, -view_radius + 1.0];
   game.run_count(60);
@@ -59,15 +58,13 @@ fn out_of_visibility_missiles_properly_deleted() {
 /// MobDespawnCoords packet or a EventLeaveHorizon packet.
 #[test]
 fn out_of_visibility_collision() {
-  let (mut game, mut mock) = TestGame::new();
-
   let offset = 500.0;
 
-  let mut proto = GamePrototype::default();
-  proto.planes[0].missile_offset.x = offset;
+  let mut config = GamePrototype::default();
+  config.view_radius = 100.0;
+  config.planes[0].missile_offset.x = offset;
 
-  game.resources.write::<GameConfig>().inner = proto.try_into().unwrap();
-  game.resources.write::<Config>().view_radius = 100.0;
+  let (mut game, mut mock) = TestGame::with_config(config);
 
   let mut client1 = mock.open();
   let mut client2 = mock.open();
@@ -120,9 +117,10 @@ fn out_of_visibility_collision() {
 
 #[test]
 fn out_of_visibility_mob() {
-  let (mut game, mut mock) = TestGame::new();
+  let mut config = GamePrototype::default();
+  config.view_radius = 500.0;
 
-  game.resources.write::<Config>().view_radius = 500.0;
+  let (mut game, mut mock) = TestGame::with_config(config);
 
   let mut client = mock.open();
   client.login("test1", &mut game);
@@ -152,12 +150,14 @@ fn out_of_visibility_mob() {
 
 #[test]
 fn edge_of_visibility_mob() {
-  let (mut game, mut mock) = TestGame::new();
+  let mut config = GamePrototype::default();
+  config.view_radius = 500.0;
+
+  let (mut game, mut mock) = TestGame::with_config(config);
 
   let mut client = mock.open();
   let player = client.login("test", &mut game);
 
-  game.resources.write::<Config>().view_radius = 500.0;
   game.world.get_mut::<Position>(player).unwrap().0 = Vector2::zeros();
 
   game.run_count(5);
