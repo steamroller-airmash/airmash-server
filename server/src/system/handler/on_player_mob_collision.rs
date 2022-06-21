@@ -111,8 +111,6 @@ fn update_player_powerup(event: &PlayerMobCollision, game: &mut AirmashGame) {
 
   game.dispatch(PlayerPowerup {
     player: event.player,
-    ty: mob.powerup.server_type.unwrap(),
-    duration: mob.powerup.duration.unwrap(),
     powerup: mob.powerup,
   });
 }

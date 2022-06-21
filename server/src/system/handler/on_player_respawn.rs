@@ -96,11 +96,8 @@ fn reset_player(event: &PlayerRespawn, game: &mut AirmashGame) {
   drop(query);
 
   if let Some(proto) = proto {
-    #[allow(deprecated)]
     game.dispatch(PlayerPowerup {
       player: event.player,
-      ty: proto.server_type.unwrap(),
-      duration: proto.duration.unwrap(),
       powerup: proto,
     });
   }
