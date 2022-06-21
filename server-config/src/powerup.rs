@@ -53,6 +53,19 @@ impl PowerupPrototype {
 }
 
 impl PowerupPrototype {
+  pub fn upgrade_count(&self) -> u16 {
+    self
+      .effects
+      .iter()
+      .filter_map(|x| match x {
+        EffectPrototype::Upgrade { count } => Some(*count),
+        _ => None,
+      })
+      .sum()
+  }
+}
+
+impl PowerupPrototype {
   pub(crate) fn resolve(self) -> Result<Self, ValidationError> {
     if self.name.is_empty() {
       return Err(ValidationError::custom(

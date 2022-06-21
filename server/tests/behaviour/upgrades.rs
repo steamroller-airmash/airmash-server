@@ -1,3 +1,5 @@
+use std::time::Duration;
+
 use airmash_protocol::ServerPacket;
 use airmash_server::component::*;
 use airmash_server::event::PlayerKilled;
@@ -46,4 +48,29 @@ fn player_does_not_drop_upgrade_when_not_configured() {
       panic!("Upgrade was spawned despite upgrades being disabled");
     }
   }
+}
+
+#[test]
+fn picking_up_an_upgrade_gives_an_upgrade() {
+  let (mut game, mut mock) = TestGame::new();
+
+  let mut client = mock.open();
+  let player = client.login("test", &mut game);
+
+  game.world.get_mut::<Position>(player).unwrap().0 = Vector2::zeros();
+  game.run_once();
+  game.spawn_mob(MobType::Upgrade, Vector2::zeros(), Duration::from_secs(60));
+  game.run_once();
+
+  let num_upgrades = client
+    .packets()
+    .filter_map(|p| match p {
+      ServerPacket::ScoreUpdate(p) => Some(p),
+      _ => None,
+    })
+    .last()
+    .expect("Client received no ScoreUpdate packets")
+    .upgrades;
+
+  assert_eq!(num_upgrades, 1);
 }
