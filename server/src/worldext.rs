@@ -103,7 +103,7 @@ impl AirmashGame {
       .map_err(|_| NoSuchEntity)?;
 
     let speed = vel.norm();
-    let upg_factor = config.upgrades.missile.factor[upgrades.missile as usize];
+    let upg_factor = crate::consts::UPGRADE_MULTIPLIERS[upgrades.missile as usize];
 
     for info in missiles {
       let rot = rot.0 + info.rot_offset;

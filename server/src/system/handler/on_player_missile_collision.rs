@@ -47,7 +47,7 @@ fn damage_player(event: &PlayerMissileCollision, game: &mut AirmashGame) {
       let damage = match game_config.allow_damage {
         true => {
           mob.damage * plane.damage_factor
-            / config.upgrades.defense.factor[upgrades.defense as usize]
+            / crate::consts::UPGRADE_MULTIPLIERS[upgrades.defense as usize]
             * effects.damage_mult()
         }
         false => 0.0,
