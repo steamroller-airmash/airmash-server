@@ -454,7 +454,7 @@ impl EntitySetBuilder {
     use crate::resource::collision::PlayerPosDb;
 
     let db = game.resources.read::<PlayerPosDb>();
-    let config = game.resources.read::<Config>();
+    let config = game.resources.read::<GameConfig>();
 
     let mut me = Self::default();
     db.query(
@@ -471,7 +471,7 @@ impl EntitySetBuilder {
     use crate::resource::collision::PlayerPosDb;
 
     let db = game.resources.read::<PlayerPosDb>();
-    let config = game.resources.read::<Config>();
+    let config = game.resources.read::<GameConfig>();
 
     let mut me = Self::default();
     db.query(pos, config.view_radius, LayerSpec::None, &mut me.entries);

@@ -73,10 +73,7 @@ fn send_player_killed_packets(event: &PlayerKilled, game: &mut AirmashGame) {
     warn!("Player {:?} killed themselves?", event.player);
   }
 
-  let view_radius = {
-    let config = game.resources.read::<Config>();
-    config.view_radius
-  };
+  let view_radius = game.resources.read::<GameConfig>().view_radius;
 
   let player_kill = {
     let query = game

@@ -144,6 +144,7 @@ pub struct Config {
   #[serde(with = "duration")]
   pub inferno_duration: Duration,
 
+  #[deprecated]
   /// The radius in which the player can observe events happening.
   pub view_radius: Distance,
 
