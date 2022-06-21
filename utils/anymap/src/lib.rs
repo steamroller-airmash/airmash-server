@@ -1,8 +1,23 @@
+//! This crate provides a safe and convenient store for one value of each type.
+//!
+//! The main type for this crate is [`AnyMap`].
+//!
+//! # Example
+//! ```
+//! # use anymap::AnyMap;
+//! let mut data = AnyMap::new();
+//! ```
+
+#![cfg_attr(anydebug, allow(incomplete_features))]
+#![cfg_attr(anydebug, feature(specialization))]
+
 use std::any::TypeId;
 use std::collections::{hash_map, HashMap};
 use std::hash::{BuildHasherDefault, Hasher};
 use std::marker::PhantomData;
-use std::mem;
+use std::{fmt, mem};
+
+mod dbg;
 
 #[derive(Default)]
 struct TypeIdHasher(u64);
@@ -26,9 +41,21 @@ impl Hasher for TypeIdHasher {
   }
 }
 
-trait Any: std::any::Any {}
+trait Any: std::any::Any {
+  fn type_name(&self) -> &'static str;
 
-impl<T: std::any::Any> Any for T {}
+  fn debug(&self, f: &mut fmt::DebugSet<'_, '_>);
+}
+
+impl<T: std::any::Any> Any for T {
+  fn type_name(&self) -> &'static str {
+    std::any::type_name::<Self>()
+  }
+
+  fn debug(&self, f: &mut fmt::DebugSet<'_, '_>) {
+    f.entry(&self::dbg::debug_any(self));
+  }
+}
 
 impl dyn Any {
   pub fn is<T: Any>(&self) -> bool {
@@ -138,12 +165,30 @@ impl AnyMap {
       .map(|v| unsafe { *v.downcast_unchecked() })
   }
 
-  pub fn contains<T: 'static>(&mut self) -> bool {
+  pub fn contains<T: 'static>(&self) -> bool {
     self.map.contains_key(&TypeId::of::<T>())
   }
 
   pub fn entry<T: 'static>(&mut self) -> Entry<'_, T> {
     Entry::new(self.map.entry(TypeId::of::<T>()))
+  }
+}
+
+impl Default for AnyMap {
+  fn default() -> Self {
+    Self::new()
+  }
+}
+
+impl fmt::Debug for AnyMap {
+  fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+    let mut set = f.debug_set();
+
+    for (_, val) in self.map.iter() {
+      val.debug(&mut set);
+    }
+
+    set.finish()
   }
 }
 
