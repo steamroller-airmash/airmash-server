@@ -19,8 +19,6 @@ pub mod config {
 pub extern crate hecs;
 
 #[macro_use]
-extern crate serde;
-#[macro_use]
 extern crate log;
 #[macro_use]
 extern crate server_macros;
