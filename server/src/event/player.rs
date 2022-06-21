@@ -3,7 +3,7 @@ use std::time::Duration;
 use hecs::Entity;
 use smallvec::SmallVec;
 
-use crate::config::PlanePrototypeRef;
+use crate::config::{PlanePrototypeRef, PowerupPrototypeRef};
 use crate::protocol::PowerupType;
 
 /// A new player has joined the game.
@@ -68,6 +68,7 @@ pub struct PlayerPowerup {
   pub player: Entity,
   pub ty: PowerupType,
   pub duration: Duration,
+  pub powerup: PowerupPrototypeRef,
 }
 
 /// A goliath has used their special.
