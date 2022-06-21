@@ -26,7 +26,7 @@ use crate::{PrototypeRef, PtrRef, StringRef, ValidationError};
     Ref::MobRef: Deserialize<'de>,
   "
 ))]
-pub struct MobPrototype<'a, Ref: PrototypeRef<'a>> {
+pub struct MobPrototype<'a, Ref: PrototypeRef<'a> = StringRef> {
   /// The name that will be used to this mob.
   pub name: Cow<'static, str>,
 

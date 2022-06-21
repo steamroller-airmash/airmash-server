@@ -25,7 +25,7 @@ use crate::{MissilePrototype, PrototypeRef, PtrRef, SpecialPrototype, StringRef,
     Ref::MobRef: Deserialize<'de>,
   "
 ))]
-pub struct PlanePrototype<'a, Ref: PrototypeRef<'a>> {
+pub struct PlanePrototype<'a, Ref: PrototypeRef<'a> = StringRef> {
   /// The name with which to refer to this plane prototype. It must be unique
   /// among all plane prototypes.
   pub name: Cow<'static, str>,
