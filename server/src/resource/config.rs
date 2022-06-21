@@ -150,6 +150,7 @@ pub struct Config {
 
   /// The delay between a player dying and them being allowed to respawn.
   #[serde(with = "duration")]
+  #[deprecated]
   pub respawn_delay: Duration,
 }
 
