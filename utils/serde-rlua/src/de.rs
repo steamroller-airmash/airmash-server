@@ -4,6 +4,15 @@ use serde::forward_to_deserialize_any;
 
 use super::Error;
 
+macro_rules! try2 {
+  ($e:expr) => {
+    match $e {
+      Ok(v) => v,
+      Err(e) => return Err(e),
+    }
+  };
+}
+
 struct Empty;
 
 impl<'lua> FromLua<'lua> for Empty {
@@ -83,7 +92,7 @@ impl<'lua, 'de> Deserializer<'de> for LuaDeserializer<'lua> {
   {
     match self.value {
       Value::Nil => visitor.visit_none(),
-      _ => visitor.visit_unit(),
+      _ => visitor.visit_some(self),
     }
   }
 
@@ -177,10 +186,25 @@ impl<'lua, 'de> Deserializer<'de> for LuaDeserializer<'lua> {
     self.deserialize_seq(visitor)
   }
 
+  fn deserialize_struct<V>(
+    self,
+    _name: &'static str,
+    fields: &'static [&'static str],
+    visitor: V,
+  ) -> Result<V::Value, Self::Error>
+  where
+    V: de::Visitor<'de>,
+  {
+    match self.value {
+      Value::Table(table) => visitor.visit_map(StructDeserializer::new(table.pairs(), fields)),
+      value => Self::invalid_type(value, visitor),
+    }
+  }
+
   forward_to_deserialize_any! {
     bool i8 i16 i32 i64 u8 u16 u32 u64 f32 f64 char str string bytes
     byte_buf unit unit_struct newtype_struct
-    struct identifier ignored_any
+    identifier ignored_any
   }
 }
 
@@ -357,6 +381,111 @@ impl<'lua, 'de> de::VariantAccess<'de> for VariantDeserializer<'lua> {
   }
 }
 
+struct StructDeserializer<'lua> {
+  fields: Vec<&'static str>,
+  iter: Option<TablePairs<'lua, rlua::String<'lua>, Value<'lua>>>,
+  value: Option<Value<'lua>>,
+}
+
+impl<'lua> StructDeserializer<'lua> {
+  pub fn new(
+    iter: TablePairs<'lua, rlua::String<'lua>, Value<'lua>>,
+    fields: &'static [&'static str],
+  ) -> Self {
+    Self {
+      fields: fields.to_owned(),
+      iter: Some(iter),
+      value: None,
+    }
+  }
+}
+
+impl<'lua, 'de> de::MapAccess<'de> for StructDeserializer<'lua> {
+  type Error = Error;
+
+  fn next_key_seed<K>(&mut self, seed: K) -> Result<Option<K::Value>, Self::Error>
+  where
+    K: de::DeserializeSeed<'de>,
+  {
+    if let Some(iter) = &mut self.iter {
+      if let Some(item) = iter.next() {
+        let (key, value) = item?;
+        self.value = Some(value);
+
+        let key = key.as_bytes();
+        if let Some(idx) = self.fields.iter().position(|f| f.as_bytes() == key) {
+          self.fields.swap_remove(idx);
+        }
+
+        return seed.deserialize(key.into_deserializer()).map(Some);
+      }
+
+      self.iter = None;
+    }
+
+    let field = match self.fields.pop() {
+      Some(field) => field.as_bytes(),
+      None => return Ok(None),
+    };
+
+    self.value = Some(Value::Nil);
+    seed.deserialize(field.into_deserializer()).map(Some)
+  }
+
+  fn next_value_seed<V>(&mut self, seed: V) -> Result<V::Value, Self::Error>
+  where
+    V: de::DeserializeSeed<'de>,
+  {
+    let value = self
+      .value
+      .take()
+      .expect("next_value_seed called before next_key_seed");
+
+    seed.deserialize(LuaDeserializer::new(value))
+  }
+
+  fn next_entry_seed<K, V>(
+    &mut self,
+    kseed: K,
+    vseed: V,
+  ) -> Result<Option<(K::Value, V::Value)>, Self::Error>
+  where
+    K: de::DeserializeSeed<'de>,
+    V: de::DeserializeSeed<'de>,
+  {
+    if let Some(iter) = &mut self.iter {
+      if let Some(item) = iter.next() {
+        let (key, value) = item?;
+
+        if let Some(idx) = self
+          .fields
+          .iter()
+          .position(|f| f.as_bytes() == key.as_bytes())
+        {
+          self.fields.swap_remove(idx);
+        }
+
+        let key = try2!(kseed.deserialize(key.as_bytes().into_deserializer()));
+        let val = vseed.deserialize(LuaDeserializer::new(value))?;
+
+        return Ok(Some((key, val)));
+      }
+
+      self.iter = None;
+    }
+
+    let field = match self.fields.pop() {
+      Some(field) => field.as_bytes(),
+      None => return Ok(None),
+    };
+
+    Ok(Some((
+      try2!(kseed.deserialize(field.into_deserializer())),
+      vseed.deserialize(LuaDeserializer::new(Value::Nil))?,
+    )))
+  }
+}
+
 #[cfg(test)]
 mod tests {
   use rlua::Lua;
@@ -503,5 +632,52 @@ mod tests {
       let got = from_value(value).unwrap();
       assert_eq!(expected, got);
     });
+  }
+
+  #[test]
+  fn struct_with_option_none() {
+    #[derive(Deserialize, Debug, PartialEq, Eq)]
+    struct WithOption {
+      field: Option<String>,
+    }
+
+    let lua = Lua::new();
+
+    let expected = WithOption { field: None };
+    let found = lua.context(|lua| {
+      let value = lua.load("{}").eval().unwrap();
+      from_value(value).expect("Failed to deserialize struct")
+    });
+
+    assert_eq!(expected, found);
+  }
+
+  #[test]
+  fn struct_with_option_some() {
+    #[derive(Deserialize, Debug, PartialEq, Eq)]
+    struct WithOption {
+      field: Option<String>,
+    }
+
+    let lua = Lua::new();
+
+    let expected = WithOption {
+      field: Some("test".to_owned()),
+    };
+    let found = lua.context(|lua| {
+      let value = lua
+        .load(
+          r#"
+            a = { }
+            a.field = "test"
+            return a
+          "#,
+        )
+        .eval()
+        .unwrap();
+      from_value(value).expect("Failed to deserialize struct")
+    });
+
+    assert_eq!(expected, found);
   }
 }
