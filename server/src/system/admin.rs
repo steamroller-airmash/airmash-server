@@ -18,7 +18,7 @@ fn teleport(event: &PacketEvent<Command>, game: &mut AirmashGame) {
     pub pos_y: f32,
   }
 
-  fn named_positions(s: &[u8]) -> Option<Vector2<f32>> {
+  fn named_positions(s: &[u8]) -> Option<Vector2> {
     let (x, y) = match s {
       b"blue-flag" => (-9670.0, -1470.0),
       b"red-flag" => (8600.0, -940.0),

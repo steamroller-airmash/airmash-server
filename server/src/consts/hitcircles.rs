@@ -1,7 +1,7 @@
 use crate::protocol::PlaneType;
 use crate::Vector2;
 
-type HitCircle = (Vector2<f32>, f32);
+type HitCircle = (Vector2, f32);
 
 macro_rules! hit_circle {
   ($x:expr, $y:expr, $r:expr) => {

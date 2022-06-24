@@ -47,7 +47,7 @@ pub fn get_server_upgrades(upgrades: &Upgrades, effects: &Effects) -> crate::pro
   }
 }
 
-pub fn rotate(v: Vector2<f32>, angle: f32) -> Vector2<f32> {
+pub fn rotate(v: Vector2, angle: f32) -> Vector2 {
   let (sin, cos) = angle.sin_cos();
   vector![v.x * cos - v.y * sin, v.x * sin + v.y * cos]
 }

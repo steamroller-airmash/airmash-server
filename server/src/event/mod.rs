@@ -218,7 +218,7 @@ pub struct EventBounce {
   ///
   /// The current direction of the player is contained within the
   /// [`Velocity`](crate::component::Velocity) component.
-  pub old_vel: Vector2<f32>,
+  pub old_vel: Vector2,
 }
 
 /// A player's powerup has expired.

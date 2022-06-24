@@ -47,9 +47,9 @@ pub mod system;
 pub mod util;
 
 pub use hecs::Entity;
-pub use nalgebra::Vector2;
 pub use server_macros::handler;
 
+pub use self::config::Vector2;
 pub use self::dispatch::{Event, EventDispatcher, EventHandler};
 pub use self::task::{GameRef, TaskScheduler};
 pub use self::world::{AirmashGame, Resources};
