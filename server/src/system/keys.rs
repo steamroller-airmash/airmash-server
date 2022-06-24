@@ -73,6 +73,7 @@ fn update_keystate(event: &KeyEvent, game: &mut AirmashGame) {
     KeyCode::Right => keystate.right = event.state,
     KeyCode::Fire => keystate.fire = event.state,
     KeyCode::Special => keystate.special = event.state,
+    _ => return,
   }
 
   last_action.0 = this_frame;

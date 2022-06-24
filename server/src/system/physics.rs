@@ -7,10 +7,10 @@ use crate::component::*;
 use crate::config::{MissilePrototypeRef, PlanePrototypeRef};
 use crate::event::PlayerJoin;
 use crate::protocol::server::PlayerUpdate;
-use crate::protocol::{Upgrades as ServerUpgrades, Vector2};
+use crate::protocol::Upgrades as ServerUpgrades;
 use crate::resource::*;
 use crate::util::get_current_clock;
-use crate::AirmashGame;
+use crate::{AirmashGame, Vector2};
 
 pub fn update(game: &mut AirmashGame) {
   update_player_positions(game);
@@ -235,9 +235,9 @@ fn send_update_packets(game: &mut AirmashGame) {
       clock,
       id: ent.id() as u16,
       keystate: keystate.to_server(plane, active, effects),
-      pos: pos.0,
+      pos: pos.into(),
       rot: rot.0,
-      speed: vel.0,
+      speed: vel.into(),
       upgrades: ups,
     };
 

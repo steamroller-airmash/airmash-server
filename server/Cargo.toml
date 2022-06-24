@@ -8,7 +8,7 @@ mt-network = []
 
 [dependencies]
 hecs = "0.7.7"
-nalgebra = { version = "0.31.0", features = ["serde-serialize"] }
+nalgebra = { version = "0.31.0", features = ["serde-serialize", "convert-mint"] }
 linkme = "0.2.6"
 log = "0.4"
 crossbeam-channel = "0.5"
@@ -21,6 +21,7 @@ slab = "0.4"
 fxhash = "0.2"
 httparse = "1.6.0"
 humantime = "2.1.0"
+mint = "0.5"
 
 tokio = { version="1.0", features=["rt", "sync", "io-util", "macros", "time", "rt-multi-thread"] }
 tokio-tungstenite = "0.17.1"
@@ -28,7 +29,7 @@ tokio-tungstenite = "0.17.1"
 serde = { version = "1.0", features = ["derive"] }
 serde-deserialize-over = "0.1.1"
 
-airmash-protocol = { version = "0.5.0", features = ["serde"] }
+airmash-protocol = { version = "0.6.1", features = ["serde"] }
 server-macros = { path="../server-macros" }
 server-config = { path="../server-config" }
 kdtree = { path="../utils/kdtree" }

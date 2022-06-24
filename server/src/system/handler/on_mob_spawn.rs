@@ -20,7 +20,7 @@ fn send_packet(event: &MobSpawn, game: &mut AirmashGame) {
     MobUpdateStationary {
       id: event.mob.id() as _,
       ty: mob.server_type,
-      pos: pos.0,
+      pos: pos.into(),
     },
   );
 }

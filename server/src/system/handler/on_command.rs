@@ -1,4 +1,3 @@
-use std::convert::TryFrom;
 use std::str::FromStr;
 use std::time::{Duration, Instant};
 
@@ -69,8 +68,11 @@ fn on_respawn_command(event: &PacketEvent<Command>, game: &mut AirmashGame) {
 
   fn parse_plane(s: &BString) -> Result<PlaneType, ()> {
     let s = s.to_str().map_err(|_| ())?;
-    let num: u32 = s.parse().map_err(|_| ())?;
-    PlaneType::try_from(num).map_err(|_| ())
+    let num: u8 = s.parse().map_err(|_| ())?;
+    match PlaneType::from(num) {
+      PlaneType::Unknown(_) => Err(()),
+      plane => Ok(plane),
+    }
   }
 
   if !game.resources.read::<GameConfig>().allow_respawn {
@@ -122,6 +124,7 @@ fn on_respawn_command(event: &PacketEvent<Command>, game: &mut AirmashGame) {
     PlaneType::Goliath => "goliath",
     PlaneType::Prowler => "prowler",
     PlaneType::Mohawk => "mohawk",
+    _ => unreachable!(),
   };
   let new_proto = match gconfig.planes.get(pname) {
     Some(proto) => *proto,

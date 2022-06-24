@@ -27,10 +27,10 @@ pub fn send_player_fire(event: &PlayerFire, game: &mut AirmashGame) {
     if let Some((pos, vel, &mob)) = query.get() {
       projectiles.push(s::PlayerFireProjectile {
         id: missile.id() as _,
-        pos: pos.0,
-        speed: vel.0,
+        pos: pos.into(),
+        speed: vel.into(),
         ty: mob.server_type,
-        accel: vel.normalize() * mob.accel,
+        accel: (vel.normalize() * mob.accel).into(),
         max_speed: mob.max_speed,
       });
     } else {

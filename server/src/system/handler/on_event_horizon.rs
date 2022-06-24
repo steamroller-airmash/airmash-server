@@ -31,9 +31,9 @@ fn send_missile_update(event: &EventHorizon, game: &mut AirmashGame) {
       id: event.entity.id() as _,
       clock,
       ty: missile.server_type,
-      pos: pos.0,
-      speed: vel.0,
-      accel: accel.0,
+      pos: pos.into(),
+      speed: vel.into(),
+      accel: accel.into(),
       max_speed: missile.max_speed,
     },
   );
@@ -60,7 +60,7 @@ fn send_mob_update(event: &EventHorizon, game: &mut AirmashGame) {
     MobUpdateStationary {
       id: event.entity.id() as _,
       ty: mob.server_type,
-      pos: pos.0,
+      pos: pos.into(),
     },
   );
 }

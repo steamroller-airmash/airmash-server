@@ -1,7 +1,6 @@
 use std::sync::Arc;
 use std::time::{Duration, Instant};
 
-use airmash_protocol::{MobType, Vector2};
 use fxhash::FxHashSet as HashSet;
 use hecs::{Entity, EntityBuilder, NoSuchEntity};
 use nalgebra::vector;
@@ -11,10 +10,10 @@ use crate::component::*;
 use crate::config::{MissilePrototypeRef, PlanePrototypeRef};
 use crate::event::{EntitySpawn, MobSpawn, PlayerFire};
 use crate::network::{ConnectionId, ConnectionMgr};
-use crate::protocol::{v5, ServerPacket};
+use crate::protocol::{v5, MobType, ServerPacket};
 use crate::resource::collision::LayerSpec;
 use crate::resource::{Config, GameConfig, LastFrame, ThisFrame};
-use crate::AirmashGame;
+use crate::{AirmashGame, Vector2};
 
 /// Info required to spawn a new missile.
 #[derive(Clone, Copy, Debug)]

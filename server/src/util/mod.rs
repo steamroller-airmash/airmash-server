@@ -5,9 +5,9 @@ use std::time::{Duration, Instant};
 use nalgebra::vector;
 
 use crate::component::{Effects, Upgrades};
-use crate::protocol::{Time, Vector2};
+use crate::protocol::Time;
 use crate::resource::*;
-use crate::AirmashGame;
+use crate::{AirmashGame, Vector2};
 
 pub(crate) mod escapes;
 mod powerup_spawner;

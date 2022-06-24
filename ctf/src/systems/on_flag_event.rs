@@ -138,7 +138,7 @@ fn send_game_flag(event: &FlagEvent, game: &mut AirmashGame) {
   game.send_to_all(GameFlag {
     ty,
     flag: team.0 as _,
-    pos: pos.0,
+    pos: pos.into(),
     id: carrier,
     blueteam: scores.blueteam,
     redteam: scores.redteam,

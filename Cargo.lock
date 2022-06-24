@@ -39,17 +39,14 @@ dependencies = [
 
 [[package]]
 name = "airmash-protocol"
-version = "0.5.0"
+version = "0.6.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "3c4c1d292226e1a0c8fcb1d5d2f2c50299905d04503544210ac084ca79e4875c"
+checksum = "e2713d90ad8232a9a277c7102ef25c6e1ea9d3cf4e2a99abbc81e1e279eb1067"
 dependencies = [
  "bstr",
- "derivative",
- "nalgebra",
- "num-traits",
+ "mint",
  "serde-feature-hack",
  "serde_json",
- "smallvec",
 ]
 
 [[package]]
@@ -72,6 +69,7 @@ dependencies = [
  "linkme",
  "log",
  "miette",
+ "mint",
  "nalgebra",
  "rand",
  "serde",
@@ -322,17 +320,6 @@ checksum = "57952ca27b5e3606ff4dd79b0020231aaf9d6aa76dc05fd30137538c50bd3ce8"
 dependencies = [
  "generic-array",
  "typenum",
-]
-
-[[package]]
-name = "derivative"
-version = "2.2.0"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "fcc3dd5e9e9c0b295d6e1e4d811fb6f157d5ffd784b8d202fc62eac8035a770b"
-dependencies = [
- "proc-macro2 1.0.40",
- "quote 1.0.20",
- "syn",
 ]
 
 [[package]]
@@ -674,6 +661,12 @@ dependencies = [
 ]
 
 [[package]]
+name = "mint"
+version = "0.5.9"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "e53debba6bda7a793e5f99b8dacf19e626084f525f7829104ba9898f367d85ff"
+
+[[package]]
 name = "mio"
 version = "0.8.3"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -693,6 +686,7 @@ checksum = "18a89248335f688e4bd994e6d030fd7e185eb41769b8c435395075425e100ac6"
 dependencies = [
  "approx",
  "matrixmultiply",
+ "mint",
  "nalgebra-macros",
  "num-complex",
  "num-rational",

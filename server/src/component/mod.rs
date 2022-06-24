@@ -2,10 +2,11 @@
 
 use std::time::{Duration, Instant};
 
-use airmash_protocol::Vector2;
 use bstr::BString;
 use hecs::Entity;
 use uuid::Uuid;
+
+use crate::Vector2;
 
 mod effect;
 mod keystate;
@@ -16,13 +17,13 @@ pub use crate::protocol::{FlagCode, MobType, PlaneType, PowerupType};
 
 def_wrappers! {
   /// The position of an entity.
-  pub type Position = crate::protocol::Position;
+  pub type Position = Vector2<f32>;
 
   /// The velocity of an entity.
-  pub type Velocity = crate::protocol::Velocity;
+  pub type Velocity = Vector2<f32>;
 
   /// The acceleration of an entity.
-  pub type Accel = crate::protocol::Accel;
+  pub type Accel = Vector2<f32>;
 
   /// The rotation of an entity.
   pub type Rotation = crate::protocol::Rotation;
@@ -222,3 +223,33 @@ impl MissileFiringSide {
     }
   }
 }
+
+macro_rules! mint_wrapper {
+  ($ty:ty => $mint:ty) => {
+    impl<'a> From<&'a $ty> for $mint {
+      fn from(v: &'a $ty) -> Self {
+        v.0.into()
+      }
+    }
+
+    impl From<$ty> for $mint {
+      fn from(v: $ty) -> Self {
+        v.0.into()
+      }
+    }
+
+    impl From<$mint> for $ty {
+      fn from(v: $mint) -> Self {
+        Self(v.into())
+      }
+    }
+
+    impl ::mint::IntoMint for $ty {
+      type MintType = $mint;
+    }
+  };
+}
+
+mint_wrapper!(Position => mint::Vector2<f32>);
+mint_wrapper!(Velocity => mint::Vector2<f32>);
+mint_wrapper!(Accel    => mint::Vector2<f32>);

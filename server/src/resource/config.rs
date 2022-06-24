@@ -183,6 +183,7 @@ impl Index<Plane> for PlaneInfos {
       Plane::Prowler => &self.prowler,
       Plane::Mohawk => &self.mohawk,
       Plane::Goliath => &self.goliath,
+      _ => panic!("got unexpected plane type {:?}", idx),
     }
   }
 }
@@ -201,6 +202,7 @@ impl Index<Mob> for MobInfos {
       Mob::Upgrade => &self.upgrade,
       Mob::Inferno => &self.inferno,
       Mob::Shield => &self.shield,
+      _ => panic!("got unexpected mob type {:?}", idx),
     }
   }
 }

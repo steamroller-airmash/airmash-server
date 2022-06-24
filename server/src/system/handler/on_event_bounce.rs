@@ -25,9 +25,9 @@ fn send_bounce_packet(event: &EventBounce, game: &mut AirmashGame) {
   let packet = crate::protocol::server::EventBounce {
     clock,
     id: event.player.id() as _,
-    pos: pos.0,
+    pos: pos.into(),
     rot: rot.0,
-    speed: vel.0,
+    speed: vel.into(),
     keystate: keystate.to_server(plane, active, effects),
   };
 
@@ -35,8 +35,8 @@ fn send_bounce_packet(event: &EventBounce, game: &mut AirmashGame) {
   drop(query);
 
   if keystate.stealthed {
-    game.send_to_team_visible(team, packet.pos, packet);
+    game.send_to_team_visible(team, packet.pos.into(), packet);
   } else {
-    game.send_to_visible(packet.pos, packet);
+    game.send_to_visible(packet.pos.into(), packet);
   }
 }

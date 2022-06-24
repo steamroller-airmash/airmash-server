@@ -110,10 +110,10 @@
 //! [`PRE_LOGIN`]: crate::priority::PRE_LOGIN
 //! [`Login`]: crate::protocol::server::Login
 
-use airmash_protocol::Vector2;
 use hecs::Entity;
 
 use crate::protocol::KeyCode;
+use crate::Vector2;
 
 mod collision;
 mod missile;

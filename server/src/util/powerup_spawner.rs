@@ -1,8 +1,8 @@
 use std::time::{Duration, Instant};
 
 use crate::event::Frame;
-use crate::protocol::{MobType, Position};
-use crate::{Entity, EventHandler};
+use crate::protocol::MobType;
+use crate::{Entity, EventHandler, Vector2};
 
 #[derive(Copy, Clone)]
 enum SpawnerState {
@@ -14,11 +14,11 @@ pub struct PeriodicPowerupSpawner {
   state: SpawnerState,
   interval: Duration,
   mob: MobType,
-  pos: Position,
+  pos: Vector2<f32>,
 }
 
 impl PeriodicPowerupSpawner {
-  pub fn new(mob: MobType, pos: Position, interval: Duration) -> Self {
+  pub fn new(mob: MobType, pos: Vector2<f32>, interval: Duration) -> Self {
     Self {
       mob,
       pos,
@@ -27,11 +27,11 @@ impl PeriodicPowerupSpawner {
     }
   }
 
-  pub fn inferno(pos: Position, interval: Duration) -> Self {
+  pub fn inferno(pos: Vector2<f32>, interval: Duration) -> Self {
     Self::new(MobType::Inferno, pos, interval)
   }
 
-  pub fn shield(pos: Position, interval: Duration) -> Self {
+  pub fn shield(pos: Vector2<f32>, interval: Duration) -> Self {
     Self::new(MobType::Shield, pos, interval)
   }
 }

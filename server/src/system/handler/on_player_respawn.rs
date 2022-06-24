@@ -19,7 +19,7 @@ fn send_packet(event: &PlayerRespawn, game: &mut AirmashGame) {
 
   let packet = PlayerRespawn {
     id: event.player.id() as _,
-    pos: pos.0,
+    pos: pos.into(),
     rot: rot.0,
     upgrades: crate::util::get_server_upgrades(upgrades, effects),
   };

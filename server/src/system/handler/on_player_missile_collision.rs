@@ -118,10 +118,10 @@ fn send_player_hit(event: &PlayerMissileCollision, game: &mut AirmashGame) {
   let packet = PlayerHit {
     id: event.missile.id() as _,
     owner: owner.0.id() as _,
-    pos: pos.0,
+    pos: pos.into(),
     ty: mob.server_type,
     players,
   };
 
-  game.send_to_visible(packet.pos, packet);
+  game.send_to_visible(packet.pos.into(), packet);
 }

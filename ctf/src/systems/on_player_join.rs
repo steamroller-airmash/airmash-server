@@ -53,7 +53,7 @@ fn send_flag_position_on_join(event: &PlayerJoin, game: &mut AirmashGame) {
 
     let packet = GameFlag {
       ty,
-      pos: pos.0,
+      pos: pos.into(),
       flag: team.0 as _,
       id: carrier.0.map(|x| x.id() as _),
       blueteam: scores.blueteam,
