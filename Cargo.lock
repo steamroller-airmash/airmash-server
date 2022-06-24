@@ -39,9 +39,9 @@ dependencies = [
 
 [[package]]
 name = "airmash-protocol"
-version = "0.6.1"
+version = "0.6.2"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "e2713d90ad8232a9a277c7102ef25c6e1ea9d3cf4e2a99abbc81e1e279eb1067"
+checksum = "a3f34bd68b89b81154bf6f0047b78fcb1fb0929d7c05595c7939c151bf218dd2"
 dependencies = [
  "bstr",
  "mint",

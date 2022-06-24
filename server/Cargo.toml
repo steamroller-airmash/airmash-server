@@ -29,7 +29,7 @@ tokio-tungstenite = "0.17.1"
 serde = { version = "1.0", features = ["derive"] }
 serde-deserialize-over = "0.1.1"
 
-airmash-protocol = { version = "0.6.1", features = ["serde"] }
+airmash-protocol = { version = "0.6.2", features = ["serde"] }
 server-macros = { path="../server-macros" }
 server-config = { path="../server-config" }
 kdtree = { path="../utils/kdtree" }
