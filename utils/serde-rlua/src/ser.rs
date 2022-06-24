@@ -27,6 +27,10 @@ impl<'lua> Serializer for LuaSerializer<'lua> {
   type SerializeStruct = SerializeMap<'lua>;
   type SerializeStructVariant = SerializeStructVariant<'lua>;
 
+  fn is_human_readable(&self) -> bool {
+    true
+  }
+
   #[inline]
   fn serialize_bool(self, value: bool) -> Result<Self::Ok, Self::Error> {
     Ok(Value::Boolean(value))

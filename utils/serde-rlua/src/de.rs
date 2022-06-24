@@ -59,6 +59,10 @@ impl<'lua> LuaDeserializer<'lua> {
 impl<'lua, 'de> Deserializer<'de> for LuaDeserializer<'lua> {
   type Error = Error;
 
+  fn is_human_readable(&self) -> bool {
+    true
+  }
+
   fn deserialize_any<V>(self, visitor: V) -> Result<V::Value, Self::Error>
   where
     V: de::Visitor<'de>,
