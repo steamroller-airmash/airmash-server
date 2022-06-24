@@ -3,7 +3,6 @@ use std::time::{Duration, Instant};
 
 use fxhash::FxHashSet as HashSet;
 use hecs::{Entity, EntityBuilder, NoSuchEntity};
-use nalgebra::vector;
 use smallvec::SmallVec;
 
 use crate::component::*;
@@ -13,6 +12,7 @@ use crate::network::{ConnectionId, ConnectionMgr};
 use crate::protocol::{v5, MobType, ServerPacket};
 use crate::resource::collision::LayerSpec;
 use crate::resource::{Config, GameConfig, LastFrame, ThisFrame};
+use crate::util::NalgebraExt;
 use crate::{AirmashGame, Vector2};
 
 /// Info required to spawn a new missile.
@@ -210,18 +210,18 @@ impl AirmashGame {
       let angle = total_angle * frac;
 
       infos.push(FireMissileInfo {
-        pos_offset: vector![
+        pos_offset: Vector2::new(
           start_y + total_offset_y * frac,
-          start_x - total_offset_x * frac
-        ],
+          start_x - total_offset_x * frac,
+        ),
         rot_offset: -angle,
         proto: missile,
       });
       infos.push(FireMissileInfo {
-        pos_offset: vector![
+        pos_offset: Vector2::new(
           start_y - total_offset_y * frac,
-          start_x - total_offset_x * frac
-        ],
+          start_x - total_offset_x * frac,
+        ),
         rot_offset: angle,
         proto: missile,
       });

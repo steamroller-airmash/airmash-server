@@ -2,6 +2,7 @@ use smallvec::SmallVec;
 
 use crate::component::*;
 use crate::event::PlayerSpectate;
+use crate::util::NalgebraExt;
 use crate::{AirmashGame, Vector2};
 
 #[handler(priority = crate::priority::MEDIUM)]

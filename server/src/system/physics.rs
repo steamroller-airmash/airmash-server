@@ -7,7 +7,7 @@ use crate::event::PlayerJoin;
 use crate::protocol::server::PlayerUpdate;
 use crate::protocol::Upgrades as ServerUpgrades;
 use crate::resource::*;
-use crate::util::get_current_clock;
+use crate::util::{get_current_clock, NalgebraExt};
 use crate::{AirmashGame, Vector2};
 
 pub fn update(game: &mut AirmashGame) {

@@ -12,6 +12,7 @@ use crate::component::*;
 use crate::config::PlanePrototypeRef;
 use crate::protocol::client::Login;
 use crate::protocol::FlagCode;
+use crate::util::NalgebraExt;
 use crate::Vector2;
 
 /// Build a player

@@ -3,6 +3,7 @@
 use hecs::Entity;
 use kdtree::{KdTree, Node};
 
+use crate::util::NalgebraExt;
 use crate::Vector2;
 
 def_wrappers! {

@@ -30,7 +30,7 @@ pub fn send_player_fire(event: &PlayerFire, game: &mut AirmashGame) {
         pos: pos.into(),
         speed: vel.into(),
         ty: mob.server_type,
-        accel: (vel.normalize() * mob.accel).into(),
+        accel: (vel.normalized() * mob.accel).into(),
         max_speed: mob.max_speed,
       });
     } else {

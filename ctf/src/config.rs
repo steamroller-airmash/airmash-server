@@ -1,5 +1,6 @@
 use std::time::Duration;
 
+use airmash::util::NalgebraExt;
 use airmash::Vector2;
 
 pub const BLUE_TEAM: u16 = 1;

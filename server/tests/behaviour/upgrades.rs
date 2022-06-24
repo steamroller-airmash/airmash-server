@@ -4,6 +4,7 @@ use airmash_protocol::ServerPacket;
 use airmash_server::component::*;
 use airmash_server::event::PlayerKilled;
 use airmash_server::resource::GameConfig;
+use airmash_server::util::NalgebraExt;
 use airmash_server::{FireMissileInfo, Vector2};
 use server::test::TestGame;
 

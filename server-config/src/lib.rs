@@ -29,7 +29,7 @@ pub use self::plane::PlanePrototype;
 pub use self::powerup::PowerupPrototype;
 pub use self::special::*;
 
-pub type Vector2 = nalgebra::Vector2<f32>;
+pub type Vector2 = ultraviolet::Vec2;
 
 mod sealed {
   pub trait Sealed {}

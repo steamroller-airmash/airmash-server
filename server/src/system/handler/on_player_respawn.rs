@@ -2,6 +2,7 @@ use crate::component::*;
 use crate::config::PlanePrototypeRef;
 use crate::event::{PlayerPowerup, PlayerRespawn, PlayerSpawn};
 use crate::resource::{Config, GameConfig};
+use crate::util::NalgebraExt;
 use crate::{AirmashGame, EntitySetBuilder, Vector2};
 
 #[handler]

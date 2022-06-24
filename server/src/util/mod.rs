@@ -11,8 +11,10 @@ pub(crate) mod escapes;
 mod powerup_spawner;
 pub(crate) mod serde;
 pub mod spectate;
+mod vector;
 
 pub use self::powerup_spawner::PeriodicPowerupSpawner;
+pub use self::vector::NalgebraExt;
 
 pub fn convert_time(dur: Duration) -> Time {
   dur.as_secs_f32() * 60.0

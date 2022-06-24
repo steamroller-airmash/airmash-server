@@ -3,6 +3,7 @@ use std::time::Duration;
 use airmash_protocol::{KeyCode, MobType, ServerPacket};
 use airmash_server::component::Position;
 use airmash_server::resource::GameConfig;
+use airmash_server::util::NalgebraExt;
 use airmash_server::Vector2;
 use server::test::TestGame;
 use server_config::GamePrototype;

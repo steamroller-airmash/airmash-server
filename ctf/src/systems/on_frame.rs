@@ -1,6 +1,7 @@
 use airmash::component::*;
 use airmash::event::Frame;
 use airmash::resource::collision::LayerSpec;
+use airmash::util::NalgebraExt;
 use airmash::AirmashGame;
 use smallvec::SmallVec;
 

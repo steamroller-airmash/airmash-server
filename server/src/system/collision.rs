@@ -11,6 +11,7 @@ use crate::event::{
   EventBounce, MissileTerrainCollision, PlayerMissileCollision, PlayerMobCollision,
 };
 use crate::resource::collision::*;
+use crate::util::NalgebraExt;
 use crate::AirmashGame;
 
 struct FrameId(usize);
@@ -170,7 +171,7 @@ fn collide_player_terrain(game: &mut AirmashGame) {
     };
 
     let rel = collision.0.pos - collision.1.pos;
-    let newvel = rel.normalize() * vel.norm().max(1.0);
+    let newvel = rel.normalized() * vel.norm().max(1.0);
     let old_vel = std::mem::replace(&mut vel.0, newvel);
 
     events.push(EventBounce {
