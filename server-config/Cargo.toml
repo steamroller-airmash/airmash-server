@@ -8,11 +8,7 @@ script = [ "rlua", "serde-rlua" ]
 
 [dependencies]
 serde = { version = "1.0", features = [ "derive" ] }
-serde-value = "0.7"
-serde_path_to_error = "0.1.7"
-nalgebra = { version = "0.31", features = ["serde-serialize"] }
 ultraviolet = { version = "0.9", features = ["serde", "mint"] }
-doc-cfg = "0.1"
 
 rlua = { version = "0.19", optional = true }
 serde-rlua = { path = "../utils/serde-rlua", optional = true }
@@ -24,6 +20,7 @@ features = [ "serde" ]
 
 [dev-dependencies]
 serde_json = "1.0"
+serde_path_to_error = "0.1.7"
 anyhow = "1.0"
 
 [[example]]
