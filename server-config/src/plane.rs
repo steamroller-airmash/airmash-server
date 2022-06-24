@@ -4,7 +4,7 @@ use std::time::Duration;
 use protocol::PlaneType;
 use serde::{Deserialize, Serialize};
 
-use crate::util::duration;
+use crate::util::{duration, vector};
 use crate::{
   MissilePrototype, PrototypeRef, PtrRef, SpecialPrototype, StringRef, ValidationError, Vector2,
 };
@@ -58,6 +58,7 @@ pub struct PlanePrototype<'a, Ref: PrototypeRef<'a> = StringRef> {
   /// The offset at which the missile will be fired from the plane. X
   /// corresponds to the distance in front of the plane while Y gives the
   /// distance sideways from the plane and will alternate sides with each shot.
+  #[serde(with = "vector")]
   pub missile_offset: Vector2,
 
   /// The energy that it takes the plane to fire a single shot.
@@ -99,6 +100,7 @@ pub struct PlanePrototype<'a, Ref: PrototypeRef<'a> = StringRef> {
   pub brake: f32,
 
   /// Displacement of the outside missile when the plane fires with an inferno.
+  #[serde(with = "vector")]
   pub inferno_offset: Vector2,
   /// Angle of the outside missile when the plane fires with an inferno.
   pub inferno_angle: f32,
