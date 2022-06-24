@@ -47,13 +47,13 @@ pub mod system;
 pub mod util;
 
 pub use hecs::Entity;
+pub use nalgebra::Vector2;
 pub use server_macros::handler;
 
 pub use self::dispatch::{Event, EventDispatcher, EventHandler};
 pub use self::task::{GameRef, TaskScheduler};
 pub use self::world::{AirmashGame, Resources};
 pub use self::worldext::{EntitySetBuilder, FireMissileInfo};
-pub use crate::protocol::Vector2;
 
 /// Exports needed by the handler macro.
 #[doc(hidden)]

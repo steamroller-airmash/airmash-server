@@ -149,6 +149,7 @@ pub fn process_packets(game: &mut AirmashGame) {
         time,
         packet,
       }),
+      unknown => debug!("Got unexpected packet: {:?}", unknown),
     }
   }
 }
@@ -192,7 +193,7 @@ fn handle_login(game: &mut AirmashGame, mut login: Login, conn: ConnectionId) {
       game.send_to_conn(
         conn,
         s::Error {
-          error: airmash_protocol::ErrorType::IncorrectProtocolLevel,
+          error: airmash_protocol::ErrorType::IncorrectProtocol,
         },
       );
       return;
@@ -220,7 +221,7 @@ fn handle_login(game: &mut AirmashGame, mut login: Login, conn: ConnectionId) {
       game.send_to_conn(
         conn,
         s::Error {
-          error: airmash_protocol::ErrorType::UnknownError,
+          error: airmash_protocol::ErrorType::Unknown(255),
         },
       );
       let _ = game.world.despawn(entity);

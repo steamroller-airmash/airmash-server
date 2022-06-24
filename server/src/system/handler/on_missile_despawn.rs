@@ -26,7 +26,7 @@ fn send_despawn_packet(event: &MissileDespawn, game: &mut AirmashGame) {
       pos.0,
       s::MobDespawnCoords {
         id: event.missile.id() as _,
-        pos: pos.0,
+        pos: pos.into(),
         ty: mob.server_type,
       },
     );

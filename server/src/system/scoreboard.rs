@@ -48,7 +48,7 @@ fn send_packets(game: &mut AirmashGame) {
       },
       s::ScoreBoardRanking {
         id: player.id() as _,
-        pos: low_res_pos,
+        pos: low_res_pos.map(|x| x.into()),
       },
     ));
   }

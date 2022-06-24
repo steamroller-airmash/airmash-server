@@ -37,7 +37,7 @@ fn send_packets(event: &PlayerSpectate, game: &mut AirmashGame) {
       PlayerKill {
         id: event.player.id() as _,
         killer: None,
-        pos: Vector2::zeros(),
+        pos: Vector2::zeros().into(),
       },
     );
   }

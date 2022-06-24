@@ -17,7 +17,7 @@ rlua = { version = "0.19", optional = true }
 serde-rlua = { path = "../utils/serde-rlua", optional = true }
 
 [dependencies.protocol]
-version = "0.5"
+version = "0.6.2"
 package = "airmash-protocol"
 features = [ "serde" ]
 

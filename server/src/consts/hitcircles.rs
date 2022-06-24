@@ -1,4 +1,5 @@
-use airmash_protocol::{PlaneType, Vector2};
+use crate::protocol::PlaneType;
+use crate::Vector2;
 
 type HitCircle = (Vector2<f32>, f32);
 
@@ -57,5 +58,6 @@ pub fn hitcircles_for_plane(plane: PlaneType) -> &'static [HitCircle] {
     PlaneType::Mohawk => MOHAWK_HC,
     PlaneType::Prowler => PROWLER_HC,
     PlaneType::Tornado => TORNADO_HC,
+    _ => panic!("got unexpected plane type {:?}", plane),
   }
 }

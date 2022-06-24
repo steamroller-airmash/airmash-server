@@ -24,9 +24,9 @@ fn send_boost_packet(event: &EventBoost, game: &mut AirmashGame) {
       clock,
       id: event.player.id() as _,
       boost: event.boosting,
-      pos: pos.0,
+      pos: pos.into(),
       rot: rot.0,
-      speed: vel.0,
+      speed: vel.into(),
       energy: energy.0,
       energy_regen: regen.0,
     };

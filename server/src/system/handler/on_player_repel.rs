@@ -63,9 +63,9 @@ fn send_packet(event: &PlayerRepel, game: &mut AirmashGame) {
       health_regen: health_regen.0,
       energy: energy.0,
       energy_regen: energy_regen.0,
-      pos: pos.0,
+      pos: pos.into(),
       rot: rot.0,
-      speed: vel.0,
+      speed: vel.into(),
     });
   }
 
@@ -87,9 +87,9 @@ fn send_packet(event: &PlayerRepel, game: &mut AirmashGame) {
 
     missiles.push(s::EventRepelMob {
       id: missile.id() as _,
-      pos: pos.0,
-      accel: accel.0,
-      speed: vel.0,
+      pos: pos.into(),
+      accel: accel.into(),
+      speed: vel.into(),
       max_speed: mob.max_speed,
       ty: mob.server_type,
     });
@@ -100,14 +100,14 @@ fn send_packet(event: &PlayerRepel, game: &mut AirmashGame) {
     id: event.player.id() as _,
     energy: energy.0,
     energy_regen: regen.0,
-    pos: pos.0,
+    pos: pos.into(),
     rot: rot.0,
-    speed: vel.0,
+    speed: vel.into(),
     players,
     mobs: missiles,
   };
 
-  game.send_to_visible(packet.pos, packet);
+  game.send_to_visible(packet.pos.into(), packet);
 }
 
 #[handler(priority = crate::priority::MEDIUM)]

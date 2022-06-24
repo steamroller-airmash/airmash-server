@@ -111,7 +111,7 @@ fn send_game_end_packet(event: &GameEndEvent, game: &mut AirmashGame) {
   drop(stats);
 
   let packet = ServerCustom {
-    ty: airmash::protocol::ServerCustomType::CTFWin,
+    ty: airmash::protocol::ServerCustomType::CTF,
     data: text.into(),
   };
 

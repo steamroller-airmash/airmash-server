@@ -1,7 +1,8 @@
 use std::borrow::Cow;
 use std::time::Duration;
 
-use protocol::{PlaneType, Vector2};
+use nalgebra::Vector2;
+use protocol::PlaneType;
 use serde::{Deserialize, Serialize};
 
 use crate::util::duration;

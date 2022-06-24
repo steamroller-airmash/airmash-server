@@ -1,11 +1,9 @@
 use std::time::Duration;
 
-use airmash_protocol::Vector2;
-
 use crate::component::*;
 use crate::event::{PlayerKilled, PlayerRespawn};
 use crate::resource::{GameConfig, TaskScheduler, ThisFrame};
-use crate::{consts, AirmashGame};
+use crate::{consts, AirmashGame, Vector2};
 
 #[handler]
 fn launch_respawn_task(event: &PlayerKilled, game: &mut AirmashGame) {
@@ -85,11 +83,11 @@ fn send_player_killed_packets(event: &PlayerKilled, game: &mut AirmashGame) {
     PlayerKill {
       id: event.player.id() as _,
       killer: event.killer.map(|x| x.id() as _),
-      pos: pos.0,
+      pos: pos.into(),
     }
   };
 
-  game.send_to_visible(player_kill.pos, player_kill);
+  game.send_to_visible(player_kill.pos.into(), player_kill);
 
   // The killer may have left the game
   if let Some(killer) = event.killer {
@@ -99,7 +97,7 @@ fn send_player_killed_packets(event: &PlayerKilled, game: &mut AirmashGame) {
       Err(_) => return,
     };
 
-    if (pos.0 - player_kill.pos).norm_squared() >= view_radius * view_radius {
+    if (pos.0 - Vector2::from(player_kill.pos)).norm_squared() >= view_radius * view_radius {
       game.send_to(killer, player_kill);
     }
   };
