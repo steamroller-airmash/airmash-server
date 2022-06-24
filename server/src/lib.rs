@@ -17,7 +17,6 @@ pub mod config {
 }
 
 pub extern crate hecs;
-pub extern crate nalgebra;
 
 #[macro_use]
 extern crate serde;
