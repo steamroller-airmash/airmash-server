@@ -2,7 +2,6 @@
 
 use hecs::Entity;
 use kdtree::{KdTree, Node};
-use nalgebra::vector;
 
 use crate::Vector2;
 
@@ -146,7 +145,7 @@ impl Default for Terrain {
     for [x, y, r] in TERRAIN {
       entries.push(Entry {
         entity: Entity::from_bits(1 << 32).unwrap(),
-        pos: vector![x as f32, y as f32],
+        pos: Vector2::new(x as f32, y as f32),
         radius: r as f32,
         layer: 0,
       });

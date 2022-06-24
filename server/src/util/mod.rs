@@ -2,8 +2,6 @@
 
 use std::time::{Duration, Instant};
 
-use nalgebra::vector;
-
 use crate::component::{Effects, Upgrades};
 use crate::protocol::Time;
 use crate::resource::*;
@@ -49,5 +47,5 @@ pub fn get_server_upgrades(upgrades: &Upgrades, effects: &Effects) -> crate::pro
 
 pub fn rotate(v: Vector2, angle: f32) -> Vector2 {
   let (sin, cos) = angle.sin_cos();
-  vector![v.x * cos - v.y * sin, v.x * sin + v.y * cos]
+  Vector2::new(v.x * cos - v.y * sin, v.x * sin + v.y * cos)
 }

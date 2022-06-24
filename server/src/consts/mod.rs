@@ -2,11 +2,9 @@
 
 use std::time::Duration;
 
-use nalgebra::vector;
-
 use crate::config::MissilePrototypeRef;
 use crate::protocol::*;
-use crate::FireMissileInfo;
+use crate::{FireMissileInfo, Vector2};
 
 mod hitcircles;
 mod terrain;
@@ -41,17 +39,17 @@ pub const TORNADO_SPECIAL_ENERGY: Energy = 0.9;
 pub fn tornado_missile_details(proto: MissilePrototypeRef) -> [FireMissileInfo; 3] {
   [
     FireMissileInfo {
-      pos_offset: vector![0.0, 40.1],
+      pos_offset: Vector2::new(0.0, 40.1),
       rot_offset: 0.0,
       proto,
     },
     FireMissileInfo {
-      pos_offset: vector![15.0, 9.6],
+      pos_offset: Vector2::new(15.0, 9.6),
       rot_offset: -0.05,
       proto,
     },
     FireMissileInfo {
-      pos_offset: vector![-15.0, 9.6],
+      pos_offset: Vector2::new(-15.0, 9.6),
       rot_offset: 0.05,
       proto,
     },
@@ -60,27 +58,27 @@ pub fn tornado_missile_details(proto: MissilePrototypeRef) -> [FireMissileInfo; 
 pub fn tornado_inferno_missile_details(proto: MissilePrototypeRef) -> [FireMissileInfo; 5] {
   [
     FireMissileInfo {
-      pos_offset: vector![0.0, 40.1],
+      pos_offset: Vector2::new(0.0, 40.1),
       rot_offset: 0.0,
       proto,
     },
     FireMissileInfo {
-      pos_offset: vector![30.0, 15.0],
+      pos_offset: Vector2::new(30.0, 15.0),
       rot_offset: -0.1,
       proto,
     },
     FireMissileInfo {
-      pos_offset: vector![20.0, 25.0],
+      pos_offset: Vector2::new(20.0, 25.0),
       rot_offset: -0.05,
       proto,
     },
     FireMissileInfo {
-      pos_offset: vector![-20.0, 25.0],
+      pos_offset: Vector2::new(-20.0, 25.0),
       rot_offset: 0.05,
       proto,
     },
     FireMissileInfo {
-      pos_offset: vector![-30.0, 15.0],
+      pos_offset: Vector2::new(-30.0, 15.0),
       rot_offset: 0.1,
       proto,
     },

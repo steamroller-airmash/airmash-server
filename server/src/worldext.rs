@@ -111,7 +111,7 @@ impl AirmashGame {
 
       // Rotate starting angle 90 degrees so that it's inline with the plane. Change
       // this and missiles will shoot sideways
-      let dir = vector![rot.sin(), -rot.cos()];
+      let dir = Vector2::new(rot.sin(), -rot.cos());
       let vel = dir * (missile.base_speed + speed * missile.inherit_factor) * upg_factor;
 
       let mut builder = crate::defaults::build_default_missile();
@@ -200,7 +200,7 @@ impl AirmashGame {
 
     let mut infos = SmallVec::<[_; 3]>::new();
     infos.push(FireMissileInfo {
-      pos_offset: vector![start_y, start_x],
+      pos_offset: Vector2::new(start_y, start_x),
       rot_offset: 0.0,
       proto: missile,
     });
