@@ -1,7 +1,7 @@
+use std::collections::HashSet;
 use std::sync::Arc;
 use std::time::{Duration, Instant};
 
-use fxhash::FxHashSet as HashSet;
 use hecs::{Entity, EntityBuilder, NoSuchEntity};
 use smallvec::SmallVec;
 

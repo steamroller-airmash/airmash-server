@@ -1,4 +1,5 @@
-use fxhash::FxHashSet as HashSet;
+use std::collections::HashSet;
+
 use hecs::Entity;
 
 use crate::component::*;

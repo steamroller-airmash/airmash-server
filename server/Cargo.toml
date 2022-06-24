@@ -17,7 +17,6 @@ uuid = { version = "1.1", features = ["v4"] }
 smallvec = "1.6"
 itertools = "0.10"
 slab = "0.4"
-fxhash = "0.2"
 httparse = "1.6.0"
 humantime = "2.1.0"
 mint = "0.5"
