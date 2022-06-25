@@ -1,11 +1,11 @@
 use std::time::Duration;
 
-use airmash_server::util::NalgebraExt;
-use airmash_server::Vector2;
-use server::component::*;
-use server::protocol::{DespawnType, ServerPacket};
-use server::test::TestGame;
-use server_config::GamePrototype;
+use airmash::component::*;
+use airmash::config::GamePrototype;
+use airmash::protocol::{DespawnType, ServerPacket};
+use airmash::test::TestGame;
+use airmash::util::NalgebraExt;
+use airmash::Vector2;
 
 #[test]
 fn upgrade_despawns_on_time() {

@@ -1,6 +1,6 @@
+use airmash::protocol::client as c;
+use airmash::test::{MockConnection, MockConnectionEndpoint, TestGame};
 use airmash_protocol::ServerPacket;
-use server::protocol::client as c;
-use server::test::{MockConnection, MockConnectionEndpoint, TestGame};
 
 pub fn create_login_packet(name: &str) -> c::Login {
   c::Login {

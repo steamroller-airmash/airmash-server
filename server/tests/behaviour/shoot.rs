@@ -1,7 +1,7 @@
 use std::time::Duration;
 
-use server::protocol::{MobType, ServerPacket};
-use server::test::TestGame;
+use airmash::protocol::{MobType, ServerPacket};
+use airmash::test::TestGame;
 
 #[test]
 fn predator_fires_predator_missile() {

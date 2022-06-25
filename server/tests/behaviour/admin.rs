@@ -1,6 +1,6 @@
-use airmash_server::component::Position;
-use airmash_server::resource::GameConfig;
-use server::protocol::client as c;
+use airmash::component::Position;
+use airmash::protocol::client as c;
+use airmash::resource::GameConfig;
 
 #[test]
 fn admin_teleport() {

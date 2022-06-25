@@ -15,8 +15,5 @@ rand = "0.8"
 clap = "3.2.6"
 serde = "1.0"
 color-backtrace = "0.5"
+airmash = { path="../server", features = ["mt-network"] }
 
-[dependencies.airmash]
-path="../server"
-package = "airmash-server"
-features = ["mt-network"]

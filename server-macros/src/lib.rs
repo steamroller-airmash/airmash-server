@@ -22,7 +22,7 @@ mod handler;
 /// # Example
 /// ```ignore
 /// # struct MyEvent;
-/// # struct AirmashGame; // We can't import airmash_server here
+/// # struct AirmashGame; // We can't import airmash here
 /// const MY_CUSTOM_PRIORITY: i32 = 335;
 ///
 /// // Here we create an event handler with the default priority.
