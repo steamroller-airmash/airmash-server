@@ -1,6 +1,6 @@
 use crate::component::*;
-use crate::event::PlayerSpawn;
-use crate::resource::GameConfig;
+use crate::event::{PlayerPowerup, PlayerSpawn};
+use crate::resource::{Config, GameConfig};
 use crate::AirmashGame;
 
 // If GameConfig::always_upgraded is true then we need to stamp over the set of
@@ -20,4 +20,21 @@ fn override_player_upgrades(evt: &PlayerSpawn, game: &mut AirmashGame) {
   upgrades.defense = 5;
   upgrades.energy = 5;
   upgrades.missile = 5;
+}
+
+#[handler]
+fn give_spawn_shield(event: &PlayerSpawn, game: &mut AirmashGame) {
+  let proto = game
+    .resources
+    .read::<Config>()
+    .powerups
+    .get("spawn-shield")
+    .copied();
+
+  if let Some(proto) = proto {
+    game.dispatch(PlayerPowerup {
+      player: event.player,
+      powerup: proto,
+    });
+  }
 }
