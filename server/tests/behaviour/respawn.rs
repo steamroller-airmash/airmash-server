@@ -1,7 +1,7 @@
 use std::time::Duration;
 
-use server::protocol::{PlaneType, ServerPacket};
-use server::test::TestGame;
+use airmash::protocol::{PlaneType, ServerPacket};
+use airmash::test::TestGame;
 
 #[test]
 fn respawn_as_mohawk() {

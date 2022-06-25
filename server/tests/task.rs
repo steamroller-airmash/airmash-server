@@ -1,9 +1,9 @@
 use std::time::Duration;
 
+use airmash::protocol::server::ServerMessage;
+use airmash::resource::TaskScheduler;
+use airmash::test::*;
 use airmash_protocol::ServerPacket;
-use airmash_server::protocol::server::ServerMessage;
-use airmash_server::resource::TaskScheduler;
-use airmash_server::test::*;
 
 #[test]
 fn tasks_obey_test_time() {

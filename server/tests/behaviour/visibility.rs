@@ -1,12 +1,12 @@
 use std::time::Duration;
 
-use airmash_protocol::{KeyCode, MobType, ServerPacket};
-use airmash_server::component::Position;
-use airmash_server::resource::Config;
-use airmash_server::util::NalgebraExt;
-use airmash_server::Vector2;
-use server::test::TestGame;
-use server_config::GamePrototype;
+use airmash::component::Position;
+use airmash::config::GamePrototype;
+use airmash::protocol::{KeyCode, MobType, ServerPacket};
+use airmash::resource::Config;
+use airmash::test::TestGame;
+use airmash::util::NalgebraExt;
+use airmash::Vector2;
 
 /// If a player is at the very edge of another player's horizon then
 /// LeaveHorizon packets may not be sent correctly because the missile might be

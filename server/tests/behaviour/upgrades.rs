@@ -1,12 +1,12 @@
 use std::time::Duration;
 
+use airmash::component::*;
+use airmash::event::PlayerKilled;
+use airmash::resource::{Config, GameConfig};
+use airmash::test::TestGame;
+use airmash::util::NalgebraExt;
+use airmash::{FireMissileInfo, Vector2};
 use airmash_protocol::ServerPacket;
-use airmash_server::component::*;
-use airmash_server::event::PlayerKilled;
-use airmash_server::resource::{Config, GameConfig};
-use airmash_server::util::NalgebraExt;
-use airmash_server::{FireMissileInfo, Vector2};
-use server::test::TestGame;
 
 #[test]
 fn player_does_not_drop_upgrade_when_not_configured() {

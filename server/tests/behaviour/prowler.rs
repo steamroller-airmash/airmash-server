@@ -1,7 +1,7 @@
-use server::component::*;
-use server::protocol::KeyCode;
-use server::resource::Config;
-use server::Vector2;
+use airmash::component::*;
+use airmash::protocol::KeyCode;
+use airmash::resource::Config;
+use airmash::Vector2;
 
 #[test]
 fn prowler_decloak_on_hit() {

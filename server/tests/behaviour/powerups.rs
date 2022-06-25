@@ -1,10 +1,10 @@
 use std::time::Duration;
 
-use airmash_server::util::NalgebraExt;
-use server::component::*;
-use server::protocol::{server as s, ServerPacket};
-use server::test::TestGame;
-use server::Vector2;
+use airmash::component::*;
+use airmash::protocol::{server as s, ServerPacket};
+use airmash::test::TestGame;
+use airmash::util::NalgebraExt;
+use airmash::Vector2;
 
 #[test]
 fn player_is_upgraded_on_collision_with_upgrade() {

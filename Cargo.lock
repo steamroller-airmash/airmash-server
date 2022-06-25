@@ -38,19 +38,7 @@ dependencies = [
 ]
 
 [[package]]
-name = "airmash-protocol"
-version = "0.6.2"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "a3f34bd68b89b81154bf6f0047b78fcb1fb0929d7c05595c7939c151bf218dd2"
-dependencies = [
- "bstr",
- "mint",
- "serde-feature-hack",
- "serde_json",
-]
-
-[[package]]
-name = "airmash-server"
+name = "airmash"
 version = "0.1.0"
 dependencies = [
  "airmash-protocol",
@@ -81,10 +69,22 @@ dependencies = [
 ]
 
 [[package]]
+name = "airmash-protocol"
+version = "0.6.2"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "a3f34bd68b89b81154bf6f0047b78fcb1fb0929d7c05595c7939c151bf218dd2"
+dependencies = [
+ "bstr",
+ "mint",
+ "serde-feature-hack",
+ "serde_json",
+]
+
+[[package]]
 name = "airmash-server-base"
 version = "0.0.1"
 dependencies = [
- "airmash-server",
+ "airmash",
  "clap",
  "env_logger",
  "log",
@@ -94,7 +94,7 @@ dependencies = [
 name = "airmash-server-ctf"
 version = "0.0.1"
 dependencies = [
- "airmash-server",
+ "airmash",
  "bstr",
  "clap",
  "env_logger",
@@ -109,7 +109,7 @@ dependencies = [
 name = "airmash-server-ffa"
 version = "0.0.1"
 dependencies = [
- "airmash-server",
+ "airmash",
  "clap",
  "color-backtrace",
  "env_logger",

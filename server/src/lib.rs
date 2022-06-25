@@ -23,7 +23,7 @@ extern crate log;
 #[macro_use]
 extern crate server_macros;
 
-extern crate self as airmash_server;
+extern crate self as airmash;
 
 #[macro_use]
 mod macros;

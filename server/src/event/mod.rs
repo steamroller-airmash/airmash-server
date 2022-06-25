@@ -19,7 +19,7 @@
 //! Creating an event handler via the [`handler`] macro will look something like
 //! this:
 //! ```
-//! # use airmash_server::{handler, AirmashGame};
+//! # use airmash::{handler, AirmashGame};
 //! # struct InsertEventHere;
 //! #[handler]
 //! fn my_custom_handler(event: &InsertEventHere, game: &mut AirmashGame) {
@@ -35,7 +35,7 @@
 //! To do this we must first define a handler and then later on register an
 //! instance of it with whatever [`AirmashGame`] instance we choose.
 //! ```
-//! # use airmash_server::{EventHandler, AirmashGame, event::Frame};
+//! # use airmash::{EventHandler, AirmashGame, event::Frame};
 //! #[derive(Default)]
 //! pub struct CountFrames(usize);
 //!

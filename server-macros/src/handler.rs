@@ -55,8 +55,8 @@ pub fn handler(
 
 fn impl_handler(item: ItemFn, args: MacroArgs) -> Result<TokenStream> {
   let name = &item.sig.ident;
-  let krate = match proc_macro_crate::crate_name("airmash-server").unwrap_or(FoundCrate::Itself) {
-    FoundCrate::Itself => Ident::new("airmash_server", Span::call_site()),
+  let krate = match proc_macro_crate::crate_name("airmash").unwrap_or(FoundCrate::Itself) {
+    FoundCrate::Itself => Ident::new("airmash", Span::call_site()),
     FoundCrate::Name(name) => Ident::new(&name, Span::call_site()),
   };
 
