@@ -59,7 +59,10 @@ fn main() {
   game
     .resources
     .write::<airmash::resource::GameConfig>()
-    .inner = airmash::resource::Config::new(config).unwrap();
+    .inner = airmash::resource::Config::new(config.clone()).unwrap();
+  game
+    .resources
+    .insert(airmash::resource::Config::new(config).unwrap());
 
   airmash_server_ctf::setup_ctf_server(&mut game);
 

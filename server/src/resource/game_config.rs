@@ -48,6 +48,7 @@ pub struct GameConfig {
   /// TODO: This should be replaced with authenticating for admin commands.
   pub admin_enabled: bool,
 
+  #[deprecated]
   pub inner: server_config::GameConfig,
 }
 

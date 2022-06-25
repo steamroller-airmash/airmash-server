@@ -75,7 +75,8 @@ fn main() {
   }
 
   game.resources.write::<server::resource::GameConfig>().inner =
-    server::resource::Config::new(config).unwrap();
+    server::resource::Config::new(config.clone()).unwrap();
+  game.resources.insert(server::resource::Config::new(config).unwrap());
 
   game.run_until_shutdown();
 }

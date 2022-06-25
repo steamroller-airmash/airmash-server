@@ -59,7 +59,10 @@ fn main() {
   game
     .resources
     .write::<airmash_server::resource::GameConfig>()
-    .inner = airmash_server::resource::Config::new(config).unwrap();
+    .inner = airmash_server::resource::Config::new(config.clone()).unwrap();
+  game
+    .resources
+    .insert(airmash_server::resource::Config::new(config).unwrap());
 
   game.run_until_shutdown();
 }
