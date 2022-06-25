@@ -1,8 +1,8 @@
 use std::env;
 
-use airmash_server::protocol::GameType;
-use airmash_server::resource::RegionName;
-use airmash_server::*;
+use airmash::protocol::GameType;
+use airmash::resource::RegionName;
+use airmash::*;
 use clap::arg;
 
 fn set_default_var(name: &str, value: &str) {
@@ -39,9 +39,9 @@ fn main() {
   game.resources.insert(GameType::FFA);
 
   // Use the FFA scoreboard.
-  airmash_server::system::ffa::register_all(&mut game);
+  airmash::system::ffa::register_all(&mut game);
 
-  let mut config = airmash_server::config::GamePrototype::default();
+  let mut config = airmash::config::GamePrototype::default();
   if let Some(path) = matches.value_of("config") {
     let script = match std::fs::read_to_string(path) {
       Ok(script) => script,
@@ -58,7 +58,7 @@ fn main() {
 
   game
     .resources
-    .insert(airmash_server::resource::Config::new(config).unwrap());
+    .insert(airmash::resource::Config::new(config).unwrap());
 
   game.run_until_shutdown();
 }
