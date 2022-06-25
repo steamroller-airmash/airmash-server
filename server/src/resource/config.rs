@@ -45,6 +45,7 @@ pub struct PlaneInfo {
   // Offset of missile relative to the plane when fired.
   //
   // The horizontal (Y) offset will alternate sides with every shot.
+  #[serde(with = "vector")]
   pub missile_offset: Vector2,
 
   // Angle and displacement of the other two missiles when inferno firing
