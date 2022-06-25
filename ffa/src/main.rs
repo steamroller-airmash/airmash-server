@@ -74,9 +74,9 @@ fn main() {
       .expect("Error while running config file");
   }
 
-  game.resources.write::<server::resource::GameConfig>().inner =
-    server::resource::Config::new(config.clone()).unwrap();
-  game.resources.insert(server::resource::Config::new(config).unwrap());
+  game
+    .resources
+    .insert(server::resource::Config::new(config).unwrap());
 
   game.run_until_shutdown();
 }

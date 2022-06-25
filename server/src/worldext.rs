@@ -11,7 +11,7 @@ use crate::event::{EntitySpawn, MobSpawn, PlayerFire};
 use crate::network::{ConnectionId, ConnectionMgr};
 use crate::protocol::{v5, MobType, ServerPacket};
 use crate::resource::collision::LayerSpec;
-use crate::resource::{GameConfig, LastFrame, ThisFrame};
+use crate::resource::{Config, LastFrame, ThisFrame};
 use crate::util::NalgebraExt;
 use crate::{AirmashGame, Vector2};
 
@@ -241,14 +241,14 @@ impl AirmashGame {
       "Can only spawn stationary mobs"
     );
 
-    let gconfig = self.resources.read::<GameConfig>();
+    let config = self.resources.read::<Config>();
     let proto = *match mob {
-      MobType::Inferno => gconfig.mobs.get("inferno").unwrap(),
-      MobType::Shield => gconfig.mobs.get("shield").unwrap(),
-      MobType::Upgrade => gconfig.mobs.get("upgrade").unwrap(),
+      MobType::Inferno => config.mobs.get("inferno").unwrap(),
+      MobType::Shield => config.mobs.get("shield").unwrap(),
+      MobType::Upgrade => config.mobs.get("upgrade").unwrap(),
       _ => unreachable!(),
     };
-    drop(gconfig);
+    drop(config);
 
     let this_frame = self.this_frame();
     let entity = self.world.spawn((
@@ -445,7 +445,7 @@ impl EntitySetBuilder {
     use crate::resource::collision::PlayerPosDb;
 
     let db = game.resources.read::<PlayerPosDb>();
-    let config = game.resources.read::<GameConfig>();
+    let config = game.resources.read::<Config>();
 
     let mut me = Self::default();
     db.query(
@@ -462,7 +462,7 @@ impl EntitySetBuilder {
     use crate::resource::collision::PlayerPosDb;
 
     let db = game.resources.read::<PlayerPosDb>();
-    let config = game.resources.read::<GameConfig>();
+    let config = game.resources.read::<Config>();
 
     let mut me = Self::default();
     db.query(pos, config.view_radius, LayerSpec::None, &mut me.entries);
