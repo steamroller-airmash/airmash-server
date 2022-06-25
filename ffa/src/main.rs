@@ -1,11 +1,11 @@
 use std::env;
 use std::time::Duration;
 
+use airmash::protocol::GameType;
+use airmash::resource::RegionName;
+use airmash::util::PeriodicPowerupSpawner;
+use airmash::*;
 use clap::arg;
-use server::protocol::GameType;
-use server::resource::RegionName;
-use server::util::PeriodicPowerupSpawner;
-use server::*;
 
 mod systems;
 
@@ -43,7 +43,7 @@ fn main() {
   game.resources.insert(GameType::FFA);
 
   // Use the provided FFA scoreboard systems.
-  server::system::ffa::register_all(&mut game);
+  airmash::system::ffa::register_all(&mut game);
 
   // Inferno in Europe
   game.register(PeriodicPowerupSpawner::inferno(
@@ -59,7 +59,7 @@ fn main() {
     Duration::from_secs(105),
   ));
 
-  let mut config = server::config::GamePrototype::default();
+  let mut config = airmash::config::GamePrototype::default();
   if let Some(path) = matches.value_of("config") {
     let script = match std::fs::read_to_string(path) {
       Ok(script) => script,
@@ -76,7 +76,7 @@ fn main() {
 
   game
     .resources
-    .insert(server::resource::Config::new(config).unwrap());
+    .insert(airmash::resource::Config::new(config).unwrap());
 
   game.run_until_shutdown();
 }

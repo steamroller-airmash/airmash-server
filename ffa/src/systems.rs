@@ -1,7 +1,7 @@
-use server::component::*;
-use server::event::{PlayerJoin, PlayerRespawn};
-use server::resource::collision::{LayerSpec, Terrain};
-use server::{AirmashGame, Vector2};
+use airmash::component::*;
+use airmash::event::{PlayerJoin, PlayerRespawn};
+use airmash::resource::collision::{LayerSpec, Terrain};
+use airmash::{AirmashGame, Vector2};
 
 const SPAWN_TOP_RIGHT: Vector2 = Vector2::new(-1325.0, -4330.0);
 const SPAWN_SIZE: Vector2 = Vector2::new(3500.0, 2500.0);
@@ -23,7 +23,7 @@ pub fn select_spawn_position(game: &AirmashGame) -> Vector2 {
   }
 }
 
-#[server::handler(priority = server::priority::PRE_LOGIN)]
+#[airmash::handler(priority = airmash::priority::PRE_LOGIN)]
 fn choose_join_position(event: &PlayerJoin, game: &mut AirmashGame) {
   let spawn_pos = select_spawn_position(game);
 
@@ -32,7 +32,7 @@ fn choose_join_position(event: &PlayerJoin, game: &mut AirmashGame) {
   }
 }
 
-#[server::handler(priority = server::priority::HIGH)]
+#[airmash::handler(priority = airmash::priority::HIGH)]
 fn choose_respawn_position(event: &PlayerRespawn, game: &mut AirmashGame) {
   let spawn_pos = select_spawn_position(game);
 

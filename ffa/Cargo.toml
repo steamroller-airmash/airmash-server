@@ -9,10 +9,14 @@ repository = 'https://github.com/steamroller-airmash/airmash-server'
 edition = "2018"
 
 [dependencies]
-server = { path="../server", package="airmash-server" }
 log = "0.4"
 env_logger = "0.9"
 rand = "0.8"
 clap = "3.2.6"
 serde = "1.0"
 color-backtrace = "0.5"
+
+[dependencies.airmash]
+path="../server"
+package = "airmash-server"
+features = ["mt-network"]
