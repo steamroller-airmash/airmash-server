@@ -36,8 +36,9 @@ pub(crate) mod option_duration {
 }
 
 pub(crate) mod vector {
-  use crate::Vector2;
   use serde::{Deserialize, Deserializer, Serialize, Serializer};
+
+  use crate::Vector2;
 
   pub(crate) fn serialize<S: Serializer>(v: &Vector2, ser: S) -> Result<S::Ok, S::Error> {
     [v.x, v.y].serialize(ser)
