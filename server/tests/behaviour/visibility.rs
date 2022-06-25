@@ -3,8 +3,8 @@ use std::time::Duration;
 use airmash_protocol::{KeyCode, MobType, ServerPacket};
 use airmash_server::component::Position;
 use airmash_server::resource::GameConfig;
+use airmash_server::util::NalgebraExt;
 use airmash_server::Vector2;
-use nalgebra::vector;
 use server::test::TestGame;
 use server_config::GamePrototype;
 
@@ -28,7 +28,7 @@ fn out_of_visibility_missiles_properly_deleted() {
 
   let view_radius = game.resources.read::<GameConfig>().view_radius;
 
-  game.world.get_mut::<Position>(ent2).unwrap().0 = vector![0.0, -view_radius + 1.0];
+  game.world.get_mut::<Position>(ent2).unwrap().0 = Vector2::new(0.0, -view_radius + 1.0);
   game.run_count(60);
 
   client2.send_key(KeyCode::Fire, true);
@@ -76,9 +76,9 @@ fn out_of_visibility_collision() {
   let id2 = ent2.id() as u16;
 
   // There is a mountain at (x: -252, y: -1504) with r = 60
-  let object = vector![-252.0, -1504.0];
+  let object = Vector2::new(-252.0, -1504.0);
 
-  let pos = vector![object.x, object.y - offset];
+  let pos = Vector2::new(object.x, object.y - offset);
 
   game.world.get_mut::<Position>(ent1).unwrap().0 = pos;
   game.world.get_mut::<Position>(ent2).unwrap().0 = pos;

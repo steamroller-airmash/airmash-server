@@ -1,15 +1,13 @@
 use std::f32::consts::{FRAC_PI_2, PI, TAU};
 use std::time::Duration;
 
-use nalgebra::vector;
-
 use crate::component::*;
 use crate::config::{MissilePrototypeRef, PlanePrototypeRef};
 use crate::event::PlayerJoin;
 use crate::protocol::server::PlayerUpdate;
 use crate::protocol::Upgrades as ServerUpgrades;
 use crate::resource::*;
-use crate::util::get_current_clock;
+use crate::util::{get_current_clock, NalgebraExt};
 use crate::{AirmashGame, Vector2};
 
 pub fn update(game: &mut AirmashGame) {
@@ -91,7 +89,7 @@ fn update_player_positions(game: &mut AirmashGame) {
 
     if let Some(angle) = movement_angle {
       let mult = plane.accel * delta * boost_factor;
-      vel.0 += vector![mult * angle.sin(), mult * -angle.cos()];
+      vel.0 += Vector2::new(mult * angle.sin(), mult * -angle.cos());
     }
 
     let old_vel = vel.0;
@@ -122,7 +120,7 @@ fn update_player_positions(game: &mut AirmashGame) {
     pos.0 += old_vel * delta + (vel.0 - old_vel) * delta * 0.5;
     rot.0 = (rot.0 % TAU + TAU) % TAU;
 
-    let bound = vector![16352.0, 8160.0];
+    let bound = Vector2::new(16352.0, 8160.0);
     if pos.x.abs() > bound.x {
       pos.x = pos.x.signum() * bound.x;
     }
@@ -151,7 +149,7 @@ fn update_missile_positions(game: &mut AirmashGame) {
 
     pos.0 += oldvel * delta + (vel.0 - oldvel) * delta * 0.5;
 
-    let bounds = vector![16384.0, 8192.0];
+    let bounds = Vector2::new(16384.0, 8192.0);
     let size = bounds * 2.0;
 
     if pos.x.abs() > bounds.x {

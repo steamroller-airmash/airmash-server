@@ -1,12 +1,13 @@
 use std::borrow::Cow;
 use std::time::Duration;
 
-use nalgebra::Vector2;
 use protocol::PlaneType;
 use serde::{Deserialize, Serialize};
 
-use crate::util::duration;
-use crate::{MissilePrototype, PrototypeRef, PtrRef, SpecialPrototype, StringRef, ValidationError};
+use crate::util::{duration, vector};
+use crate::{
+  MissilePrototype, PrototypeRef, PtrRef, SpecialPrototype, StringRef, ValidationError, Vector2,
+};
 
 #[derive(Clone, Debug, Serialize, Deserialize)]
 #[serde(deny_unknown_fields)]
@@ -57,7 +58,8 @@ pub struct PlanePrototype<'a, Ref: PrototypeRef<'a> = StringRef> {
   /// The offset at which the missile will be fired from the plane. X
   /// corresponds to the distance in front of the plane while Y gives the
   /// distance sideways from the plane and will alternate sides with each shot.
-  pub missile_offset: Vector2<f32>,
+  #[serde(with = "vector")]
+  pub missile_offset: Vector2,
 
   /// The energy that it takes the plane to fire a single shot.
   pub fire_energy: f32,
@@ -98,7 +100,8 @@ pub struct PlanePrototype<'a, Ref: PrototypeRef<'a> = StringRef> {
   pub brake: f32,
 
   /// Displacement of the outside missile when the plane fires with an inferno.
-  pub inferno_offset: Vector2<f32>,
+  #[serde(with = "vector")]
+  pub inferno_offset: Vector2,
   /// Angle of the outside missile when the plane fires with an inferno.
   pub inferno_angle: f32,
 }

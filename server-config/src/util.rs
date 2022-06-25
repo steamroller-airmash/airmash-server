@@ -35,6 +35,20 @@ pub(crate) mod option_duration {
   }
 }
 
+pub(crate) mod vector {
+  use serde::{Deserialize, Deserializer, Serialize, Serializer};
+
+  use crate::Vector2;
+
+  pub(crate) fn serialize<S: Serializer>(v: &Vector2, ser: S) -> Result<S::Ok, S::Error> {
+    [v.x, v.y].serialize(ser)
+  }
+
+  pub(crate) fn deserialize<'de, D: Deserializer<'de>>(de: D) -> Result<Vector2, D::Error> {
+    <[f32; 2]>::deserialize(de).map(From::from)
+  }
+}
+
 /// Wrapper type around [`ManuallyDrop`] which drops the contained value unless
 /// it is explicitly prevented from doing so.
 pub(crate) struct MaybeDrop<T> {

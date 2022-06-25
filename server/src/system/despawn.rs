@@ -2,6 +2,7 @@ use smallvec::SmallVec;
 
 use crate::component::{IsMissile, *};
 use crate::event::{MissileDespawn, MissileDespawnType, MobDespawn, MobDespawnType};
+use crate::util::NalgebraExt;
 use crate::AirmashGame;
 
 pub fn update(game: &mut AirmashGame) {

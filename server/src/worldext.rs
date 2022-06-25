@@ -1,9 +1,8 @@
+use std::collections::HashSet;
 use std::sync::Arc;
 use std::time::{Duration, Instant};
 
-use fxhash::FxHashSet as HashSet;
 use hecs::{Entity, EntityBuilder, NoSuchEntity};
-use nalgebra::vector;
 use smallvec::SmallVec;
 
 use crate::component::*;
@@ -13,6 +12,7 @@ use crate::network::{ConnectionId, ConnectionMgr};
 use crate::protocol::{v5, MobType, ServerPacket};
 use crate::resource::collision::LayerSpec;
 use crate::resource::{Config, GameConfig, LastFrame, ThisFrame};
+use crate::util::NalgebraExt;
 use crate::{AirmashGame, Vector2};
 
 /// Info required to spawn a new missile.
@@ -20,7 +20,7 @@ use crate::{AirmashGame, Vector2};
 pub struct FireMissileInfo {
   /// Starting offset of the missile, relative to the plane that is firing it.
   /// This will be rotated into the plane's frame of reference.
-  pub pos_offset: Vector2<f32>,
+  pub pos_offset: Vector2,
   /// Direction that the missile will accelerate in, relative to the direction
   /// the plane is facing when it fires.
   pub rot_offset: f32,
@@ -111,7 +111,7 @@ impl AirmashGame {
 
       // Rotate starting angle 90 degrees so that it's inline with the plane. Change
       // this and missiles will shoot sideways
-      let dir = vector![rot.sin(), -rot.cos()];
+      let dir = Vector2::new(rot.sin(), -rot.cos());
       let vel = dir * (missile.base_speed + speed * missile.inherit_factor) * upg_factor;
 
       let mut builder = crate::defaults::build_default_missile();
@@ -200,7 +200,7 @@ impl AirmashGame {
 
     let mut infos = SmallVec::<[_; 3]>::new();
     infos.push(FireMissileInfo {
-      pos_offset: vector![start_y, start_x],
+      pos_offset: Vector2::new(start_y, start_x),
       rot_offset: 0.0,
       proto: missile,
     });
@@ -210,18 +210,18 @@ impl AirmashGame {
       let angle = total_angle * frac;
 
       infos.push(FireMissileInfo {
-        pos_offset: vector![
+        pos_offset: Vector2::new(
           start_y + total_offset_y * frac,
-          start_x - total_offset_x * frac
-        ],
+          start_x - total_offset_x * frac,
+        ),
         rot_offset: -angle,
         proto: missile,
       });
       infos.push(FireMissileInfo {
-        pos_offset: vector![
+        pos_offset: Vector2::new(
           start_y - total_offset_y * frac,
-          start_x - total_offset_x * frac
-        ],
+          start_x - total_offset_x * frac,
+        ),
         rot_offset: angle,
         proto: missile,
       });
@@ -238,7 +238,7 @@ impl AirmashGame {
   /// entity.
   ///
   /// [`fire_missiles`]: crate::AirmashGame::fire_missiles
-  pub fn spawn_mob(&mut self, mob: MobType, pos: Vector2<f32>, lifetime: Duration) -> Entity {
+  pub fn spawn_mob(&mut self, mob: MobType, pos: Vector2, lifetime: Duration) -> Entity {
     assert!(
       matches!(mob, MobType::Inferno | MobType::Shield | MobType::Upgrade),
       "Can only spawn stationary mobs"
@@ -402,7 +402,7 @@ impl AirmashGame {
 
   /// Send a packet to all players that are within the visible range of the
   /// provided position.
-  pub fn send_to_visible(&self, pos: Vector2<f32>, packet: impl Into<ServerPacket>) {
+  pub fn send_to_visible(&self, pos: Vector2, packet: impl Into<ServerPacket>) {
     self.send_to_entities(EntitySetBuilder::visible(self, pos), packet);
   }
 
@@ -413,12 +413,7 @@ impl AirmashGame {
 
   /// Send a packet to all players on the provided team that are also within
   /// visible range of the provided position.
-  pub fn send_to_team_visible(
-    &self,
-    team: u16,
-    pos: Vector2<f32>,
-    packet: impl Into<ServerPacket>,
-  ) {
+  pub fn send_to_team_visible(&self, team: u16, pos: Vector2, packet: impl Into<ServerPacket>) {
     self.send_to_entities(EntitySetBuilder::team_visible(self, team, pos), packet);
   }
 
@@ -449,7 +444,7 @@ impl EntitySetBuilder {
 
   /// Create an entity set with all players on `team` within the view radius of
   /// `pos`.
-  pub fn team_visible(game: &AirmashGame, team: u16, pos: Vector2<f32>) -> Self {
+  pub fn team_visible(game: &AirmashGame, team: u16, pos: Vector2) -> Self {
     use crate::resource::collision::PlayerPosDb;
 
     let db = game.resources.read::<PlayerPosDb>();
@@ -466,7 +461,7 @@ impl EntitySetBuilder {
   }
 
   /// Create an entity set with all players within the view radius of `pos`.
-  pub fn visible(game: &AirmashGame, pos: Vector2<f32>) -> Self {
+  pub fn visible(game: &AirmashGame, pos: Vector2) -> Self {
     use crate::resource::collision::PlayerPosDb;
 
     let db = game.resources.read::<PlayerPosDb>();

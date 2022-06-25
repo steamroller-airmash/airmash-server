@@ -3,6 +3,7 @@ use std::time::Duration;
 use crate::component::*;
 use crate::event::{PlayerKilled, PlayerRespawn};
 use crate::resource::{GameConfig, TaskScheduler, ThisFrame};
+use crate::util::NalgebraExt;
 use crate::{consts, AirmashGame, Vector2};
 
 #[handler]

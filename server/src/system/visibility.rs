@@ -1,10 +1,12 @@
-use fxhash::FxHashSet as HashSet;
+use std::collections::HashSet;
+
 use hecs::Entity;
 
 use crate::component::*;
 use crate::event::{EntitySpawn, EventHorizon, MobSpawn, PlayerFire};
 use crate::resource::collision::LayerSpec;
 use crate::resource::{collision as c, GameConfig};
+use crate::util::NalgebraExt;
 use crate::AirmashGame;
 
 def_wrappers! {

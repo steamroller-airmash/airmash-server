@@ -1,6 +1,7 @@
 use crate::component::*;
 use crate::config::{MissilePrototypeRef, PlanePrototypeRef};
 use crate::event::{EventStealth, PlayerRepel};
+use crate::util::NalgebraExt;
 use crate::AirmashGame;
 
 #[handler]
@@ -129,7 +130,7 @@ fn repel_players(event: &PlayerRepel, game: &mut AirmashGame) {
       Err(_) => continue,
     };
 
-    let dir = (pos.0 - player_pos.0).normalize();
+    let dir = (pos.0 - player_pos.0).normalized();
     // TODO: The reflect speed constant didn't do what I wanted here so I've bumped
     //       it up to 10. This should probably be reevaluated at some point.
     vel.0 = dir * 10.0;
@@ -173,10 +174,10 @@ fn repel_missiles(event: &PlayerRepel, game: &mut AirmashGame) {
     traj.start = pos.0;
     traj.maxdist -= total_dist;
 
-    let dir = (pos.0 - player_pos.0).normalize();
+    let dir = (pos.0 - player_pos.0).normalized();
 
     vel.0 = dir * vel.0.norm();
-    accel.0 = (-accel.normalize() + dir).normalize() * mob.accel;
+    accel.0 = (-accel.normalized() + dir).normalized() * mob.accel;
     team.0 = player_team.0;
     owner.0 = event.player;
   }

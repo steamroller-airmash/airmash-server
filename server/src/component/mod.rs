@@ -17,13 +17,13 @@ pub use crate::protocol::{FlagCode, MobType, PlaneType, PowerupType};
 
 def_wrappers! {
   /// The position of an entity.
-  pub type Position = Vector2<f32>;
+  pub type Position = Vector2;
 
   /// The velocity of an entity.
-  pub type Velocity = Vector2<f32>;
+  pub type Velocity = Vector2;
 
   /// The acceleration of an entity.
-  pub type Accel = Vector2<f32>;
+  pub type Accel = Vector2;
 
   /// The rotation of an entity.
   pub type Rotation = crate::protocol::Rotation;
@@ -187,7 +187,7 @@ pub struct PrevUpgrades(pub Upgrades);
 /// lifetime.
 #[derive(Copy, Clone, Debug)]
 pub struct MissileTrajectory {
-  pub start: Vector2<f32>,
+  pub start: Vector2,
   pub maxdist: f32,
 }
 

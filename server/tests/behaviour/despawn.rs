@@ -1,5 +1,6 @@
 use std::time::Duration;
 
+use airmash_server::util::NalgebraExt;
 use airmash_server::Vector2;
 use server::component::*;
 use server::protocol::{DespawnType, ServerPacket};

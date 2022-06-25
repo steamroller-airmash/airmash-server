@@ -2,8 +2,6 @@
 
 use std::time::{Duration, Instant};
 
-use nalgebra::vector;
-
 use crate::component::{Effects, Upgrades};
 use crate::protocol::Time;
 use crate::resource::*;
@@ -13,8 +11,10 @@ pub(crate) mod escapes;
 mod powerup_spawner;
 pub(crate) mod serde;
 pub mod spectate;
+mod vector;
 
 pub use self::powerup_spawner::PeriodicPowerupSpawner;
+pub use self::vector::NalgebraExt;
 
 pub fn convert_time(dur: Duration) -> Time {
   dur.as_secs_f32() * 60.0
@@ -47,7 +47,7 @@ pub fn get_server_upgrades(upgrades: &Upgrades, effects: &Effects) -> crate::pro
   }
 }
 
-pub fn rotate(v: Vector2<f32>, angle: f32) -> Vector2<f32> {
+pub fn rotate(v: Vector2, angle: f32) -> Vector2 {
   let (sin, cos) = angle.sin_cos();
-  vector![v.x * cos - v.y * sin, v.x * sin + v.y * cos]
+  Vector2::new(v.x * cos - v.y * sin, v.x * sin + v.y * cos)
 }

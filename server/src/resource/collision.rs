@@ -2,8 +2,8 @@
 
 use hecs::Entity;
 use kdtree::{KdTree, Node};
-use nalgebra::vector;
 
+use crate::util::NalgebraExt;
 use crate::Vector2;
 
 def_wrappers! {
@@ -25,7 +25,7 @@ def_wrappers! {
 
 #[derive(Copy, Clone, Debug)]
 pub struct Entry {
-  pub pos: Vector2<f32>,
+  pub pos: Vector2,
   pub radius: f32,
   pub entity: Entity,
   pub layer: u16,
@@ -68,7 +68,7 @@ impl SpatialTree {
     self.tree.rebuild_from(&mut entries);
   }
 
-  pub fn contains(&self, pos: Vector2<f32>, rad: f32, layer: LayerSpec) -> bool {
+  pub fn contains(&self, pos: Vector2, rad: f32, layer: LayerSpec) -> bool {
     let pos = [pos.x, pos.y];
 
     match layer {
@@ -92,7 +92,7 @@ impl SpatialTree {
   /// [`query`]: self::SpatialTree::query
   pub fn query_pos<V: Extend<Entity>>(
     &self,
-    pos: Vector2<f32>,
+    pos: Vector2,
     rad: f32,
     layer: LayerSpec,
     out: &mut V,
@@ -115,13 +115,7 @@ impl SpatialTree {
   /// defined by `pos` and `rad`.
   ///
   /// This result is then filtered by the `LayerSpec` given in `layer`.
-  pub fn query<V: Extend<Entity>>(
-    &self,
-    pos: Vector2<f32>,
-    rad: f32,
-    layer: LayerSpec,
-    out: &mut V,
-  ) {
+  pub fn query<V: Extend<Entity>>(&self, pos: Vector2, rad: f32, layer: LayerSpec, out: &mut V) {
     let base = self.tree.within([pos.x, pos.y], rad);
 
     match layer {
@@ -152,7 +146,7 @@ impl Default for Terrain {
     for [x, y, r] in TERRAIN {
       entries.push(Entry {
         entity: Entity::from_bits(1 << 32).unwrap(),
-        pos: vector![x as f32, y as f32],
+        pos: Vector2::new(x as f32, y as f32),
         radius: r as f32,
         layer: 0,
       });

@@ -14,11 +14,11 @@ pub struct PeriodicPowerupSpawner {
   state: SpawnerState,
   interval: Duration,
   mob: MobType,
-  pos: Vector2<f32>,
+  pos: Vector2,
 }
 
 impl PeriodicPowerupSpawner {
-  pub fn new(mob: MobType, pos: Vector2<f32>, interval: Duration) -> Self {
+  pub fn new(mob: MobType, pos: Vector2, interval: Duration) -> Self {
     Self {
       mob,
       pos,
@@ -27,11 +27,11 @@ impl PeriodicPowerupSpawner {
     }
   }
 
-  pub fn inferno(pos: Vector2<f32>, interval: Duration) -> Self {
+  pub fn inferno(pos: Vector2, interval: Duration) -> Self {
     Self::new(MobType::Inferno, pos, interval)
   }
 
-  pub fn shield(pos: Vector2<f32>, interval: Duration) -> Self {
+  pub fn shield(pos: Vector2, interval: Duration) -> Self {
     Self::new(MobType::Shield, pos, interval)
   }
 }

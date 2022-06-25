@@ -20,18 +20,8 @@ bstr = "0.2"
 
 lazy_static = "1.4"
 smallvec = "1.6"
-phf = { version="0.10", features=["macros"] }
 
 [dependencies.airmash]
 path="../server"
 package = "airmash-server"
 features = ["mt-network"]
-
-# [dependencies.sentry]
-# optional = true
-# version = "*"
-
-# [dependencies.airmash-server]
-# path = '../server'
-# # Enable looking for X-Forwarded-For within the request
-# features = [ "proxied" ]

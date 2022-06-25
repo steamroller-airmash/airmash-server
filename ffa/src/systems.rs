@@ -3,11 +3,11 @@ use server::event::{PlayerJoin, PlayerRespawn};
 use server::resource::collision::{LayerSpec, Terrain};
 use server::{AirmashGame, Vector2};
 
-const SPAWN_TOP_RIGHT: Vector2<f32> = Vector2::new(-1325.0, -4330.0);
-const SPAWN_SIZE: Vector2<f32> = Vector2::new(3500.0, 2500.0);
+const SPAWN_TOP_RIGHT: Vector2 = Vector2::new(-1325.0, -4330.0);
+const SPAWN_SIZE: Vector2 = Vector2::new(3500.0, 2500.0);
 const SPAWN_RADIUS: f32 = 100.0;
 
-pub fn select_spawn_position(game: &AirmashGame) -> Vector2<f32> {
+pub fn select_spawn_position(game: &AirmashGame) -> Vector2 {
   let terrain = game.resources.read::<Terrain>();
 
   loop {

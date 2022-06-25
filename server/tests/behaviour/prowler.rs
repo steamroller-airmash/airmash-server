@@ -1,7 +1,7 @@
 use airmash_server::resource::GameConfig;
-use nalgebra::vector;
 use server::component::*;
 use server::protocol::KeyCode;
+use server::Vector2;
 
 #[test]
 fn prowler_decloak_on_hit() {
@@ -30,11 +30,11 @@ fn prowler_decloak_on_hit() {
 
   game
     .world
-    .insert(ent1, (Position(vector![0.0, -250.0]), prowler))
+    .insert(ent1, (Position(Vector2::new(0.0, -250.0)), prowler))
     .unwrap();
   game
     .world
-    .insert_one(ent2, Position(vector![0.0, 0.0]))
+    .insert_one(ent2, Position(Vector2::new(0.0, 0.0)))
     .unwrap();
 
   client1.send_key(KeyCode::Special, true);

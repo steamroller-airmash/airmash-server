@@ -3,7 +3,6 @@
 use std::ops::Index;
 use std::time::Duration;
 
-use nalgebra::vector;
 use serde_deserialize_over::DeserializeOver;
 
 use crate::protocol::{
@@ -46,7 +45,8 @@ pub struct PlaneInfo {
   // Offset of missile relative to the plane when fired.
   //
   // The horizontal (Y) offset will alternate sides with every shot.
-  pub missile_offset: Vector2<Distance>,
+  #[serde(with = "vector")]
+  pub missile_offset: Vector2,
 
   // Angle and displacement of the other two missiles when inferno firing
   // (assuming symmetry around central missile)
@@ -306,7 +306,7 @@ mod plane_defaults {
       fire_energy: 0.6,
 
       missile_type: MobType::PredatorMissile,
-      missile_offset: vector![35.0, 0.0],
+      missile_offset: Vector2::new(35.0, 0.0),
 
       missile_inferno_angle: 0.05,
       missile_inferno_offset_x: 18.0,
@@ -335,7 +335,7 @@ mod plane_defaults {
       fire_energy: 0.9,
 
       missile_type: MobType::GoliathMissile,
-      missile_offset: vector![35.0, 0.0],
+      missile_offset: Vector2::new(35.0, 0.0),
 
       missile_inferno_angle: 0.04,
       missile_inferno_offset_x: 30.0,
@@ -365,7 +365,7 @@ mod plane_defaults {
 
       missile_type: MobType::MohawkMissile,
       // This will have to be a special case
-      missile_offset: vector![10.0, 15.0],
+      missile_offset: Vector2::new(10.0, 15.0),
 
       missile_inferno_angle: 0.1,
       missile_inferno_offset_x: 0.0,
@@ -394,7 +394,7 @@ mod plane_defaults {
       fire_energy: 0.5,
 
       missile_type: MobType::TornadoSingleMissile,
-      missile_offset: vector![40.0, 0.0],
+      missile_offset: Vector2::new(40.0, 0.0),
 
       missile_inferno_angle: 0.05,
       missile_inferno_offset_x: 15.1,
@@ -423,7 +423,7 @@ mod plane_defaults {
       fire_energy: 0.75,
 
       missile_type: MobType::ProwlerMissile,
-      missile_offset: vector![35.0, 0.0],
+      missile_offset: Vector2::new(35.0, 0.0),
 
       missile_inferno_angle: 0.05,
       missile_inferno_offset_x: 18.0,

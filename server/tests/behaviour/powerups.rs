@@ -1,5 +1,6 @@
 use std::time::Duration;
 
+use airmash_server::util::NalgebraExt;
 use server::component::*;
 use server::protocol::{server as s, ServerPacket};
 use server::test::TestGame;
