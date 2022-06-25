@@ -26,7 +26,6 @@ tokio = { version="1.0", features=["rt", "sync", "io-util", "macros", "time", "r
 tokio-tungstenite = "0.17.1"
 
 serde = { version = "1.0", features = ["derive"] }
-serde-deserialize-over = "0.1.1"
 
 airmash-protocol = { version = "0.6.2", features = ["serde"] }
 server-macros = { path="../server-macros" }
@@ -36,10 +35,6 @@ anymap = { path="../utils/anymap" }
 
 [dev-dependencies]
 approx = "0.5"
-serde_json = "1.0"
-serde_path_to_error = "0.1"
-miette = { version = "4.7", features = [ "fancy" ] }
-thiserror = "1.0"
 
 [dependencies.futures-util]
 version = "0.3"
