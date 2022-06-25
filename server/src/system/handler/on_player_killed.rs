@@ -2,7 +2,7 @@ use std::time::Duration;
 
 use crate::component::*;
 use crate::event::{PlayerKilled, PlayerRespawn};
-use crate::resource::{GameConfig, TaskScheduler, ThisFrame};
+use crate::resource::{Config, GameConfig, TaskScheduler, ThisFrame};
 use crate::util::NalgebraExt;
 use crate::{consts, AirmashGame, Vector2};
 
@@ -10,6 +10,7 @@ use crate::{consts, AirmashGame, Vector2};
 fn launch_respawn_task(event: &PlayerKilled, game: &mut AirmashGame) {
   let tasks = game.resources.read::<TaskScheduler>();
   let game_config = game.resources.read::<GameConfig>();
+  let config = game.resources.read::<Config>();
   let this_frame = game.resources.read::<ThisFrame>();
 
   let query = game
@@ -28,7 +29,7 @@ fn launch_respawn_task(event: &PlayerKilled, game: &mut AirmashGame) {
 
   let event = *event;
   tasks.schedule(
-    this_frame.0 + game_config.respawn_delay,
+    this_frame.0 + config.respawn_delay,
     move |game: &mut AirmashGame| {
       let query = game
         .world
@@ -71,7 +72,7 @@ fn send_player_killed_packets(event: &PlayerKilled, game: &mut AirmashGame) {
     warn!("Player {:?} killed themselves?", event.player);
   }
 
-  let view_radius = game.resources.read::<GameConfig>().view_radius;
+  let view_radius = game.resources.read::<Config>().view_radius;
 
   let player_kill = {
     let query = game
@@ -174,6 +175,7 @@ fn update_upgrades(event: &PlayerKilled, game: &mut AirmashGame) {
 fn drop_upgrade(event: &PlayerKilled, game: &mut AirmashGame) {
   let this_frame = game.this_frame();
   let game_config = game.resources.read::<GameConfig>();
+  let config = game.resources.read::<Config>();
 
   // Do nothing if we aren't supposed to be spawning upgrades.
   if !game_config.spawn_upgrades {
@@ -194,15 +196,14 @@ fn drop_upgrade(event: &PlayerKilled, game: &mut AirmashGame) {
     return;
   }
 
-  let gconfig = game.resources.read::<GameConfig>();
-  let mob = match gconfig.mobs.get("upgrade").copied() {
+  let mob = match config.mobs.get("upgrade").copied() {
     Some(mob) => mob,
     // If there is no upgrade prototype then we don't drop upgrades
     None => return,
   };
   let prob = rand::random::<f32>();
 
-  drop(gconfig);
+  drop(config);
   drop(game_config);
 
   if total_upgrades > 0 || prob < consts::UPGRADE_DROP_PROBABILITY {

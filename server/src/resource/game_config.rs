@@ -1,5 +1,3 @@
-use std::ops::Deref;
-
 /// Flags to enable and/or disable engine features.
 ///
 /// By default these configs are set as would be needed for an FFA gamemode.
@@ -47,8 +45,6 @@ pub struct GameConfig {
   ///
   /// TODO: This should be replaced with authenticating for admin commands.
   pub admin_enabled: bool,
-
-  pub inner: server_config::GameConfig,
 }
 
 impl Default for GameConfig {
@@ -60,15 +56,6 @@ impl Default for GameConfig {
       spawn_upgrades: true,
       always_upgraded: false,
       admin_enabled: false,
-      inner: server_config::GameConfig::default(),
     }
-  }
-}
-
-impl Deref for GameConfig {
-  type Target = server_config::GameConfig;
-
-  fn deref(&self) -> &Self::Target {
-    &self.inner
   }
 }

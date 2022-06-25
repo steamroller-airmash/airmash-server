@@ -69,7 +69,7 @@ jobs:
           sharedKey: build-cache-release
       - name: Build and run
         run: |
-          cargo run --release --example export-config --color always > new-default.json
+          cargo run --release --features script --example export --color always > new-default.json
       - name: Diff configs
         run: |
           cp configs/default.json old-default.json
@@ -97,7 +97,7 @@ jobs:
           sharedKey: build-cache-release
       - name: Build and run
         run: |
-          cargo run --release --color always --example validate-config -- configs/*.json
+          cargo run --release --features script --color always --example validate -- configs/*.lua
 
   verify-pass:
     name: verify-tests-pass

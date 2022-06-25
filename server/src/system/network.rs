@@ -8,7 +8,7 @@ use crate::network::*;
 use crate::protocol::client::{self as c, Login};
 use crate::protocol::v5::deserialize;
 use crate::protocol::ClientPacket;
-use crate::resource::{GameConfig, TakenNames};
+use crate::resource::{Config, TakenNames};
 use crate::AirmashGame;
 
 pub fn process_packets(game: &mut AirmashGame) {
@@ -211,9 +211,9 @@ fn handle_login(game: &mut AirmashGame, mut login: Login, conn: ConnectionId) {
 
     make_unique_name(&mut names, &mut login.name);
 
-    let gconfig = &game.resources.read::<GameConfig>().inner;
+    let config = game.resources.read::<Config>();
     let mut builder =
-      crate::defaults::build_default_player(&login, gconfig.default_plane, start_time, this_frame);
+      crate::defaults::build_default_player(&login, config.default_plane, start_time, this_frame);
 
     let entity = game.world.spawn(builder.build());
 

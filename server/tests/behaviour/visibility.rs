@@ -2,7 +2,7 @@ use std::time::Duration;
 
 use airmash_protocol::{KeyCode, MobType, ServerPacket};
 use airmash_server::component::Position;
-use airmash_server::resource::GameConfig;
+use airmash_server::resource::Config;
 use airmash_server::util::NalgebraExt;
 use airmash_server::Vector2;
 use server::test::TestGame;
@@ -26,7 +26,7 @@ fn out_of_visibility_missiles_properly_deleted() {
   let ent1 = client1.login("test-1", &mut game);
   let ent2 = client2.login("test-2", &mut game);
 
-  let view_radius = game.resources.read::<GameConfig>().view_radius;
+  let view_radius = game.resources.read::<Config>().view_radius;
 
   game.world.get_mut::<Position>(ent2).unwrap().0 = Vector2::new(0.0, -view_radius + 1.0);
   game.run_count(60);

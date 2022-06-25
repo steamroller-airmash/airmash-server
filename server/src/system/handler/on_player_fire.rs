@@ -1,14 +1,12 @@
 use crate::component::*;
 use crate::config::MissilePrototypeRef;
 use crate::event::PlayerFire;
-use crate::resource::Config;
 use crate::AirmashGame;
 
 #[handler]
 pub fn send_player_fire(event: &PlayerFire, game: &mut AirmashGame) {
   use crate::protocol::server as s;
 
-  let config = game.resources.read::<Config>();
   let clock = crate::util::get_current_clock(game);
 
   let mut projectiles = Vec::with_capacity(event.missiles.len());
@@ -56,7 +54,6 @@ pub fn send_player_fire(event: &PlayerFire, game: &mut AirmashGame) {
     };
 
     drop(query);
-    drop(config);
 
     game.send_to_visible(pos.0, packet);
   } else {

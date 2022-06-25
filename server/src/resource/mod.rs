@@ -7,16 +7,16 @@ use bstr::BString;
 use hecs::Entity;
 
 pub mod collision;
-pub mod config;
 
 mod game_config;
 mod stats;
 
-pub use self::config::Config;
 pub use self::game_config::GameConfig;
 pub use self::stats::ServerStats;
 pub use crate::protocol::GameType;
 pub use crate::TaskScheduler;
+
+pub type Config = crate::config::GameConfig;
 
 def_wrappers! {
   /// Time at which the last frame occurred.

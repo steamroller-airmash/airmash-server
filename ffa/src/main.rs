@@ -1,11 +1,9 @@
 use std::env;
-use std::fs::File;
 use std::time::Duration;
 
 use clap::arg;
-use serde_deserialize_over::DeserializeOver;
 use server::protocol::GameType;
-use server::resource::{Config, RegionName};
+use server::resource::RegionName;
 use server::util::PeriodicPowerupSpawner;
 use server::*;
 
@@ -61,22 +59,24 @@ fn main() {
     Duration::from_secs(105),
   ));
 
+  let mut config = server::config::GamePrototype::default();
   if let Some(path) = matches.value_of("config") {
-    let file = match File::open(path) {
-      Ok(x) => x,
+    let script = match std::fs::read_to_string(path) {
+      Ok(script) => script,
       Err(e) => {
         eprintln!("Unable to open config file. Error was {}", e);
-        return;
+        std::process::exit(1);
       }
     };
 
-    let mut de = serde_json::Deserializer::new(serde_json::de::IoRead::new(file));
-
-    let mut config = Config::default();
-    config.deserialize_over(&mut de).unwrap();
-
-    game.resources.insert(config);
+    config
+      .patch(&script)
+      .expect("Error while running config file");
   }
+
+  game
+    .resources
+    .insert(server::resource::Config::new(config).unwrap());
 
   game.run_until_shutdown();
 }

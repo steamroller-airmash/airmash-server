@@ -176,7 +176,6 @@ impl AirmashGame {
     self.resources.insert(StartTime(now));
     self.resources.insert(LastFrame(now));
     self.resources.insert(ThisFrame(now));
-    self.resources.insert(Config::default());
     self.resources.insert(Terrain::default());
     self.resources.insert(PlayerPosDb::default());
     self.resources.insert(PlayerCollideDb::default());

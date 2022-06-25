@@ -1,6 +1,6 @@
-use airmash_server::resource::GameConfig;
 use server::component::*;
 use server::protocol::KeyCode;
+use server::resource::Config;
 use server::Vector2;
 
 #[test]
@@ -9,7 +9,7 @@ fn prowler_decloak_on_hit() {
 
   let &prowler = game
     .resources
-    .read::<GameConfig>()
+    .read::<Config>()
     .planes
     .get("prowler")
     .unwrap();

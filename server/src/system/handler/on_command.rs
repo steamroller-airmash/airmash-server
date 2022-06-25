@@ -9,7 +9,7 @@ use crate::event::{PacketEvent, PlayerChangePlane, PlayerRespawn, PlayerSpectate
 use crate::protocol::client::Command;
 use crate::protocol::server::PlayerFlag;
 use crate::protocol::{server as s, ErrorType, PlaneType, UpgradeType};
-use crate::resource::{GameConfig, ThisFrame};
+use crate::resource::{Config, GameConfig, ThisFrame};
 use crate::util::spectate::*;
 use crate::AirmashGame;
 
@@ -89,7 +89,7 @@ fn on_respawn_command(event: &PacketEvent<Command>, game: &mut AirmashGame) {
   };
 
   let this_frame = game.resources.read::<ThisFrame>().0;
-  let gconfig = game.resources.read::<GameConfig>();
+  let config = game.resources.read::<Config>();
 
   let mut query = match game.world.query_one::<(
     &RespawnAllowed,
@@ -126,7 +126,7 @@ fn on_respawn_command(event: &PacketEvent<Command>, game: &mut AirmashGame) {
     PlaneType::Mohawk => "mohawk",
     _ => unreachable!(),
   };
-  let new_proto = match gconfig.planes.get(pname) {
+  let new_proto = match config.planes.get(pname) {
     Some(proto) => *proto,
     None => {
       game.send_to(
@@ -145,7 +145,7 @@ fn on_respawn_command(event: &PacketEvent<Command>, game: &mut AirmashGame) {
   let prev_alive = std::mem::replace(&mut alive.0, true);
 
   drop(query);
-  drop(gconfig);
+  drop(config);
 
   // We need to make sure to update the plane type before respawning the player as
   // otherwise using Q and E for strafing in a mohawk stops working. See issue
