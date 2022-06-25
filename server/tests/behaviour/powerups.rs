@@ -83,3 +83,33 @@ fn inferno_slows_down_plane() {
     .any(|p| p.upgrades.inferno);
   assert!(has_inferno);
 }
+
+#[test]
+fn first_spawn_has_2s_shield() {
+  let (mut game, mut mock) = TestGame::new();
+
+  let mut client = mock.open();
+  client.login("test", &mut game);
+  game.run_once();
+
+  assert!(client.packets().any(|p| matches!(
+    p,
+    ServerPacket::PlayerPowerup(s::PlayerPowerup {
+      ty: PowerupType::Shield,
+      ..
+    })
+  )));
+
+  game.run_for(Duration::from_secs(3));
+  let _ = client.packets().count();
+  game.run_for(Duration::from_secs(3));
+
+  let no_shield = !client
+    .packets()
+    .filter_map(|p| match p {
+      ServerPacket::PlayerUpdate(p) => Some(p),
+      _ => None,
+    })
+    .any(|p| p.upgrades.shield);
+  assert!(no_shield);
+}
