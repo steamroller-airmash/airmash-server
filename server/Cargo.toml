@@ -7,7 +7,7 @@ edition = "2018"
 mt-network = []
 
 [dependencies]
-hecs = "0.7.7"
+hecs = "0.8.2"
 linkme = "0.3.2"
 log = "0.4"
 crossbeam-channel = "0.5"
