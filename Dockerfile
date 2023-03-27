@@ -1,4 +1,4 @@
-FROM rust:1.61.0-slim-bullseye as build-env
+FROM rust:1.68.1-slim-bullseye as build-env
 
 RUN apt-get update \
   && apt-get install -y dwz \
