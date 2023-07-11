@@ -44,7 +44,7 @@ dependencies = [
  "airmash-protocol",
  "anymap",
  "approx",
- "bstr",
+ "bstr 1.6.0",
  "crossbeam-channel",
  "futures-task",
  "futures-util",
@@ -74,7 +74,7 @@ version = "0.6.2"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "a3f34bd68b89b81154bf6f0047b78fcb1fb0929d7c05595c7939c151bf218dd2"
 dependencies = [
- "bstr",
+ "bstr 0.2.17",
  "mint",
  "serde-feature-hack",
  "serde_json",
@@ -95,7 +95,7 @@ name = "airmash-server-ctf"
 version = "0.0.1"
 dependencies = [
  "airmash",
- "bstr",
+ "bstr 1.6.0",
  "clap",
  "env_logger",
  "htmlescape",
@@ -193,7 +193,16 @@ version = "0.2.17"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "ba3569f383e8f1598449f1a423e72e99569137b47740b1da11ef19af3d5c3223"
 dependencies = [
- "lazy_static",
+ "memchr",
+ "serde",
+]
+
+[[package]]
+name = "bstr"
+version = "1.6.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "6798148dccfbff0fae41c7574d2fa8f1ef3492fba0face179de5d8d447d67b05"
+dependencies = [
  "memchr",
  "regex-automata",
  "serde",
@@ -801,9 +810,9 @@ dependencies = [
 
 [[package]]
 name = "regex-automata"
-version = "0.1.10"
+version = "0.3.2"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "6c230d73fb8d8c1b9c0b3135c5142a8acee3a0558fb8db5cf1cb65f8d7862132"
+checksum = "83d3daa6976cffb758ec878f108ba0e062a45b2d6ca3a2cca965338855476caf"
 
 [[package]]
 name = "regex-syntax"
@@ -818,7 +827,7 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "5d33e5ba15c3d43178f283ed5863d4531e292fc0e56fb773f3bea45f18e3a42a"
 dependencies = [
  "bitflags",
- "bstr",
+ "bstr 0.2.17",
  "libc",
  "num-traits",
  "rlua-lua54-sys",

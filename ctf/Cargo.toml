@@ -14,7 +14,7 @@ env_logger = "0.10"
 clap = "3.2.22"
 htmlescape = "0.3"
 rand = "0.8"
-bstr = "0.2"
+bstr = "1.6"
 
 lazy_static = "1.4"
 smallvec = "1.11"
