@@ -11,5 +11,5 @@ edition = "2018"
 [dependencies]
 log = "0.4"
 env_logger = "0.10"
-clap = "3.2.22"
+clap = "4.5.2"
 airmash = { path="../server", features = ["mt-network"] }
